@@ -11,4 +11,6 @@
 | 2026-10-08 | Git en la carpeta del proyecto | Historial y poder revertir cada fase. |
 | 2026-10-08 | Todo el texto del juego en inglés | Pedido del usuario. Comentarios y docs siguen en español. |
 | 2026-10-08 | Evaluación indulgente: ≥50 % de cobertura por zona; el color no bloquea. Masterpiece exige color ≥60 % en todas las zonas | No castigar a quien no sabe dibujar, pero premiar el buen color. |
+| 2026-10-08 | La pintura del inventario se coloca en el suelo como parcela y de ella crece el girasol 3D procedural, con los colores pintados por zona y tamaño según la calidad | Mantiene "pintas lo que crece" sin la transición cinemática. |
+| 2026-10-08 | Cosecha: Sunflower ×(1–4 según calidad) + 1 semilla que guarda la pintura y la recrea al plantarla; la parcela se consume | Decisión del usuario. Ojo: con semillas una pintura rinde para siempre; revisar en la economía (Fase 6). |
 | 2026-10-08 | Se descarta la animación pintura → cultivo (4C/4D). Al terminar, la pintura se recoge del caballete con Interact y va al inventario (placeholder); el caballete recibe un lienzo nuevo | Decisión del usuario. Qué se hace con las pinturas del inventario queda por definir. |

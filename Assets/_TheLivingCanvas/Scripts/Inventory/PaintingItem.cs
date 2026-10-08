@@ -21,5 +21,17 @@ namespace TheLivingCanvas.Inventory
         public override string DisplayName => $"{Crop.DisplayName} painting";
         public override string Detail => Result.Quality.ToString();
         public override Texture Icon => Image;
+        public override string ToastText => $"+1 {DisplayName} ({Detail})";
+    }
+
+    /// <summary>
+    /// Semilla obtenida al cosechar: guarda la pintura de la que nació y, al plantarla,
+    /// vuelve a crear esa misma parcela (y el mismo cultivo).
+    /// </summary>
+    public class SeedItem : PaintingItem
+    {
+        public SeedItem(PaintingItem painting) : base(painting.Crop, painting.Result, painting.Image) { }
+
+        public override string DisplayName => $"{Crop.DisplayName} seed";
     }
 }

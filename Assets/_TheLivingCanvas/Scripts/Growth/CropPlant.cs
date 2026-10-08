@@ -14,6 +14,18 @@ namespace TheLivingCanvas.Growth
         /// <summary>Empieza a crecer: <paramref name="duration"/> segundos hasta el tamaño final.</summary>
         public abstract void Grow(PaintingResult painting, float duration);
 
+        /// <summary>Alcanzó su tamaño final: se puede cosechar.</summary>
+        public bool IsGrown { get; protected set; }
+
+        /// <summary>Unidades cosechadas según la calidad de la pintura.</summary>
+        public static int HarvestAmount(PaintingQuality quality) => quality switch
+        {
+            PaintingQuality.Normal => 1,
+            PaintingQuality.Good => 2,
+            PaintingQuality.Excellent => 3,
+            _ => 4
+        };
+
         /// <summary>Escala final según la calidad de la pintura.</summary>
         protected static float QualityScale(PaintingQuality quality) => quality switch
         {

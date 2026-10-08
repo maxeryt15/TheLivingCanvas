@@ -14,21 +14,26 @@ namespace TheLivingCanvas.Data
         [SerializeField] float growthDuration = 20f;
         [Tooltip("Planta 3D que crece de la parcela.")]
         [SerializeField] CropPlant plantPrefab;
+        [Tooltip("Icono de la cosecha en el inventario.")]
+        [SerializeField] Texture2D icon;
 
         public string Id => id;
         public string DisplayName => displayName;
         public PaintTemplate Template => template;
         public float GrowthDuration => growthDuration;
         public CropPlant PlantPrefab => plantPrefab;
+        public Texture2D Icon => icon;
 
 #if UNITY_EDITOR
-        public void EditorSetup(string newId, string newDisplayName, PaintTemplate newTemplate, float newGrowthDuration, CropPlant newPlantPrefab)
+        public void EditorSetup(string newId, string newDisplayName, PaintTemplate newTemplate, float newGrowthDuration,
+            CropPlant newPlantPrefab, Texture2D newIcon)
         {
             id = newId;
             displayName = newDisplayName;
             template = newTemplate;
             growthDuration = newGrowthDuration;
             plantPrefab = newPlantPrefab;
+            icon = newIcon;
         }
 #endif
     }

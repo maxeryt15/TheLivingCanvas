@@ -85,7 +85,8 @@ namespace TheLivingCanvas.Inventory
 
         void OnItemAdded(InventoryItem item)
         {
-            toastLabel.text = $"+1 {item.DisplayName} ({item.Detail})";
+            // Si llegan varios seguidos (ej. cosecha + semilla), se listan juntos.
+            toastLabel.text = toast.activeSelf ? $"{toastLabel.text}\n{item.ToastText}" : item.ToastText;
             toast.SetActive(true);
             toastHideTime = Time.unscaledTime + toastSeconds;
         }
@@ -115,6 +116,7 @@ namespace TheLivingCanvas.Inventory
                 slot.gameObject.SetActive(true);
                 slot.transform.Find("Icon").GetComponent<RawImage>().texture = item.Icon;
                 slot.transform.Find("Name").GetComponent<Text>().text = $"{item.DisplayName}\n{item.Detail}";
+                slot.interactable = item is PaintingItem; // solo pinturas y semillas se colocan
                 slot.onClick.AddListener(() => OnSlotClicked(item));
             }
         }

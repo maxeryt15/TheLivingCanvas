@@ -57,6 +57,40 @@ namespace TheLivingCanvas.EditorTools
             return AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
         }
 
+        /// <summary>Icono placeholder de la cosecha: centro marrón y anillo de pétalos amarillos sobre transparente.</summary>
+        public static Texture2D GenerateSunflowerIcon(string assetPath)
+        {
+            const int size = 128;
+            var center = new Vector2(size * 0.5f, size * 0.5f);
+            var yellow = new Color32(250, 200, 40, 255);
+            var brown = new Color32(110, 70, 30, 255);
+            var pixels = new Color32[size * size];
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    Color32 c = default; // transparente
+                    if (Vector2.Distance(p, center) <= 24f) c = brown;
+                    else if (InPetals(p, center, 12, 38f, 22f, 10f)) c = yellow;
+                    pixels[y * size + x] = c;
+                }
+            }
+
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            texture.SetPixels32(pixels);
+            texture.Apply();
+            File.WriteAllBytes(assetPath, texture.EncodeToPNG());
+            Object.DestroyImmediate(texture);
+
+            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            var importer = (TextureImporter)AssetImporter.GetAtPath(assetPath);
+            importer.alphaIsTransparency = true;
+            importer.mipmapEnabled = false;
+            importer.SaveAndReimport();
+            return AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+        }
+
         static bool InPetals(Vector2 p, Vector2 center, int count, float distance, float length, float width)
         {
             for (int i = 0; i < count; i++)

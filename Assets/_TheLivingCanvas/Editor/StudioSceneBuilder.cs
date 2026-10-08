@@ -355,7 +355,7 @@ namespace TheLivingCanvas.EditorTools
 
             // Aviso al recoger algo.
             var toast = CreatePanel(root.transform, "Toast", uiSprite, new Color(0.22f, 0.36f, 0.16f, 0.92f),
-                new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(560f, 64f));
+                new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(560f, 100f));
             var toastLabel = AddStretchedText(toast.transform, "Label", 26, font, cream, TextAnchor.MiddleCenter);
 
             // Panel del inventario.
@@ -718,7 +718,8 @@ namespace TheLivingCanvas.EditorTools
                 crop = ScriptableObject.CreateInstance<CropDefinition>();
                 AssetDatabase.CreateAsset(crop, cropPath);
             }
-            crop.EditorSetup("sunflower", "Sunflower", template, 20f, BuildSunflowerPlantPrefab());
+            crop.EditorSetup("sunflower", "Sunflower", template, 20f, BuildSunflowerPlantPrefab(),
+                PaintTemplateGenerator.GenerateSunflowerIcon($"{Root}/Art/Textures/Icon_Sunflower.png"));
             EditorUtility.SetDirty(crop);
             return crop;
         }

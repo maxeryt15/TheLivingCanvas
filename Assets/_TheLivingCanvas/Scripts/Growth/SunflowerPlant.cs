@@ -66,6 +66,7 @@ namespace TheLivingCanvas.Growth
                 yield return null;
             }
             Apply(1f);
+            IsGrown = true;
         }
 
         /// <summary>Pose de la planta en el progreso <paramref name="t"/> (0 = brote, 1 = adulta).</summary>

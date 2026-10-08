@@ -88,7 +88,7 @@ namespace TheLivingCanvas.Growth
             validSpot &= IsSpotClear();
 
             hintLabel.text = validSpot
-                ? "Place painting:  [E] place   ·   [Esc] cancel"
+                ? $"Place {item.DisplayName.ToLowerInvariant()}:  [E] place   ·   [Esc] cancel"
                 : "Can't place it here  ·  [Esc] cancel";
         }
 
