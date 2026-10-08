@@ -96,6 +96,11 @@ namespace TheLivingCanvas.EditorTools
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
             AssetDatabase.SaveAssets();
+
+            // DefaultControls registra cada paso (crear, emparentar) en el Undo del editor. En Play mode,
+            // Ctrl+Z en la Game view también dispara ese Undo y desarmaba la UI. La escena es generada:
+            // no hay nada que deshacer.
+            Undo.ClearAll();
             Debug.Log($"[StudioSceneBuilder] Scene generated at {ScenePath}");
         }
 
