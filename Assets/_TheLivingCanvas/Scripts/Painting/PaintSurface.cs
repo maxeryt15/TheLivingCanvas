@@ -37,6 +37,12 @@ namespace TheLivingCanvas.Painting
         public float PixelWorldSize => transform.lossyScale.x / width;
 
         public Color BaseColor => baseColor;
+        public int Width => width;
+        public int Height => height;
+        /// <summary>Aumenta con cada cambio de la pintura (para recalcular análisis solo cuando hace falta).</summary>
+        public int Revision { get; private set; }
+        /// <summary>Píxeles actuales, solo lectura por convención (análisis de cobertura).</summary>
+        internal Color32[] Pixels => pixels;
         public bool CanUndo => history.CanUndo;
         public bool CanRedo => history.CanRedo;
 
@@ -66,6 +72,7 @@ namespace TheLivingCanvas.Painting
             texture.SetPixels32(pixels);
             texture.Apply(false);
             dirty = false;
+            Revision++;
         }
 
         /// <summary>Raycast solo contra este lienzo. Devuelve la UV (0–1) del punto tocado.</summary>

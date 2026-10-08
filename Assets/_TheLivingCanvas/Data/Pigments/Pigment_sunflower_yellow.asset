@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Pigment_sunflower_yellow
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.PigmentDefinition
   id: sunflower_yellow
-  displayName: Amarillo girasol
+  displayName: Sunflower Yellow
   color: {r: 0.98, g: 0.78, b: 0.15, a: 1}

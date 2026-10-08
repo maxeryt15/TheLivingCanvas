@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Pigment_carmine
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.PigmentDefinition
   id: carmine
-  displayName: "Rojo carm\xEDn"
+  displayName: Carmine Red
   color: {r: 0.75, g: 0.15, b: 0.17, a: 1}

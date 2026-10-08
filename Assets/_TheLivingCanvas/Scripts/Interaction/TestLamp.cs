@@ -13,7 +13,7 @@ namespace TheLivingCanvas.Interaction
         [SerializeField] Color offColor = new(0.35f, 0.33f, 0.3f);
         [SerializeField] bool isOn;
 
-        public string Prompt => isOn ? "Apagar lámpara" : "Encender lámpara";
+        public string Prompt => isOn ? "Turn off lamp" : "Turn on lamp";
 
         void Start() => Apply();
 

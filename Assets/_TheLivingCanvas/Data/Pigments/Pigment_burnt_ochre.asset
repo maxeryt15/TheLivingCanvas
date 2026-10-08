@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Pigment_burnt_ochre
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.PigmentDefinition
   id: burnt_ochre
-  displayName: Ocre tostado
+  displayName: Burnt Ochre
   color: {r: 0.55, g: 0.33, b: 0.13, a: 1}

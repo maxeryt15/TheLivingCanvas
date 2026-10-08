@@ -96,7 +96,7 @@ namespace TheLivingCanvas.EditorTools
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
             AssetDatabase.SaveAssets();
-            Debug.Log($"[StudioSceneBuilder] Escena generada en {ScenePath}");
+            Debug.Log($"[StudioSceneBuilder] Scene generated at {ScenePath}");
         }
 
         static bool HasOtherModifiedScenes()
@@ -255,12 +255,12 @@ namespace TheLivingCanvas.EditorTools
             var paletteProp = brushSo.FindProperty("palette");
             var pigments = new[]
             {
-                GetOrCreatePigment("sunflower_yellow", "Amarillo girasol", new Color(0.98f, 0.78f, 0.15f)),
-                GetOrCreatePigment("burnt_ochre", "Ocre tostado", new Color(0.55f, 0.33f, 0.13f)),
-                GetOrCreatePigment("leaf_green", "Verde hoja", new Color(0.30f, 0.55f, 0.22f)),
-                GetOrCreatePigment("ultramarine", "Azul ultramar", new Color(0.17f, 0.27f, 0.62f)),
-                GetOrCreatePigment("carmine", "Rojo carmín", new Color(0.75f, 0.15f, 0.17f)),
-                GetOrCreatePigment("titanium_white", "Blanco titanio", new Color(0.98f, 0.98f, 0.96f)),
+                GetOrCreatePigment("sunflower_yellow", "Sunflower Yellow", new Color(0.98f, 0.78f, 0.15f)),
+                GetOrCreatePigment("burnt_ochre", "Burnt Ochre", new Color(0.55f, 0.33f, 0.13f)),
+                GetOrCreatePigment("leaf_green", "Leaf Green", new Color(0.30f, 0.55f, 0.22f)),
+                GetOrCreatePigment("ultramarine", "Ultramarine Blue", new Color(0.17f, 0.27f, 0.62f)),
+                GetOrCreatePigment("carmine", "Carmine Red", new Color(0.75f, 0.15f, 0.17f)),
+                GetOrCreatePigment("titanium_white", "Titanium White", new Color(0.98f, 0.98f, 0.96f)),
             };
             paletteProp.arraySize = pigments.Length;
             for (int i = 0; i < pigments.Length; i++)
@@ -268,6 +268,46 @@ namespace TheLivingCanvas.EditorTools
             brushSo.ApplyModifiedPropertiesWithoutUndo();
 
             BuildPalettePanel(paintHud.transform, brush);
+            BuildCoverageReadout(paintHud.transform, paintMode, brush);
+        }
+
+        /// <summary>Lectura de depuración de cobertura, arriba a la derecha (Fase 3C).</summary>
+        static void BuildCoverageReadout(Transform parent, PaintModeController paintMode, PaintBrushController brush)
+        {
+            // El alto se ajusta al texto (VerticalLayoutGroup + ContentSizeFitter).
+            var panel = new GameObject("CoverageReadout", typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            panel.transform.SetParent(parent, false);
+            var rect = (RectTransform)panel.transform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1f, 1f);
+            rect.anchoredPosition = new Vector2(-30f, -30f);
+            rect.sizeDelta = new Vector2(320f, 0f);
+            var layout = panel.GetComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(16, 16, 12, 12);
+            layout.childControlWidth = layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            panel.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var image = panel.GetComponent<Image>();
+            image.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            image.type = Image.Type.Sliced;
+            image.color = new Color(0.12f, 0.09f, 0.07f, 0.8f);
+            image.raycastTarget = false;
+
+            var labelGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            labelGo.transform.SetParent(panel.transform, false);
+            var label = labelGo.GetComponent<Text>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.fontSize = 22;
+            label.alignment = TextAnchor.UpperLeft;
+            label.color = new Color(1f, 0.95f, 0.82f);
+            label.raycastTarget = false;
+
+            var readout = panel.AddComponent<CoverageReadoutUI>();
+            var so = new SerializedObject(readout);
+            so.FindProperty("paintMode").objectReferenceValue = paintMode;
+            so.FindProperty("brush").objectReferenceValue = brush;
+            so.FindProperty("label").objectReferenceValue = label;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Paleta lateral de madera: muestras de color, tamaño, borrador y cómo salir.</summary>
@@ -302,7 +342,7 @@ namespace TheLivingCanvas.EditorTools
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
 
-            AddLabel(panel.transform, "Title", "Paleta", 30, 40f, font, cream);
+            AddLabel(panel.transform, "Title", "Palette", 30, 40f, font, cream);
 
             // Muestras: PaintToolsUI clona la plantilla por cada pigmento de la paleta.
             var swatches = new GameObject("Swatches", typeof(RectTransform), typeof(GridLayoutGroup), typeof(LayoutElement));
@@ -323,13 +363,13 @@ namespace TheLivingCanvas.EditorTools
             template.GetComponent<Button>().targetGraphic = templateImage;
             ConfigureHighlight(template.GetComponent<Outline>(), cream);
 
-            AddLabel(panel.transform, "SizeLabel", "Tamaño", 24, 30f, font, cream);
+            AddLabel(panel.transform, "SizeLabel", "Brush size", 24, 30f, font, cream);
             var slider = DefaultControls.CreateSlider(resources);
             slider.name = "SizeSlider";
             slider.transform.SetParent(panel.transform, false);
             slider.AddComponent<LayoutElement>().preferredHeight = 30f;
 
-            var eraser = CreateButton(resources, panel.transform, "EraserButton", "Borrador", 24, font);
+            var eraser = CreateButton(resources, panel.transform, "EraserButton", "Eraser", 24, font);
             ConfigureHighlight(eraser.AddComponent<Outline>(), cream);
 
             var historyRow = new GameObject("HistoryRow", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
@@ -339,11 +379,11 @@ namespace TheLivingCanvas.EditorTools
             rowLayout.spacing = 10f;
             rowLayout.childControlWidth = rowLayout.childControlHeight = true;
             rowLayout.childForceExpandWidth = rowLayout.childForceExpandHeight = true;
-            var undo = CreateButton(resources, historyRow.transform, "UndoButton", "Deshacer", 19, font);
-            var redo = CreateButton(resources, historyRow.transform, "RedoButton", "Rehacer", 19, font);
-            var clear = CreateButton(resources, panel.transform, "ClearButton", "Limpiar lienzo", 22, font);
+            var undo = CreateButton(resources, historyRow.transform, "UndoButton", "Undo", 19, font);
+            var redo = CreateButton(resources, historyRow.transform, "RedoButton", "Redo", 19, font);
+            var clear = CreateButton(resources, panel.transform, "ClearButton", "Clear canvas", 22, font);
 
-            AddLabel(panel.transform, "ExitHint", "Ctrl+Z / Ctrl+Y   ·   [Esc] o [E] Salir", 17, 50f, font, cream);
+            AddLabel(panel.transform, "ExitHint", "Ctrl+Z undo  ·  Ctrl+Y redo\n[Esc] or [E] to exit", 17, 50f, font, cream);
 
             var tools = panel.AddComponent<PaintToolsUI>();
             var so = new SerializedObject(tools);

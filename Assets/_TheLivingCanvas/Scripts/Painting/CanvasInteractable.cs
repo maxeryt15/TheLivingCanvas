@@ -16,7 +16,7 @@ namespace TheLivingCanvas.Painting
 
         public Transform ViewPoint => viewPoint;
         public PaintSurface Surface => surface;
-        public string Prompt => "Pintar";
+        public string Prompt => "Paint";
 
         void Awake() => paintMode = FindAnyObjectByType<PaintModeController>();
 

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Pigment_titanium_white
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.PigmentDefinition
   id: titanium_white
-  displayName: Blanco titanio
+  displayName: Titanium White
   color: {r: 0.98, g: 0.98, b: 0.96, a: 1}

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Pigment_leaf_green
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.PigmentDefinition
   id: leaf_green
-  displayName: Verde hoja
+  displayName: Leaf Green
   color: {r: 0.3, g: 0.55, b: 0.22, a: 1}
