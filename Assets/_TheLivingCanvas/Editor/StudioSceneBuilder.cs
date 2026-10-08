@@ -1,6 +1,7 @@
 using System.Linq;
 using TheLivingCanvas.Core;
 using TheLivingCanvas.Data;
+using TheLivingCanvas.Growth;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Painting;
@@ -32,6 +33,7 @@ namespace TheLivingCanvas.EditorTools
         const string ControlsPath = Root + "/Settings/PlayerControls.inputactions";
         const string PlayerPrefabPath = Root + "/Prefabs/Player/Player.prefab";
         const string EaselPrefabPath = Root + "/Prefabs/Canvas/Easel.prefab";
+        const string PaintingPlotPrefabPath = Root + "/Prefabs/Crops/PaintingPlot.prefab";
 
         [MenuItem("TheLivingCanvas/Build Studio Scene")]
         public static void Build()
@@ -82,8 +84,10 @@ namespace TheLivingCanvas.EditorTools
             player.transform.SetPositionAndRotation(new Vector3(0f, 0f, -2f), Quaternion.identity);
             var rig = BuildCameraRig(player);
             var hud = BuildHud(player.GetComponent<PlayerInteractor>());
-            BuildPaintMode(rig, player, hud);
-            BuildInventoryUI(hud.transform, player.GetComponent<PlayerInventory>());
+            var paintMode = BuildPaintMode(rig, player, hud);
+            var placer = BuildPaintingPlacer(hud.transform, player);
+            BuildInventoryUI(hud.transform, player.GetComponent<PlayerInventory>(), placer, paintMode,
+                rig.GetComponent<CursorLock>(), rig.GetComponent<CameraModeController>());
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
@@ -222,7 +226,7 @@ namespace TheLivingCanvas.EditorTools
             return rig;
         }
 
-        static void BuildPaintMode(GameObject rig, GameObject player, GameObject hud)
+        static PaintModeController BuildPaintMode(GameObject rig, GameObject player, GameObject hud)
         {
             // Los clics en la UI necesitan un EventSystem con el módulo del Input System nuevo.
             var eventSystem = new GameObject("EventSystem", typeof(EventSystem));
@@ -276,12 +280,66 @@ namespace TheLivingCanvas.EditorTools
 
             BuildPalettePanel(paintHud.transform, brush, finisher);
             BuildCoverageReadout(paintHud.transform, paintMode, brush);
+            return paintMode;
+        }
+
+        /// <summary>Colocar pinturas del inventario en el suelo: controlador, aviso y prefab de la parcela.</summary>
+        static PaintingPlacer BuildPaintingPlacer(Transform hud, GameObject player)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var hint = CreatePanel(hud, "PlacementHint", AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd"),
+                new Color(0.16f, 0.11f, 0.08f, 0.85f), new Vector2(0.5f, 0f), new Vector2(0f, 120f), new Vector2(620f, 60f));
+            var label = AddStretchedText(hint.transform, "Label", 24, font, new Color(1f, 0.95f, 0.82f), TextAnchor.MiddleCenter);
+            hint.SetActive(false);
+
+            var placer = new GameObject("PaintingPlacer").AddComponent<PaintingPlacer>();
+            var so = new SerializedObject(placer);
+            so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+            so.FindProperty("interactor").objectReferenceValue = player.GetComponent<PlayerInteractor>();
+            so.FindProperty("plotPrefab").objectReferenceValue = BuildPaintingPlotPrefab();
+            so.FindProperty("confirmAction").objectReferenceValue = GetAction("Player/Interact");
+            so.FindProperty("cancelAction").objectReferenceValue = GetAction("Paint/Exit");
+            so.FindProperty("hint").objectReferenceValue = hint;
+            so.FindProperty("hintLabel").objectReferenceValue = label;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return placer;
+        }
+
+        /// <summary>
+        /// Parcela: el lienzo con su marco, plano en el suelo y con la pintura hacia arriba.
+        /// La parte de arriba de la pintura apunta hacia delante (+Z): se lee derecha desde quien la colocó.
+        /// </summary>
+        static PaintingPlot BuildPaintingPlotPrefab()
+        {
+            var root = new GameObject("PaintingPlot");
+            var box = root.AddComponent<BoxCollider>();
+            box.center = new Vector3(0f, 0.02f, 0f);
+            box.size = new Vector3(1.06f, 0.04f, 0.86f);
+
+            CreatePart(PrimitiveType.Cube, "Frame", root.transform, new Vector3(0f, 0.015f, 0f), new Vector3(1.06f, 0.03f, 0.86f),
+                GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f)), Quaternion.identity);
+            var painting = CreatePart(PrimitiveType.Quad, "Painting", root.transform, new Vector3(0f, 0.032f, 0f), new Vector3(1f, 0.8f, 1f),
+                GetOrCreateMaterial("M_PaintingPlot", Color.white), Quaternion.Euler(90f, 0f, 0f));
+            Object.DestroyImmediate(painting.GetComponent<Collider>()); // basta con el BoxCollider de la raíz
+
+            var plot = root.AddComponent<PaintingPlot>();
+            var so = new SerializedObject(plot);
+            so.FindProperty("paintingRenderer").objectReferenceValue = painting.GetComponent<MeshRenderer>();
+            var colliders = so.FindProperty("colliders");
+            colliders.arraySize = 1;
+            colliders.GetArrayElementAtIndex(0).objectReferenceValue = box;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(root, PaintingPlotPrefabPath);
+            Object.DestroyImmediate(root);
+            return prefab.GetComponent<PaintingPlot>();
         }
 
         /// <summary>
         /// Inventario placeholder: aviso "+1 ..." arriba al centro y panel con casillas (I / Tab / Y).
         /// </summary>
-        static void BuildInventoryUI(Transform hud, PlayerInventory inventory)
+        static void BuildInventoryUI(Transform hud, PlayerInventory inventory, PaintingPlacer placer,
+            PaintModeController paintMode, CursorLock cursorLock, CameraModeController cameraMode)
         {
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var cream = new Color(1f, 0.95f, 0.82f);
@@ -307,7 +365,7 @@ namespace TheLivingCanvas.EditorTools
             ((RectTransform)title.transform).offsetMax = new Vector2(0f, -16f);
 
             var hint = AddStretchedText(panel.transform, "Hint", 18, font, cream, TextAnchor.LowerCenter);
-            hint.text = "[I] or [Tab] to close";
+            hint.text = "Click a painting to place it on the floor   ·   [I] or [Tab] to close";
             ((RectTransform)hint.transform).offsetMin = new Vector2(0f, 12f);
 
             var empty = AddStretchedText(panel.transform, "Empty", 22, font, cream, TextAnchor.MiddleCenter);
@@ -326,12 +384,13 @@ namespace TheLivingCanvas.EditorTools
             layout.childAlignment = TextAnchor.UpperLeft;
 
             // Casilla plantilla: miniatura 5:4 (como el lienzo) + nombre y calidad.
-            var slot = new GameObject("SlotTemplate", typeof(RectTransform), typeof(Image));
+            var slot = new GameObject("SlotTemplate", typeof(RectTransform), typeof(Image), typeof(Button));
             slot.transform.SetParent(grid.transform, false);
             var slotImage = slot.GetComponent<Image>();
             slotImage.sprite = uiSprite;
             slotImage.type = Image.Type.Sliced;
             slotImage.color = new Color(0.93f, 0.88f, 0.78f);
+            slot.GetComponent<Button>().targetGraphic = slotImage;
 
             var icon = new GameObject("Icon", typeof(RectTransform), typeof(RawImage));
             icon.transform.SetParent(slot.transform, false);
@@ -347,9 +406,13 @@ namespace TheLivingCanvas.EditorTools
             var so = new SerializedObject(ui);
             so.FindProperty("inventory").objectReferenceValue = inventory;
             so.FindProperty("toggleAction").objectReferenceValue = GetAction("Player/Inventory");
+            so.FindProperty("placer").objectReferenceValue = placer;
+            so.FindProperty("paintMode").objectReferenceValue = paintMode;
+            so.FindProperty("cursorLock").objectReferenceValue = cursorLock;
+            so.FindProperty("cameraMode").objectReferenceValue = cameraMode;
             so.FindProperty("panel").objectReferenceValue = panel;
             so.FindProperty("slotContainer").objectReferenceValue = gridRect;
-            so.FindProperty("slotTemplate").objectReferenceValue = slot;
+            so.FindProperty("slotTemplate").objectReferenceValue = slot.GetComponent<Button>();
             so.FindProperty("emptyLabel").objectReferenceValue = empty.gameObject;
             so.FindProperty("toast").objectReferenceValue = toast;
             so.FindProperty("toastLabel").objectReferenceValue = toastLabel;

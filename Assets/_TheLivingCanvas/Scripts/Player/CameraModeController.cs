@@ -36,8 +36,23 @@ namespace TheLivingCanvas.Player
         CinemachineInputAxisController firstPersonInput;
         CinemachinePanTilt firstPersonPanTilt;
         CameraMode modeBeforeFixedView;
+        bool lookInputEnabled = true;
 
         public CameraMode Mode { get; private set; }
+
+        /// <summary>Permite apagar el mirar con ratón/stick (ej. con el inventario abierto para usar el cursor).</summary>
+        public void SetLookInputEnabled(bool enabled)
+        {
+            lookInputEnabled = enabled;
+            ApplyLookInput();
+        }
+
+        void ApplyLookInput()
+        {
+            // Solo la cámara activa lee el ratón/stick.
+            thirdPersonInput.enabled = Mode == CameraMode.ThirdPerson && lookInputEnabled;
+            firstPersonInput.enabled = Mode == CameraMode.FirstPerson && lookInputEnabled;
+        }
 
         void Awake()
         {
@@ -97,9 +112,7 @@ namespace TheLivingCanvas.Player
             firstPersonCamera.Priority = firstPerson ? ActivePriority : InactivePriority;
             fixedViewCamera.Priority = fixedView ? ActivePriority : InactivePriority;
 
-            // Solo la cámara activa lee el ratón/stick.
-            thirdPersonInput.enabled = thirdPerson;
-            firstPersonInput.enabled = firstPerson;
+            ApplyLookInput();
 
             playerMovement.enabled = thirdPerson;
             playerVisuals.SetActive(thirdPerson);
