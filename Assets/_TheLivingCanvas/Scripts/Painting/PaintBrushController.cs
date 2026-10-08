@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using TheLivingCanvas.Data;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -6,29 +10,48 @@ namespace TheLivingCanvas.Painting
 {
     /// <summary>
     /// Mientras se pinta: proyecta el puntero sobre el lienzo activo, dibuja un aro del tamaño
-    /// del pincel y pinta con el botón izquierdo / punta del lápiz.
+    /// del pincel y pinta con el botón izquierdo / punta del lápiz. Guarda el estado de las
+    /// herramientas (pigmento, tamaño, borrador).
     /// </summary>
     public class PaintBrushController : MonoBehaviour
     {
         [SerializeField] PaintModeController paintMode;
         [SerializeField] InputActionReference pointAction;
         [SerializeField] InputActionReference strokeAction;
+        [Tooltip("Rueda del ratón y teclas [ ] para cambiar el tamaño.")]
+        [SerializeField] InputActionReference brushSizeAction;
         [Tooltip("Imagen de UI (en un Canvas Screen Space - Overlay) que marca el tamaño del pincel.")]
         [SerializeField] Image cursorRing;
 
-        [SerializeField] Color brushColor = new(0.17f, 0.27f, 0.55f);
+        [SerializeField] List<PigmentDefinition> palette = new();
         [Tooltip("Radio del pincel en píxeles de la pintura.")]
         [SerializeField] float brushRadius = 10f;
+        [SerializeField] float minBrushRadius = 3f;
+        [SerializeField] float maxBrushRadius = 40f;
+        [Tooltip("Factor por paso de rueda / tecla.")]
+        [SerializeField] float sizeStepFactor = 1.15f;
 
         PaintSurface strokeSurface;
         Texture2D ringTexture;
         Canvas uiCanvas;
+
+        /// <summary>Se dispara cuando cambia el pigmento, el tamaño o el borrador (para refrescar la UI).</summary>
+        public event Action ToolsChanged;
+
+        public IReadOnlyList<PigmentDefinition> Palette => palette;
+        public PigmentDefinition SelectedPigment { get; private set; }
+        public bool EraserActive { get; private set; }
+        public float BrushRadius => brushRadius;
+        public float MinBrushRadius => minBrushRadius;
+        public float MaxBrushRadius => maxBrushRadius;
 
         void Awake()
         {
             uiCanvas = cursorRing.canvas;
             cursorRing.color = Color.white; // los colores van en la textura
             cursorRing.gameObject.SetActive(false);
+            if (palette.Count > 0)
+                SelectedPigment = palette[0];
         }
 
         void OnDestroy() => DestroyRing();
@@ -37,6 +60,39 @@ namespace TheLivingCanvas.Painting
         {
             pointAction.action.Enable();
             strokeAction.action.Enable();
+            brushSizeAction.action.Enable();
+            brushSizeAction.action.performed += OnBrushSizeInput;
+        }
+
+        void OnDisable() => brushSizeAction.action.performed -= OnBrushSizeInput;
+
+        public void SelectPigment(PigmentDefinition pigment)
+        {
+            SelectedPigment = pigment;
+            EraserActive = false;
+            ToolsChanged?.Invoke();
+        }
+
+        public void SetEraser(bool active)
+        {
+            EraserActive = active;
+            ToolsChanged?.Invoke();
+        }
+
+        public void SetBrushRadius(float radius)
+        {
+            float clamped = Mathf.Clamp(radius, minBrushRadius, maxBrushRadius);
+            if (Mathf.Approximately(clamped, brushRadius)) return;
+            brushRadius = clamped;
+            ToolsChanged?.Invoke();
+        }
+
+        void OnBrushSizeInput(InputAction.CallbackContext context)
+        {
+            if (!paintMode.IsPainting) return;
+            float value = context.ReadValue<float>();
+            if (value == 0f) return; // soltar la tecla
+            SetBrushRadius(value > 0f ? brushRadius * sizeStepFactor : brushRadius / sizeStepFactor);
         }
 
         void Update()
@@ -49,15 +105,18 @@ namespace TheLivingCanvas.Painting
                 return;
             }
 
+            // Sobre la paleta (UI) no se pinta.
+            bool overUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
             Ray ray = Camera.main.ScreenPointToRay(pointAction.action.ReadValue<Vector2>());
-            bool overCanvas = surface.Raycast(ray, out Vector2 uv, out RaycastHit hit);
+            bool overCanvas = surface.Raycast(ray, out Vector2 uv, out RaycastHit hit) && !overUi;
             UpdateCursor(overCanvas, hit, surface);
 
             if (overCanvas && strokeAction.action.IsPressed())
             {
                 if (strokeSurface != surface)
                 {
-                    surface.BeginStroke(uv, brushRadius, brushColor);
+                    Color color = EraserActive || SelectedPigment == null ? surface.BaseColor : SelectedPigment.Color;
+                    surface.BeginStroke(uv, brushRadius, color);
                     strokeSurface = surface;
                 }
                 else

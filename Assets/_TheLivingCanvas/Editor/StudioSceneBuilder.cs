@@ -1,5 +1,6 @@
 using System.Linq;
 using TheLivingCanvas.Core;
+using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Player;
@@ -7,7 +8,9 @@ using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
@@ -202,19 +205,16 @@ namespace TheLivingCanvas.EditorTools
 
         static void BuildPaintMode(GameObject rig, GameObject player, GameObject hud)
         {
-            // Aviso arriba al centro mientras se pinta.
-            var hint = new GameObject("PaintHint", typeof(RectTransform), typeof(Text));
-            hint.transform.SetParent(hud.transform, false);
-            var rect = (RectTransform)hint.transform;
-            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 1f);
-            rect.anchoredPosition = new Vector2(0f, -40f);
-            rect.sizeDelta = new Vector2(900f, 50f);
-            var text = hint.GetComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.fontSize = 26;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.color = new Color(0.25f, 0.17f, 0.1f);
-            text.text = "Pintando  ·  [Esc] o [E] para salir";
+            // Los clics en la UI necesitan un EventSystem con el módulo del Input System nuevo.
+            var eventSystem = new GameObject("EventSystem", typeof(EventSystem));
+            eventSystem.AddComponent<InputSystemUIInputModule>();
+
+            var paintHud = new GameObject("PaintHUD", typeof(RectTransform));
+            paintHud.transform.SetParent(hud.transform, false);
+            var hudRect = (RectTransform)paintHud.transform;
+            hudRect.anchorMin = Vector2.zero;
+            hudRect.anchorMax = Vector2.one;
+            hudRect.offsetMin = hudRect.offsetMax = Vector2.zero;
 
             var paintMode = new GameObject("PaintMode").AddComponent<PaintModeController>();
             var so = new SerializedObject(paintMode);
@@ -222,11 +222,10 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("interactor").objectReferenceValue = player.GetComponent<PlayerInteractor>();
             so.FindProperty("cursorLock").objectReferenceValue = rig.GetComponent<CursorLock>();
             so.FindProperty("exitAction").objectReferenceValue = GetAction("Paint/Exit");
-            so.FindProperty("paintHud").objectReferenceValue = hint;
+            so.FindProperty("paintHud").objectReferenceValue = paintHud;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             // Aro del cursor de pincel: imagen de UI (el sprite del aro se genera en runtime).
-            AssetDatabase.DeleteAsset($"{MaterialsFolder}/M_BrushCursor.mat"); // restos de pruebas anteriores
             var ringGo = new GameObject("BrushCursor", typeof(RectTransform), typeof(Image));
             ringGo.transform.SetParent(hud.transform, false);
             var ring = ringGo.GetComponent<Image>();
@@ -238,8 +237,143 @@ namespace TheLivingCanvas.EditorTools
             brushSo.FindProperty("paintMode").objectReferenceValue = paintMode;
             brushSo.FindProperty("pointAction").objectReferenceValue = GetAction("Paint/Point");
             brushSo.FindProperty("strokeAction").objectReferenceValue = GetAction("Paint/Stroke");
+            brushSo.FindProperty("brushSizeAction").objectReferenceValue = GetAction("Paint/BrushSize");
             brushSo.FindProperty("cursorRing").objectReferenceValue = ring;
+            var paletteProp = brushSo.FindProperty("palette");
+            var pigments = new[]
+            {
+                GetOrCreatePigment("sunflower_yellow", "Amarillo girasol", new Color(0.98f, 0.78f, 0.15f)),
+                GetOrCreatePigment("burnt_ochre", "Ocre tostado", new Color(0.55f, 0.33f, 0.13f)),
+                GetOrCreatePigment("leaf_green", "Verde hoja", new Color(0.30f, 0.55f, 0.22f)),
+                GetOrCreatePigment("ultramarine", "Azul ultramar", new Color(0.17f, 0.27f, 0.62f)),
+                GetOrCreatePigment("carmine", "Rojo carmín", new Color(0.75f, 0.15f, 0.17f)),
+                GetOrCreatePigment("titanium_white", "Blanco titanio", new Color(0.98f, 0.98f, 0.96f)),
+            };
+            paletteProp.arraySize = pigments.Length;
+            for (int i = 0; i < pigments.Length; i++)
+                paletteProp.GetArrayElementAtIndex(i).objectReferenceValue = pigments[i];
             brushSo.ApplyModifiedPropertiesWithoutUndo();
+
+            BuildPalettePanel(paintHud.transform, brush);
+        }
+
+        /// <summary>Paleta lateral de madera: muestras de color, tamaño, borrador y cómo salir.</summary>
+        static void BuildPalettePanel(Transform parent, PaintBrushController brush)
+        {
+            var resources = new DefaultControls.Resources
+            {
+                standard = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd"),
+                background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd"),
+                knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd")
+            };
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+            var panel = new GameObject("PalettePanel", typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup));
+            panel.transform.SetParent(parent, false);
+            var panelRect = (RectTransform)panel.transform;
+            panelRect.anchorMin = panelRect.anchorMax = new Vector2(0f, 0.5f);
+            panelRect.pivot = new Vector2(0f, 0.5f);
+            panelRect.anchoredPosition = new Vector2(40f, 0f);
+            panelRect.sizeDelta = new Vector2(240f, 580f);
+            var panelImage = panel.GetComponent<Image>();
+            panelImage.sprite = resources.standard;
+            panelImage.type = Image.Type.Sliced;
+            panelImage.color = new Color(0.45f, 0.30f, 0.19f, 0.95f);
+            var layout = panel.GetComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(18, 18, 18, 18);
+            layout.spacing = 14f;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+
+            AddLabel(panel.transform, "Title", "Paleta", 30, 40f, font, cream);
+
+            // Muestras: PaintToolsUI clona la plantilla por cada pigmento de la paleta.
+            var swatches = new GameObject("Swatches", typeof(RectTransform), typeof(GridLayoutGroup), typeof(LayoutElement));
+            swatches.transform.SetParent(panel.transform, false);
+            var grid = swatches.GetComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(90f, 90f);
+            grid.spacing = new Vector2(14f, 14f);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = 2;
+            grid.childAlignment = TextAnchor.UpperCenter;
+            swatches.GetComponent<LayoutElement>().preferredHeight = 3 * 90f + 2 * 14f;
+
+            var template = new GameObject("SwatchTemplate", typeof(RectTransform), typeof(Image), typeof(Button), typeof(Outline));
+            template.transform.SetParent(swatches.transform, false);
+            var templateImage = template.GetComponent<Image>();
+            templateImage.sprite = resources.standard;
+            templateImage.type = Image.Type.Sliced;
+            template.GetComponent<Button>().targetGraphic = templateImage;
+            ConfigureHighlight(template.GetComponent<Outline>(), cream);
+
+            AddLabel(panel.transform, "SizeLabel", "Tamaño", 24, 30f, font, cream);
+            var slider = DefaultControls.CreateSlider(resources);
+            slider.name = "SizeSlider";
+            slider.transform.SetParent(panel.transform, false);
+            slider.AddComponent<LayoutElement>().preferredHeight = 30f;
+
+            var eraser = DefaultControls.CreateButton(resources);
+            eraser.name = "EraserButton";
+            eraser.transform.SetParent(panel.transform, false);
+            eraser.AddComponent<LayoutElement>().preferredHeight = 56f;
+            eraser.GetComponent<Image>().color = new Color(0.93f, 0.88f, 0.78f);
+            var eraserText = eraser.GetComponentInChildren<Text>();
+            eraserText.text = "Borrador";
+            eraserText.font = font;
+            eraserText.fontSize = 24;
+            eraserText.color = new Color(0.25f, 0.17f, 0.1f);
+            ConfigureHighlight(eraser.AddComponent<Outline>(), cream);
+
+            AddLabel(panel.transform, "ExitHint", "[Esc] o [E]  Salir", 20, 50f, font, cream);
+
+            var tools = panel.AddComponent<PaintToolsUI>();
+            var so = new SerializedObject(tools);
+            so.FindProperty("brush").objectReferenceValue = brush;
+            so.FindProperty("swatchContainer").objectReferenceValue = swatches.transform;
+            so.FindProperty("swatchTemplate").objectReferenceValue = template.GetComponent<Button>();
+            so.FindProperty("sizeSlider").objectReferenceValue = slider.GetComponent<Slider>();
+            so.FindProperty("eraserButton").objectReferenceValue = eraser.GetComponent<Button>();
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void AddLabel(Transform parent, string name, string content, int fontSize, float height, Font font, Color color)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Text), typeof(LayoutElement));
+            go.transform.SetParent(parent, false);
+            go.GetComponent<LayoutElement>().preferredHeight = height;
+            var text = go.GetComponent<Text>();
+            text.text = content;
+            text.font = font;
+            text.fontSize = fontSize;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.color = color;
+            text.raycastTarget = false;
+        }
+
+        /// <summary>Borde claro alrededor de la herramienta seleccionada (PaintToolsUI lo activa).</summary>
+        static void ConfigureHighlight(Outline outline, Color color)
+        {
+            outline.effectColor = color;
+            outline.effectDistance = new Vector2(4f, -4f);
+            outline.enabled = false;
+        }
+
+        static PigmentDefinition GetOrCreatePigment(string id, string displayName, Color color)
+        {
+            var path = $"{Root}/Data/Pigments/Pigment_{id}.asset";
+            var pigment = AssetDatabase.LoadAssetAtPath<PigmentDefinition>(path);
+            if (pigment == null)
+            {
+                pigment = ScriptableObject.CreateInstance<PigmentDefinition>();
+                AssetDatabase.CreateAsset(pigment, path);
+            }
+            pigment.EditorSetup(id, displayName, color);
+            EditorUtility.SetDirty(pigment);
+            return pigment;
         }
 
         /// <summary>
@@ -311,6 +445,7 @@ namespace TheLivingCanvas.EditorTools
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.matchWidthOrHeight = 0.5f;
+            hud.AddComponent<GraphicRaycaster>(); // necesario para que los botones reciban clics
 
             var panel = new GameObject("InteractionPrompt", typeof(RectTransform), typeof(Image));
             panel.transform.SetParent(hud.transform, false);

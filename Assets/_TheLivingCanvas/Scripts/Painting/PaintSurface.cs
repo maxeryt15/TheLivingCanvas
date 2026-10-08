@@ -12,7 +12,8 @@ namespace TheLivingCanvas.Painting
         [Tooltip("Resolución de la pintura. Mantener la proporción del lienzo (1 × 0.8 m → 5:4).")]
         [SerializeField] int width = 640;
         [SerializeField] int height = 512;
-        [SerializeField] Color32 baseColor = new(245, 240, 226, 255);
+        [Tooltip("Color de la tela sin pintar (también es lo que pinta el borrador).")]
+        [SerializeField] Color32 baseColor = new(236, 228, 208, 255);
         [Tooltip("Separación entre estampados, como fracción del radio.")]
         [SerializeField, Range(0.05f, 1f)] float spacing = 0.25f;
         [Tooltip("Parte del radio que se pinta a opacidad completa; el resto se difumina.")]
@@ -31,6 +32,8 @@ namespace TheLivingCanvas.Painting
 
         /// <summary>Tamaño en metros de un píxel de la pintura (para dibujar el cursor a escala).</summary>
         public float PixelWorldSize => transform.lossyScale.x / width;
+
+        public Color BaseColor => baseColor;
 
         void Awake()
         {
