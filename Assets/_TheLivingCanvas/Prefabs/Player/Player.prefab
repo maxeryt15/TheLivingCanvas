@@ -165,6 +165,7 @@ GameObject:
   - component: {fileID: 6709229438373683638}
   - component: {fileID: 907955942594787664}
   - component: {fileID: 309921310988699684}
+  - component: {fileID: 8540552794212616525}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -234,6 +235,22 @@ MonoBehaviour:
   sprintSpeed: 5.5
   turnSpeed: 720
   gravity: -20
+--- !u!114 &8540552794212616525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6875788775779737426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 153ac33675d7b0445a42045f57c9c1d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Interaction.PlayerInteractor
+  interactAction: {fileID: 8814490207984344550, guid: e220dc9ce11c1814588b2c7b9748e445, type: 3}
+  probeHeight: 1
+  reach: 1.5
+  maxAngle: 75
 --- !u!1 &8080874729878726584
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 using System.Linq;
 using TheLivingCanvas.Core;
+using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Player;
 using Unity.Cinemachine;
 using UnityEditor;
@@ -8,6 +9,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 namespace TheLivingCanvas.EditorTools
 {
@@ -72,6 +74,8 @@ namespace TheLivingCanvas.EditorTools
             var player = (GameObject)PrefabUtility.InstantiatePrefab(BuildPlayerPrefab());
             player.transform.SetPositionAndRotation(new Vector3(0f, 0f, -2f), Quaternion.identity);
             BuildCameraRig(player);
+            BuildHud(player.GetComponent<PlayerInteractor>());
+            BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
 
             var volumeGo = new GameObject("Global Volume");
             var volume = volumeGo.AddComponent<Volume>();
@@ -99,6 +103,10 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("moveAction").objectReferenceValue = GetAction("Player/Move");
             so.FindProperty("sprintAction").objectReferenceValue = GetAction("Player/Sprint");
             so.ApplyModifiedPropertiesWithoutUndo();
+
+            var interactor = new SerializedObject(root.AddComponent<PlayerInteractor>());
+            interactor.FindProperty("interactAction").objectReferenceValue = GetAction("Player/Interact");
+            interactor.ApplyModifiedPropertiesWithoutUndo();
 
             var visuals = new GameObject("Visuals");
             visuals.transform.SetParent(root.transform, false);
@@ -173,6 +181,82 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("playerMovement").objectReferenceValue = player.GetComponent<PlayerMovement>();
             so.FindProperty("playerVisuals").objectReferenceValue = player.transform.Find("Visuals").gameObject;
             so.FindProperty("debugToggleAction").objectReferenceValue = GetAction("Player/ToggleView");
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>HUD provisional: aviso de interacción abajo al centro.</summary>
+        static void BuildHud(PlayerInteractor interactor)
+        {
+            var hud = new GameObject("HUD");
+            hud.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+            var scaler = hud.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.matchWidthOrHeight = 0.5f;
+
+            var panel = new GameObject("InteractionPrompt", typeof(RectTransform), typeof(Image));
+            panel.transform.SetParent(hud.transform, false);
+            var panelRect = (RectTransform)panel.transform;
+            panelRect.anchorMin = panelRect.anchorMax = panelRect.pivot = new Vector2(0.5f, 0f);
+            panelRect.anchoredPosition = new Vector2(0f, 120f);
+            panelRect.sizeDelta = new Vector2(520f, 64f);
+            panel.GetComponent<Image>().color = new Color(0.16f, 0.11f, 0.08f, 0.75f);
+
+            var labelGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            labelGo.transform.SetParent(panel.transform, false);
+            var labelRect = (RectTransform)labelGo.transform;
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = labelRect.offsetMax = Vector2.zero;
+            var label = labelGo.GetComponent<Text>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.fontSize = 30;
+            label.alignment = TextAnchor.MiddleCenter;
+            label.color = new Color(1f, 0.95f, 0.85f);
+
+            var promptUi = hud.AddComponent<InteractionPromptUI>();
+            var so = new SerializedObject(promptUi);
+            so.FindProperty("interactor").objectReferenceValue = interactor;
+            so.FindProperty("panel").objectReferenceValue = panel;
+            so.FindProperty("label").objectReferenceValue = label;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            panel.SetActive(false);
+        }
+
+        /// <summary>Lámpara de prueba sobre la mesa (Fase 1C).</summary>
+        static void BuildTestLamp(Transform parent, Vector3 position)
+        {
+            var lamp = new GameObject("TestLamp");
+            lamp.transform.SetParent(parent);
+            lamp.transform.localPosition = position;
+
+            var stand = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            stand.name = "Stand";
+            stand.transform.SetParent(lamp.transform, false);
+            stand.transform.localPosition = new Vector3(0f, 0.2f, 0f);
+            stand.transform.localScale = new Vector3(0.08f, 0.2f, 0.08f);
+            stand.GetComponent<MeshRenderer>().sharedMaterial = GetOrCreateMaterial("M_Player_Visor", new Color(0.15f, 0.12f, 0.1f));
+
+            var bulb = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            bulb.name = "Bulb";
+            bulb.transform.SetParent(lamp.transform, false);
+            bulb.transform.localPosition = new Vector3(0f, 0.48f, 0f);
+            bulb.transform.localScale = Vector3.one * 0.22f;
+            bulb.GetComponent<MeshRenderer>().sharedMaterial = GetOrCreateMaterial("M_Lamp_Bulb", new Color(0.35f, 0.33f, 0.3f));
+
+            var lightGo = new GameObject("Light");
+            lightGo.transform.SetParent(lamp.transform, false);
+            lightGo.transform.localPosition = new Vector3(0f, 0.48f, 0f);
+            var light = lightGo.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = new Color(1f, 0.8f, 0.5f);
+            light.range = 5f;
+            light.intensity = 3f;
+
+            var testLamp = lamp.AddComponent<TestLamp>();
+            var so = new SerializedObject(testLamp);
+            so.FindProperty("lampLight").objectReferenceValue = light;
+            so.FindProperty("bulb").objectReferenceValue = bulb.GetComponent<MeshRenderer>();
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
