@@ -17,6 +17,9 @@ namespace TheLivingCanvas.Painting
         [SerializeField] Button swatchTemplate;
         [SerializeField] Slider sizeSlider;
         [SerializeField] Button eraserButton;
+        [SerializeField] Button undoButton;
+        [SerializeField] Button redoButton;
+        [SerializeField] Button clearButton;
 
         readonly Dictionary<PigmentDefinition, Outline> swatchHighlights = new();
         Outline eraserHighlight;
@@ -40,6 +43,16 @@ namespace TheLivingCanvas.Painting
             sizeSlider.minValue = brush.MinBrushRadius;
             sizeSlider.maxValue = brush.MaxBrushRadius;
             sizeSlider.onValueChanged.AddListener(brush.SetBrushRadius);
+
+            undoButton.onClick.AddListener(brush.Undo);
+            redoButton.onClick.AddListener(brush.Redo);
+            clearButton.onClick.AddListener(brush.ClearCanvas);
+        }
+
+        void Update()
+        {
+            undoButton.interactable = brush.CanUndo;
+            redoButton.interactable = brush.CanRedo;
         }
 
         void OnEnable()

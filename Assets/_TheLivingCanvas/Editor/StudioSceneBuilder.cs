@@ -35,7 +35,8 @@ namespace TheLivingCanvas.EditorTools
         [MenuItem("TheLivingCanvas/Build Studio Scene")]
         public static void Build()
         {
-            if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            // Studio.unity se sobrescribe entero, así que solo se pregunta por cambios en otras escenas.
+            if (!Application.isBatchMode && HasOtherModifiedScenes() && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 return;
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -96,6 +97,16 @@ namespace TheLivingCanvas.EditorTools
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
             AssetDatabase.SaveAssets();
             Debug.Log($"[StudioSceneBuilder] Escena generada en {ScenePath}");
+        }
+
+        static bool HasOtherModifiedScenes()
+        {
+            for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
+            {
+                var s = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);
+                if (s.isDirty && s.path != ScenePath) return true;
+            }
+            return false;
         }
 
         /// <summary>Jugador placeholder: cápsula con visera para ver hacia dónde mira.</summary>
@@ -238,6 +249,8 @@ namespace TheLivingCanvas.EditorTools
             brushSo.FindProperty("pointAction").objectReferenceValue = GetAction("Paint/Point");
             brushSo.FindProperty("strokeAction").objectReferenceValue = GetAction("Paint/Stroke");
             brushSo.FindProperty("brushSizeAction").objectReferenceValue = GetAction("Paint/BrushSize");
+            brushSo.FindProperty("undoAction").objectReferenceValue = GetAction("Paint/Undo");
+            brushSo.FindProperty("redoAction").objectReferenceValue = GetAction("Paint/Redo");
             brushSo.FindProperty("cursorRing").objectReferenceValue = ring;
             var paletteProp = brushSo.FindProperty("palette");
             var pigments = new[]
@@ -275,7 +288,7 @@ namespace TheLivingCanvas.EditorTools
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0f, 0.5f);
             panelRect.pivot = new Vector2(0f, 0.5f);
             panelRect.anchoredPosition = new Vector2(40f, 0f);
-            panelRect.sizeDelta = new Vector2(240f, 580f);
+            panelRect.sizeDelta = new Vector2(240f, 720f);
             var panelImage = panel.GetComponent<Image>();
             panelImage.sprite = resources.standard;
             panelImage.type = Image.Type.Sliced;
@@ -316,19 +329,21 @@ namespace TheLivingCanvas.EditorTools
             slider.transform.SetParent(panel.transform, false);
             slider.AddComponent<LayoutElement>().preferredHeight = 30f;
 
-            var eraser = DefaultControls.CreateButton(resources);
-            eraser.name = "EraserButton";
-            eraser.transform.SetParent(panel.transform, false);
-            eraser.AddComponent<LayoutElement>().preferredHeight = 56f;
-            eraser.GetComponent<Image>().color = new Color(0.93f, 0.88f, 0.78f);
-            var eraserText = eraser.GetComponentInChildren<Text>();
-            eraserText.text = "Borrador";
-            eraserText.font = font;
-            eraserText.fontSize = 24;
-            eraserText.color = new Color(0.25f, 0.17f, 0.1f);
+            var eraser = CreateButton(resources, panel.transform, "EraserButton", "Borrador", 24, font);
             ConfigureHighlight(eraser.AddComponent<Outline>(), cream);
 
-            AddLabel(panel.transform, "ExitHint", "[Esc] o [E]  Salir", 20, 50f, font, cream);
+            var historyRow = new GameObject("HistoryRow", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+            historyRow.transform.SetParent(panel.transform, false);
+            historyRow.GetComponent<LayoutElement>().preferredHeight = 56f;
+            var rowLayout = historyRow.GetComponent<HorizontalLayoutGroup>();
+            rowLayout.spacing = 10f;
+            rowLayout.childControlWidth = rowLayout.childControlHeight = true;
+            rowLayout.childForceExpandWidth = rowLayout.childForceExpandHeight = true;
+            var undo = CreateButton(resources, historyRow.transform, "UndoButton", "Deshacer", 19, font);
+            var redo = CreateButton(resources, historyRow.transform, "RedoButton", "Rehacer", 19, font);
+            var clear = CreateButton(resources, panel.transform, "ClearButton", "Limpiar lienzo", 22, font);
+
+            AddLabel(panel.transform, "ExitHint", "Ctrl+Z / Ctrl+Y   ·   [Esc] o [E] Salir", 17, 50f, font, cream);
 
             var tools = panel.AddComponent<PaintToolsUI>();
             var so = new SerializedObject(tools);
@@ -337,7 +352,25 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("swatchTemplate").objectReferenceValue = template.GetComponent<Button>();
             so.FindProperty("sizeSlider").objectReferenceValue = slider.GetComponent<Slider>();
             so.FindProperty("eraserButton").objectReferenceValue = eraser.GetComponent<Button>();
+            so.FindProperty("undoButton").objectReferenceValue = undo.GetComponent<Button>();
+            so.FindProperty("redoButton").objectReferenceValue = redo.GetComponent<Button>();
+            so.FindProperty("clearButton").objectReferenceValue = clear.GetComponent<Button>();
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static GameObject CreateButton(DefaultControls.Resources resources, Transform parent, string name, string label, int fontSize, Font font)
+        {
+            var button = DefaultControls.CreateButton(resources);
+            button.name = name;
+            button.transform.SetParent(parent, false);
+            button.AddComponent<LayoutElement>().preferredHeight = 56f;
+            button.GetComponent<Image>().color = new Color(0.93f, 0.88f, 0.78f);
+            var text = button.GetComponentInChildren<Text>();
+            text.text = label;
+            text.font = font;
+            text.fontSize = fontSize;
+            text.color = new Color(0.25f, 0.17f, 0.1f);
+            return button;
         }
 
         static void AddLabel(Transform parent, string name, string content, int fontSize, float height, Font font, Color color)

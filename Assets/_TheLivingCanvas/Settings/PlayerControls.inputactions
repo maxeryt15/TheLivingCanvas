@@ -247,6 +247,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Undo",
+                    "type": "Button",
+                    "id": "3cea0b1d-ab12-4de4-9f50-6b7c8d9eafba",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Redo",
+                    "type": "Button",
+                    "id": "4dfb1c2e-bc23-4ef5-8a61-7c8d9eafb0cb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -346,6 +364,72 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "BrushSize",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Ctrl+Z",
+                    "id": "7a2f3e4d-5c6b-4a79-9887-766554433218",
+                    "path": "ButtonWithOneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Undo",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "8a2f3e4d-5c6b-4a79-9887-766554433219",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Undo",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "9a2f3e4d-5c6b-4a79-9887-76655443321a",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Undo",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "Ctrl+Y",
+                    "id": "aa2f3e4d-5c6b-4a79-9887-76655443321b",
+                    "path": "ButtonWithOneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Redo",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "ba2f3e4d-5c6b-4a79-9887-76655443321c",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Redo",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "button",
+                    "id": "ca2f3e4d-5c6b-4a79-9887-76655443321d",
+                    "path": "<Keyboard>/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Redo",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }

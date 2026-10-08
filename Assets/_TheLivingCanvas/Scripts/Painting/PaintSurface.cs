@@ -18,8 +18,11 @@ namespace TheLivingCanvas.Painting
         [SerializeField, Range(0.05f, 1f)] float spacing = 0.25f;
         [Tooltip("Parte del radio que se pinta a opacidad completa; el resto se difumina.")]
         [SerializeField, Range(0f, 1f)] float hardness = 0.7f;
+        [Tooltip("Pasos de deshacer (cada uno ocupa ancho × alto × 4 bytes).")]
+        [SerializeField] int undoSteps = 20;
 
         MeshCollider meshCollider;
+        PaintHistory history;
         Texture2D texture;
         Color32[] pixels;
         bool dirty;
@@ -34,6 +37,8 @@ namespace TheLivingCanvas.Painting
         public float PixelWorldSize => transform.lossyScale.x / width;
 
         public Color BaseColor => baseColor;
+        public bool CanUndo => history.CanUndo;
+        public bool CanRedo => history.CanRedo;
 
         void Awake()
         {
@@ -45,7 +50,8 @@ namespace TheLivingCanvas.Painting
                 filterMode = FilterMode.Bilinear
             };
             pixels = new Color32[width * height];
-            Clear();
+            history = new PaintHistory(undoSteps);
+            FillBase();
 
             var material = GetComponent<MeshRenderer>().material;
             material.SetTexture("_BaseMap", texture);
@@ -70,7 +76,18 @@ namespace TheLivingCanvas.Painting
             return didHit;
         }
 
+        /// <summary>Deja el lienzo en blanco (se puede deshacer).</summary>
         public void Clear()
+        {
+            history.Record(pixels);
+            FillBase();
+        }
+
+        public void Undo() => dirty |= history.Undo(pixels);
+
+        public void Redo() => dirty |= history.Redo(pixels);
+
+        void FillBase()
         {
             for (int i = 0; i < pixels.Length; i++)
                 pixels[i] = baseColor;
@@ -79,6 +96,7 @@ namespace TheLivingCanvas.Painting
 
         public void BeginStroke(Vector2 uv, float radiusPx, Color color)
         {
+            history.Record(pixels);
             strokeRadius = radiusPx;
             strokeColor = color;
             lastPixel = UvToPixel(uv);

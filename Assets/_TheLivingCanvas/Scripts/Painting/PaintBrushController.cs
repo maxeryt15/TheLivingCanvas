@@ -20,6 +20,8 @@ namespace TheLivingCanvas.Painting
         [SerializeField] InputActionReference strokeAction;
         [Tooltip("Rueda del ratón y teclas [ ] para cambiar el tamaño.")]
         [SerializeField] InputActionReference brushSizeAction;
+        [SerializeField] InputActionReference undoAction;
+        [SerializeField] InputActionReference redoAction;
         [Tooltip("Imagen de UI (en un Canvas Screen Space - Overlay) que marca el tamaño del pincel.")]
         [SerializeField] Image cursorRing;
 
@@ -45,6 +47,10 @@ namespace TheLivingCanvas.Painting
         public float MinBrushRadius => minBrushRadius;
         public float MaxBrushRadius => maxBrushRadius;
 
+        PaintSurface ActiveSurface => paintMode.IsPainting ? paintMode.ActiveCanvas.Surface : null;
+        public bool CanUndo => ActiveSurface != null && ActiveSurface.CanUndo;
+        public bool CanRedo => ActiveSurface != null && ActiveSurface.CanRedo;
+
         void Awake()
         {
             uiCanvas = cursorRing.canvas;
@@ -62,9 +68,40 @@ namespace TheLivingCanvas.Painting
             strokeAction.action.Enable();
             brushSizeAction.action.Enable();
             brushSizeAction.action.performed += OnBrushSizeInput;
+            undoAction.action.Enable();
+            undoAction.action.performed += OnUndoInput;
+            redoAction.action.Enable();
+            redoAction.action.performed += OnRedoInput;
         }
 
-        void OnDisable() => brushSizeAction.action.performed -= OnBrushSizeInput;
+        void OnDisable()
+        {
+            brushSizeAction.action.performed -= OnBrushSizeInput;
+            undoAction.action.performed -= OnUndoInput;
+            redoAction.action.performed -= OnRedoInput;
+        }
+
+        public void Undo()
+        {
+            strokeSurface = null; // un trazo en curso no debe seguir sobre el estado restaurado
+            ActiveSurface?.Undo();
+        }
+
+        public void Redo()
+        {
+            strokeSurface = null;
+            ActiveSurface?.Redo();
+        }
+
+        public void ClearCanvas()
+        {
+            strokeSurface = null;
+            ActiveSurface?.Clear();
+        }
+
+        void OnUndoInput(InputAction.CallbackContext _) => Undo();
+
+        void OnRedoInput(InputAction.CallbackContext _) => Redo();
 
         public void SelectPigment(PigmentDefinition pigment)
         {
