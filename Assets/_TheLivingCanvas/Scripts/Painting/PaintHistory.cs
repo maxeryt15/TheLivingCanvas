@@ -28,6 +28,16 @@ namespace TheLivingCanvas.Painting
                 pool.Push(redo.Pop());
         }
 
+        /// <summary>Olvida todo el historial (ej. al poner un lienzo nuevo).</summary>
+        public void Clear()
+        {
+            foreach (var snapshot in undo)
+                pool.Push(snapshot);
+            undo.Clear();
+            while (redo.Count > 0)
+                pool.Push(redo.Pop());
+        }
+
         public bool Undo(Color32[] current)
         {
             if (!CanUndo) return false;

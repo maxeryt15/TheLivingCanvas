@@ -47,6 +47,7 @@ namespace TheLivingCanvas.Painting
         const float ColorFitRange = 220f;            // distancia RGB a la que el parecido llega a 0
         const float FullCoverage = 0.9f;             // a partir de aquí la cobertura cuenta como completa
         const float MaxSpillPenalty = 0.15f;
+        const float MasterpieceMinColorFit = 0.6f;   // Masterpiece exige buen color en todas las zonas
 
         static readonly Dictionary<(PaintTemplate, int, int), int[]> zoneMapCache = new();
 
@@ -127,6 +128,8 @@ namespace TheLivingCanvas.Painting
                 < 0.9f => PaintingQuality.Excellent,
                 _ => PaintingQuality.Masterpiece
             };
+            if (result.Quality == PaintingQuality.Masterpiece && !result.Zones.TrueForAll(z => z.ColorFit >= MasterpieceMinColorFit))
+                result.Quality = PaintingQuality.Excellent;
             return result;
         }
 

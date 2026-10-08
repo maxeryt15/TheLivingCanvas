@@ -14,6 +14,7 @@ namespace TheLivingCanvas.Interaction
         [SerializeField] bool isOn;
 
         public string Prompt => isOn ? "Turn off lamp" : "Turn on lamp";
+        public bool CanInteract => true;
 
         void Start() => Apply();
 

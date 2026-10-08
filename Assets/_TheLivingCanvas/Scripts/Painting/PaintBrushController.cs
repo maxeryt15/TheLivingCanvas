@@ -159,8 +159,8 @@ namespace TheLivingCanvas.Painting
 
         void Update()
         {
-            // Al empezar a pintar en un lienzo, aplicarle las opciones de guía actuales.
-            if (paintMode.ActiveCanvas != null && paintMode.ActiveCanvas != guidedCanvas)
+            // Al empezar cada sesión de pintura, aplicar al lienzo las opciones de guía actuales.
+            if (paintMode.ActiveCanvas != guidedCanvas)
             {
                 guidedCanvas = paintMode.ActiveCanvas;
                 ApplyGuide();

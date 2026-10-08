@@ -124,6 +124,26 @@ namespace TheLivingCanvas.Painting
             FillBase();
         }
 
+        /// <summary>Lienzo nuevo: en blanco y sin historial (no se puede deshacer).</summary>
+        public void ResetToBlank()
+        {
+            history.Clear();
+            FillBase();
+        }
+
+        /// <summary>Copia de la pintura actual (sin la guía) como textura independiente.</summary>
+        public Texture2D CreateSnapshot()
+        {
+            var snapshot = new Texture2D(width, height, TextureFormat.RGBA32, false)
+            {
+                name = "PaintingSnapshot",
+                wrapMode = TextureWrapMode.Clamp
+            };
+            snapshot.SetPixels32(pixels);
+            snapshot.Apply(false);
+            return snapshot;
+        }
+
         public void Undo() => dirty |= history.Undo(pixels);
 
         public void Redo() => dirty |= history.Redo(pixels);

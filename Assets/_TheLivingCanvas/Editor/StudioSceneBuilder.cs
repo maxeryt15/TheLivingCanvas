@@ -2,6 +2,7 @@ using System.Linq;
 using TheLivingCanvas.Core;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
+using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Player;
 using Unity.Cinemachine;
@@ -82,6 +83,7 @@ namespace TheLivingCanvas.EditorTools
             var rig = BuildCameraRig(player);
             var hud = BuildHud(player.GetComponent<PlayerInteractor>());
             BuildPaintMode(rig, player, hud);
+            BuildInventoryUI(hud.transform, player.GetComponent<PlayerInventory>());
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
@@ -130,6 +132,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("sprintAction").objectReferenceValue = GetAction("Player/Sprint");
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            root.AddComponent<PlayerInventory>();
             var interactor = new SerializedObject(root.AddComponent<PlayerInteractor>());
             interactor.FindProperty("interactAction").objectReferenceValue = GetAction("Player/Interact");
             interactor.ApplyModifiedPropertiesWithoutUndo();
@@ -273,6 +276,117 @@ namespace TheLivingCanvas.EditorTools
 
             BuildPalettePanel(paintHud.transform, brush, finisher);
             BuildCoverageReadout(paintHud.transform, paintMode, brush);
+        }
+
+        /// <summary>
+        /// Inventario placeholder: aviso "+1 ..." arriba al centro y panel con casillas (I / Tab / Y).
+        /// </summary>
+        static void BuildInventoryUI(Transform hud, PlayerInventory inventory)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+
+            var root = new GameObject("InventoryUI", typeof(RectTransform));
+            root.transform.SetParent(hud, false);
+            var rootRect = (RectTransform)root.transform;
+            rootRect.anchorMin = Vector2.zero;
+            rootRect.anchorMax = Vector2.one;
+            rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
+
+            // Aviso al recoger algo.
+            var toast = CreatePanel(root.transform, "Toast", uiSprite, new Color(0.22f, 0.36f, 0.16f, 0.92f),
+                new Vector2(0.5f, 1f), new Vector2(0f, -40f), new Vector2(560f, 64f));
+            var toastLabel = AddStretchedText(toast.transform, "Label", 26, font, cream, TextAnchor.MiddleCenter);
+
+            // Panel del inventario.
+            var panel = CreatePanel(root.transform, "Panel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 0.95f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 520f));
+            var title = AddStretchedText(panel.transform, "Title", 32, font, cream, TextAnchor.UpperCenter);
+            title.text = "Inventory";
+            ((RectTransform)title.transform).offsetMax = new Vector2(0f, -16f);
+
+            var hint = AddStretchedText(panel.transform, "Hint", 18, font, cream, TextAnchor.LowerCenter);
+            hint.text = "[I] or [Tab] to close";
+            ((RectTransform)hint.transform).offsetMin = new Vector2(0f, 12f);
+
+            var empty = AddStretchedText(panel.transform, "Empty", 22, font, cream, TextAnchor.MiddleCenter);
+            empty.text = "Nothing here yet. Finish a painting and take it from the easel.";
+
+            var grid = new GameObject("Slots", typeof(RectTransform), typeof(GridLayoutGroup));
+            grid.transform.SetParent(panel.transform, false);
+            var gridRect = (RectTransform)grid.transform;
+            gridRect.anchorMin = Vector2.zero;
+            gridRect.anchorMax = Vector2.one;
+            gridRect.offsetMin = new Vector2(30f, 50f);
+            gridRect.offsetMax = new Vector2(-30f, -70f);
+            var layout = grid.GetComponent<GridLayoutGroup>();
+            layout.cellSize = new Vector2(160f, 180f);
+            layout.spacing = new Vector2(16f, 16f);
+            layout.childAlignment = TextAnchor.UpperLeft;
+
+            // Casilla plantilla: miniatura 5:4 (como el lienzo) + nombre y calidad.
+            var slot = new GameObject("SlotTemplate", typeof(RectTransform), typeof(Image));
+            slot.transform.SetParent(grid.transform, false);
+            var slotImage = slot.GetComponent<Image>();
+            slotImage.sprite = uiSprite;
+            slotImage.type = Image.Type.Sliced;
+            slotImage.color = new Color(0.93f, 0.88f, 0.78f);
+
+            var icon = new GameObject("Icon", typeof(RectTransform), typeof(RawImage));
+            icon.transform.SetParent(slot.transform, false);
+            var iconRect = (RectTransform)icon.transform;
+            iconRect.anchorMin = iconRect.anchorMax = iconRect.pivot = new Vector2(0.5f, 1f);
+            iconRect.anchoredPosition = new Vector2(0f, -8f);
+            iconRect.sizeDelta = new Vector2(144f, 115f);
+
+            var nameText = AddStretchedText(slot.transform, "Name", 17, font, new Color(0.25f, 0.17f, 0.1f), TextAnchor.LowerCenter);
+            ((RectTransform)nameText.transform).offsetMin = new Vector2(4f, 6f);
+
+            var ui = root.AddComponent<InventoryUI>();
+            var so = new SerializedObject(ui);
+            so.FindProperty("inventory").objectReferenceValue = inventory;
+            so.FindProperty("toggleAction").objectReferenceValue = GetAction("Player/Inventory");
+            so.FindProperty("panel").objectReferenceValue = panel;
+            so.FindProperty("slotContainer").objectReferenceValue = gridRect;
+            so.FindProperty("slotTemplate").objectReferenceValue = slot;
+            so.FindProperty("emptyLabel").objectReferenceValue = empty.gameObject;
+            so.FindProperty("toast").objectReferenceValue = toast;
+            so.FindProperty("toastLabel").objectReferenceValue = toastLabel;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static GameObject CreatePanel(Transform parent, string name, Sprite sprite, Color color, Vector2 anchor, Vector2 position, Vector2 size)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image));
+            go.transform.SetParent(parent, false);
+            var rect = (RectTransform)go.transform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = anchor;
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+            var image = go.GetComponent<Image>();
+            image.sprite = sprite;
+            image.type = Image.Type.Sliced;
+            image.color = color;
+            image.raycastTarget = false;
+            return go;
+        }
+
+        static Text AddStretchedText(Transform parent, string name, int fontSize, Font font, Color color, TextAnchor alignment)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Text));
+            go.transform.SetParent(parent, false);
+            var rect = (RectTransform)go.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+            var text = go.GetComponent<Text>();
+            text.font = font;
+            text.fontSize = fontSize;
+            text.color = color;
+            text.alignment = alignment;
+            text.raycastTarget = false;
+            return text;
         }
 
         /// <summary>Mensaje temporal abajo al centro, por encima del aviso de interacción.</summary>

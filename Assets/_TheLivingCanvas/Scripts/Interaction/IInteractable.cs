@@ -6,8 +6,11 @@ namespace TheLivingCanvas.Interaction
     /// </summary>
     public interface IInteractable
     {
-        /// <summary>Texto de la acción, ej. "Encender lámpara". Puede cambiar según el estado.</summary>
+        /// <summary>Texto de la acción, ej. "Turn on lamp". Puede cambiar según el estado.</summary>
         string Prompt { get; }
+
+        /// <summary>false para ignorarlo temporalmente (ej. un caballete mientras su pintura cobra vida).</summary>
+        bool CanInteract { get; }
 
         void Interact(PlayerInteractor interactor);
     }

@@ -1,11 +1,13 @@
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
+using TheLivingCanvas.Inventory;
 using UnityEngine;
 
 namespace TheLivingCanvas.Painting
 {
     /// <summary>
-    /// Un caballete con lienzo: al interactuar entra en el modo pintura.
+    /// Un caballete con lienzo. En blanco o a medias: interactuar entra en el modo pintura.
+    /// Terminado: interactuar recoge la pintura al inventario y deja un lienzo nuevo en blanco.
     /// </summary>
     public class CanvasInteractable : MonoBehaviour, IInteractable
     {
@@ -17,12 +19,15 @@ namespace TheLivingCanvas.Painting
         [SerializeField] CropDefinition crop;
 
         PaintModeController paintMode;
+        PaintingResult finishedResult;
 
         public Transform ViewPoint => viewPoint;
         public PaintSurface Surface => surface;
         public CanvasGuide Guide => guide;
         public CropDefinition Crop => crop;
-        public string Prompt => "Paint";
+        public bool IsFinished => finishedResult != null;
+        public string Prompt => IsFinished ? "Take painting" : "Paint";
+        public bool CanInteract => true;
 
         void Awake() => paintMode = FindAnyObjectByType<PaintModeController>();
 
@@ -30,9 +35,33 @@ namespace TheLivingCanvas.Painting
         {
             // El boceto tenue se ve también desde el mundo, antes de empezar a pintar.
             guide.SetTemplate(crop != null ? crop.Template : null);
-            guide.Show(showOutline: true, showHints: false);
+            ShowSketch();
         }
 
-        public void Interact(PlayerInteractor interactor) => paintMode.Enter(this);
+        public void Interact(PlayerInteractor interactor)
+        {
+            if (IsFinished) TakePainting(interactor);
+            else paintMode.Enter(this);
+        }
+
+        /// <summary>La pintura pasó la evaluación: queda lista para recogerla.</summary>
+        public void MarkFinished(PaintingResult result)
+        {
+            finishedResult = result;
+            guide.Show(showOutline: false, showHints: false); // sin boceto: se ve la pintura tal cual
+        }
+
+        void TakePainting(PlayerInteractor interactor)
+        {
+            var inventory = interactor.GetComponent<PlayerInventory>();
+            inventory.Add(new PaintingItem(crop, finishedResult, surface.CreateSnapshot()));
+
+            // Lienzo nuevo en el caballete.
+            finishedResult = null;
+            surface.ResetToBlank();
+            ShowSketch();
+        }
+
+        void ShowSketch() => guide.Show(showOutline: true, showHints: false);
     }
 }

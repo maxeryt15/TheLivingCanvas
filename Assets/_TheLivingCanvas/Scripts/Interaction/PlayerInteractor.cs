@@ -48,7 +48,7 @@ namespace TheLivingCanvas.Interaction
             for (int i = 0; i < count; i++)
             {
                 var candidate = hits[i].GetComponentInParent<IInteractable>();
-                if (candidate == null) continue;
+                if (candidate == null || !candidate.CanInteract) continue;
 
                 Vector3 toTarget = hits[i].bounds.center - origin;
                 Vector3 flat = Vector3.ProjectOnPlane(toTarget, Vector3.up);

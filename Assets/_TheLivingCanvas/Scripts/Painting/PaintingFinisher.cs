@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using UnityEngine;
 
@@ -6,15 +5,13 @@ namespace TheLivingCanvas.Painting
 {
     /// <summary>
     /// Botón "Finish painting": evalúa el lienzo activo. Si falta pintura en alguna zona lo dice con
-    /// amabilidad y se sigue pintando; si pasa, anuncia el resultado y dispara <see cref="Completed"/>
-    /// (la transición pintura → cultivo, Fase 4C/4D, se suscribe ahí).
+    /// amabilidad y se sigue pintando; si pasa, marca el lienzo como terminado (listo para recogerlo)
+    /// y sale del modo pintura.
     /// </summary>
     public class PaintingFinisher : MonoBehaviour
     {
         [SerializeField] PaintModeController paintMode;
         [SerializeField] PaintFeedbackUI feedback;
-
-        public event Action<CanvasInteractable, PaintingResult> Completed;
 
         public void Finish()
         {
@@ -28,8 +25,9 @@ namespace TheLivingCanvas.Painting
                 return;
             }
 
-            feedback.Show($"Your {canvas.Crop.DisplayName.ToLowerInvariant()} is ready to come to life!\nQuality: {result.Quality}", success: true);
-            Completed?.Invoke(canvas, result);
+            canvas.MarkFinished(result);
+            paintMode.Exit();
+            feedback.Show($"Your {canvas.Crop.DisplayName.ToLowerInvariant()} painting is finished! Quality: {result.Quality}\nTake it from the easel.", success: true);
         }
 
         static string MissingPaintMessage(PaintingResult result)
