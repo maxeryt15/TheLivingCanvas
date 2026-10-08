@@ -16,3 +16,4 @@ MonoBehaviour:
   displayName: Sunflower
   template: {fileID: 11400000, guid: 7d025acca2b21194590a72ce0baf18e0, type: 2}
   growthDuration: 20
+  plantPrefab: {fileID: 9173715175900706247, guid: 7a43b67d051e66b45bcd9039c5fa7b79, type: 3}

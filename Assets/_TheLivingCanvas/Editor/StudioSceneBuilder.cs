@@ -34,6 +34,7 @@ namespace TheLivingCanvas.EditorTools
         const string PlayerPrefabPath = Root + "/Prefabs/Player/Player.prefab";
         const string EaselPrefabPath = Root + "/Prefabs/Canvas/Easel.prefab";
         const string PaintingPlotPrefabPath = Root + "/Prefabs/Crops/PaintingPlot.prefab";
+        const string SunflowerPrefabPath = Root + "/Prefabs/Crops/Sunflower.prefab";
 
         [MenuItem("TheLivingCanvas/Build Studio Scene")]
         public static void Build()
@@ -717,9 +718,87 @@ namespace TheLivingCanvas.EditorTools
                 crop = ScriptableObject.CreateInstance<CropDefinition>();
                 AssetDatabase.CreateAsset(crop, cropPath);
             }
-            crop.EditorSetup("sunflower", "Sunflower", template, 20f);
+            crop.EditorSetup("sunflower", "Sunflower", template, 20f, BuildSunflowerPlantPrefab());
             EditorUtility.SetDirty(crop);
             return crop;
+        }
+
+        /// <summary>
+        /// Girasol procedural (placeholder) de ~1.2 m: tallo, dos hojas con bisagra y una cabeza que mira
+        /// hacia -Z (hacia quien coloca la parcela) con 16 pétalos con bisagra. Los colores se ponen en runtime.
+        /// </summary>
+        static SunflowerPlant BuildSunflowerPlantPrefab()
+        {
+            var petalMat = GetOrCreateMaterial("M_Plant_Petal", new Color(0.98f, 0.78f, 0.15f));
+            var centerMat = GetOrCreateMaterial("M_Plant_Center", new Color(0.45f, 0.3f, 0.15f));
+            var stemMat = GetOrCreateMaterial("M_Plant_Stem", new Color(0.3f, 0.55f, 0.22f));
+
+            var root = new GameObject("Sunflower");
+            var growth = new GameObject("GrowthRoot").transform;
+            growth.SetParent(root.transform, false);
+
+            var stem = CreatePart(PrimitiveType.Cylinder, "Stem", growth, new Vector3(0f, 0.6f, 0f), new Vector3(0.045f, 0.6f, 0.045f), stemMat, Quaternion.identity);
+            var stemRenderers = new System.Collections.Generic.List<Renderer> { stem.GetComponent<Renderer>() };
+
+            var leafHinges = new Transform[2];
+            float[] leafHeights = { 0.38f, 0.62f };
+            float[] leafYaws = { 90f, -90f };
+            for (int i = 0; i < 2; i++)
+            {
+                var hinge = new GameObject($"LeafHinge_{i}").transform;
+                hinge.SetParent(growth, false);
+                hinge.localPosition = new Vector3(0f, leafHeights[i], 0f);
+                hinge.localRotation = Quaternion.Euler(0f, leafYaws[i], 0f);
+                var leaf = CreatePart(PrimitiveType.Sphere, "Leaf", hinge, new Vector3(0f, 0f, 0.13f), new Vector3(0.09f, 0.015f, 0.26f), stemMat, Quaternion.identity);
+                stemRenderers.Add(leaf.GetComponent<Renderer>());
+                leafHinges[i] = hinge;
+            }
+
+            var head = new GameObject("Head").transform;
+            head.SetParent(growth, false);
+            head.localPosition = new Vector3(0f, 1.2f, 0f);
+            head.localRotation = Quaternion.Euler(20f, 180f, 0f);
+            var center = CreatePart(PrimitiveType.Cylinder, "Center", head, new Vector3(0f, 0f, 0.012f), new Vector3(0.22f, 0.02f, 0.22f), centerMat, Quaternion.Euler(90f, 0f, 0f));
+            var back = CreatePart(PrimitiveType.Cylinder, "Back", head, new Vector3(0f, 0f, -0.018f), new Vector3(0.24f, 0.015f, 0.24f), stemMat, Quaternion.Euler(90f, 0f, 0f));
+            stemRenderers.Add(back.GetComponent<Renderer>());
+
+            const int petalCount = 16;
+            var petalHinges = new Transform[petalCount];
+            var petalRenderers = new Renderer[petalCount];
+            for (int i = 0; i < petalCount; i++)
+            {
+                var anchor = new GameObject($"PetalAnchor_{i}").transform;
+                anchor.SetParent(head, false);
+                anchor.localRotation = Quaternion.Euler(0f, 0f, i * 360f / petalCount);
+                var hinge = new GameObject("Hinge").transform;
+                hinge.SetParent(anchor, false);
+                hinge.localPosition = new Vector3(0f, 0.1f, 0f);
+                var petal = CreatePart(PrimitiveType.Sphere, "Petal", hinge, new Vector3(0f, 0.09f, 0f), new Vector3(0.06f, 0.18f, 0.012f), petalMat, Quaternion.identity);
+                petalHinges[i] = hinge;
+                petalRenderers[i] = petal.GetComponent<Renderer>();
+            }
+
+            var plant = root.AddComponent<SunflowerPlant>();
+            var so = new SerializedObject(plant);
+            so.FindProperty("growthRoot").objectReferenceValue = growth;
+            so.FindProperty("head").objectReferenceValue = head;
+            SetArray(so.FindProperty("leafHinges"), leafHinges);
+            SetArray(so.FindProperty("petalHinges"), petalHinges);
+            SetArray(so.FindProperty("petalRenderers"), petalRenderers);
+            SetArray(so.FindProperty("centerRenderers"), new Object[] { center.GetComponent<Renderer>() });
+            SetArray(so.FindProperty("stemRenderers"), stemRenderers.ToArray());
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(root, SunflowerPrefabPath);
+            Object.DestroyImmediate(root);
+            return prefab.GetComponent<SunflowerPlant>();
+        }
+
+        static void SetArray(SerializedProperty property, Object[] values)
+        {
+            property.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++)
+                property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
         }
 
         static PigmentDefinition GetOrCreatePigment(string id, string displayName, Color color)

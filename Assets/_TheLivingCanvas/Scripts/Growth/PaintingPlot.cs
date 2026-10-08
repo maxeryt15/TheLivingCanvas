@@ -27,5 +27,18 @@ namespace TheLivingCanvas.Growth
             foreach (var c in colliders)
                 c.enabled = !preview;
         }
+
+        /// <summary>La pintura ya está en el suelo: de ella crece la planta 3D de su cultivo.</summary>
+        public CropPlant StartGrowing()
+        {
+            var crop = Painting.Crop;
+            if (crop.PlantPrefab == null) return null;
+            // Encima de la pintura; la flor mira hacia quien la colocó (-Z de la parcela).
+            var plant = Instantiate(crop.PlantPrefab, transform);
+            plant.transform.localPosition = new Vector3(0f, 0.035f, 0f);
+            plant.transform.localRotation = Quaternion.identity;
+            plant.Grow(Painting.Result, crop.GrowthDuration);
+            return plant;
+        }
     }
 }

@@ -111,6 +111,7 @@ namespace TheLivingCanvas.Growth
             if (!IsPlacing || Time.frameCount == beganFrame || !validSpot) return;
             preview.name = "PaintingPlot";
             preview.SetPreview(false);
+            preview.StartGrowing();
             inventory.Remove(item);
             End();
         }
