@@ -46,3 +46,6 @@ crashlytics-build.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Capturas del MCP
+/Captures/
