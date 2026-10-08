@@ -7,13 +7,15 @@ namespace TheLivingCanvas.Player
     public enum CameraMode
     {
         ThirdPerson,
-        FirstPerson
+        FirstPerson,
+        /// <summary>Primera persona fija en un punto (ej. frente al lienzo al pintar).</summary>
+        FixedView
     }
 
     /// <summary>
     /// Cámara contextual: tercera persona por defecto y primera persona para acciones
-    /// puntuales (pintar, inspeccionar pinturas). Cambia la prioridad entre dos
-    /// CinemachineCamera y deja quieto al jugador mientras está en primera persona.
+    /// puntuales (pintar, inspeccionar pinturas). Cambia la prioridad entre CinemachineCameras
+    /// y deja quieto al jugador mientras no está en tercera persona.
     /// </summary>
     public class CameraModeController : MonoBehaviour
     {
@@ -22,6 +24,8 @@ namespace TheLivingCanvas.Player
 
         [SerializeField] CinemachineCamera thirdPersonCamera;
         [SerializeField] CinemachineCamera firstPersonCamera;
+        [Tooltip("Cámara sin movimiento propio; se coloca en el punto de vista pedido.")]
+        [SerializeField] CinemachineCamera fixedViewCamera;
         [SerializeField] PlayerMovement playerMovement;
         [Tooltip("Se oculta en primera persona para que el cuerpo no tape la vista.")]
         [SerializeField] GameObject playerVisuals;
@@ -31,6 +35,7 @@ namespace TheLivingCanvas.Player
         CinemachineInputAxisController thirdPersonInput;
         CinemachineInputAxisController firstPersonInput;
         CinemachinePanTilt firstPersonPanTilt;
+        CameraMode modeBeforeFixedView;
 
         public CameraMode Mode { get; private set; }
 
@@ -56,13 +61,30 @@ namespace TheLivingCanvas.Player
 
         void Start() => SetMode(CameraMode.ThirdPerson);
 
-        void OnDebugToggle(InputAction.CallbackContext _) =>
+        void OnDebugToggle(InputAction.CallbackContext _)
+        {
+            if (Mode == CameraMode.FixedView) return;
             SetMode(Mode == CameraMode.ThirdPerson ? CameraMode.FirstPerson : CameraMode.ThirdPerson);
+        }
+
+        /// <summary>Pasa a una vista fija en primera persona situada en <paramref name="viewPoint"/>.</summary>
+        public void EnterFixedView(Transform viewPoint)
+        {
+            if (Mode != CameraMode.FixedView)
+                modeBeforeFixedView = Mode;
+            fixedViewCamera.transform.SetPositionAndRotation(viewPoint.position, viewPoint.rotation);
+            SetMode(CameraMode.FixedView);
+        }
+
+        /// <summary>Vuelve a la vista que había antes de EnterFixedView.</summary>
+        public void ExitFixedView() => SetMode(modeBeforeFixedView);
 
         public void SetMode(CameraMode mode)
         {
             Mode = mode;
+            bool thirdPerson = mode == CameraMode.ThirdPerson;
             bool firstPerson = mode == CameraMode.FirstPerson;
+            bool fixedView = mode == CameraMode.FixedView;
 
             if (firstPerson)
             {
@@ -71,15 +93,16 @@ namespace TheLivingCanvas.Player
                 firstPersonPanTilt.TiltAxis.Value = 0f;
             }
 
+            thirdPersonCamera.Priority = thirdPerson ? ActivePriority : InactivePriority;
             firstPersonCamera.Priority = firstPerson ? ActivePriority : InactivePriority;
-            thirdPersonCamera.Priority = firstPerson ? InactivePriority : ActivePriority;
+            fixedViewCamera.Priority = fixedView ? ActivePriority : InactivePriority;
 
             // Solo la cámara activa lee el ratón/stick.
+            thirdPersonInput.enabled = thirdPerson;
             firstPersonInput.enabled = firstPerson;
-            thirdPersonInput.enabled = !firstPerson;
 
-            playerMovement.enabled = !firstPerson;
-            playerVisuals.SetActive(!firstPerson);
+            playerMovement.enabled = thirdPerson;
+            playerVisuals.SetActive(thirdPerson);
         }
     }
 }

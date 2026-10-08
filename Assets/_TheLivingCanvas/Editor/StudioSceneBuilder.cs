@@ -1,6 +1,7 @@
 using System.Linq;
 using TheLivingCanvas.Core;
 using TheLivingCanvas.Interaction;
+using TheLivingCanvas.Painting;
 using TheLivingCanvas.Player;
 using Unity.Cinemachine;
 using UnityEditor;
@@ -26,6 +27,7 @@ namespace TheLivingCanvas.EditorTools
         const string ProfilePath = Root + "/Settings/StudioVolumeProfile.asset";
         const string ControlsPath = Root + "/Settings/PlayerControls.inputactions";
         const string PlayerPrefabPath = Root + "/Prefabs/Player/Player.prefab";
+        const string EaselPrefabPath = Root + "/Prefabs/Canvas/Easel.prefab";
 
         [MenuItem("TheLivingCanvas/Build Studio Scene")]
         public static void Build()
@@ -73,9 +75,14 @@ namespace TheLivingCanvas.EditorTools
 
             var player = (GameObject)PrefabUtility.InstantiatePrefab(BuildPlayerPrefab());
             player.transform.SetPositionAndRotation(new Vector3(0f, 0f, -2f), Quaternion.identity);
-            BuildCameraRig(player);
-            BuildHud(player.GetComponent<PlayerInteractor>());
+            var rig = BuildCameraRig(player);
+            var hud = BuildHud(player.GetComponent<PlayerInteractor>());
+            BuildPaintMode(rig, player, hud);
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
+
+            // Caballete delante del punto de inicio, mirando hacia el jugador.
+            var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
+            easel.transform.SetPositionAndRotation(new Vector3(1.5f, 0f, 1.5f), Quaternion.Euler(0f, 200f, 0f));
 
             var volumeGo = new GameObject("Global Volume");
             var volume = volumeGo.AddComponent<Volume>();
@@ -137,7 +144,7 @@ namespace TheLivingCanvas.EditorTools
             return prefab;
         }
 
-        static void BuildCameraRig(GameObject player)
+        static GameObject BuildCameraRig(GameObject player)
         {
             var rig = new GameObject("Cameras");
             rig.AddComponent<CursorLock>();
@@ -174,18 +181,111 @@ namespace TheLivingCanvas.EditorTools
             fpGo.AddComponent<CinemachinePanTilt>().ReferenceFrame = CinemachinePanTilt.ReferenceFrames.World;
             AddLookInput(fpGo);
 
+            // Vista fija: sin componentes de movimiento; CameraModeController la coloca (ej. frente al lienzo).
+            var fixedGo = new GameObject("CM FixedView");
+            fixedGo.transform.SetParent(rig.transform, false);
+            var fixedCam = fixedGo.AddComponent<CinemachineCamera>();
+            fixedCam.Lens.FieldOfView = 50f;
+            fixedCam.Lens.NearClipPlane = 0.05f;
+
             var modeController = rig.AddComponent<CameraModeController>();
             var so = new SerializedObject(modeController);
             so.FindProperty("thirdPersonCamera").objectReferenceValue = tp;
             so.FindProperty("firstPersonCamera").objectReferenceValue = fp;
+            so.FindProperty("fixedViewCamera").objectReferenceValue = fixedCam;
             so.FindProperty("playerMovement").objectReferenceValue = player.GetComponent<PlayerMovement>();
             so.FindProperty("playerVisuals").objectReferenceValue = player.transform.Find("Visuals").gameObject;
             so.FindProperty("debugToggleAction").objectReferenceValue = GetAction("Player/ToggleView");
             so.ApplyModifiedPropertiesWithoutUndo();
+            return rig;
+        }
+
+        static void BuildPaintMode(GameObject rig, GameObject player, GameObject hud)
+        {
+            // Aviso arriba al centro mientras se pinta.
+            var hint = new GameObject("PaintHint", typeof(RectTransform), typeof(Text));
+            hint.transform.SetParent(hud.transform, false);
+            var rect = (RectTransform)hint.transform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 1f);
+            rect.anchoredPosition = new Vector2(0f, -40f);
+            rect.sizeDelta = new Vector2(900f, 50f);
+            var text = hint.GetComponent<Text>();
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.fontSize = 26;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.color = new Color(0.25f, 0.17f, 0.1f);
+            text.text = "Pintando  ·  [Esc] o [E] para salir";
+
+            var paintMode = new GameObject("PaintMode").AddComponent<PaintModeController>();
+            var so = new SerializedObject(paintMode);
+            so.FindProperty("cameraMode").objectReferenceValue = rig.GetComponent<CameraModeController>();
+            so.FindProperty("interactor").objectReferenceValue = player.GetComponent<PlayerInteractor>();
+            so.FindProperty("cursorLock").objectReferenceValue = rig.GetComponent<CursorLock>();
+            so.FindProperty("exitAction").objectReferenceValue = GetAction("Paint/Exit");
+            so.FindProperty("paintHud").objectReferenceValue = hint;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>
+        /// Caballete placeholder con un lienzo de 1 × 0.8 m inclinado hacia atrás.
+        /// El frente (+Z local) mira al pintor; ViewPoint queda perpendicular al lienzo.
+        /// </summary>
+        static GameObject BuildEaselPrefab()
+        {
+            var woodMat = GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f));
+            var canvasMat = GetOrCreateMaterial("M_Canvas_Blank", new Color(0.96f, 0.94f, 0.88f));
+
+            var root = new GameObject("Easel");
+            var blocker = root.AddComponent<BoxCollider>();
+            blocker.center = new Vector3(0f, 0.9f, 0f);
+            blocker.size = new Vector3(1.2f, 1.8f, 0.6f);
+
+            CreatePart(PrimitiveType.Cube, "Leg_Left", root.transform, new Vector3(-0.45f, 0.8f, 0.1f), new Vector3(0.05f, 1.6f, 0.05f), woodMat, Quaternion.Euler(-8f, 0f, 4f));
+            CreatePart(PrimitiveType.Cube, "Leg_Right", root.transform, new Vector3(0.45f, 0.8f, 0.1f), new Vector3(0.05f, 1.6f, 0.05f), woodMat, Quaternion.Euler(-8f, 0f, -4f));
+            CreatePart(PrimitiveType.Cube, "Leg_Back", root.transform, new Vector3(0f, 0.75f, -0.3f), new Vector3(0.05f, 1.5f, 0.05f), woodMat, Quaternion.Euler(20f, 0f, 0f));
+            CreatePart(PrimitiveType.Cube, "Ledge", root.transform, new Vector3(0f, 0.9f, 0.14f), new Vector3(1.1f, 0.04f, 0.1f), woodMat, Quaternion.identity);
+
+            // Tablero inclinado 8° hacia atrás; el lienzo y el punto de vista cuelgan de él.
+            var board = new GameObject("Board").transform;
+            board.SetParent(root.transform, false);
+            board.localPosition = new Vector3(0f, 1.32f, 0.08f);
+            board.localRotation = Quaternion.Euler(-8f, 0f, 0f);
+
+            CreatePart(PrimitiveType.Cube, "Frame", board, new Vector3(0f, 0f, -0.02f), new Vector3(1.06f, 0.86f, 0.03f), woodMat, Quaternion.identity);
+            var canvas = CreatePart(PrimitiveType.Quad, "Canvas", board, Vector3.zero, new Vector3(1f, 0.8f, 1f), canvasMat, Quaternion.Euler(0f, 180f, 0f));
+            canvas.transform.localPosition = new Vector3(0f, 0f, 0.001f);
+
+            var viewPoint = new GameObject("ViewPoint").transform;
+            viewPoint.SetParent(board, false);
+            viewPoint.localPosition = new Vector3(0f, 0f, 1.15f);
+            viewPoint.localRotation = Quaternion.Euler(0f, 180f, 0f);
+
+            var interactable = root.AddComponent<CanvasInteractable>();
+            var so = new SerializedObject(interactable);
+            so.FindProperty("viewPoint").objectReferenceValue = viewPoint;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(root, EaselPrefabPath);
+            Object.DestroyImmediate(root);
+            return prefab;
+        }
+
+        static GameObject CreatePart(PrimitiveType type, string name, Transform parent, Vector3 position, Vector3 scale, Material material, Quaternion rotation)
+        {
+            var go = GameObject.CreatePrimitive(type);
+            go.name = name;
+            if (type != PrimitiveType.Quad)
+                Object.DestroyImmediate(go.GetComponent<Collider>()); // el BoxCollider del caballete basta
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = position;
+            go.transform.localRotation = rotation;
+            go.transform.localScale = scale;
+            go.GetComponent<MeshRenderer>().sharedMaterial = material;
+            return go;
         }
 
         /// <summary>HUD provisional: aviso de interacción abajo al centro.</summary>
-        static void BuildHud(PlayerInteractor interactor)
+        static GameObject BuildHud(PlayerInteractor interactor)
         {
             var hud = new GameObject("HUD");
             hud.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
@@ -221,6 +321,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("label").objectReferenceValue = label;
             so.ApplyModifiedPropertiesWithoutUndo();
             panel.SetActive(false);
+            return hud;
         }
 
         /// <summary>Lámpara de prueba sobre la mesa (Fase 1C).</summary>
