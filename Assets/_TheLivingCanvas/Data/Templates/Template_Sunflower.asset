@@ -20,13 +20,16 @@ MonoBehaviour:
     suggestedPigment: {fileID: 11400000, guid: 8b670d75cc6ef944fb0ffb752328c817, type: 2}
     minCoverage: 0.5
     weight: 1
+    missingPaintHint: The petals need a bit more paint.
   - zoneName: Center
     channel: 2
     suggestedPigment: {fileID: 11400000, guid: 0312c802ba4a0a740974bf252ac84122, type: 2}
     minCoverage: 0.5
     weight: 1
+    missingPaintHint: The center of the flower is still empty.
   - zoneName: Stem & leaves
     channel: 1
     suggestedPigment: {fileID: 11400000, guid: 640e085e4379ceb4e85af02a0c5193db, type: 2}
     minCoverage: 0.5
     weight: 0.8
+    missingPaintHint: The stem and leaves need some color.

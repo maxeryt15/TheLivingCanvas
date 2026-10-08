@@ -5,8 +5,8 @@ using UnityEngine.UI;
 namespace TheLivingCanvas.Painting
 {
     /// <summary>
-    /// Lectura de depuración de la cobertura del lienzo activo. Recalcula solo cuando la pintura
-    /// cambió, como mucho unas pocas veces por segundo.
+    /// Lectura de depuración del lienzo activo: evaluación por zonas si el lienzo tiene cultivo,
+    /// si no cobertura por pigmento. Recalcula solo cuando la pintura cambió (máx. unas veces por segundo).
     /// </summary>
     public class CoverageReadoutUI : MonoBehaviour
     {
@@ -20,8 +20,6 @@ namespace TheLivingCanvas.Painting
         int lastRevision = -1;
         float nextUpdateTime;
 
-        public CoverageResult LastResult { get; private set; }
-
         void OnEnable() => lastRevision = -1; // fuerza recalcular al volver a pintar
 
         void Update()
@@ -33,8 +31,27 @@ namespace TheLivingCanvas.Painting
             lastSurface = surface;
             lastRevision = surface.Revision;
             nextUpdateTime = Time.unscaledTime + minInterval;
-            LastResult = PaintCoverage.Analyze(surface, brush.Palette);
-            label.text = Format(LastResult);
+
+            var crop = paintMode.ActiveCanvas.Crop;
+            label.text = crop != null
+                ? Format(PaintEvaluator.Evaluate(surface, crop.Template))
+                : Format(PaintCoverage.Analyze(surface, brush.Palette));
+        }
+
+        /// <summary>Progreso por zona de la plantilla (para ajustar la evaluación).</summary>
+        string Format(PaintingResult result)
+        {
+            builder.Clear();
+            builder.Append("Evaluation (debug)\n");
+            foreach (var zone in result.Zones)
+            {
+                builder.Append(zone.Passed ? "[ok] " : "[  ] ")
+                    .Append(zone.Requirement.zoneName).Append(": ").Append(Percent(zone.Coverage))
+                    .Append("  (color ").Append(Percent(zone.ColorFit)).Append(")\n");
+            }
+            builder.Append("Outside: ").Append(Percent(result.Spill)).Append('\n');
+            builder.Append("Score: ").Append(Percent(result.Score)).Append(" · ").Append(result.Quality);
+            return builder.ToString();
         }
 
         string Format(CoverageResult result)

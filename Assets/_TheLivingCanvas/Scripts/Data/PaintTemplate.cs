@@ -23,6 +23,8 @@ namespace TheLivingCanvas.Data
         [Range(0f, 1f)] public float minCoverage = 0.5f;
         [Tooltip("Peso de la zona en la puntuación final.")]
         public float weight = 1f;
+        [Tooltip("Mensaje amable (en inglés) cuando a la zona le falta pintura.")]
+        public string missingPaintHint = "This area needs a bit more paint.";
     }
 
     /// <summary>

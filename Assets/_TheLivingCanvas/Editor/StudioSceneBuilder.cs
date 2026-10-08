@@ -264,8 +264,59 @@ namespace TheLivingCanvas.EditorTools
                 paletteProp.GetArrayElementAtIndex(i).objectReferenceValue = pigments[i];
             brushSo.ApplyModifiedPropertiesWithoutUndo();
 
-            BuildPalettePanel(paintHud.transform, brush);
+            // El mensaje vive en el HUD raíz para que la enhorabuena siga visible al salir del modo pintura.
+            var finisher = paintMode.gameObject.AddComponent<PaintingFinisher>();
+            var finisherSo = new SerializedObject(finisher);
+            finisherSo.FindProperty("paintMode").objectReferenceValue = paintMode;
+            finisherSo.FindProperty("feedback").objectReferenceValue = BuildFeedback(hud.transform);
+            finisherSo.ApplyModifiedPropertiesWithoutUndo();
+
+            BuildPalettePanel(paintHud.transform, brush, finisher);
             BuildCoverageReadout(paintHud.transform, paintMode, brush);
+        }
+
+        /// <summary>Mensaje temporal abajo al centro, por encima del aviso de interacción.</summary>
+        static PaintFeedbackUI BuildFeedback(Transform hud)
+        {
+            var root = new GameObject("PaintFeedback", typeof(RectTransform), typeof(PaintFeedbackUI));
+            root.transform.SetParent(hud, false);
+            var rootRect = (RectTransform)root.transform;
+            rootRect.anchorMin = Vector2.zero;
+            rootRect.anchorMax = Vector2.one;
+            rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
+
+            var panel = new GameObject("Panel", typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            panel.transform.SetParent(root.transform, false);
+            var rect = (RectTransform)panel.transform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0f);
+            rect.anchoredPosition = new Vector2(0f, 60f);
+            rect.sizeDelta = new Vector2(760f, 0f);
+            var image = panel.GetComponent<Image>();
+            image.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            image.type = Image.Type.Sliced;
+            image.raycastTarget = false;
+            var layout = panel.GetComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(24, 24, 16, 16);
+            layout.childControlWidth = layout.childControlHeight = true;
+            layout.childForceExpandHeight = false;
+            panel.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var labelGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            labelGo.transform.SetParent(panel.transform, false);
+            var label = labelGo.GetComponent<Text>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.fontSize = 28;
+            label.alignment = TextAnchor.MiddleCenter;
+            label.color = new Color(1f, 0.95f, 0.82f);
+            label.raycastTarget = false;
+
+            var feedback = root.GetComponent<PaintFeedbackUI>();
+            var so = new SerializedObject(feedback);
+            so.FindProperty("panel").objectReferenceValue = panel;
+            so.FindProperty("background").objectReferenceValue = image;
+            so.FindProperty("label").objectReferenceValue = label;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return feedback;
         }
 
         /// <summary>Lectura de depuración de cobertura, arriba a la derecha (Fase 3C).</summary>
@@ -308,7 +359,7 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Paleta lateral de madera: muestras de color, tamaño, borrador y cómo salir.</summary>
-        static void BuildPalettePanel(Transform parent, PaintBrushController brush)
+        static void BuildPalettePanel(Transform parent, PaintBrushController brush, PaintingFinisher finisher)
         {
             var resources = new DefaultControls.Resources
             {
@@ -325,7 +376,7 @@ namespace TheLivingCanvas.EditorTools
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0f, 0.5f);
             panelRect.pivot = new Vector2(0f, 0.5f);
             panelRect.anchoredPosition = new Vector2(40f, 0f);
-            panelRect.sizeDelta = new Vector2(240f, 790f);
+            panelRect.sizeDelta = new Vector2(240f, 860f);
             var panelImage = panel.GetComponent<Image>();
             panelImage.sprite = resources.standard;
             panelImage.type = Image.Type.Sliced;
@@ -379,6 +430,10 @@ namespace TheLivingCanvas.EditorTools
             ConfigureHighlight(guide.AddComponent<Outline>(), cream);
             var hints = CreateButton(resources, guideRow, "HintsButton", "Color hints", 17, font);
             ConfigureHighlight(hints.AddComponent<Outline>(), cream);
+
+            var finish = CreateButton(resources, panel.transform, "FinishButton", "Finish painting", 24, font);
+            finish.GetComponent<Image>().color = new Color(0.98f, 0.80f, 0.32f);
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(finish.GetComponent<Button>().onClick, finisher.Finish);
 
             AddLabel(panel.transform, "ExitHint", "Ctrl+Z undo  ·  Ctrl+Y redo\n[Esc] or [E] to exit", 17, 50f, font, cream);
 
@@ -472,9 +527,9 @@ namespace TheLivingCanvas.EditorTools
             }
             template.EditorSetup("Sunflower", mask, new[]
             {
-                new ZoneRequirement { zoneName = "Petals", channel = ZoneChannel.Red, suggestedPigment = palette[0], minCoverage = 0.5f, weight = 1f },
-                new ZoneRequirement { zoneName = "Center", channel = ZoneChannel.Blue, suggestedPigment = palette[1], minCoverage = 0.5f, weight = 1f },
-                new ZoneRequirement { zoneName = "Stem & leaves", channel = ZoneChannel.Green, suggestedPigment = palette[2], minCoverage = 0.5f, weight = 0.8f },
+                new ZoneRequirement { zoneName = "Petals", channel = ZoneChannel.Red, suggestedPigment = palette[0], minCoverage = 0.5f, weight = 1f, missingPaintHint = "The petals need a bit more paint." },
+                new ZoneRequirement { zoneName = "Center", channel = ZoneChannel.Blue, suggestedPigment = palette[1], minCoverage = 0.5f, weight = 1f, missingPaintHint = "The center of the flower is still empty." },
+                new ZoneRequirement { zoneName = "Stem & leaves", channel = ZoneChannel.Green, suggestedPigment = palette[2], minCoverage = 0.5f, weight = 0.8f, missingPaintHint = "The stem and leaves need some color." },
             });
             EditorUtility.SetDirty(template);
 
