@@ -36,6 +36,7 @@ namespace TheLivingCanvas.Painting
         PaintSurface strokeSurface;
         Texture2D ringTexture;
         Canvas uiCanvas;
+        CanvasInteractable guidedCanvas;
 
         /// <summary>Se dispara cuando cambia el pigmento, el tamaño o el borrador (para refrescar la UI).</summary>
         public event Action ToolsChanged;
@@ -43,6 +44,10 @@ namespace TheLivingCanvas.Painting
         public IReadOnlyList<PigmentDefinition> Palette => palette;
         public PigmentDefinition SelectedPigment { get; private set; }
         public bool EraserActive { get; private set; }
+        /// <summary>Contorno tenue de la plantilla.</summary>
+        public bool ShowGuide { get; private set; } = true;
+        /// <summary>Pista del color sugerido dentro de cada zona.</summary>
+        public bool ShowColorHints { get; private set; }
         public float BrushRadius => brushRadius;
         public float MinBrushRadius => minBrushRadius;
         public float MaxBrushRadius => maxBrushRadius;
@@ -116,6 +121,26 @@ namespace TheLivingCanvas.Painting
             ToolsChanged?.Invoke();
         }
 
+        public void SetShowGuide(bool show)
+        {
+            ShowGuide = show;
+            ApplyGuide();
+            ToolsChanged?.Invoke();
+        }
+
+        public void SetShowColorHints(bool show)
+        {
+            ShowColorHints = show;
+            ApplyGuide();
+            ToolsChanged?.Invoke();
+        }
+
+        void ApplyGuide()
+        {
+            if (guidedCanvas != null)
+                guidedCanvas.Guide.Show(ShowGuide, ShowColorHints);
+        }
+
         public void SetBrushRadius(float radius)
         {
             float clamped = Mathf.Clamp(radius, minBrushRadius, maxBrushRadius);
@@ -134,6 +159,13 @@ namespace TheLivingCanvas.Painting
 
         void Update()
         {
+            // Al empezar a pintar en un lienzo, aplicarle las opciones de guía actuales.
+            if (paintMode.ActiveCanvas != null && paintMode.ActiveCanvas != guidedCanvas)
+            {
+                guidedCanvas = paintMode.ActiveCanvas;
+                ApplyGuide();
+            }
+
             var surface = paintMode.IsPainting ? paintMode.ActiveCanvas.Surface : null;
             if (surface == null || Camera.main == null)
             {

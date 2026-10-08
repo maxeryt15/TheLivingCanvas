@@ -227,6 +227,7 @@ GameObject:
   - component: {fileID: 7168604904277090588}
   - component: {fileID: 5269653397691963407}
   - component: {fileID: 515634559272949382}
+  - component: {fileID: 4078712616686377422}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -348,6 +349,22 @@ MonoBehaviour:
   spacing: 0.25
   hardness: 0.7
   undoSteps: 20
+--- !u!114 &4078712616686377422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5291422009591205869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbad9971628bd9047a1ed7ab61e50462, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Painting.CanvasGuide
+  outlineColor:
+    serializedVersion: 2
+    rgba: 1511927110
+  hintStrength: 0.22
 --- !u!1 &6546821729577660585
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,6 +438,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Painting.CanvasInteractable
   viewPoint: {fileID: 2576245511536693683}
   surface: {fileID: 515634559272949382}
+  guide: {fileID: 4078712616686377422}
+  crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
 --- !u!1 &7611646397093923832
 GameObject:
   m_ObjectHideFlags: 0

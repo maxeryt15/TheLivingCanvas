@@ -253,15 +253,7 @@ namespace TheLivingCanvas.EditorTools
             brushSo.FindProperty("redoAction").objectReferenceValue = GetAction("Paint/Redo");
             brushSo.FindProperty("cursorRing").objectReferenceValue = ring;
             var paletteProp = brushSo.FindProperty("palette");
-            var pigments = new[]
-            {
-                GetOrCreatePigment("sunflower_yellow", "Sunflower Yellow", new Color(0.98f, 0.78f, 0.15f)),
-                GetOrCreatePigment("burnt_ochre", "Burnt Ochre", new Color(0.55f, 0.33f, 0.13f)),
-                GetOrCreatePigment("leaf_green", "Leaf Green", new Color(0.30f, 0.55f, 0.22f)),
-                GetOrCreatePigment("ultramarine", "Ultramarine Blue", new Color(0.17f, 0.27f, 0.62f)),
-                GetOrCreatePigment("carmine", "Carmine Red", new Color(0.75f, 0.15f, 0.17f)),
-                GetOrCreatePigment("titanium_white", "Titanium White", new Color(0.98f, 0.98f, 0.96f)),
-            };
+            var pigments = GetOrCreatePalette();
             paletteProp.arraySize = pigments.Length;
             for (int i = 0; i < pigments.Length; i++)
                 paletteProp.GetArrayElementAtIndex(i).objectReferenceValue = pigments[i];
@@ -328,7 +320,7 @@ namespace TheLivingCanvas.EditorTools
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0f, 0.5f);
             panelRect.pivot = new Vector2(0f, 0.5f);
             panelRect.anchoredPosition = new Vector2(40f, 0f);
-            panelRect.sizeDelta = new Vector2(240f, 720f);
+            panelRect.sizeDelta = new Vector2(240f, 790f);
             var panelImage = panel.GetComponent<Image>();
             panelImage.sprite = resources.standard;
             panelImage.type = Image.Type.Sliced;
@@ -372,16 +364,16 @@ namespace TheLivingCanvas.EditorTools
             var eraser = CreateButton(resources, panel.transform, "EraserButton", "Eraser", 24, font);
             ConfigureHighlight(eraser.AddComponent<Outline>(), cream);
 
-            var historyRow = new GameObject("HistoryRow", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
-            historyRow.transform.SetParent(panel.transform, false);
-            historyRow.GetComponent<LayoutElement>().preferredHeight = 56f;
-            var rowLayout = historyRow.GetComponent<HorizontalLayoutGroup>();
-            rowLayout.spacing = 10f;
-            rowLayout.childControlWidth = rowLayout.childControlHeight = true;
-            rowLayout.childForceExpandWidth = rowLayout.childForceExpandHeight = true;
-            var undo = CreateButton(resources, historyRow.transform, "UndoButton", "Undo", 19, font);
-            var redo = CreateButton(resources, historyRow.transform, "RedoButton", "Redo", 19, font);
+            var historyRow = CreateRow(panel.transform, "HistoryRow");
+            var undo = CreateButton(resources, historyRow, "UndoButton", "Undo", 19, font);
+            var redo = CreateButton(resources, historyRow, "RedoButton", "Redo", 19, font);
             var clear = CreateButton(resources, panel.transform, "ClearButton", "Clear canvas", 22, font);
+
+            var guideRow = CreateRow(panel.transform, "GuideRow");
+            var guide = CreateButton(resources, guideRow, "GuideButton", "Guide", 19, font);
+            ConfigureHighlight(guide.AddComponent<Outline>(), cream);
+            var hints = CreateButton(resources, guideRow, "HintsButton", "Color hints", 17, font);
+            ConfigureHighlight(hints.AddComponent<Outline>(), cream);
 
             AddLabel(panel.transform, "ExitHint", "Ctrl+Z undo  ·  Ctrl+Y redo\n[Esc] or [E] to exit", 17, 50f, font, cream);
 
@@ -395,7 +387,21 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("undoButton").objectReferenceValue = undo.GetComponent<Button>();
             so.FindProperty("redoButton").objectReferenceValue = redo.GetComponent<Button>();
             so.FindProperty("clearButton").objectReferenceValue = clear.GetComponent<Button>();
+            so.FindProperty("guideButton").objectReferenceValue = guide.GetComponent<Button>();
+            so.FindProperty("hintsButton").objectReferenceValue = hints.GetComponent<Button>();
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static Transform CreateRow(Transform parent, string name)
+        {
+            var row = new GameObject(name, typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+            row.transform.SetParent(parent, false);
+            row.GetComponent<LayoutElement>().preferredHeight = 56f;
+            var layout = row.GetComponent<HorizontalLayoutGroup>();
+            layout.spacing = 10f;
+            layout.childControlWidth = layout.childControlHeight = true;
+            layout.childForceExpandWidth = layout.childForceExpandHeight = true;
+            return row.transform;
         }
 
         static GameObject CreateButton(DefaultControls.Resources resources, Transform parent, string name, string label, int fontSize, Font font)
@@ -433,6 +439,50 @@ namespace TheLivingCanvas.EditorTools
             outline.effectColor = color;
             outline.effectDistance = new Vector2(4f, -4f);
             outline.enabled = false;
+        }
+
+        /// <summary>Los 6 pigmentos del vertical slice, en el orden de la paleta.</summary>
+        static PigmentDefinition[] GetOrCreatePalette() => new[]
+        {
+            GetOrCreatePigment("sunflower_yellow", "Sunflower Yellow", new Color(0.98f, 0.78f, 0.15f)),
+            GetOrCreatePigment("burnt_ochre", "Burnt Ochre", new Color(0.55f, 0.33f, 0.13f)),
+            GetOrCreatePigment("leaf_green", "Leaf Green", new Color(0.30f, 0.55f, 0.22f)),
+            GetOrCreatePigment("ultramarine", "Ultramarine Blue", new Color(0.17f, 0.27f, 0.62f)),
+            GetOrCreatePigment("carmine", "Carmine Red", new Color(0.75f, 0.15f, 0.17f)),
+            GetOrCreatePigment("titanium_white", "Titanium White", new Color(0.98f, 0.98f, 0.96f)),
+        };
+
+        /// <summary>Plantilla y cultivo del girasol (máscara de zonas regenerada cada vez).</summary>
+        static CropDefinition GetOrCreateSunflowerCrop()
+        {
+            var palette = GetOrCreatePalette();
+            var mask = PaintTemplateGenerator.GenerateSunflowerMask($"{Root}/Art/Textures/PaintTemplates/Sunflower_Zones.png");
+
+            var templatePath = $"{Root}/Data/Templates/Template_Sunflower.asset";
+            var template = AssetDatabase.LoadAssetAtPath<PaintTemplate>(templatePath);
+            if (template == null)
+            {
+                template = ScriptableObject.CreateInstance<PaintTemplate>();
+                AssetDatabase.CreateAsset(template, templatePath);
+            }
+            template.EditorSetup("Sunflower", mask, new[]
+            {
+                new ZoneRequirement { zoneName = "Petals", channel = ZoneChannel.Red, suggestedPigment = palette[0], minCoverage = 0.5f, weight = 1f },
+                new ZoneRequirement { zoneName = "Center", channel = ZoneChannel.Blue, suggestedPigment = palette[1], minCoverage = 0.5f, weight = 1f },
+                new ZoneRequirement { zoneName = "Stem & leaves", channel = ZoneChannel.Green, suggestedPigment = palette[2], minCoverage = 0.5f, weight = 0.8f },
+            });
+            EditorUtility.SetDirty(template);
+
+            var cropPath = $"{Root}/Data/Crops/Crop_Sunflower.asset";
+            var crop = AssetDatabase.LoadAssetAtPath<CropDefinition>(cropPath);
+            if (crop == null)
+            {
+                crop = ScriptableObject.CreateInstance<CropDefinition>();
+                AssetDatabase.CreateAsset(crop, cropPath);
+            }
+            crop.EditorSetup("sunflower", "Sunflower", template, 20f);
+            EditorUtility.SetDirty(crop);
+            return crop;
         }
 
         static PigmentDefinition GetOrCreatePigment(string id, string displayName, Color color)
@@ -478,6 +528,7 @@ namespace TheLivingCanvas.EditorTools
             var canvas = CreatePart(PrimitiveType.Quad, "Canvas", board, Vector3.zero, new Vector3(1f, 0.8f, 1f), canvasMat, Quaternion.Euler(0f, 180f, 0f));
             canvas.transform.localPosition = new Vector3(0f, 0f, 0.001f);
             var surface = canvas.AddComponent<PaintSurface>();
+            var guide = canvas.AddComponent<CanvasGuide>();
 
             var viewPoint = new GameObject("ViewPoint").transform;
             viewPoint.SetParent(board, false);
@@ -488,6 +539,8 @@ namespace TheLivingCanvas.EditorTools
             var so = new SerializedObject(interactable);
             so.FindProperty("viewPoint").objectReferenceValue = viewPoint;
             so.FindProperty("surface").objectReferenceValue = surface;
+            so.FindProperty("guide").objectReferenceValue = guide;
+            so.FindProperty("crop").objectReferenceValue = GetOrCreateSunflowerCrop();
             so.ApplyModifiedPropertiesWithoutUndo();
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, EaselPrefabPath);

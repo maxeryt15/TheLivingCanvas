@@ -23,6 +23,11 @@ namespace TheLivingCanvas.Painting
 
         MeshCollider meshCollider;
         PaintHistory history;
+
+        // Guía opcional (contorno y pistas de color): solo afecta a la imagen mostrada.
+        Color32[] guideOutline;
+        Color32[] guideHints;
+        Color32[] display;
         Texture2D texture;
         Color32[] pixels;
         bool dirty;
@@ -69,11 +74,40 @@ namespace TheLivingCanvas.Painting
         void LateUpdate()
         {
             if (!dirty) return;
-            texture.SetPixels32(pixels);
+            texture.SetPixels32(guideOutline == null && guideHints == null ? pixels : ComposeDisplay());
             texture.Apply(false);
             dirty = false;
             Revision++;
         }
+
+        /// <summary>
+        /// Capas de guía por píxel (alfa = intensidad). Las pistas de color solo se ven sobre tela sin pintar;
+        /// el contorno se ve siempre, tenue. null quita la capa.
+        /// </summary>
+        public void SetGuide(Color32[] outline, Color32[] hints)
+        {
+            guideOutline = outline;
+            guideHints = hints;
+            dirty = true;
+        }
+
+        Color32[] ComposeDisplay()
+        {
+            display ??= new Color32[pixels.Length];
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                Color32 c = pixels[i];
+                if (guideHints != null && guideHints[i].a > 0 && IsBase(c))
+                    c = Color32.Lerp(c, guideHints[i], guideHints[i].a / 255f);
+                if (guideOutline != null && guideOutline[i].a > 0)
+                    c = Color32.Lerp(c, guideOutline[i], guideOutline[i].a / 255f);
+                c.a = 255;
+                display[i] = c;
+            }
+            return display;
+        }
+
+        bool IsBase(Color32 c) => c.r == baseColor.r && c.g == baseColor.g && c.b == baseColor.b;
 
         /// <summary>Raycast solo contra este lienzo. Devuelve la UV (0–1) del punto tocado.</summary>
         public bool Raycast(Ray ray, out Vector2 uv, out RaycastHit hit, float maxDistance = 10f)

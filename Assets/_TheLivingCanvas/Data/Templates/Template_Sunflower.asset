@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6402e72c03a595c4b8c7bb3a96ff7d0b, type: 3}
+  m_Name: Template_Sunflower
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.PaintTemplate
+  displayName: Sunflower
+  zoneMask: {fileID: 2800000, guid: 2e0d9c51ae70ebb4894863136829dfd4, type: 3}
+  zones:
+  - zoneName: Petals
+    channel: 0
+    suggestedPigment: {fileID: 11400000, guid: 8b670d75cc6ef944fb0ffb752328c817, type: 2}
+    minCoverage: 0.5
+    weight: 1
+  - zoneName: Center
+    channel: 2
+    suggestedPigment: {fileID: 11400000, guid: 0312c802ba4a0a740974bf252ac84122, type: 2}
+    minCoverage: 0.5
+    weight: 1
+  - zoneName: Stem & leaves
+    channel: 1
+    suggestedPigment: {fileID: 11400000, guid: 640e085e4379ceb4e85af02a0c5193db, type: 2}
+    minCoverage: 0.5
+    weight: 0.8

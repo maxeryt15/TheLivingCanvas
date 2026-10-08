@@ -20,9 +20,13 @@ namespace TheLivingCanvas.Painting
         [SerializeField] Button undoButton;
         [SerializeField] Button redoButton;
         [SerializeField] Button clearButton;
+        [SerializeField] Button guideButton;
+        [SerializeField] Button hintsButton;
 
         readonly Dictionary<PigmentDefinition, Outline> swatchHighlights = new();
         Outline eraserHighlight;
+        Outline guideHighlight;
+        Outline hintsHighlight;
 
         void Awake()
         {
@@ -47,6 +51,11 @@ namespace TheLivingCanvas.Painting
             undoButton.onClick.AddListener(brush.Undo);
             redoButton.onClick.AddListener(brush.Redo);
             clearButton.onClick.AddListener(brush.ClearCanvas);
+
+            guideHighlight = guideButton.GetComponent<Outline>();
+            hintsHighlight = hintsButton.GetComponent<Outline>();
+            guideButton.onClick.AddListener(() => brush.SetShowGuide(!brush.ShowGuide));
+            hintsButton.onClick.AddListener(() => brush.SetShowColorHints(!brush.ShowColorHints));
         }
 
         void Update()
@@ -68,6 +77,8 @@ namespace TheLivingCanvas.Painting
             foreach (var pair in swatchHighlights)
                 pair.Value.enabled = !brush.EraserActive && pair.Key == brush.SelectedPigment;
             eraserHighlight.enabled = brush.EraserActive;
+            guideHighlight.enabled = brush.ShowGuide;
+            hintsHighlight.enabled = brush.ShowColorHints;
             sizeSlider.SetValueWithoutNotify(brush.BrushRadius);
         }
     }
