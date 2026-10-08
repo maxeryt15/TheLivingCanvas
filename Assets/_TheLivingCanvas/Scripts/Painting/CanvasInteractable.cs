@@ -10,10 +10,12 @@ namespace TheLivingCanvas.Painting
     {
         [Tooltip("Punto desde el que la cámara mira el lienzo de frente al pintar.")]
         [SerializeField] Transform viewPoint;
+        [SerializeField] PaintSurface surface;
 
         PaintModeController paintMode;
 
         public Transform ViewPoint => viewPoint;
+        public PaintSurface Surface => surface;
         public string Prompt => "Pintar";
 
         void Awake() => paintMode = FindAnyObjectByType<PaintModeController>();

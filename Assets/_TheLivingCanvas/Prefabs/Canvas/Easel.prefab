@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: 9000566085143963197}
   - component: {fileID: 7168604904277090588}
   - component: {fileID: 5269653397691963407}
+  - component: {fileID: 515634559272949382}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -327,6 +328,25 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &515634559272949382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5291422009591205869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3b279787f4de084c9daf808428e9a0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Painting.PaintSurface
+  width: 640
+  height: 512
+  baseColor:
+    serializedVersion: 2
+    rgba: 4293062901
+  spacing: 0.25
+  hardness: 0.7
 --- !u!1 &6546821729577660585
 GameObject:
   m_ObjectHideFlags: 0
@@ -399,6 +419,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Painting.CanvasInteractable
   viewPoint: {fileID: 2576245511536693683}
+  surface: {fileID: 515634559272949382}
 --- !u!1 &7611646397093923832
 GameObject:
   m_ObjectHideFlags: 0

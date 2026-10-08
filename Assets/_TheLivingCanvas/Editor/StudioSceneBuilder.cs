@@ -224,6 +224,22 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("exitAction").objectReferenceValue = GetAction("Paint/Exit");
             so.FindProperty("paintHud").objectReferenceValue = hint;
             so.ApplyModifiedPropertiesWithoutUndo();
+
+            // Aro del cursor de pincel: imagen de UI (el sprite del aro se genera en runtime).
+            AssetDatabase.DeleteAsset($"{MaterialsFolder}/M_BrushCursor.mat"); // restos de pruebas anteriores
+            var ringGo = new GameObject("BrushCursor", typeof(RectTransform), typeof(Image));
+            ringGo.transform.SetParent(hud.transform, false);
+            var ring = ringGo.GetComponent<Image>();
+            ring.color = new Color(0.2f, 0.14f, 0.1f, 0.9f);
+            ring.raycastTarget = false;
+
+            var brush = paintMode.gameObject.AddComponent<PaintBrushController>();
+            var brushSo = new SerializedObject(brush);
+            brushSo.FindProperty("paintMode").objectReferenceValue = paintMode;
+            brushSo.FindProperty("pointAction").objectReferenceValue = GetAction("Paint/Point");
+            brushSo.FindProperty("strokeAction").objectReferenceValue = GetAction("Paint/Stroke");
+            brushSo.FindProperty("cursorRing").objectReferenceValue = ring;
+            brushSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>
@@ -254,6 +270,7 @@ namespace TheLivingCanvas.EditorTools
             CreatePart(PrimitiveType.Cube, "Frame", board, new Vector3(0f, 0f, -0.02f), new Vector3(1.06f, 0.86f, 0.03f), woodMat, Quaternion.identity);
             var canvas = CreatePart(PrimitiveType.Quad, "Canvas", board, Vector3.zero, new Vector3(1f, 0.8f, 1f), canvasMat, Quaternion.Euler(0f, 180f, 0f));
             canvas.transform.localPosition = new Vector3(0f, 0f, 0.001f);
+            var surface = canvas.AddComponent<PaintSurface>();
 
             var viewPoint = new GameObject("ViewPoint").transform;
             viewPoint.SetParent(board, false);
@@ -263,6 +280,7 @@ namespace TheLivingCanvas.EditorTools
             var interactable = root.AddComponent<CanvasInteractable>();
             var so = new SerializedObject(interactable);
             so.FindProperty("viewPoint").objectReferenceValue = viewPoint;
+            so.FindProperty("surface").objectReferenceValue = surface;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, EaselPrefabPath);

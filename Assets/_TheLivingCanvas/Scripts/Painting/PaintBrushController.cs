@@ -1,0 +1,137 @@
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
+
+namespace TheLivingCanvas.Painting
+{
+    /// <summary>
+    /// Mientras se pinta: proyecta el puntero sobre el lienzo activo, dibuja un aro del tamaño
+    /// del pincel y pinta con el botón izquierdo / punta del lápiz.
+    /// </summary>
+    public class PaintBrushController : MonoBehaviour
+    {
+        [SerializeField] PaintModeController paintMode;
+        [SerializeField] InputActionReference pointAction;
+        [SerializeField] InputActionReference strokeAction;
+        [Tooltip("Imagen de UI (en un Canvas Screen Space - Overlay) que marca el tamaño del pincel.")]
+        [SerializeField] Image cursorRing;
+
+        [SerializeField] Color brushColor = new(0.17f, 0.27f, 0.55f);
+        [Tooltip("Radio del pincel en píxeles de la pintura.")]
+        [SerializeField] float brushRadius = 10f;
+
+        PaintSurface strokeSurface;
+        Texture2D ringTexture;
+        Canvas uiCanvas;
+
+        void Awake()
+        {
+            uiCanvas = cursorRing.canvas;
+            cursorRing.color = Color.white; // los colores van en la textura
+            cursorRing.gameObject.SetActive(false);
+        }
+
+        void OnDestroy() => DestroyRing();
+
+        void OnEnable()
+        {
+            pointAction.action.Enable();
+            strokeAction.action.Enable();
+        }
+
+        void Update()
+        {
+            var surface = paintMode.IsPainting ? paintMode.ActiveCanvas.Surface : null;
+            if (surface == null || Camera.main == null)
+            {
+                strokeSurface = null;
+                cursorRing.gameObject.SetActive(false);
+                return;
+            }
+
+            Ray ray = Camera.main.ScreenPointToRay(pointAction.action.ReadValue<Vector2>());
+            bool overCanvas = surface.Raycast(ray, out Vector2 uv, out RaycastHit hit);
+            UpdateCursor(overCanvas, hit, surface);
+
+            if (overCanvas && strokeAction.action.IsPressed())
+            {
+                if (strokeSurface != surface)
+                {
+                    surface.BeginStroke(uv, brushRadius, brushColor);
+                    strokeSurface = surface;
+                }
+                else
+                {
+                    surface.ContinueStroke(uv);
+                }
+            }
+            else
+            {
+                // Salir del lienzo corta el trazo; al volver empieza uno nuevo.
+                strokeSurface = null;
+            }
+        }
+
+        void UpdateCursor(bool overCanvas, RaycastHit hit, PaintSurface surface)
+        {
+            cursorRing.gameObject.SetActive(overCanvas);
+            Cursor.visible = !overCanvas; // el aro sustituye al cursor del sistema sobre el lienzo
+            if (!overCanvas) return;
+
+            // Proyecta el radio del pincel (en el plano del lienzo) a píxeles de pantalla.
+            var cam = Camera.main;
+            float worldRadius = brushRadius * surface.PixelWorldSize;
+            Vector3 center = cam.WorldToScreenPoint(hit.point);
+            Vector3 edge = cam.WorldToScreenPoint(hit.point + surface.transform.right * worldRadius);
+            float screenRadius = Vector2.Distance(center, edge);
+
+            // La textura se genera al tamaño exacto en pantalla para que el grosor del aro sea fijo en píxeles.
+            int size = Mathf.Max(8, Mathf.CeilToInt(screenRadius * 2f) + 4);
+            if (ringTexture == null || ringTexture.width != size)
+                RebuildRing(size);
+
+            var rect = cursorRing.rectTransform;
+            rect.position = new Vector3(center.x, center.y, 0f); // Canvas Overlay: posición en píxeles de pantalla
+            rect.sizeDelta = Vector2.one * (size / uiCanvas.scaleFactor);
+        }
+
+        /// <summary>Aro oscuro de ~1.5 px con un borde interior claro, para verse sobre lienzo y pintura.</summary>
+        void RebuildRing(int size)
+        {
+            DestroyRing();
+            ringTexture = new Texture2D(size, size, TextureFormat.RGBA32, false)
+            {
+                name = "BrushRing",
+                wrapMode = TextureWrapMode.Clamp
+            };
+
+            var dark = new Color(0.18f, 0.12f, 0.08f);
+            var light = new Color(1f, 0.97f, 0.9f);
+            float half = size * 0.5f;
+            float outer = half - 2f;          // centro de la línea oscura
+            float inner = outer - 1.75f;      // centro de la línea clara
+            var pixels = new Color[size * size];
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float d = new Vector2(x + 0.5f - half, y + 0.5f - half).magnitude;
+                    float darkA = Mathf.Clamp01(1.25f - Mathf.Abs(d - outer));
+                    float lightA = Mathf.Clamp01(0.9f - Mathf.Abs(d - inner)) * 0.8f;
+                    var c = darkA >= lightA ? dark : light;
+                    c.a = Mathf.Max(darkA, lightA);
+                    pixels[y * size + x] = c;
+                }
+            }
+            ringTexture.SetPixels(pixels);
+            ringTexture.Apply(false);
+            cursorRing.sprite = Sprite.Create(ringTexture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+        }
+
+        void DestroyRing()
+        {
+            if (cursorRing != null && cursorRing.sprite != null) Destroy(cursorRing.sprite);
+            if (ringTexture != null) Destroy(ringTexture);
+        }
+    }
+}
