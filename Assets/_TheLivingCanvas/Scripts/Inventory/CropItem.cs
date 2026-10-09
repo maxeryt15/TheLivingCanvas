@@ -19,6 +19,8 @@ namespace TheLivingCanvas.Inventory
         public Rarity Rarity => Variant?.rarity ?? Rarity.Common;
         /// <summary>Monedas por unidad: el precio del cultivo según la rareza.</summary>
         public int UnitPrice => Mathf.RoundToInt(Crop.SellPrice * Rarity.PriceMultiplier());
+        /// <summary>Color que da al molerlo: el de la variante o el del cultivo.</summary>
+        public PigmentDefinition GrindPigment => Variant?.pigment ?? Crop.Pigment;
 
         public override string DisplayName => Variant?.displayName ?? Crop.DisplayName;
         public override string Detail => Rarity == Rarity.Common ? $"x{Quantity}" : $"x{Quantity} · {Rarity}";

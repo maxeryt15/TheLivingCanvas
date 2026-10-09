@@ -19,6 +19,9 @@ namespace TheLivingCanvas.Data
         [SerializeField] Texture2D icon;
         [Tooltip("Monedas por unidad cosechada al venderla.")]
         [SerializeField] int sellPrice = 10;
+        [Tooltip("Pigmento que da al molerlo en el mortero (las variantes dan el suyo).")]
+        [SerializeField] PigmentDefinition pigment;
+        [SerializeField] int pigmentPerUnit = 10;
         [Tooltip("Variantes por color; si ninguna encaja, sale el cultivo normal (Common).")]
         [SerializeField] CropVariant[] variants = System.Array.Empty<CropVariant>();
 
@@ -30,6 +33,8 @@ namespace TheLivingCanvas.Data
         public Texture2D Icon => icon;
         public int SellPrice => sellPrice;
         public CropVariant[] Variants => variants;
+        public PigmentDefinition Pigment => pigment;
+        public int PigmentPerUnit => pigmentPerUnit;
 
         /// <summary>
         /// Variante que corresponde a la pintura, o null (cultivo normal). En cada zona clave se compara el color
@@ -79,6 +84,12 @@ namespace TheLivingCanvas.Data
         }
 
         public void EditorSetVariants(CropVariant[] newVariants) => variants = newVariants;
+
+        public void EditorSetPigmentYield(PigmentDefinition newPigment, int newPigmentPerUnit)
+        {
+            pigment = newPigment;
+            pigmentPerUnit = newPigmentPerUnit;
+        }
 #endif
     }
 }

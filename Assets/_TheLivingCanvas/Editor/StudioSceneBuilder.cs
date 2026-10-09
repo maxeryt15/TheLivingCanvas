@@ -97,6 +97,7 @@ namespace TheLivingCanvas.EditorTools
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
             BuildShop(hud.transform, environment.transform, player, rig);
             BuildCropPicker(hud.transform, player, rig);
+            BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -763,6 +764,7 @@ namespace TheLivingCanvas.EditorTools
             var crop = GetOrCreateCropAsset("Crop_Tomato");
             crop.EditorSetup("tomato", "Tomato", template, 25f, BuildTomatoPlantPrefab(),
                 PaintTemplateGenerator.GenerateTomatoIcon($"{Root}/Art/Textures/Icon_Tomato.png"), 15);
+            crop.EditorSetPigmentYield(palette[4], 10);
             crop.EditorSetVariants(new[]
             {
                 new CropVariant { id = "golden", displayName = "Golden Tomato", zoneName = "Tomatoes", pigment = palette[0], rarity = Rarity.Uncommon },
@@ -791,6 +793,7 @@ namespace TheLivingCanvas.EditorTools
             var crop = GetOrCreateCropAsset("Crop_Glowbell");
             crop.EditorSetup("glowbell", "Glowbell", template, 30f, BuildGlowbellPlantPrefab(),
                 PaintTemplateGenerator.GenerateGlowbellIcon($"{Root}/Art/Textures/Icon_Glowbell.png"), 25);
+            crop.EditorSetPigmentYield(palette[3], 10);
             crop.EditorSetVariants(new[]
             {
                 new CropVariant { id = "sun", displayName = "Sun Glowbell", zoneName = "Glow", pigment = palette[0], rarity = Rarity.Uncommon },
@@ -985,6 +988,7 @@ namespace TheLivingCanvas.EditorTools
             }
             crop.EditorSetup("sunflower", "Sunflower", template, 20f, BuildSunflowerPlantPrefab(),
                 PaintTemplateGenerator.GenerateSunflowerIcon($"{Root}/Art/Textures/Icon_Sunflower.png"), 10);
+            crop.EditorSetPigmentYield(palette[0], 10);
             crop.EditorSetVariants(new[]
             {
                 new CropVariant { id = "red", displayName = "Red Sunflower", zoneName = "Petals", pigment = palette[4], rarity = Rarity.Uncommon },
@@ -1264,6 +1268,21 @@ namespace TheLivingCanvas.EditorTools
                 EditorUtility.SetDirty(offer);
                 offers.Add(offer);
             }
+            foreach (var pigment in GetOrCreatePalette())
+            {
+                var path = $"{Root}/Data/Shop/Offer_Refill_{pigment.Id}.asset";
+                var refill = AssetDatabase.LoadAssetAtPath<RefillOffer>(path);
+                if (refill == null)
+                {
+                    refill = ScriptableObject.CreateInstance<RefillOffer>();
+                    AssetDatabase.CreateAsset(refill, path);
+                }
+                refill.EditorSetupOffer($"{pigment.DisplayName} jar", $"+30 {pigment.DisplayName.ToLowerInvariant()} pigment.", 8, null);
+                refill.EditorSetPigment(pigment);
+                EditorUtility.SetDirty(refill);
+                offers.Add(refill);
+            }
+
             foreach (var crop in GetOrCreateCrops().Skip(StartingCrops))
             {
                 var path = $"{Root}/Data/Shop/Offer_Sketch_{crop.Id}.asset";
@@ -1322,17 +1341,34 @@ namespace TheLivingCanvas.EditorTools
             title.text = titleText;
             ((RectTransform)title.transform).offsetMax = new Vector2(0f, -16f);
 
-            var rowsGo = new GameObject("Rows", typeof(RectTransform), typeof(VerticalLayoutGroup));
-            rowsGo.transform.SetParent(panel.transform, false);
+            // Zona con scroll (rueda del ratón): las filas se apilan arriba y crecen hacia abajo.
+            var scrollGo = new GameObject("Scroll", typeof(RectTransform), typeof(RectMask2D), typeof(ScrollRect));
+            scrollGo.transform.SetParent(panel.transform, false);
+            var scrollRect = (RectTransform)scrollGo.transform;
+            scrollRect.anchorMin = Vector2.zero;
+            scrollRect.anchorMax = Vector2.one;
+            scrollRect.offsetMin = new Vector2(30f, 140f);
+            scrollRect.offsetMax = new Vector2(-30f, -70f);
+
+            var rowsGo = new GameObject("Rows", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+            rowsGo.transform.SetParent(scrollGo.transform, false);
             var rowsRect = (RectTransform)rowsGo.transform;
-            rowsRect.anchorMin = Vector2.zero;
+            rowsRect.anchorMin = new Vector2(0f, 1f);
             rowsRect.anchorMax = Vector2.one;
-            rowsRect.offsetMin = new Vector2(30f, 140f);
-            rowsRect.offsetMax = new Vector2(-30f, -70f);
+            rowsRect.pivot = new Vector2(0.5f, 1f);
+            rowsRect.offsetMin = rowsRect.offsetMax = Vector2.zero;
             var rowsLayout = rowsGo.GetComponent<VerticalLayoutGroup>();
             rowsLayout.spacing = 10f;
             rowsLayout.childControlWidth = rowsLayout.childControlHeight = true;
             rowsLayout.childForceExpandHeight = false;
+            rowsGo.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var scroll = scrollGo.GetComponent<ScrollRect>();
+            scroll.content = rowsRect;
+            scroll.viewport = scrollRect;
+            scroll.horizontal = false;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 30f;
 
             // Fila plantilla: icono, nombre (+ descripción) y botón de acción.
             var row = new GameObject("RowTemplate", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
@@ -1389,6 +1425,36 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("closeButton").objectReferenceValue = ui.Close;
             so.FindProperty("rowContainer").objectReferenceValue = ui.Rows;
             so.FindProperty("rowTemplate").objectReferenceValue = ui.RowTemplate;
+        }
+
+        /// <summary>Mortero sobre un tocón junto a la pared del fondo + panel para moler la cosecha.</summary>
+        static void BuildMortar(Transform hud, Transform environment, GameObject player, GameObject rig, PaintBrushController brush)
+        {
+            var ui = BuildListPanel(hud, "MortarUI", "Mortar", new Vector2(760f, 640f));
+            var mortar = ui.Root.AddComponent<MortarUI>();
+            var so = new SerializedObject(mortar);
+            SetModalPanelRefs(so, ui, player, rig);
+            so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+            so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
+            so.FindProperty("brush").objectReferenceValue = brush;
+            so.FindProperty("messageLabel").objectReferenceValue = ui.Message;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var stumpMat = GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f));
+            var stoneMat = GetOrCreateMaterial("M_Mortar_Stone", new Color(0.62f, 0.6f, 0.56f));
+            var station = new GameObject("Mortar");
+            station.transform.SetParent(environment);
+            station.transform.localPosition = new Vector3(-2.3f, 0f, 4.8f);
+            var box = station.AddComponent<BoxCollider>();
+            box.center = new Vector3(0f, 0.4f, 0f);
+            box.size = new Vector3(0.7f, 0.8f, 0.7f);
+
+            CreatePart(PrimitiveType.Cylinder, "Stump", station.transform, new Vector3(0f, 0.3f, 0f), new Vector3(0.6f, 0.3f, 0.6f), stumpMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Sphere, "Bowl", station.transform, new Vector3(0f, 0.66f, 0f), new Vector3(0.36f, 0.2f, 0.36f), stoneMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cylinder, "Pestle", station.transform, new Vector3(0.08f, 0.8f, 0f), new Vector3(0.05f, 0.14f, 0.05f), stoneMat, Quaternion.Euler(0f, 0f, -25f));
+            var stationSo = new SerializedObject(station.AddComponent<MortarStation>());
+            stationSo.FindProperty("mortar").objectReferenceValue = mortar;
+            stationSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Selector de cultivo al poner un lienzo en el caballete.</summary>

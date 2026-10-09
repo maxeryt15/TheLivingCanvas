@@ -15,6 +15,7 @@ namespace TheLivingCanvas.Economy
         Texture2D swatch;
 
         public PigmentDefinition Pigment => pigment;
+        protected int Units => units;
 
         /// <summary>Sin icono propio: una muestra del color (creada en runtime, no se guarda).</summary>
         public override Texture Icon

@@ -19,6 +19,8 @@ MonoBehaviour:
   plantPrefab: {fileID: 8333980614284103012, guid: 14ca6b97f54f5fa4a8cb46aef5e8708a, type: 3}
   icon: {fileID: 2800000, guid: af93cc0546425494ea741caf7316907c, type: 3}
   sellPrice: 25
+  pigment: {fileID: 11400000, guid: 0c535dcdf0b1d724881d0fa92fef7c51, type: 2}
+  pigmentPerUnit: 10
   variants:
   - id: sun
     displayName: Sun Glowbell

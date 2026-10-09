@@ -5,7 +5,10 @@ using UnityEngine.UI;
 
 namespace TheLivingCanvas.Economy
 {
-    /// <summary>Panel placeholder de la tienda: una fila por oferta con su precio y un botón Buy.</summary>
+    /// <summary>
+    /// Panel placeholder de la tienda: una fila por oferta que se puede comprar ahora (lo ya comprado y las
+    /// recargas de colores que aún no se tienen no salen), con su precio y un botón Buy.
+    /// </summary>
     public class ShopUI : ModalPanel
     {
         [SerializeField] ShopOffer[] offers;
@@ -59,7 +62,7 @@ namespace TheLivingCanvas.Economy
             }
             offer.Deliver(buyer);
             messageLabel.text = $"Bought {offer.DisplayName.ToLowerInvariant()}!";
-            RefreshButtons();
+            Rebuild(); // lo comprado puede desaparecer y aparecer otras ofertas (ej. la recarga de ese color)
         }
 
         void Rebuild()
@@ -70,6 +73,7 @@ namespace TheLivingCanvas.Economy
 
             foreach (var offer in offers)
             {
+                if (!offer.IsAvailable(buyer)) continue;
                 var row = Instantiate(rowTemplate, rowContainer);
                 row.SetActive(true);
                 row.transform.Find("Icon").GetComponent<RawImage>().texture = offer.Icon;
@@ -85,9 +89,8 @@ namespace TheLivingCanvas.Economy
         {
             foreach (var (offer, buy) in rows)
             {
-                bool available = offer.IsAvailable(buyer);
-                buy.interactable = available && wallet.CanAfford(offer.Price);
-                buy.GetComponentInChildren<Text>().text = available ? $"Buy  {offer.Price}" : "Owned";
+                buy.interactable = wallet.CanAfford(offer.Price);
+                buy.GetComponentInChildren<Text>().text = $"Buy  {offer.Price}";
             }
         }
     }
