@@ -146,6 +146,8 @@ namespace TheLivingCanvas.EditorTools
 
             root.AddComponent<PlayerInventory>();
             root.AddComponent<Wallet>();
+            root.AddComponent<PigmentStock>().EditorSetStartingAmounts(
+                GetOrCreatePalette().Take(StartingPigments).ToArray(), new[] { 150, 40, 50 });
             var sketchbook = new SerializedObject(root.AddComponent<Sketchbook>());
             SetArray(sketchbook.FindProperty("knownCrops"), GetOrCreateCrops().Take(StartingCrops).ToArray());
             sketchbook.ApplyModifiedPropertiesWithoutUndo();
@@ -289,9 +291,11 @@ namespace TheLivingCanvas.EditorTools
             var finisherSo = new SerializedObject(finisher);
             finisherSo.FindProperty("paintMode").objectReferenceValue = paintMode;
             finisherSo.FindProperty("feedback").objectReferenceValue = BuildFeedback(hud.transform);
+            finisherSo.FindProperty("brush").objectReferenceValue = brush;
+            finisherSo.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
             finisherSo.ApplyModifiedPropertiesWithoutUndo();
 
-            BuildPalettePanel(paintHud.transform, brush, finisher);
+            BuildPalettePanel(paintHud.transform, brush, finisher, player.GetComponent<PigmentStock>());
             BuildCoverageReadout(paintHud.transform, paintMode, brush);
             return paintMode;
         }
@@ -549,7 +553,7 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Paleta lateral de madera: muestras de color, tamaño, borrador y cómo salir.</summary>
-        static void BuildPalettePanel(Transform parent, PaintBrushController brush, PaintingFinisher finisher)
+        static void BuildPalettePanel(Transform parent, PaintBrushController brush, PaintingFinisher finisher, PigmentStock stock)
         {
             var resources = new DefaultControls.Resources
             {
@@ -600,6 +604,12 @@ namespace TheLivingCanvas.EditorTools
             templateImage.type = Image.Type.Sliced;
             template.GetComponent<Button>().targetGraphic = templateImage;
             ConfigureHighlight(template.GetComponent<Outline>(), cream);
+            var amount = AddStretchedText(template.transform, "Amount", 20, font, Color.white, TextAnchor.LowerRight);
+            ((RectTransform)amount.transform).offsetMax = new Vector2(-6f, 0f);
+            ((RectTransform)amount.transform).offsetMin = new Vector2(0f, 4f);
+            var amountShadow = amount.gameObject.AddComponent<Shadow>(); // legible sobre el blanco y el amarillo
+            amountShadow.effectColor = new Color(0f, 0f, 0f, 0.8f);
+            amountShadow.effectDistance = new Vector2(1.5f, -1.5f);
 
             AddLabel(panel.transform, "SizeLabel", "Brush size", 24, 30f, font, cream);
             var slider = DefaultControls.CreateSlider(resources);
@@ -630,6 +640,7 @@ namespace TheLivingCanvas.EditorTools
             var tools = panel.AddComponent<PaintToolsUI>();
             var so = new SerializedObject(tools);
             so.FindProperty("brush").objectReferenceValue = brush;
+            so.FindProperty("stock").objectReferenceValue = stock;
             so.FindProperty("swatchContainer").objectReferenceValue = swatches.transform;
             so.FindProperty("swatchTemplate").objectReferenceValue = template.GetComponent<Button>();
             so.FindProperty("sizeSlider").objectReferenceValue = slider.GetComponent<Slider>();
@@ -1248,7 +1259,7 @@ namespace TheLivingCanvas.EditorTools
                     offer = ScriptableObject.CreateInstance<PigmentOffer>();
                     AssetDatabase.CreateAsset(offer, path);
                 }
-                offer.EditorSetupOffer(pigment.DisplayName, "A new color for your palette.", 15, null);
+                offer.EditorSetupOffer(pigment.DisplayName, "A new color for your palette (+30).", 15, null);
                 offer.EditorSetPigment(pigment);
                 EditorUtility.SetDirty(offer);
                 offers.Add(offer);

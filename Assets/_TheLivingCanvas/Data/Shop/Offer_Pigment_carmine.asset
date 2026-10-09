@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Offer_Pigment_carmine
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Economy.PigmentOffer
   displayName: Carmine Red
-  description: A new color for your palette.
+  description: A new color for your palette (+30).
   price: 15
   icon: {fileID: 0}
   pigment: {fileID: 11400000, guid: 6089d0400a55f19418a5e9d3b42a67db, type: 2}
+  units: 30

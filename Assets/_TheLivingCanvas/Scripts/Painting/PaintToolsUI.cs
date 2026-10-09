@@ -7,13 +7,14 @@ namespace TheLivingCanvas.Painting
 {
     /// <summary>
     /// Paleta lateral del modo pintura: una muestra por pigmento (generadas desde la paleta del
-    /// pincel), tamaño del pincel y borrador. Refleja el estado de PaintBrushController.
+    /// pincel) con la cantidad que queda, tamaño del pincel y borrador. Refleja el estado de PaintBrushController.
     /// </summary>
     public class PaintToolsUI : MonoBehaviour
     {
         [SerializeField] PaintBrushController brush;
+        [SerializeField] PigmentStock stock;
         [SerializeField] RectTransform swatchContainer;
-        [Tooltip("Botón de muestra desactivado que se clona por cada pigmento.")]
+        [Tooltip("Botón de muestra desactivado que se clona por cada pigmento (con un Text 'Amount').")]
         [SerializeField] Button swatchTemplate;
         [SerializeField] Slider sizeSlider;
         [SerializeField] Button eraserButton;
@@ -24,6 +25,7 @@ namespace TheLivingCanvas.Painting
         [SerializeField] Button hintsButton;
 
         readonly Dictionary<PigmentDefinition, Outline> swatchHighlights = new();
+        readonly Dictionary<PigmentDefinition, Text> swatchAmounts = new();
         Outline eraserHighlight;
         Outline guideHighlight;
         Outline hintsHighlight;
@@ -35,6 +37,7 @@ namespace TheLivingCanvas.Painting
                 AddSwatch(pigment);
             // Suscrito siempre (no solo con el panel visible): se compran pigmentos sin estar pintando.
             brush.PigmentAdded += AddSwatch;
+            stock.Changed += RefreshAmounts;
 
             eraserHighlight = eraserButton.GetComponent<Outline>();
             eraserButton.onClick.AddListener(() => brush.SetEraser(!brush.EraserActive));
@@ -53,7 +56,11 @@ namespace TheLivingCanvas.Painting
             hintsButton.onClick.AddListener(() => brush.SetShowColorHints(!brush.ShowColorHints));
         }
 
-        void OnDestroy() => brush.PigmentAdded -= AddSwatch;
+        void OnDestroy()
+        {
+            brush.PigmentAdded -= AddSwatch;
+            stock.Changed -= RefreshAmounts;
+        }
 
         void AddSwatch(PigmentDefinition pigment)
         {
@@ -63,6 +70,14 @@ namespace TheLivingCanvas.Painting
             swatch.image.color = pigment.Color;
             swatch.onClick.AddListener(() => brush.SelectPigment(pigment));
             swatchHighlights[pigment] = swatch.GetComponent<Outline>();
+            swatchAmounts[pigment] = swatch.transform.Find("Amount").GetComponent<Text>();
+            RefreshAmounts();
+        }
+
+        void RefreshAmounts()
+        {
+            foreach (var pair in swatchAmounts)
+                pair.Value.text = stock.Get(pair.Key).ToString();
         }
 
         void Update()

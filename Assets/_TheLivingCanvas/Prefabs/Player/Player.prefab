@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 309921310988699684}
   - component: {fileID: 1369985129268799377}
   - component: {fileID: 7997938788624478519}
+  - component: {fileID: 5124207475027352058}
   - component: {fileID: 3612679850124350672}
   - component: {fileID: 8540552794212616525}
   m_Layer: 0
@@ -264,6 +265,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Economy.Wallet
   coins: 0
+--- !u!114 &5124207475027352058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6875788775779737426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 106039c409e2b8e45b4ace703cfbe7e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Painting.PigmentStock
+  startingAmounts:
+  - pigment: {fileID: 11400000, guid: 8b670d75cc6ef944fb0ffb752328c817, type: 2}
+    amount: 150
+  - pigment: {fileID: 11400000, guid: 0312c802ba4a0a740974bf252ac84122, type: 2}
+    amount: 40
+  - pigment: {fileID: 11400000, guid: 640e085e4379ceb4e85af02a0c5193db, type: 2}
+    amount: 50
 --- !u!114 &3612679850124350672
 MonoBehaviour:
   m_ObjectHideFlags: 0
