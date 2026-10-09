@@ -43,6 +43,11 @@ namespace TheLivingCanvas.Painting
         float distanceSinceStamp;
         float strokeRadius;
         Color32 strokeColor;
+        // Veladura (opacidad < 1): se mezcla con la pintura de antes del trazo y cada píxel guarda la cobertura
+        // máxima del trazo, así los estampados que se solapan dentro de un mismo trazo no se acumulan.
+        float strokeOpacity = 1f;
+        Color32[] strokeBase;
+        float[] strokeCoverage;
 
         /// <summary>Tamaño en metros de un píxel de la pintura (para dibujar el cursor a escala).</summary>
         public float PixelWorldSize => transform.lossyScale.x / width;
@@ -182,11 +187,20 @@ namespace TheLivingCanvas.Painting
             return true;
         }
 
-        public void BeginStroke(Vector2 uv, float radiusPx, Color color)
+        /// <param name="opacity">1 = opaco; menos de 1 = veladura que deja ver lo de debajo.</param>
+        public void BeginStroke(Vector2 uv, float radiusPx, Color color, float opacity = 1f)
         {
             history.Record(pixels);
             strokeRadius = radiusPx;
             strokeColor = color;
+            strokeOpacity = Mathf.Clamp01(opacity);
+            if (strokeOpacity < 1f)
+            {
+                strokeBase ??= new Color32[pixels.Length];
+                strokeCoverage ??= new float[pixels.Length];
+                System.Array.Copy(pixels, strokeBase, pixels.Length);
+                System.Array.Clear(strokeCoverage, 0, strokeCoverage.Length);
+            }
             lastPixel = UvToPixel(uv);
             distanceSinceStamp = 0f;
             Stamp(lastPixel);
@@ -232,7 +246,18 @@ namespace TheLivingCanvas.Painting
 
                     float alpha = d <= hardness ? 1f : 1f - (d - hardness) / (1f - hardness);
                     int i = y * width + x;
-                    pixels[i] = Color32.Lerp(pixels[i], strokeColor, alpha);
+                    if (strokeOpacity < 1f)
+                    {
+                        float coverage = Mathf.Max(strokeCoverage[i], alpha);
+                        strokeCoverage[i] = coverage;
+                        var glazed = Color32.Lerp(strokeBase[i], strokeColor, coverage * strokeOpacity);
+                        glazed.a = 255; // la veladura es trabajo a mano: quita la marca de Fill
+                        pixels[i] = glazed;
+                    }
+                    else
+                    {
+                        pixels[i] = Color32.Lerp(pixels[i], strokeColor, alpha);
+                    }
                 }
             }
             dirty = true;

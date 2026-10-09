@@ -32,6 +32,8 @@ namespace TheLivingCanvas.Painting
         [SerializeField] float brushRadius = 10f;
         [SerializeField] float minBrushRadius = 3f;
         [SerializeField] float maxBrushRadius = 40f;
+        [Tooltip("Opacidad de cada trazo del pincel Glaze (veladura).")]
+        [SerializeField, Range(0.1f, 0.9f)] float glazeOpacity = 0.5f;
         [Tooltip("Factor por paso de rueda / tecla.")]
         [SerializeField] float sizeStepFactor = 1.15f;
 
@@ -232,7 +234,8 @@ namespace TheLivingCanvas.Painting
                     }
                     else
                     {
-                        surface.BeginStroke(uv, brushRadius, color);
+                        bool glaze = SelectedBrush != null && SelectedBrush.Kind == BrushKind.Glaze;
+                        surface.BeginStroke(uv, brushRadius, color, glaze ? glazeOpacity : 1f);
                     }
                     strokeSurface = surface;
                 }

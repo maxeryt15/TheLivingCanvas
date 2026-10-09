@@ -611,7 +611,7 @@ namespace TheLivingCanvas.EditorTools
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0f, 0.5f);
             panelRect.pivot = new Vector2(0f, 0.5f);
             panelRect.anchoredPosition = new Vector2(40f, 0f);
-            panelRect.sizeDelta = new Vector2(240f, 860f);
+            panelRect.sizeDelta = new Vector2(300f, 860f); // ancho para 4 botones en la fila de herramientas
             var panelImage = panel.GetComponent<Image>();
             panelImage.sprite = resources.standard;
             panelImage.type = Image.Type.Sliced;
@@ -664,6 +664,13 @@ namespace TheLivingCanvas.EditorTools
             ConfigureHighlight(brushTemplate.AddComponent<Outline>(), cream);
             var eraser = CreateButton(resources, toolsRow, "EraserButton", "Eraser", 18, font);
             ConfigureHighlight(eraser.AddComponent<Outline>(), cream);
+            // Con 4 botones (~43 px cada uno) el texto se encoge para caber.
+            foreach (var label in new[] { brushTemplate.GetComponentInChildren<Text>(), eraser.GetComponentInChildren<Text>() })
+            {
+                label.resizeTextForBestFit = true;
+                label.resizeTextMinSize = 11;
+                label.resizeTextMaxSize = 18;
+            }
 
             var historyRow = CreateRow(panel.transform, "HistoryRow");
             var undo = CreateButton(resources, historyRow, "UndoButton", "Undo", 19, font);
@@ -756,6 +763,7 @@ namespace TheLivingCanvas.EditorTools
         {
             GetOrCreateBrush("round", "Round", BrushKind.Round),
             GetOrCreateBrush("fill", "Fill", BrushKind.Fill),
+            GetOrCreateBrush("glaze", "Glaze", BrushKind.Glaze),
         };
 
         static BrushDefinition GetOrCreateBrush(string id, string displayName, BrushKind kind)
@@ -1553,6 +1561,7 @@ namespace TheLivingCanvas.EditorTools
         static string BrushDescription(BrushKind kind) => kind switch
         {
             BrushKind.Fill => "Click a zone of the sketch to fill it in one go.",
+            BrushKind.Glaze => "A see-through layer that mixes with the colors below.",
             _ => "A new brush for your palette."
         };
 
