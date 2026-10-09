@@ -35,6 +35,38 @@ namespace TheLivingCanvas.Painting
         public PaintingQuality Quality;
         /// <summary>Modo indulgente: basta con cubrir cada zona; el color no bloquea.</summary>
         public bool CanComeToLife;
+
+        /// <summary>
+        /// Copia "desvanecida" (para las semillas): un nivel de calidad menos y los colores de cada zona
+        /// <paramref name="fade"/> (0–1) más pálidos, así el cultivo 3D también sale más pálido.
+        /// </summary>
+        public PaintingResult Faded(float fade)
+        {
+            var copy = new PaintingResult
+            {
+                Spill = Spill,
+                Score = Score,
+                Quality = Quality == PaintingQuality.Normal ? PaintingQuality.Normal : Quality - 1,
+                CanComeToLife = CanComeToLife
+            };
+            foreach (var zone in Zones)
+                copy.Zones.Add(new ZoneResult
+                {
+                    Requirement = zone.Requirement,
+                    Coverage = zone.Coverage,
+                    ColorFit = zone.ColorFit,
+                    DominantColor = Fade(zone.DominantColor, fade)
+                });
+            return copy;
+        }
+
+        /// <summary>Hacia un tono gris claro: menos saturado y más luminoso.</summary>
+        public static Color Fade(Color color, float fade)
+        {
+            float gray = color.grayscale;
+            var washed = Color.Lerp(new Color(gray, gray, gray, color.a), Color.white, 0.4f);
+            return Color.Lerp(color, washed, fade);
+        }
     }
 
     /// <summary>

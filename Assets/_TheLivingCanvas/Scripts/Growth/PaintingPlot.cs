@@ -6,8 +6,8 @@ namespace TheLivingCanvas.Growth
 {
     /// <summary>
     /// Una pintura terminada puesta plana en el suelo: la parcela de la que crece el cultivo.
-    /// Con la planta adulta se cosecha (Interact): da la cosecha según la calidad y una semilla
-    /// con la misma pintura. La parcela se consume.
+    /// Con la planta adulta se cosecha (Interact): da la cosecha según la calidad y, salvo en calidad
+    /// Normal, una semilla con la pintura desvanecida. La parcela se consume.
     /// </summary>
     public class PaintingPlot : MonoBehaviour, IInteractable
     {
@@ -52,7 +52,8 @@ namespace TheLivingCanvas.Growth
             if (!CanInteract) return;
             var inventory = interactor.GetComponent<PlayerInventory>();
             inventory.Add(new CropItem(Painting.Crop, CropPlant.HarvestAmount(Painting.Result.Quality)));
-            inventory.Add(new SeedItem(Painting));
+            if (SeedItem.CanSeed(Painting))
+                inventory.Add(new SeedItem(Painting));
             Destroy(gameObject); // la pintura se consume
         }
     }
