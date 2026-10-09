@@ -65,7 +65,8 @@ namespace TheLivingCanvas.Inventory
         void OnToggle(InputAction.CallbackContext _)
         {
             if (IsOpen) Close();
-            else if (!paintMode.IsPainting && !placer.IsPlacing) Open();
+            // PointerMode: otro panel (ej. la tienda) ya tiene el cursor.
+            else if (!paintMode.IsPainting && !placer.IsPlacing && !cursorLock.PointerMode) Open();
         }
 
         void Open()

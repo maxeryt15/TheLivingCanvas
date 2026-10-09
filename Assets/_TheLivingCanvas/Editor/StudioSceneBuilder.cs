@@ -93,6 +93,7 @@ namespace TheLivingCanvas.EditorTools
             BuildCoinCounter(hud.transform, player.GetComponent<Wallet>());
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
+            BuildShop(hud.transform, environment.transform, player, rig);
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -965,6 +966,136 @@ namespace TheLivingCanvas.EditorTools
             CreatePart(PrimitiveType.Cube, "Side_Left", crate.transform, new Vector3(-0.43f, 0.3f, 0f), new Vector3(0.04f, 0.5f, 0.62f), crateMat, Quaternion.identity);
             CreatePart(PrimitiveType.Cube, "Side_Right", crate.transform, new Vector3(0.43f, 0.3f, 0f), new Vector3(0.04f, 0.5f, 0.62f), crateMat, Quaternion.identity);
             crate.AddComponent<SellCrate>();
+        }
+
+        /// <summary>Ofertas de la tienda (assets en Data/Shop).</summary>
+        static ShopOffer[] GetOrCreateShopOffers()
+        {
+            if (!AssetDatabase.IsValidFolder($"{Root}/Data/Shop"))
+                AssetDatabase.CreateFolder($"{Root}/Data", "Shop");
+
+            var canvasPath = $"{Root}/Data/Shop/Offer_Canvas.asset";
+            var canvas = AssetDatabase.LoadAssetAtPath<CanvasOffer>(canvasPath);
+            if (canvas == null)
+            {
+                canvas = ScriptableObject.CreateInstance<CanvasOffer>();
+                AssetDatabase.CreateAsset(canvas, canvasPath);
+            }
+            canvas.EditorSetupOffer("Blank canvas", "A fresh canvas for the easel.", 5, null);
+            EditorUtility.SetDirty(canvas);
+
+            return new ShopOffer[] { canvas };
+        }
+
+        /// <summary>Puesto de la tienda junto a la pared del fondo + panel de compra.</summary>
+        static void BuildShop(Transform hud, Transform environment, GameObject player, GameObject rig)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            var resources = new DefaultControls.Resources
+            {
+                standard = uiSprite,
+                background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd"),
+                knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd")
+            };
+
+            var root = new GameObject("ShopUI", typeof(RectTransform));
+            root.transform.SetParent(hud, false);
+            var rootRect = (RectTransform)root.transform;
+            rootRect.anchorMin = Vector2.zero;
+            rootRect.anchorMax = Vector2.one;
+            rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
+
+            var panel = CreatePanel(root.transform, "Panel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 0.95f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 560f));
+            panel.GetComponent<Image>().raycastTarget = true; // los clics no atraviesan el panel
+            var title = AddStretchedText(panel.transform, "Title", 32, font, cream, TextAnchor.UpperCenter);
+            title.text = "Shop";
+            ((RectTransform)title.transform).offsetMax = new Vector2(0f, -16f);
+
+            var rowsGo = new GameObject("Rows", typeof(RectTransform), typeof(VerticalLayoutGroup));
+            rowsGo.transform.SetParent(panel.transform, false);
+            var rowsRect = (RectTransform)rowsGo.transform;
+            rowsRect.anchorMin = Vector2.zero;
+            rowsRect.anchorMax = Vector2.one;
+            rowsRect.offsetMin = new Vector2(30f, 140f);
+            rowsRect.offsetMax = new Vector2(-30f, -70f);
+            var rowsLayout = rowsGo.GetComponent<VerticalLayoutGroup>();
+            rowsLayout.spacing = 12f;
+            rowsLayout.childControlWidth = rowsLayout.childControlHeight = true;
+            rowsLayout.childForceExpandHeight = false;
+
+            // Fila plantilla: icono, nombre + descripción y botón Buy con el precio.
+            var row = new GameObject("RowTemplate", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
+            row.transform.SetParent(rowsGo.transform, false);
+            row.GetComponent<LayoutElement>().preferredHeight = 100f;
+            var rowImage = row.GetComponent<Image>();
+            rowImage.sprite = uiSprite;
+            rowImage.type = Image.Type.Sliced;
+            rowImage.color = new Color(0.93f, 0.88f, 0.78f);
+
+            var icon = new GameObject("Icon", typeof(RectTransform), typeof(RawImage));
+            icon.transform.SetParent(row.transform, false);
+            var iconRect = (RectTransform)icon.transform;
+            iconRect.anchorMin = iconRect.anchorMax = iconRect.pivot = new Vector2(0f, 0.5f);
+            iconRect.anchoredPosition = new Vector2(14f, 0f);
+            iconRect.sizeDelta = new Vector2(90f, 72f);
+
+            var nameText = AddStretchedText(row.transform, "Name", 24, font, new Color(0.25f, 0.17f, 0.1f), TextAnchor.MiddleLeft);
+            var nameRect = (RectTransform)nameText.transform;
+            nameRect.offsetMin = new Vector2(120f, 0f);
+            nameRect.offsetMax = new Vector2(-180f, 0f);
+
+            var buy = CreateButton(resources, row.transform, "Buy", "Buy", 24, font);
+            buy.GetComponent<Image>().color = new Color(0.55f, 0.75f, 0.45f);
+            var buyRect = (RectTransform)buy.transform;
+            buyRect.anchorMin = buyRect.anchorMax = buyRect.pivot = new Vector2(1f, 0.5f);
+            buyRect.anchoredPosition = new Vector2(-16f, 0f);
+            buyRect.sizeDelta = new Vector2(150f, 56f);
+
+            var message = AddStretchedText(panel.transform, "Message", 22, font, cream, TextAnchor.LowerCenter);
+            ((RectTransform)message.transform).offsetMin = new Vector2(0f, 90f);
+
+            var close = CreateButton(resources, panel.transform, "Close", "Close", 24, font);
+            var closeRect = (RectTransform)close.transform;
+            closeRect.anchorMin = closeRect.anchorMax = closeRect.pivot = new Vector2(0.5f, 0f);
+            closeRect.anchoredPosition = new Vector2(0f, 20f);
+            closeRect.sizeDelta = new Vector2(200f, 56f);
+
+            var shop = root.AddComponent<ShopUI>();
+            var so = new SerializedObject(shop);
+            SetArray(so.FindProperty("offers"), GetOrCreateShopOffers());
+            so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            so.FindProperty("interactor").objectReferenceValue = player.GetComponent<PlayerInteractor>();
+            so.FindProperty("cursorLock").objectReferenceValue = rig.GetComponent<CursorLock>();
+            so.FindProperty("cameraMode").objectReferenceValue = rig.GetComponent<CameraModeController>();
+            so.FindProperty("exitAction").objectReferenceValue = GetAction("Paint/Exit");
+            so.FindProperty("panel").objectReferenceValue = panel;
+            so.FindProperty("rowContainer").objectReferenceValue = rowsRect;
+            so.FindProperty("rowTemplate").objectReferenceValue = row;
+            so.FindProperty("closeButton").objectReferenceValue = close.GetComponent<Button>();
+            so.FindProperty("messageLabel").objectReferenceValue = message;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            // Puesto placeholder: mostrador con dos postes y un toldo, mirando hacia el centro (-Z).
+            var counterMat = GetOrCreateMaterial("M_Shop_Counter", new Color(0.34f, 0.52f, 0.46f));
+            var awningMat = GetOrCreateMaterial("M_Accent_Terracotta", new Color(0.80f, 0.45f, 0.30f));
+            var postMat = GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f));
+            var stall = new GameObject("ShopStall");
+            stall.transform.SetParent(environment);
+            stall.transform.localPosition = new Vector3(3.8f, 0f, 4.6f);
+            var box = stall.AddComponent<BoxCollider>();
+            box.center = new Vector3(0f, 0.45f, 0f);
+            box.size = new Vector3(1.8f, 0.9f, 0.6f);
+
+            CreatePart(PrimitiveType.Cube, "Counter", stall.transform, new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 0.6f), counterMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Post_Left", stall.transform, new Vector3(-0.85f, 1.25f, 0.25f), new Vector3(0.08f, 2.5f, 0.08f), postMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Post_Right", stall.transform, new Vector3(0.85f, 1.25f, 0.25f), new Vector3(0.08f, 2.5f, 0.08f), postMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Awning", stall.transform, new Vector3(0f, 2.45f, -0.05f), new Vector3(2f, 0.08f, 0.9f), awningMat, Quaternion.Euler(-12f, 0f, 0f));
+            var stallSo = new SerializedObject(stall.AddComponent<ShopStall>());
+            stallSo.FindProperty("shop").objectReferenceValue = shop;
+            stallSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Lámpara de prueba sobre la mesa (Fase 1C).</summary>
