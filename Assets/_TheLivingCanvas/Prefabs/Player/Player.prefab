@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 309921310988699684}
   - component: {fileID: 1369985129268799377}
   - component: {fileID: 7997938788624478519}
+  - component: {fileID: 3612679850124350672}
   - component: {fileID: 8540552794212616525}
   m_Layer: 0
   m_Name: Player
@@ -263,6 +264,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Economy.Wallet
   coins: 0
+--- !u!114 &3612679850124350672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6875788775779737426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8f564fed06e6d4419db4a5074f526c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Painting.Sketchbook
+  knownCrops:
+  - {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
 --- !u!114 &8540552794212616525
 MonoBehaviour:
   m_ObjectHideFlags: 0

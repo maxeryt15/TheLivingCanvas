@@ -6,8 +6,8 @@ using UnityEngine;
 namespace TheLivingCanvas.Painting
 {
     /// <summary>
-    /// Un caballete. Vacío: interactuar pone un lienzo en blanco del inventario y entra en el modo pintura.
-    /// En blanco o a medias: interactuar sigue pintando.
+    /// Un caballete. Vacío: interactuar elige qué cultivo pintar (si se sabe más de uno), pone un lienzo
+    /// en blanco del inventario y entra en el modo pintura. En blanco o a medias: interactuar sigue pintando.
     /// Terminado: interactuar recoge la pintura al inventario y el caballete queda vacío.
     /// </summary>
     public class CanvasInteractable : MonoBehaviour, IInteractable
@@ -16,10 +16,9 @@ namespace TheLivingCanvas.Painting
         [SerializeField] Transform viewPoint;
         [SerializeField] PaintSurface surface;
         [SerializeField] CanvasGuide guide;
-        [Tooltip("Cultivo que se pinta en este lienzo (vertical slice: siempre el girasol).")]
-        [SerializeField] CropDefinition crop;
 
         PaintModeController paintMode;
+        CropPickerUI cropPicker;
         PlayerInventory inventory;
         MeshRenderer canvasRenderer;
         PaintingResult finishedResult;
@@ -28,11 +27,12 @@ namespace TheLivingCanvas.Painting
         public Transform ViewPoint => viewPoint;
         public PaintSurface Surface => surface;
         public CanvasGuide Guide => guide;
-        public CropDefinition Crop => crop;
+        /// <summary>Cultivo del lienzo puesto (null con el caballete vacío).</summary>
+        public CropDefinition Crop { get; private set; }
         public bool IsFinished => finishedResult != null;
         public string Prompt =>
             IsFinished ? "Take painting"
-            : hasCanvas ? "Paint"
+            : hasCanvas ? $"Paint {Crop.DisplayName.ToLowerInvariant()}"
             : inventory != null && inventory.Count(BlankCanvasItem.Key) > 0 ? "Paint (uses 1 blank canvas)"
             : "No blank canvas - buy one at the shop";
         public bool CanInteract => true;
@@ -40,28 +40,36 @@ namespace TheLivingCanvas.Painting
         void Awake()
         {
             paintMode = FindAnyObjectByType<PaintModeController>();
+            cropPicker = FindAnyObjectByType<CropPickerUI>();
             inventory = FindAnyObjectByType<PlayerInventory>();
             canvasRenderer = surface.GetComponent<MeshRenderer>();
         }
 
-        void Start()
-        {
-            guide.SetTemplate(crop != null ? crop.Template : null);
-            SetHasCanvas(false);
-        }
+        void Start() => SetHasCanvas(false);
 
         public void Interact(PlayerInteractor interactor)
         {
             if (IsFinished) TakePainting(interactor);
             else if (hasCanvas) paintMode.Enter(this);
-            else if (interactor.GetComponent<PlayerInventory>().TryConsume(BlankCanvasItem.Key))
+            else if (interactor.GetComponent<PlayerInventory>().Count(BlankCanvasItem.Key) > 0)
             {
-                surface.ResetToBlank();
-                SetHasCanvas(true);
-                // El boceto tenue se ve también desde el mundo, antes de empezar a pintar.
-                ShowSketch();
-                paintMode.Enter(this);
+                var known = interactor.GetComponent<Sketchbook>().KnownCrops;
+                if (known.Count == 1) StartPainting(interactor, known[0]);
+                else if (known.Count > 1) cropPicker.Open(this, known);
             }
+        }
+
+        /// <summary>Pone un lienzo en blanco para <paramref name="crop"/> y entra en el modo pintura.</summary>
+        public void StartPainting(PlayerInteractor interactor, CropDefinition crop)
+        {
+            if (hasCanvas || !interactor.GetComponent<PlayerInventory>().TryConsume(BlankCanvasItem.Key)) return;
+            Crop = crop;
+            guide.SetTemplate(crop.Template);
+            surface.ResetToBlank();
+            SetHasCanvas(true);
+            // El boceto tenue se ve también desde el mundo, antes de empezar a pintar.
+            ShowSketch();
+            paintMode.Enter(this);
         }
 
         /// <summary>La pintura pasó la evaluación: queda lista para recogerla.</summary>
@@ -74,10 +82,11 @@ namespace TheLivingCanvas.Painting
         void TakePainting(PlayerInteractor interactor)
         {
             var inventory = interactor.GetComponent<PlayerInventory>();
-            inventory.Add(new PaintingItem(crop, finishedResult, surface.CreateSnapshot()));
+            inventory.Add(new PaintingItem(Crop, finishedResult, surface.CreateSnapshot()));
 
             // El caballete queda vacío hasta que se ponga otro lienzo.
             finishedResult = null;
+            Crop = null;
             SetHasCanvas(false);
         }
 

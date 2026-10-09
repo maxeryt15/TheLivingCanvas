@@ -94,6 +94,7 @@ namespace TheLivingCanvas.EditorTools
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
             BuildShop(hud.transform, environment.transform, player, rig);
+            BuildCropPicker(hud.transform, player, rig);
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -143,6 +144,9 @@ namespace TheLivingCanvas.EditorTools
 
             root.AddComponent<PlayerInventory>();
             root.AddComponent<Wallet>();
+            var sketchbook = new SerializedObject(root.AddComponent<Sketchbook>());
+            SetArray(sketchbook.FindProperty("knownCrops"), GetOrCreateCrops().Take(StartingCrops).ToArray());
+            sketchbook.ApplyModifiedPropertiesWithoutUndo();
             var interactor = new SerializedObject(root.AddComponent<PlayerInteractor>());
             interactor.FindProperty("interactAction").objectReferenceValue = GetAction("Player/Interact");
             interactor.ApplyModifiedPropertiesWithoutUndo();
@@ -699,6 +703,11 @@ namespace TheLivingCanvas.EditorTools
             GetOrCreatePigment("titanium_white", "Titanium White", new Color(0.98f, 0.98f, 0.96f)),
         };
 
+        /// <summary>Los primeros cultivos se saben pintar desde el principio; el resto se compra (boceto).</summary>
+        const int StartingCrops = 1;
+
+        static CropDefinition[] GetOrCreateCrops() => new[] { GetOrCreateSunflowerCrop() };
+
         /// <summary>Plantilla y cultivo del girasol (máscara de zonas regenerada cada vez).</summary>
         static CropDefinition GetOrCreateSunflowerCrop()
         {
@@ -866,7 +875,6 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("viewPoint").objectReferenceValue = viewPoint;
             so.FindProperty("surface").objectReferenceValue = surface;
             so.FindProperty("guide").objectReferenceValue = guide;
-            so.FindProperty("crop").objectReferenceValue = GetOrCreateSunflowerCrop();
             so.ApplyModifiedPropertiesWithoutUndo();
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, EaselPrefabPath);
@@ -1003,11 +1011,39 @@ namespace TheLivingCanvas.EditorTools
                 EditorUtility.SetDirty(offer);
                 offers.Add(offer);
             }
+            foreach (var crop in GetOrCreateCrops().Skip(StartingCrops))
+            {
+                var path = $"{Root}/Data/Shop/Offer_Sketch_{crop.Id}.asset";
+                var offer = AssetDatabase.LoadAssetAtPath<SketchOffer>(path);
+                if (offer == null)
+                {
+                    offer = ScriptableObject.CreateInstance<SketchOffer>();
+                    AssetDatabase.CreateAsset(offer, path);
+                }
+                offer.EditorSetupOffer($"{crop.DisplayName} sketch", $"Lets you paint {crop.DisplayName.ToLowerInvariant()}s on the easel.", 30, null);
+                offer.EditorSetCrop(crop);
+                EditorUtility.SetDirty(offer);
+                offers.Add(offer);
+            }
             return offers.ToArray();
         }
 
-        /// <summary>Puesto de la tienda junto a la pared del fondo + panel de compra.</summary>
-        static void BuildShop(Transform hud, Transform environment, GameObject player, GameObject rig)
+        /// <summary>Piezas de un panel con filas (tienda, selector de cultivo).</summary>
+        struct ListPanel
+        {
+            public GameObject Root;
+            public GameObject Panel;
+            public RectTransform Rows;
+            public GameObject RowTemplate;
+            public Button Close;
+            public Text Message;
+        }
+
+        /// <summary>
+        /// Panel centrado con título, filas (icono, nombre y botón "Buy"), un mensaje y botón Close.
+        /// La fila plantilla la clona en runtime el ModalPanel correspondiente.
+        /// </summary>
+        static ListPanel BuildListPanel(Transform hud, string name, string titleText, Vector2 size)
         {
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var cream = new Color(1f, 0.95f, 0.82f);
@@ -1019,7 +1055,7 @@ namespace TheLivingCanvas.EditorTools
                 knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd")
             };
 
-            var root = new GameObject("ShopUI", typeof(RectTransform));
+            var root = new GameObject(name, typeof(RectTransform));
             root.transform.SetParent(hud, false);
             var rootRect = (RectTransform)root.transform;
             rootRect.anchorMin = Vector2.zero;
@@ -1027,10 +1063,10 @@ namespace TheLivingCanvas.EditorTools
             rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
 
             var panel = CreatePanel(root.transform, "Panel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 0.95f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 680f));
+                new Vector2(0.5f, 0.5f), Vector2.zero, size);
             panel.GetComponent<Image>().raycastTarget = true; // los clics no atraviesan el panel
             var title = AddStretchedText(panel.transform, "Title", 32, font, cream, TextAnchor.UpperCenter);
-            title.text = "Shop";
+            title.text = titleText;
             ((RectTransform)title.transform).offsetMax = new Vector2(0f, -16f);
 
             var rowsGo = new GameObject("Rows", typeof(RectTransform), typeof(VerticalLayoutGroup));
@@ -1045,7 +1081,7 @@ namespace TheLivingCanvas.EditorTools
             rowsLayout.childControlWidth = rowsLayout.childControlHeight = true;
             rowsLayout.childForceExpandHeight = false;
 
-            // Fila plantilla: icono, nombre + descripción y botón Buy con el precio.
+            // Fila plantilla: icono, nombre (+ descripción) y botón de acción.
             var row = new GameObject("RowTemplate", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
             row.transform.SetParent(rowsGo.transform, false);
             row.GetComponent<LayoutElement>().preferredHeight = 100f;
@@ -1082,19 +1118,46 @@ namespace TheLivingCanvas.EditorTools
             closeRect.anchoredPosition = new Vector2(0f, 20f);
             closeRect.sizeDelta = new Vector2(200f, 56f);
 
-            var shop = root.AddComponent<ShopUI>();
-            var so = new SerializedObject(shop);
-            SetArray(so.FindProperty("offers"), GetOrCreateShopOffers());
-            so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            return new ListPanel
+            {
+                Root = root, Panel = panel, Rows = rowsRect, RowTemplate = row,
+                Close = close.GetComponent<Button>(), Message = message
+            };
+        }
+
+        /// <summary>Referencias comunes de un ModalPanel (cursor, cámara, interacción y cierre).</summary>
+        static void SetModalPanelRefs(SerializedObject so, ListPanel ui, GameObject player, GameObject rig)
+        {
             so.FindProperty("interactor").objectReferenceValue = player.GetComponent<PlayerInteractor>();
             so.FindProperty("cursorLock").objectReferenceValue = rig.GetComponent<CursorLock>();
             so.FindProperty("cameraMode").objectReferenceValue = rig.GetComponent<CameraModeController>();
             so.FindProperty("exitAction").objectReferenceValue = GetAction("Paint/Exit");
-            so.FindProperty("panel").objectReferenceValue = panel;
-            so.FindProperty("rowContainer").objectReferenceValue = rowsRect;
-            so.FindProperty("rowTemplate").objectReferenceValue = row;
-            so.FindProperty("closeButton").objectReferenceValue = close.GetComponent<Button>();
-            so.FindProperty("messageLabel").objectReferenceValue = message;
+            so.FindProperty("panel").objectReferenceValue = ui.Panel;
+            so.FindProperty("closeButton").objectReferenceValue = ui.Close;
+            so.FindProperty("rowContainer").objectReferenceValue = ui.Rows;
+            so.FindProperty("rowTemplate").objectReferenceValue = ui.RowTemplate;
+        }
+
+        /// <summary>Selector de cultivo al poner un lienzo en el caballete.</summary>
+        static void BuildCropPicker(Transform hud, GameObject player, GameObject rig)
+        {
+            var ui = BuildListPanel(hud, "CropPickerUI", "What will you paint?", new Vector2(760f, 560f));
+            Object.DestroyImmediate(ui.Message.gameObject);
+            var so = new SerializedObject(ui.Root.AddComponent<CropPickerUI>());
+            SetModalPanelRefs(so, ui, player, rig);
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Puesto de la tienda junto a la pared del fondo + panel de compra.</summary>
+        static void BuildShop(Transform hud, Transform environment, GameObject player, GameObject rig)
+        {
+            var ui = BuildListPanel(hud, "ShopUI", "Shop", new Vector2(760f, 680f));
+            var shop = ui.Root.AddComponent<ShopUI>();
+            var so = new SerializedObject(shop);
+            SetModalPanelRefs(so, ui, player, rig);
+            SetArray(so.FindProperty("offers"), GetOrCreateShopOffers());
+            so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            so.FindProperty("messageLabel").objectReferenceValue = ui.Message;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             // Puesto placeholder: mostrador con dos postes y un toldo, mirando hacia el centro (-Z).

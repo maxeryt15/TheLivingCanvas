@@ -19,3 +19,6 @@
 | 2026-10-09 | Precio de venta fijo por cultivo (Sunflower: 10); la calidad ya decide cuántas unidades se cosechan | Pilas simples en el inventario. |
 | 2026-10-09 | Primer upgrade: pigmentos en la tienda. Se empieza con los 3 colores del girasol (amarillo, ocre, verde); azul, rojo y blanco se compran uno a uno (15 monedas, placeholder) | Decisión del usuario. Cambia lo que se pinta (regla de oro D3) y tiñe el girasol 3D. |
 | 2026-10-09 | Venta (6A): una caja de venta vende toda la cosecha al interactuar, sin panel | Mínimo para el slice; el panel llega con la tienda si hace falta. |
+| 2026-10-09 | Fase 7: los cultivos nuevos se desbloquean comprando su boceto (sketch) en la tienda; al poner un lienzo se elige qué pintar | Da un objetivo a las monedas y reutiliza la tienda. |
+| 2026-10-09 | 2º cultivo: tomate (fruto rojo, hojas verdes, tutor ocre). 3º cultivo: flor fantástica luminosa (campanilla azul que brilla) | El tomate usa el rojo comprado; la flor muestra pronto que no es una granja normal. |
+| 2026-10-09 | Variantes por color: pintar una zona clave en un color concreto da una variante con nombre y rareza fija (sube el precio). Las mutaciones aleatorias quedan para la Fase 17 | Lo decide lo que pintas, no el azar. |

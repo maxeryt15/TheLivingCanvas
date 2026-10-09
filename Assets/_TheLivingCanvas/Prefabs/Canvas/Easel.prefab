@@ -439,7 +439,6 @@ MonoBehaviour:
   viewPoint: {fileID: 2576245511536693683}
   surface: {fileID: 515634559272949382}
   guide: {fileID: 4078712616686377422}
-  crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
 --- !u!1 &7611646397093923832
 GameObject:
   m_ObjectHideFlags: 0
