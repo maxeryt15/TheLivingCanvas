@@ -91,7 +91,8 @@ namespace TheLivingCanvas.EditorTools
             var paintMode = BuildPaintMode(rig, player, hud);
             var placer = BuildPaintingPlacer(hud.transform, player);
             BuildInventoryUI(hud.transform, player.GetComponent<PlayerInventory>(), placer, paintMode,
-                rig.GetComponent<CursorLock>(), rig.GetComponent<CameraModeController>());
+                rig.GetComponent<CursorLock>(), rig.GetComponent<CameraModeController>(),
+                paintMode.GetComponent<PaintBrushController>(), player.GetComponent<PigmentStock>());
             BuildCoinCounter(hud.transform, player.GetComponent<Wallet>());
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
@@ -357,7 +358,8 @@ namespace TheLivingCanvas.EditorTools
         /// Inventario placeholder: aviso "+1 ..." arriba al centro y panel con casillas (I / Tab / Y).
         /// </summary>
         static void BuildInventoryUI(Transform hud, PlayerInventory inventory, PaintingPlacer placer,
-            PaintModeController paintMode, CursorLock cursorLock, CameraModeController cameraMode)
+            PaintModeController paintMode, CursorLock cursorLock, CameraModeController cameraMode,
+            PaintBrushController brush, PigmentStock stock)
         {
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var cream = new Color(1f, 0.95f, 0.82f);
@@ -377,9 +379,41 @@ namespace TheLivingCanvas.EditorTools
 
             // Panel del inventario.
             var panel = CreatePanel(root.transform, "Panel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 0.95f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 520f));
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 580f));
             var title = AddStretchedText(panel.transform, "Title", 32, font, cream, TextAnchor.UpperCenter);
             title.text = "Inventory";
+
+            // Fila de pigmentos bajo el título: una ficha (color + cantidad) por color de la paleta.
+            var pigments = new GameObject("Pigments", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            pigments.transform.SetParent(panel.transform, false);
+            var pigmentsRect = (RectTransform)pigments.transform;
+            pigmentsRect.anchorMin = new Vector2(0f, 1f);
+            pigmentsRect.anchorMax = Vector2.one;
+            pigmentsRect.pivot = new Vector2(0.5f, 1f);
+            pigmentsRect.anchoredPosition = new Vector2(0f, -64f);
+            pigmentsRect.sizeDelta = new Vector2(-60f, 44f);
+            var pigmentsLayout = pigments.GetComponent<HorizontalLayoutGroup>();
+            pigmentsLayout.spacing = 14f;
+            pigmentsLayout.childAlignment = TextAnchor.MiddleCenter;
+            pigmentsLayout.childControlWidth = pigmentsLayout.childControlHeight = true;
+            pigmentsLayout.childForceExpandWidth = pigmentsLayout.childForceExpandHeight = false;
+
+            var chip = new GameObject("PigmentTemplate", typeof(RectTransform), typeof(LayoutElement));
+            chip.transform.SetParent(pigments.transform, false);
+            var chipLayout = chip.GetComponent<LayoutElement>();
+            chipLayout.preferredWidth = 96f;
+            chipLayout.preferredHeight = 40f;
+            var swatch = new GameObject("Swatch", typeof(RectTransform), typeof(Image));
+            swatch.transform.SetParent(chip.transform, false);
+            var swatchRect = (RectTransform)swatch.transform;
+            swatchRect.anchorMin = swatchRect.anchorMax = swatchRect.pivot = new Vector2(0f, 0.5f);
+            swatchRect.sizeDelta = new Vector2(36f, 36f);
+            var swatchImage = swatch.GetComponent<Image>();
+            swatchImage.sprite = uiSprite;
+            swatchImage.type = Image.Type.Sliced;
+            swatchImage.raycastTarget = false;
+            var amount = AddStretchedText(chip.transform, "Amount", 22, font, cream, TextAnchor.MiddleLeft);
+            ((RectTransform)amount.transform).offsetMin = new Vector2(44f, 0f);
             ((RectTransform)title.transform).offsetMax = new Vector2(0f, -16f);
 
             var hint = AddStretchedText(panel.transform, "Hint", 18, font, cream, TextAnchor.LowerCenter);
@@ -395,7 +429,7 @@ namespace TheLivingCanvas.EditorTools
             gridRect.anchorMin = Vector2.zero;
             gridRect.anchorMax = Vector2.one;
             gridRect.offsetMin = new Vector2(30f, 50f);
-            gridRect.offsetMax = new Vector2(-30f, -70f);
+            gridRect.offsetMax = new Vector2(-30f, -120f);
             var layout = grid.GetComponent<GridLayoutGroup>();
             layout.cellSize = new Vector2(160f, 180f);
             layout.spacing = new Vector2(16f, 16f);
@@ -432,6 +466,10 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("slotContainer").objectReferenceValue = gridRect;
             so.FindProperty("slotTemplate").objectReferenceValue = slot.GetComponent<Button>();
             so.FindProperty("emptyLabel").objectReferenceValue = empty.gameObject;
+            so.FindProperty("brush").objectReferenceValue = brush;
+            so.FindProperty("stock").objectReferenceValue = stock;
+            so.FindProperty("pigmentContainer").objectReferenceValue = pigmentsRect;
+            so.FindProperty("pigmentTemplate").objectReferenceValue = chip;
             so.FindProperty("toast").objectReferenceValue = toast;
             so.FindProperty("toastLabel").objectReferenceValue = toastLabel;
             so.ApplyModifiedPropertiesWithoutUndo();

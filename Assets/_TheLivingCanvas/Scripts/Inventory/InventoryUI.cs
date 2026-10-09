@@ -9,7 +9,8 @@ using UnityEngine.UI;
 namespace TheLivingCanvas.Inventory
 {
     /// <summary>
-    /// Panel placeholder del inventario (I / Tab / Y): una casilla por objeto con miniatura, nombre y detalle.
+    /// Panel placeholder del inventario (I / Tab / Y): arriba, el pigmento de cada color de la paleta; debajo,
+    /// una casilla por objeto con miniatura, nombre y detalle.
     /// Con el panel abierto el cursor queda libre; clicar una pintura empieza a colocarla en el suelo.
     /// Además avisa brevemente al recoger algo.
     /// </summary>
@@ -26,6 +27,12 @@ namespace TheLivingCanvas.Inventory
         [Tooltip("Casilla desactivada (Button) que se clona por cada objeto (RawImage 'Icon' + Text 'Name').")]
         [SerializeField] Button slotTemplate;
         [SerializeField] GameObject emptyLabel;
+        [Header("Pigmentos")]
+        [SerializeField] PaintBrushController brush;
+        [SerializeField] PigmentStock stock;
+        [SerializeField] RectTransform pigmentContainer;
+        [Tooltip("Ficha desactivada que se clona por color (Image 'Swatch' + Text 'Amount').")]
+        [SerializeField] GameObject pigmentTemplate;
         [SerializeField] GameObject toast;
         [SerializeField] Text toastLabel;
         [SerializeField] float toastSeconds = 3f;
@@ -37,6 +44,7 @@ namespace TheLivingCanvas.Inventory
         void Awake()
         {
             slotTemplate.gameObject.SetActive(false);
+            pigmentTemplate.SetActive(false);
             panel.SetActive(false);
             toast.SetActive(false);
         }
@@ -47,6 +55,7 @@ namespace TheLivingCanvas.Inventory
             toggleAction.action.performed += OnToggle;
             inventory.ItemAdded += OnItemAdded;
             inventory.Changed += OnChanged;
+            stock.Changed += OnChanged;
         }
 
         void OnDisable()
@@ -54,6 +63,7 @@ namespace TheLivingCanvas.Inventory
             toggleAction.action.performed -= OnToggle;
             inventory.ItemAdded -= OnItemAdded;
             inventory.Changed -= OnChanged;
+            stock.Changed -= OnChanged;
         }
 
         void Update()
@@ -106,6 +116,8 @@ namespace TheLivingCanvas.Inventory
 
         void Rebuild()
         {
+            RebuildPigments();
+
             foreach (Transform child in slotContainer)
                 if (child != slotTemplate.transform)
                     Destroy(child.gameObject);
@@ -119,6 +131,22 @@ namespace TheLivingCanvas.Inventory
                 slot.transform.Find("Name").GetComponent<Text>().text = $"{item.DisplayName}\n{item.Detail}";
                 slot.interactable = item is PaintingItem; // solo pinturas y semillas se colocan
                 slot.onClick.AddListener(() => OnSlotClicked(item));
+            }
+        }
+
+        void RebuildPigments()
+        {
+            foreach (Transform child in pigmentContainer)
+                if (child != pigmentTemplate.transform)
+                    Destroy(child.gameObject);
+
+            foreach (var pigment in brush.Palette)
+            {
+                var chip = Instantiate(pigmentTemplate, pigmentContainer);
+                chip.SetActive(true);
+                chip.name = $"Pigment_{pigment.Id}";
+                chip.transform.Find("Swatch").GetComponent<Image>().color = pigment.Color;
+                chip.transform.Find("Amount").GetComponent<Text>().text = stock.Get(pigment).ToString();
             }
         }
     }
