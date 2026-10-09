@@ -1,4 +1,3 @@
-using System.Collections;
 using TheLivingCanvas.Painting;
 using UnityEngine;
 
@@ -58,19 +57,7 @@ namespace TheLivingCanvas.Growth
             StartCoroutine(Animate(duration));
         }
 
-        IEnumerator Animate(float duration)
-        {
-            for (float time = 0f; time < duration; time += Time.deltaTime)
-            {
-                Apply(time / duration);
-                yield return null;
-            }
-            Apply(1f);
-            IsGrown = true;
-        }
-
-        /// <summary>Pose de la planta en el progreso <paramref name="t"/> (0 = brote, 1 = adulta).</summary>
-        void Apply(float t)
+        protected override void Apply(float t)
         {
             // 0–60 %: crece la planta entera y se despliegan las hojas.
             growthRoot.localScale = Vector3.one * (Mathf.Lerp(sproutScale, 1f, Phase(t, 0f, 0.6f)) * finalScale);

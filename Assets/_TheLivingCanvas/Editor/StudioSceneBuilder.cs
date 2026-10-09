@@ -36,6 +36,7 @@ namespace TheLivingCanvas.EditorTools
         const string EaselPrefabPath = Root + "/Prefabs/Canvas/Easel.prefab";
         const string PaintingPlotPrefabPath = Root + "/Prefabs/Crops/PaintingPlot.prefab";
         const string SunflowerPrefabPath = Root + "/Prefabs/Crops/Sunflower.prefab";
+        const string TomatoPrefabPath = Root + "/Prefabs/Crops/Tomato.prefab";
 
         [MenuItem("TheLivingCanvas/Build Studio Scene")]
         public static void Build()
@@ -706,7 +707,120 @@ namespace TheLivingCanvas.EditorTools
         /// <summary>Los primeros cultivos se saben pintar desde el principio; el resto se compra (boceto).</summary>
         const int StartingCrops = 1;
 
-        static CropDefinition[] GetOrCreateCrops() => new[] { GetOrCreateSunflowerCrop() };
+        static CropDefinition[] GetOrCreateCrops() => new[] { GetOrCreateSunflowerCrop(), GetOrCreateTomatoCrop() };
+
+        static CropDefinition GetOrCreateCropAsset(string fileName)
+        {
+            var path = $"{Root}/Data/Crops/{fileName}.asset";
+            var crop = AssetDatabase.LoadAssetAtPath<CropDefinition>(path);
+            if (crop == null)
+            {
+                crop = ScriptableObject.CreateInstance<CropDefinition>();
+                AssetDatabase.CreateAsset(crop, path);
+            }
+            return crop;
+        }
+
+        static PaintTemplate GetOrCreateTemplateAsset(string fileName)
+        {
+            var path = $"{Root}/Data/Templates/{fileName}.asset";
+            var template = AssetDatabase.LoadAssetAtPath<PaintTemplate>(path);
+            if (template == null)
+            {
+                template = ScriptableObject.CreateInstance<PaintTemplate>();
+                AssetDatabase.CreateAsset(template, path);
+            }
+            return template;
+        }
+
+        /// <summary>Plantilla y cultivo del tomate. Los tomates sugieren el rojo, que se compra en la tienda.</summary>
+        static CropDefinition GetOrCreateTomatoCrop()
+        {
+            var palette = GetOrCreatePalette();
+            var mask = PaintTemplateGenerator.GenerateTomatoMask($"{Root}/Art/Textures/PaintTemplates/Tomato_Zones.png");
+
+            var template = GetOrCreateTemplateAsset("Template_Tomato");
+            template.EditorSetup("Tomato", mask, new[]
+            {
+                new ZoneRequirement { zoneName = "Tomatoes", channel = ZoneChannel.Red, suggestedPigment = palette[4], minCoverage = 0.5f, weight = 1f, missingPaintHint = "The tomatoes need a bit more paint." },
+                new ZoneRequirement { zoneName = "Stem & leaves", channel = ZoneChannel.Green, suggestedPigment = palette[2], minCoverage = 0.5f, weight = 0.8f, missingPaintHint = "The stem and leaves need some color." },
+                new ZoneRequirement { zoneName = "Stake", channel = ZoneChannel.Blue, suggestedPigment = palette[1], minCoverage = 0.5f, weight = 0.5f, missingPaintHint = "Don't forget the wooden stake." },
+            });
+            EditorUtility.SetDirty(template);
+
+            var crop = GetOrCreateCropAsset("Crop_Tomato");
+            crop.EditorSetup("tomato", "Tomato", template, 25f, BuildTomatoPlantPrefab(),
+                PaintTemplateGenerator.GenerateTomatoIcon($"{Root}/Art/Textures/Icon_Tomato.png"), 15);
+            EditorUtility.SetDirty(crop);
+            return crop;
+        }
+
+        /// <summary>
+        /// Tomatera procedural (placeholder) de ~0.9 m junto a un tutor de 1.1 m: tallo, seis hojas con
+        /// bisagra y cinco tomates (con cáliz) que cuelgan sobre todo hacia -Z. Los colores se ponen en runtime.
+        /// </summary>
+        static TomatoPlant BuildTomatoPlantPrefab()
+        {
+            var fruitMat = GetOrCreateMaterial("M_Plant_Tomato", new Color(0.75f, 0.15f, 0.17f));
+            var stemMat = GetOrCreateMaterial("M_Plant_Stem", new Color(0.3f, 0.55f, 0.22f));
+            var stakeMat = GetOrCreateMaterial("M_Plant_Stake", new Color(0.55f, 0.33f, 0.13f));
+
+            var root = new GameObject("Tomato");
+            // El tutor ya está clavado: no crece con la planta.
+            var stake = CreatePart(PrimitiveType.Cylinder, "Stake", root.transform, new Vector3(0.16f, 0.55f, 0.06f), new Vector3(0.025f, 0.55f, 0.025f), stakeMat, Quaternion.identity);
+
+            var growth = new GameObject("GrowthRoot").transform;
+            growth.SetParent(root.transform, false);
+            var stem = CreatePart(PrimitiveType.Cylinder, "Stem", growth, new Vector3(0f, 0.45f, 0f), new Vector3(0.03f, 0.45f, 0.03f), stemMat, Quaternion.identity);
+            var leafRenderers = new System.Collections.Generic.List<Renderer> { stem.GetComponent<Renderer>() };
+
+            float[] leafHeights = { 0.2f, 0.32f, 0.44f, 0.56f, 0.68f, 0.8f };
+            float[] leafYaws = { 60f, -120f, 150f, -30f, 100f, -80f };
+            var leafHinges = new Transform[leafHeights.Length];
+            for (int i = 0; i < leafHeights.Length; i++)
+            {
+                var hinge = new GameObject($"LeafHinge_{i}").transform;
+                hinge.SetParent(growth, false);
+                hinge.localPosition = new Vector3(0f, leafHeights[i], 0f);
+                hinge.localRotation = Quaternion.Euler(0f, leafYaws[i], 0f);
+                var leaf = CreatePart(PrimitiveType.Sphere, "Leaf", hinge, new Vector3(0f, 0f, 0.1f), new Vector3(0.08f, 0.012f, 0.2f), stemMat, Quaternion.identity);
+                leafRenderers.Add(leaf.GetComponent<Renderer>());
+                leafHinges[i] = hinge;
+            }
+
+            Vector3[] fruitPositions =
+            {
+                new(-0.11f, 0.34f, -0.08f), new(0.09f, 0.46f, -0.1f), new(-0.07f, 0.6f, -0.11f),
+                new(0.1f, 0.7f, 0.02f), new(-0.1f, 0.5f, 0.07f)
+            };
+            var fruitAnchors = new Transform[fruitPositions.Length];
+            var fruitRenderers = new Renderer[fruitPositions.Length];
+            for (int i = 0; i < fruitPositions.Length; i++)
+            {
+                var anchor = new GameObject($"FruitAnchor_{i}").transform;
+                anchor.SetParent(growth, false);
+                anchor.localPosition = fruitPositions[i];
+                var fruit = CreatePart(PrimitiveType.Sphere, "Fruit", anchor, Vector3.zero, new Vector3(0.13f, 0.115f, 0.13f), fruitMat, Quaternion.identity);
+                var calyx = CreatePart(PrimitiveType.Sphere, "Calyx", anchor, new Vector3(0f, 0.055f, 0f), new Vector3(0.07f, 0.015f, 0.07f), stemMat, Quaternion.identity);
+                fruitAnchors[i] = anchor;
+                fruitRenderers[i] = fruit.GetComponent<Renderer>();
+                leafRenderers.Add(calyx.GetComponent<Renderer>());
+            }
+
+            var plant = root.AddComponent<TomatoPlant>();
+            var so = new SerializedObject(plant);
+            so.FindProperty("growthRoot").objectReferenceValue = growth;
+            SetArray(so.FindProperty("leafHinges"), leafHinges);
+            SetArray(so.FindProperty("fruitAnchors"), fruitAnchors);
+            SetArray(so.FindProperty("fruitRenderers"), fruitRenderers);
+            SetArray(so.FindProperty("leafRenderers"), leafRenderers.ToArray());
+            SetArray(so.FindProperty("stakeRenderers"), new Object[] { stake.GetComponent<Renderer>() });
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(root, TomatoPrefabPath);
+            Object.DestroyImmediate(root);
+            return prefab.GetComponent<TomatoPlant>();
+        }
 
         /// <summary>Plantilla y cultivo del girasol (máscara de zonas regenerada cada vez).</summary>
         static CropDefinition GetOrCreateSunflowerCrop()
@@ -1077,14 +1191,14 @@ namespace TheLivingCanvas.EditorTools
             rowsRect.offsetMin = new Vector2(30f, 140f);
             rowsRect.offsetMax = new Vector2(-30f, -70f);
             var rowsLayout = rowsGo.GetComponent<VerticalLayoutGroup>();
-            rowsLayout.spacing = 12f;
+            rowsLayout.spacing = 10f;
             rowsLayout.childControlWidth = rowsLayout.childControlHeight = true;
             rowsLayout.childForceExpandHeight = false;
 
             // Fila plantilla: icono, nombre (+ descripción) y botón de acción.
             var row = new GameObject("RowTemplate", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
             row.transform.SetParent(rowsGo.transform, false);
-            row.GetComponent<LayoutElement>().preferredHeight = 100f;
+            row.GetComponent<LayoutElement>().preferredHeight = 80f;
             var rowImage = row.GetComponent<Image>();
             rowImage.sprite = uiSprite;
             rowImage.type = Image.Type.Sliced;
@@ -1095,7 +1209,7 @@ namespace TheLivingCanvas.EditorTools
             var iconRect = (RectTransform)icon.transform;
             iconRect.anchorMin = iconRect.anchorMax = iconRect.pivot = new Vector2(0f, 0.5f);
             iconRect.anchoredPosition = new Vector2(14f, 0f);
-            iconRect.sizeDelta = new Vector2(90f, 72f);
+            iconRect.sizeDelta = new Vector2(80f, 64f);
 
             var nameText = AddStretchedText(row.transform, "Name", 24, font, new Color(0.25f, 0.17f, 0.1f), TextAnchor.MiddleLeft);
             var nameRect = (RectTransform)nameText.transform;
@@ -1151,7 +1265,8 @@ namespace TheLivingCanvas.EditorTools
         /// <summary>Puesto de la tienda junto a la pared del fondo + panel de compra.</summary>
         static void BuildShop(Transform hud, Transform environment, GameObject player, GameObject rig)
         {
-            var ui = BuildListPanel(hud, "ShopUI", "Shop", new Vector2(760f, 680f));
+            // Filas de 80 px: caben 6 ofertas.
+            var ui = BuildListPanel(hud, "ShopUI", "Shop", new Vector2(760f, 740f));
             var shop = ui.Root.AddComponent<ShopUI>();
             var so = new SerializedObject(shop);
             SetModalPanelRefs(so, ui, player, rig);

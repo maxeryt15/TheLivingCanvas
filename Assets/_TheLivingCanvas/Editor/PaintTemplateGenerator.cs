@@ -5,8 +5,9 @@ using UnityEngine;
 namespace TheLivingCanvas.EditorTools
 {
     /// <summary>
-    /// Genera las máscaras de zonas de las plantillas (PNG, un canal por zona).
-    /// Girasol: B = centro, R = pétalos, G = tallo y hojas. Mismo aspecto que el lienzo (5:4).
+    /// Genera las máscaras de zonas de las plantillas (PNG, un canal por zona) y los iconos de cosecha.
+    /// Girasol: B = centro, R = pétalos, G = tallo y hojas. Tomate: R = tomates, G = tallo y hojas, B = tutor.
+    /// Mismo aspecto que el lienzo (5:4).
     /// </summary>
     public static class PaintTemplateGenerator
     {
@@ -38,23 +39,85 @@ namespace TheLivingCanvas.EditorTools
                     pixels[y * Width + x] = c;
                 }
             }
+            return SaveMask(pixels, assetPath);
+        }
 
-            var texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false);
-            texture.SetPixels32(pixels);
-            texture.Apply();
-            File.WriteAllBytes(assetPath, texture.EncodeToPNG());
-            Object.DestroyImmediate(texture);
+        /// <summary>
+        /// Tomatera atada a un tutor: cuatro tomates (encima de todo), tallo con hojas y el tutor detrás.
+        /// </summary>
+        public static Texture2D GenerateTomatoMask(string assetPath)
+        {
+            var pixels = new Color32[Width * Height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    Color32 c = new(0, 0, 0, 255);
 
-            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
-            var importer = (TextureImporter)AssetImporter.GetAtPath(assetPath);
-            importer.isReadable = true;
-            importer.sRGBTexture = false;
-            importer.mipmapEnabled = false;
-            importer.filterMode = FilterMode.Point;
-            importer.textureCompression = TextureImporterCompression.Uncompressed;
-            importer.npotScale = TextureImporterNPOTScale.None;
-            importer.SaveAndReimport();
-            return AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+                    if (InTomatoes(p))
+                        c.r = 255;
+                    else if (InTomatoStemOrLeaves(p))
+                        c.g = 255;
+                    else if (p.x >= 414f && p.x <= 432f && p.y >= 30f && p.y <= 470f)
+                        c.b = 255; // tutor
+
+                    pixels[y * Width + x] = c;
+                }
+            }
+            return SaveMask(pixels, assetPath);
+        }
+
+        static readonly Vector3[] Tomatoes = // (x, y, radio)
+        {
+            new(275f, 345f, 44f), new(372f, 278f, 40f), new(248f, 215f, 38f), new(352f, 168f, 36f)
+        };
+
+        static bool InTomatoes(Vector2 p)
+        {
+            foreach (var t in Tomatoes)
+                if (Vector2.Distance(p, new Vector2(t.x, t.y)) <= t.z) return true;
+            return false;
+        }
+
+        static bool InTomatoStemOrLeaves(Vector2 p)
+        {
+            // Tallo central y cáliz (estrellita) encima de cada tomate.
+            if (p.x >= 312f && p.x <= 328f && p.y >= 30f && p.y <= 440f) return true;
+            foreach (var t in Tomatoes)
+                if (InEllipse(p, new Vector2(t.x, t.y + t.z - 4f), Vector2.right, 20f, 9f)) return true;
+
+            return InLeaf(p, new Vector2(320f, 110f), 200f)
+                || InLeaf(p, new Vector2(320f, 150f), -20f)
+                || InLeaf(p, new Vector2(320f, 250f), 170f)
+                || InLeaf(p, new Vector2(320f, 300f), 15f)
+                || InLeaf(p, new Vector2(320f, 400f), 150f)
+                || InLeaf(p, new Vector2(320f, 420f), 35f);
+        }
+
+        /// <summary>Icono placeholder del tomate: fruto rojo con cáliz verde sobre transparente.</summary>
+        public static Texture2D GenerateTomatoIcon(string assetPath)
+        {
+            const int size = 128;
+            var center = new Vector2(size * 0.5f, size * 0.45f);
+            var red = new Color32(200, 40, 40, 255);
+            var green = new Color32(70, 140, 55, 255);
+            var pixels = new Color32[size * size];
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    Color32 c = default; // transparente
+                    if (InEllipse(p, center + new Vector2(0f, 40f), Vector2.right, 26f, 9f)
+                        || (Mathf.Abs(p.x - center.x) <= 4f && p.y >= center.y + 40f && p.y <= center.y + 58f))
+                        c = green;
+                    else if (InEllipse(p, center, Vector2.right, 46f, 40f))
+                        c = red;
+                    pixels[y * size + x] = c;
+                }
+            }
+            return SaveIcon(pixels, size, assetPath);
         }
 
         /// <summary>Icono placeholder de la cosecha: centro marrón y anillo de pétalos amarillos sobre transparente.</summary>
@@ -76,19 +139,42 @@ namespace TheLivingCanvas.EditorTools
                     pixels[y * size + x] = c;
                 }
             }
+            return SaveIcon(pixels, size, assetPath);
+        }
 
-            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
-            texture.SetPixels32(pixels);
-            texture.Apply();
-            File.WriteAllBytes(assetPath, texture.EncodeToPNG());
-            Object.DestroyImmediate(texture);
+        /// <summary>Máscara legible desde CPU, sin filtrado ni compresión (los canales son datos).</summary>
+        static Texture2D SaveMask(Color32[] pixels, string assetPath)
+        {
+            WritePng(pixels, Width, Height, assetPath);
+            var importer = (TextureImporter)AssetImporter.GetAtPath(assetPath);
+            importer.isReadable = true;
+            importer.sRGBTexture = false;
+            importer.mipmapEnabled = false;
+            importer.filterMode = FilterMode.Point;
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.npotScale = TextureImporterNPOTScale.None;
+            importer.SaveAndReimport();
+            return AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+        }
 
-            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+        static Texture2D SaveIcon(Color32[] pixels, int size, string assetPath)
+        {
+            WritePng(pixels, size, size, assetPath);
             var importer = (TextureImporter)AssetImporter.GetAtPath(assetPath);
             importer.alphaIsTransparency = true;
             importer.mipmapEnabled = false;
             importer.SaveAndReimport();
             return AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
+        }
+
+        static void WritePng(Color32[] pixels, int width, int height, string assetPath)
+        {
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            texture.SetPixels32(pixels);
+            texture.Apply();
+            File.WriteAllBytes(assetPath, texture.EncodeToPNG());
+            Object.DestroyImmediate(texture);
+            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
         }
 
         static bool InPetals(Vector2 p, Vector2 center, int count, float distance, float length, float width)

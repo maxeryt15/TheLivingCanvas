@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a25a0de7e322034587870b3545df4b9, type: 3}
+  m_Name: Crop_Tomato
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CropDefinition
+  id: tomato
+  displayName: Tomato
+  template: {fileID: 11400000, guid: e90615aa154a6b8479b7929964d27ee1, type: 2}
+  growthDuration: 25
+  plantPrefab: {fileID: 921571539811520424, guid: 28fe84e44585e31469beab458586a1d5, type: 3}
+  icon: {fileID: 2800000, guid: ca06d50e1c3f1134c8ce5900a059c883, type: 3}
+  sellPrice: 15

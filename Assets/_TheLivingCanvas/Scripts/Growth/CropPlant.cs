@@ -1,3 +1,4 @@
+using System.Collections;
 using TheLivingCanvas.Painting;
 using UnityEngine;
 
@@ -16,6 +17,21 @@ namespace TheLivingCanvas.Growth
 
         /// <summary>Alcanzó su tamaño final: se puede cosechar.</summary>
         public bool IsGrown { get; protected set; }
+
+        /// <summary>Pose de la planta en el progreso <paramref name="t"/> (0 = brote, 1 = adulta).</summary>
+        protected abstract void Apply(float t);
+
+        /// <summary>Recorre la pose de 0 a 1 en <paramref name="duration"/> segundos y queda cosechable.</summary>
+        protected IEnumerator Animate(float duration)
+        {
+            for (float time = 0f; time < duration; time += Time.deltaTime)
+            {
+                Apply(time / duration);
+                yield return null;
+            }
+            Apply(1f);
+            IsGrown = true;
+        }
 
         /// <summary>Unidades cosechadas según la calidad de la pintura.</summary>
         public static int HarvestAmount(PaintingQuality quality) => quality switch
