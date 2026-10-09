@@ -34,7 +34,7 @@ namespace TheLivingCanvas.Painting
 
             var crop = paintMode.ActiveCanvas.Crop;
             label.text = crop != null
-                ? Format(PaintEvaluator.Evaluate(surface, crop.Template))
+                ? Format(PaintEvaluator.Evaluate(surface, crop.Template, crop.Variants))
                 : Format(PaintCoverage.Analyze(surface, brush.Palette));
         }
 

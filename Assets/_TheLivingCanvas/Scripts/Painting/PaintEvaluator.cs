@@ -70,8 +70,10 @@ namespace TheLivingCanvas.Painting
     }
 
     /// <summary>
-    /// Evalúa la pintura de un lienzo zona por zona: cobertura, parecido al color sugerido,
-    /// color dominante y pintura derramada fuera. No castiga no saber dibujar: la cobertura pesa más.
+    /// Evalúa la pintura de un lienzo zona por zona: cobertura, parecido al color, color dominante y pintura
+    /// derramada fuera. No castiga no saber dibujar: la cobertura pesa más. El parecido se mide contra el color
+    /// aceptado (el sugerido o el de una variante de esa zona) más cercano al color medio pintado, así una
+    /// variante bien pintada también puede ser Masterpiece.
     /// </summary>
     public static class PaintEvaluator
     {
@@ -83,7 +85,8 @@ namespace TheLivingCanvas.Painting
 
         static readonly Dictionary<(PaintTemplate, int, int), int[]> zoneMapCache = new();
 
-        public static PaintingResult Evaluate(PaintSurface surface, PaintTemplate template)
+        /// <param name="variants">Variantes del cultivo: sus pigmentos cuentan como color correcto en su zona.</param>
+        public static PaintingResult Evaluate(PaintSurface surface, PaintTemplate template, IReadOnlyList<CropVariant> variants = null)
         {
             int w = surface.Width, h = surface.Height;
             var key = (template, w, h);
@@ -94,7 +97,6 @@ namespace TheLivingCanvas.Painting
             int n = zones.Length;
             var zonePixels = new int[n];
             var paintedPixels = new int[n];
-            var fitSum = new float[n];
             var colorSum = new Vector3[n];
             int outsidePixels = 0, outsidePainted = 0;
 
@@ -119,8 +121,32 @@ namespace TheLivingCanvas.Painting
                 zonePixels[z]++;
                 if (!painted) continue;
                 paintedPixels[z]++;
-                fitSum[z] += 1f - Mathf.Clamp01(Mathf.Sqrt(DistanceSq(c, suggested[z])) / ColorFitRange);
                 colorSum[z] += new Vector3(c.r, c.g, c.b);
+            }
+
+            // Color objetivo de cada zona: el aceptado más cercano al color medio pintado.
+            var target = new Color32[n];
+            for (int z = 0; z < n; z++)
+            {
+                target[z] = suggested[z];
+                if (paintedPixels[z] == 0 || variants == null) continue;
+                Vector3 mean = colorSum[z] / paintedPixels[z];
+                var meanColor = new Color32((byte)mean.x, (byte)mean.y, (byte)mean.z, 255);
+                foreach (var variant in variants)
+                {
+                    if (variant.zoneName != zones[z].zoneName || variant.pigment == null) continue;
+                    Color32 candidate = variant.pigment.Color;
+                    if (DistanceSq(meanColor, candidate) < DistanceSq(meanColor, target[z]))
+                        target[z] = candidate;
+                }
+            }
+
+            var fitSum = new float[n];
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                int z = zoneMap[i];
+                if (z < 0 || DistanceSq(pixels[i], canvas) <= CanvasTolerance) continue;
+                fitSum[z] += 1f - Mathf.Clamp01(Mathf.Sqrt(DistanceSq(pixels[i], target[z])) / ColorFitRange);
             }
 
             var result = new PaintingResult { CanComeToLife = true };
