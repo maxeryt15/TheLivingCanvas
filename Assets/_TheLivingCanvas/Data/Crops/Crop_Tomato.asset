@@ -19,3 +19,19 @@ MonoBehaviour:
   plantPrefab: {fileID: 921571539811520424, guid: 28fe84e44585e31469beab458586a1d5, type: 3}
   icon: {fileID: 2800000, guid: ca06d50e1c3f1134c8ce5900a059c883, type: 3}
   sellPrice: 15
+  variants:
+  - id: golden
+    displayName: Golden Tomato
+    zoneName: Tomatoes
+    pigment: {fileID: 11400000, guid: 8b670d75cc6ef944fb0ffb752328c817, type: 2}
+    rarity: 1
+  - id: indigo
+    displayName: Indigo Tomato
+    zoneName: Tomatoes
+    pigment: {fileID: 11400000, guid: 0c535dcdf0b1d724881d0fa92fef7c51, type: 2}
+    rarity: 2
+  - id: ghost
+    displayName: Ghost Tomato
+    zoneName: Tomatoes
+    pigment: {fileID: 11400000, guid: 25b02c9d887373f4cab1b54b2c5efffe, type: 2}
+    rarity: 2

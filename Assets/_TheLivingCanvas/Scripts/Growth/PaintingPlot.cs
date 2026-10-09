@@ -20,7 +20,7 @@ namespace TheLivingCanvas.Growth
         CropPlant plant;
 
         public PaintingItem Painting { get; private set; }
-        public string Prompt => $"Harvest {Painting.Crop.DisplayName.ToLowerInvariant()}";
+        public string Prompt => $"Harvest {Painting.CropName.ToLowerInvariant()}";
         public bool CanInteract => plant != null && plant.IsGrown;
 
         public void Show(PaintingItem painting)
@@ -51,7 +51,7 @@ namespace TheLivingCanvas.Growth
         {
             if (!CanInteract) return;
             var inventory = interactor.GetComponent<PlayerInventory>();
-            inventory.Add(new CropItem(Painting.Crop, CropPlant.HarvestAmount(Painting.Result.Quality)));
+            inventory.Add(new CropItem(Painting.Crop, Painting.Variant, CropPlant.HarvestAmount(Painting.Result.Quality)));
             if (SeedItem.CanSeed(Painting))
                 inventory.Add(new SeedItem(Painting));
             Destroy(gameObject); // la pintura se consume

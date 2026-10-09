@@ -1,4 +1,5 @@
 using TheLivingCanvas.Growth;
+using TheLivingCanvas.Painting;
 using UnityEngine;
 
 namespace TheLivingCanvas.Data
@@ -18,6 +19,8 @@ namespace TheLivingCanvas.Data
         [SerializeField] Texture2D icon;
         [Tooltip("Monedas por unidad cosechada al venderla.")]
         [SerializeField] int sellPrice = 10;
+        [Tooltip("Variantes por color; si ninguna encaja, sale el cultivo normal (Common).")]
+        [SerializeField] CropVariant[] variants = System.Array.Empty<CropVariant>();
 
         public string Id => id;
         public string DisplayName => displayName;
@@ -26,6 +29,41 @@ namespace TheLivingCanvas.Data
         public CropPlant PlantPrefab => plantPrefab;
         public Texture2D Icon => icon;
         public int SellPrice => sellPrice;
+        public CropVariant[] Variants => variants;
+
+        /// <summary>
+        /// Variante que corresponde a la pintura, o null (cultivo normal). En cada zona clave se compara el color
+        /// dominante pintado con el color sugerido y los de sus variantes: gana el más cercano, y además tiene que
+        /// parecerse de verdad al pigmento de la variante (pintar los pétalos de verde no da un girasol rojo).
+        /// </summary>
+        public CropVariant FindVariant(PaintingResult painting)
+        {
+            CropVariant best = null;
+            float bestDistance = float.MaxValue;
+            foreach (var zone in painting.Zones)
+            {
+                float suggested = zone.Requirement.suggestedPigment != null
+                    ? ColorDistance(zone.DominantColor, zone.Requirement.suggestedPigment.Color)
+                    : float.MaxValue;
+                foreach (var variant in variants)
+                {
+                    if (variant.zoneName != zone.Requirement.zoneName || variant.pigment == null) continue;
+                    float distance = ColorDistance(zone.DominantColor, variant.pigment.Color);
+                    if (distance <= MaxVariantDistance && distance < suggested && distance < bestDistance)
+                    {
+                        best = variant;
+                        bestDistance = distance;
+                    }
+                }
+            }
+            return best;
+        }
+
+        /// <summary>Distancia RGB² máxima entre lo pintado y el pigmento de la variante (~0.25 por canal).</summary>
+        const float MaxVariantDistance = 0.06f;
+
+        static float ColorDistance(Color a, Color b) =>
+            new Vector3(a.r - b.r, a.g - b.g, a.b - b.b).sqrMagnitude;
 
 #if UNITY_EDITOR
         public void EditorSetup(string newId, string newDisplayName, PaintTemplate newTemplate, float newGrowthDuration,
@@ -39,6 +77,8 @@ namespace TheLivingCanvas.Data
             icon = newIcon;
             sellPrice = newSellPrice;
         }
+
+        public void EditorSetVariants(CropVariant[] newVariants) => variants = newVariants;
 #endif
     }
 }

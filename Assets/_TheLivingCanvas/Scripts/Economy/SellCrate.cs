@@ -6,7 +6,8 @@ using UnityEngine;
 namespace TheLivingCanvas.Economy
 {
     /// <summary>
-    /// Caja de venta: al interactuar vende toda la cosecha que lleva el jugador al precio de cada cultivo.
+    /// Caja de venta: al interactuar vende toda la cosecha que lleva el jugador al precio de cada cultivo
+    /// (las variantes raras valen más).
     /// Las pinturas y semillas no se venden.
     /// </summary>
     public class SellCrate : MonoBehaviour, IInteractable
@@ -25,13 +26,13 @@ namespace TheLivingCanvas.Economy
             int total = 0;
             foreach (var crop in crops)
             {
-                total += crop.Quantity * crop.Crop.SellPrice;
+                total += crop.Quantity * crop.UnitPrice;
                 playerInventory.Remove(crop);
             }
             interactor.GetComponent<Wallet>().Add(total);
         }
 
         static int Value(PlayerInventory inventory) =>
-            inventory == null ? 0 : inventory.Items.OfType<CropItem>().Sum(c => c.Quantity * c.Crop.SellPrice);
+            inventory == null ? 0 : inventory.Items.OfType<CropItem>().Sum(c => c.Quantity * c.UnitPrice);
     }
 }

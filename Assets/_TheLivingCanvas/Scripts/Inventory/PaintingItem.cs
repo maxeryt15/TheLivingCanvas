@@ -4,23 +4,33 @@ using UnityEngine;
 
 namespace TheLivingCanvas.Inventory
 {
-    /// <summary>Una pintura terminada y recogida del caballete: su imagen, su cultivo y su calidad.</summary>
+    /// <summary>Una pintura terminada y recogida del caballete: su imagen, su cultivo, su variante y su calidad.</summary>
     public class PaintingItem : InventoryItem
     {
+        /// <summary>La variante se decide aquí, con los colores recién pintados (las semillas la heredan).</summary>
         public PaintingItem(CropDefinition crop, PaintingResult result, Texture2D image)
+            : this(crop, crop.FindVariant(result), result, image) { }
+
+        protected PaintingItem(CropDefinition crop, CropVariant variant, PaintingResult result, Texture2D image)
         {
             Crop = crop;
+            Variant = variant;
             Result = result;
             Image = image;
         }
 
         public CropDefinition Crop { get; }
+        /// <summary>null = el cultivo normal.</summary>
+        public CropVariant Variant { get; }
         public PaintingResult Result { get; }
         public Texture2D Image { get; }
         /// <summary>0 = la pintura original; cada semilla replantada suma 1.</summary>
         public int Generation { get; protected set; }
 
-        public override string DisplayName => $"{Crop.DisplayName} painting";
+        /// <summary>Nombre del cultivo o de su variante (ej. "Blue Sunflower").</summary>
+        public string CropName => Variant?.displayName ?? Crop.DisplayName;
+
+        public override string DisplayName => $"{CropName} painting";
         public override string Detail => Result.Quality.ToString();
         public override Texture Icon => Image;
         public override string ToastText => $"+1 {DisplayName} ({Detail})";
@@ -37,7 +47,7 @@ namespace TheLivingCanvas.Inventory
         const float FadePerGeneration = 0.3f;
 
         public SeedItem(PaintingItem parent)
-            : base(parent.Crop, parent.Result.Faded(FadePerGeneration), FadeImage(parent.Image))
+            : base(parent.Crop, parent.Variant, parent.Result.Faded(FadePerGeneration), FadeImage(parent.Image))
         {
             Generation = parent.Generation + 1;
         }
@@ -45,7 +55,7 @@ namespace TheLivingCanvas.Inventory
         /// <summary>false si la pintura ya está en lo más bajo (Normal) y no deja semilla.</summary>
         public static bool CanSeed(PaintingItem painting) => painting.Result.Quality > PaintingQuality.Normal;
 
-        public override string DisplayName => $"{Crop.DisplayName} seed";
+        public override string DisplayName => $"{CropName} seed";
 
         static Texture2D FadeImage(Texture2D source)
         {

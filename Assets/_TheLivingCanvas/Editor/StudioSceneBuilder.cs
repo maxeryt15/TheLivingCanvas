@@ -752,6 +752,12 @@ namespace TheLivingCanvas.EditorTools
             var crop = GetOrCreateCropAsset("Crop_Tomato");
             crop.EditorSetup("tomato", "Tomato", template, 25f, BuildTomatoPlantPrefab(),
                 PaintTemplateGenerator.GenerateTomatoIcon($"{Root}/Art/Textures/Icon_Tomato.png"), 15);
+            crop.EditorSetVariants(new[]
+            {
+                new CropVariant { id = "golden", displayName = "Golden Tomato", zoneName = "Tomatoes", pigment = palette[0], rarity = Rarity.Uncommon },
+                new CropVariant { id = "indigo", displayName = "Indigo Tomato", zoneName = "Tomatoes", pigment = palette[3], rarity = Rarity.Rare },
+                new CropVariant { id = "ghost", displayName = "Ghost Tomato", zoneName = "Tomatoes", pigment = palette[5], rarity = Rarity.Rare },
+            });
             EditorUtility.SetDirty(crop);
             return crop;
         }
@@ -774,6 +780,11 @@ namespace TheLivingCanvas.EditorTools
             var crop = GetOrCreateCropAsset("Crop_Glowbell");
             crop.EditorSetup("glowbell", "Glowbell", template, 30f, BuildGlowbellPlantPrefab(),
                 PaintTemplateGenerator.GenerateGlowbellIcon($"{Root}/Art/Textures/Icon_Glowbell.png"), 25);
+            crop.EditorSetVariants(new[]
+            {
+                new CropVariant { id = "sun", displayName = "Sun Glowbell", zoneName = "Glow", pigment = palette[0], rarity = Rarity.Uncommon },
+                new CropVariant { id = "ember", displayName = "Ember Glowbell", zoneName = "Glow", pigment = palette[4], rarity = Rarity.Rare },
+            });
             EditorUtility.SetDirty(crop);
             return crop;
         }
@@ -963,6 +974,12 @@ namespace TheLivingCanvas.EditorTools
             }
             crop.EditorSetup("sunflower", "Sunflower", template, 20f, BuildSunflowerPlantPrefab(),
                 PaintTemplateGenerator.GenerateSunflowerIcon($"{Root}/Art/Textures/Icon_Sunflower.png"), 10);
+            crop.EditorSetVariants(new[]
+            {
+                new CropVariant { id = "red", displayName = "Red Sunflower", zoneName = "Petals", pigment = palette[4], rarity = Rarity.Uncommon },
+                new CropVariant { id = "blue", displayName = "Blue Sunflower", zoneName = "Petals", pigment = palette[3], rarity = Rarity.Rare },
+                new CropVariant { id = "moon", displayName = "Moon Sunflower", zoneName = "Petals", pigment = palette[5], rarity = Rarity.Rare },
+            });
             EditorUtility.SetDirty(crop);
             return crop;
         }

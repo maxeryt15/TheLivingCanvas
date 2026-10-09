@@ -27,7 +27,10 @@ namespace TheLivingCanvas.Painting
 
             canvas.MarkFinished(result);
             paintMode.Exit();
-            feedback.Show($"Your {canvas.Crop.DisplayName.ToLowerInvariant()} painting is finished! Quality: {result.Quality}\nTake it from the easel.", success: true);
+            var variant = canvas.Crop.FindVariant(result);
+            string name = (variant?.displayName ?? canvas.Crop.DisplayName).ToLowerInvariant();
+            string rarity = variant != null ? $"  ·  {variant.rarity} variant!" : string.Empty;
+            feedback.Show($"Your {name} painting is finished! Quality: {result.Quality}{rarity}\nTake it from the easel.", success: true);
         }
 
         static string MissingPaintMessage(PaintingResult result)

@@ -19,3 +19,14 @@ MonoBehaviour:
   plantPrefab: {fileID: 8333980614284103012, guid: 14ca6b97f54f5fa4a8cb46aef5e8708a, type: 3}
   icon: {fileID: 2800000, guid: af93cc0546425494ea741caf7316907c, type: 3}
   sellPrice: 25
+  variants:
+  - id: sun
+    displayName: Sun Glowbell
+    zoneName: Glow
+    pigment: {fileID: 11400000, guid: 8b670d75cc6ef944fb0ffb752328c817, type: 2}
+    rarity: 1
+  - id: ember
+    displayName: Ember Glowbell
+    zoneName: Glow
+    pigment: {fileID: 11400000, guid: 6089d0400a55f19418a5e9d3b42a67db, type: 2}
+    rarity: 2

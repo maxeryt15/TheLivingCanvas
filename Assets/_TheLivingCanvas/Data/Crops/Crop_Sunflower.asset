@@ -19,3 +19,19 @@ MonoBehaviour:
   plantPrefab: {fileID: 9173715175900706247, guid: 7a43b67d051e66b45bcd9039c5fa7b79, type: 3}
   icon: {fileID: 2800000, guid: 79460ab997cf95b4caebb66d452b0837, type: 3}
   sellPrice: 10
+  variants:
+  - id: red
+    displayName: Red Sunflower
+    zoneName: Petals
+    pigment: {fileID: 11400000, guid: 6089d0400a55f19418a5e9d3b42a67db, type: 2}
+    rarity: 1
+  - id: blue
+    displayName: Blue Sunflower
+    zoneName: Petals
+    pigment: {fileID: 11400000, guid: 0c535dcdf0b1d724881d0fa92fef7c51, type: 2}
+    rarity: 2
+  - id: moon
+    displayName: Moon Sunflower
+    zoneName: Petals
+    pigment: {fileID: 11400000, guid: 25b02c9d887373f4cab1b54b2c5efffe, type: 2}
+    rarity: 2
