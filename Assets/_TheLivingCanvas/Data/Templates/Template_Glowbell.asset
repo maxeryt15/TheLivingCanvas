@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6402e72c03a595c4b8c7bb3a96ff7d0b, type: 3}
+  m_Name: Template_Glowbell
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.PaintTemplate
+  displayName: Glowbell
+  zoneMask: {fileID: 2800000, guid: 50f1d216b7f79d241aa1938b6f25e383, type: 3}
+  zones:
+  - zoneName: Bells
+    channel: 0
+    suggestedPigment: {fileID: 11400000, guid: 0c535dcdf0b1d724881d0fa92fef7c51, type: 2}
+    minCoverage: 0.5
+    weight: 1
+    missingPaintHint: The bells need a bit more paint.
+  - zoneName: Glow
+    channel: 2
+    suggestedPigment: {fileID: 11400000, guid: 25b02c9d887373f4cab1b54b2c5efffe, type: 2}
+    minCoverage: 0.5
+    weight: 0.8
+    missingPaintHint: The glowing orbs under the bells are still empty.
+  - zoneName: Stem & leaves
+    channel: 1
+    suggestedPigment: {fileID: 11400000, guid: 640e085e4379ceb4e85af02a0c5193db, type: 2}
+    minCoverage: 0.5
+    weight: 0.6
+    missingPaintHint: The stem and branches need some color.

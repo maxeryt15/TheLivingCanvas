@@ -37,6 +37,7 @@ namespace TheLivingCanvas.EditorTools
         const string PaintingPlotPrefabPath = Root + "/Prefabs/Crops/PaintingPlot.prefab";
         const string SunflowerPrefabPath = Root + "/Prefabs/Crops/Sunflower.prefab";
         const string TomatoPrefabPath = Root + "/Prefabs/Crops/Tomato.prefab";
+        const string GlowbellPrefabPath = Root + "/Prefabs/Crops/Glowbell.prefab";
 
         [MenuItem("TheLivingCanvas/Build Studio Scene")]
         public static void Build()
@@ -707,7 +708,7 @@ namespace TheLivingCanvas.EditorTools
         /// <summary>Los primeros cultivos se saben pintar desde el principio; el resto se compra (boceto).</summary>
         const int StartingCrops = 1;
 
-        static CropDefinition[] GetOrCreateCrops() => new[] { GetOrCreateSunflowerCrop(), GetOrCreateTomatoCrop() };
+        static CropDefinition[] GetOrCreateCrops() => new[] { GetOrCreateSunflowerCrop(), GetOrCreateTomatoCrop(), GetOrCreateGlowbellCrop() };
 
         static CropDefinition GetOrCreateCropAsset(string fileName)
         {
@@ -753,6 +754,116 @@ namespace TheLivingCanvas.EditorTools
                 PaintTemplateGenerator.GenerateTomatoIcon($"{Root}/Art/Textures/Icon_Tomato.png"), 15);
             EditorUtility.SetDirty(crop);
             return crop;
+        }
+
+        /// <summary>Plantilla y cultivo del glowbell, el primer cultivo fantástico (azul y blanco de la tienda).</summary>
+        static CropDefinition GetOrCreateGlowbellCrop()
+        {
+            var palette = GetOrCreatePalette();
+            var mask = PaintTemplateGenerator.GenerateGlowbellMask($"{Root}/Art/Textures/PaintTemplates/Glowbell_Zones.png");
+
+            var template = GetOrCreateTemplateAsset("Template_Glowbell");
+            template.EditorSetup("Glowbell", mask, new[]
+            {
+                new ZoneRequirement { zoneName = "Bells", channel = ZoneChannel.Red, suggestedPigment = palette[3], minCoverage = 0.5f, weight = 1f, missingPaintHint = "The bells need a bit more paint." },
+                new ZoneRequirement { zoneName = "Glow", channel = ZoneChannel.Blue, suggestedPigment = palette[5], minCoverage = 0.5f, weight = 0.8f, missingPaintHint = "The glowing orbs under the bells are still empty." },
+                new ZoneRequirement { zoneName = "Stem & leaves", channel = ZoneChannel.Green, suggestedPigment = palette[2], minCoverage = 0.5f, weight = 0.6f, missingPaintHint = "The stem and branches need some color." },
+            });
+            EditorUtility.SetDirty(template);
+
+            var crop = GetOrCreateCropAsset("Crop_Glowbell");
+            crop.EditorSetup("glowbell", "Glowbell", template, 30f, BuildGlowbellPlantPrefab(),
+                PaintTemplateGenerator.GenerateGlowbellIcon($"{Root}/Art/Textures/Icon_Glowbell.png"), 25);
+            EditorUtility.SetDirty(crop);
+            return crop;
+        }
+
+        /// <summary>
+        /// Glowbell procedural (placeholder) de ~0.85 m: tallo, dos hojas y cuatro ramas inclinadas; de la punta de
+        /// cada rama cuelga una campanilla con una esfera luminosa. Una luz puntual suave ilumina alrededor.
+        /// </summary>
+        static GlowbellPlant BuildGlowbellPlantPrefab()
+        {
+            var bellMat = GetOrCreateMaterial("M_Plant_Bell", new Color(0.17f, 0.27f, 0.62f));
+            var glowMat = GetOrCreateMaterial("M_Plant_Glow", new Color(0.98f, 0.98f, 0.96f));
+            var stemMat = GetOrCreateMaterial("M_Plant_Stem", new Color(0.3f, 0.55f, 0.22f));
+
+            var root = new GameObject("Glowbell");
+            var growth = new GameObject("GrowthRoot").transform;
+            growth.SetParent(root.transform, false);
+            // Tallo de 0.85 m: termina justo encima de la rama más alta.
+            var stem = CreatePart(PrimitiveType.Cylinder, "Stem", growth, new Vector3(0f, 0.425f, 0f), new Vector3(0.03f, 0.425f, 0.03f), stemMat, Quaternion.identity);
+            var stemRenderers = new System.Collections.Generic.List<Renderer> { stem.GetComponent<Renderer>() };
+
+            float[] leafHeights = { 0.15f, 0.22f };
+            float[] leafYaws = { 90f, -90f };
+            var leafHinges = new Transform[leafHeights.Length];
+            for (int i = 0; i < leafHeights.Length; i++)
+            {
+                var hinge = new GameObject($"LeafHinge_{i}").transform;
+                hinge.SetParent(growth, false);
+                hinge.localPosition = new Vector3(0f, leafHeights[i], 0f);
+                hinge.localRotation = Quaternion.Euler(0f, leafYaws[i], 0f);
+                var leaf = CreatePart(PrimitiveType.Sphere, "Leaf", hinge, new Vector3(0f, 0f, 0.11f), new Vector3(0.08f, 0.012f, 0.22f), stemMat, Quaternion.identity);
+                stemRenderers.Add(leaf.GetComponent<Renderer>());
+                leafHinges[i] = hinge;
+            }
+
+            // (altura en el tallo, giro alrededor del tallo, largo). Giro 180 = hacia -Z, hacia quien la plantó.
+            (float height, float yaw, float length)[] branches = { (0.55f, -150f, 0.3f), (0.7f, 150f, 0.28f), (0.8f, 30f, 0.25f), (0.62f, -40f, 0.27f) };
+            const float tilt = 60f; // grados desde la vertical
+            var branchPivots = new Transform[branches.Length];
+            var bellPivots = new Transform[branches.Length];
+            var bellRenderers = new System.Collections.Generic.List<Renderer>();
+            var glowRenderers = new Renderer[branches.Length];
+            for (int i = 0; i < branches.Length; i++)
+            {
+                var (height, yaw, length) = branches[i];
+                var pivot = new GameObject($"Branch_{i}").transform;
+                pivot.SetParent(growth, false);
+                pivot.localPosition = new Vector3(0f, height, 0f);
+                pivot.localRotation = Quaternion.Euler(0f, yaw, 0f) * Quaternion.Euler(tilt, 0f, 0f);
+                var branch = CreatePart(PrimitiveType.Cylinder, "Branch", pivot, new Vector3(0f, length * 0.5f, 0f), new Vector3(0.015f, length * 0.5f, 0.015f), stemMat, Quaternion.identity);
+                stemRenderers.Add(branch.GetComponent<Renderer>());
+                branchPivots[i] = pivot;
+
+                // La campanilla cuelga recta de la punta (hija de GrowthRoot, no de la rama inclinada).
+                var bell = new GameObject($"Bell_{i}").transform;
+                bell.SetParent(growth, false);
+                bell.localPosition = pivot.localPosition + pivot.localRotation * new Vector3(0f, length, 0f);
+                var body = CreatePart(PrimitiveType.Sphere, "Body", bell, new Vector3(0f, -0.07f, 0f), new Vector3(0.09f, 0.12f, 0.09f), bellMat, Quaternion.identity);
+                var rim = CreatePart(PrimitiveType.Sphere, "Rim", bell, new Vector3(0f, -0.125f, 0f), new Vector3(0.13f, 0.03f, 0.13f), bellMat, Quaternion.identity);
+                var orb = CreatePart(PrimitiveType.Sphere, "Glow", bell, new Vector3(0f, -0.165f, 0f), Vector3.one * 0.05f, glowMat, Quaternion.identity);
+                bellRenderers.Add(body.GetComponent<Renderer>());
+                bellRenderers.Add(rim.GetComponent<Renderer>());
+                glowRenderers[i] = orb.GetComponent<Renderer>();
+                bellPivots[i] = bell;
+            }
+
+            var lightGo = new GameObject("GlowLight");
+            lightGo.transform.SetParent(root.transform, false);
+            lightGo.transform.localPosition = new Vector3(0f, 0.55f, -0.1f);
+            var light = lightGo.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.range = 2f;
+            light.intensity = 0f;
+            light.shadows = LightShadows.None;
+
+            var plant = root.AddComponent<GlowbellPlant>();
+            var so = new SerializedObject(plant);
+            so.FindProperty("growthRoot").objectReferenceValue = growth;
+            SetArray(so.FindProperty("leafHinges"), leafHinges);
+            SetArray(so.FindProperty("branchPivots"), branchPivots);
+            SetArray(so.FindProperty("bellPivots"), bellPivots);
+            SetArray(so.FindProperty("bellRenderers"), bellRenderers.ToArray());
+            SetArray(so.FindProperty("glowRenderers"), glowRenderers);
+            SetArray(so.FindProperty("stemRenderers"), stemRenderers.ToArray());
+            so.FindProperty("glowLight").objectReferenceValue = light;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(root, GlowbellPrefabPath);
+            Object.DestroyImmediate(root);
+            return prefab.GetComponent<GlowbellPlant>();
         }
 
         /// <summary>

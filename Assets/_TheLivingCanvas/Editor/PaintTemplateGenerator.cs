@@ -7,6 +7,7 @@ namespace TheLivingCanvas.EditorTools
     /// <summary>
     /// Genera las máscaras de zonas de las plantillas (PNG, un canal por zona) y los iconos de cosecha.
     /// Girasol: B = centro, R = pétalos, G = tallo y hojas. Tomate: R = tomates, G = tallo y hojas, B = tutor.
+    /// Glowbell: R = campanillas, B = esferas luminosas, G = tallo, ramas y hojas.
     /// Mismo aspecto que el lienzo (5:4).
     /// </summary>
     public static class PaintTemplateGenerator
@@ -93,6 +94,96 @@ namespace TheLivingCanvas.EditorTools
                 || InLeaf(p, new Vector2(320f, 300f), 15f)
                 || InLeaf(p, new Vector2(320f, 400f), 150f)
                 || InLeaf(p, new Vector2(320f, 420f), 35f);
+        }
+
+        /// <summary>
+        /// Glowbell: tallo con cuatro ramas arqueadas; de la punta de cada una cuelga una campanilla
+        /// (cuerpo + borde acampanado) con una esfera luminosa debajo.
+        /// </summary>
+        public static Texture2D GenerateGlowbellMask(string assetPath)
+        {
+            var pixels = new Color32[Width * Height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    Color32 c = new(0, 0, 0, 255);
+
+                    if (InGlowOrbs(p))
+                        c.b = 255;
+                    else if (InBells(p))
+                        c.r = 255;
+                    else if (InGlowbellStem(p))
+                        c.g = 255;
+
+                    pixels[y * Width + x] = c;
+                }
+            }
+            return SaveMask(pixels, assetPath);
+        }
+
+        // (inicio en el tallo, punta de la rama de la que cuelga la campanilla)
+        static readonly (Vector2 start, Vector2 tip)[] GlowbellBranches =
+        {
+            (new(320f, 250f), new(200f, 330f)), (new(320f, 300f), new(440f, 370f)),
+            (new(320f, 180f), new(430f, 250f)), (new(320f, 370f), new(230f, 440f))
+        };
+
+        static bool InBells(Vector2 p)
+        {
+            foreach (var (_, tip) in GlowbellBranches)
+                if (InBell(p, tip, 1f)) return true;
+            return false;
+        }
+
+        /// <summary>Campanilla colgando de <paramref name="top"/>: cuerpo ovalado y borde más ancho abajo.</summary>
+        static bool InBell(Vector2 p, Vector2 top, float scale) =>
+            InEllipse(p, top - new Vector2(0f, 34f * scale), Vector2.up, 34f * scale, 24f * scale)
+            || InEllipse(p, top - new Vector2(0f, 64f * scale), Vector2.right, 34f * scale, 10f * scale);
+
+        static bool InGlowOrbs(Vector2 p)
+        {
+            foreach (var (_, tip) in GlowbellBranches)
+                if (Vector2.Distance(p, tip - new Vector2(0f, 88f)) <= 14f) return true;
+            return false;
+        }
+
+        static bool InGlowbellStem(Vector2 p)
+        {
+            if (p.x >= 312f && p.x <= 328f && p.y >= 30f && p.y <= 380f) return true;
+            foreach (var (start, tip) in GlowbellBranches)
+                if (InSegment(p, start, tip, 6f)) return true;
+            return InLeaf(p, new Vector2(320f, 90f), 160f) || InLeaf(p, new Vector2(320f, 120f), 20f);
+        }
+
+        static bool InSegment(Vector2 p, Vector2 a, Vector2 b, float halfWidth)
+        {
+            Vector2 ab = b - a;
+            float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude);
+            return Vector2.Distance(p, a + ab * t) <= halfWidth;
+        }
+
+        /// <summary>Icono placeholder del glowbell: campanilla azul con su esfera blanca debajo.</summary>
+        public static Texture2D GenerateGlowbellIcon(string assetPath)
+        {
+            const int size = 128;
+            var top = new Vector2(size * 0.5f, 118f);
+            var blue = new Color32(45, 70, 160, 255);
+            var white = new Color32(250, 250, 240, 255);
+            var pixels = new Color32[size * size];
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    Color32 c = default; // transparente
+                    if (Vector2.Distance(p, top - new Vector2(0f, 98f)) <= 16f) c = white;
+                    else if (InBell(p, top, 1.2f)) c = blue;
+                    pixels[y * size + x] = c;
+                }
+            }
+            return SaveIcon(pixels, size, assetPath);
         }
 
         /// <summary>Icono placeholder del tomate: fruto rojo con cáliz verde sobre transparente.</summary>

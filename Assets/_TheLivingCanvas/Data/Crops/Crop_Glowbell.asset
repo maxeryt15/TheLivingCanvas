@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a25a0de7e322034587870b3545df4b9, type: 3}
+  m_Name: Crop_Glowbell
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CropDefinition
+  id: glowbell
+  displayName: Glowbell
+  template: {fileID: 11400000, guid: 8aa82683fe7acd44e81af8ef1d8e6ec1, type: 2}
+  growthDuration: 30
+  plantPrefab: {fileID: 8333980614284103012, guid: 14ca6b97f54f5fa4a8cb46aef5e8708a, type: 3}
+  icon: {fileID: 2800000, guid: af93cc0546425494ea741caf7316907c, type: 3}
+  sellPrice: 25
