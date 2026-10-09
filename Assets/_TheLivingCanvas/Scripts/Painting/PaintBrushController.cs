@@ -26,6 +26,8 @@ namespace TheLivingCanvas.Painting
         [SerializeField] Image cursorRing;
 
         [SerializeField] List<PigmentDefinition> palette = new();
+        [Tooltip("Pinceles que tiene el jugador; el primero es el seleccionado al empezar.")]
+        [SerializeField] List<BrushDefinition> brushes = new();
         [Tooltip("Radio del pincel en píxeles de la pintura.")]
         [SerializeField] float brushRadius = 10f;
         [SerializeField] float minBrushRadius = 3f;
@@ -44,6 +46,10 @@ namespace TheLivingCanvas.Painting
         public event Action<PigmentDefinition> PigmentAdded;
 
         public IReadOnlyList<PigmentDefinition> Palette => palette;
+        public IReadOnlyList<BrushDefinition> Brushes => brushes;
+        public BrushDefinition SelectedBrush { get; private set; }
+        /// <summary>Se dispara con cada pincel nuevo (ej. comprado en la tienda).</summary>
+        public event Action<BrushDefinition> BrushAdded;
         public PigmentDefinition SelectedPigment { get; private set; }
         public bool EraserActive { get; private set; }
         /// <summary>Contorno tenue de la plantilla.</summary>
@@ -65,6 +71,8 @@ namespace TheLivingCanvas.Painting
             cursorRing.gameObject.SetActive(false);
             if (palette.Count > 0)
                 SelectedPigment = palette[0];
+            if (brushes.Count > 0)
+                SelectedBrush = brushes[0];
         }
 
         void OnDestroy() => DestroyRing();
@@ -119,6 +127,24 @@ namespace TheLivingCanvas.Painting
             palette.Add(pigment);
             PigmentAdded?.Invoke(pigment);
             return true;
+        }
+
+        public bool HasBrush(BrushDefinition brush) => brushes.Contains(brush);
+
+        /// <summary>Añade un pincel (false si ya lo tenía).</summary>
+        public bool AddBrush(BrushDefinition brush)
+        {
+            if (brush == null || brushes.Contains(brush)) return false;
+            brushes.Add(brush);
+            BrushAdded?.Invoke(brush);
+            return true;
+        }
+
+        /// <summary>Cambia de pincel; el borrador sigue como estaba (con Fill, borra la zona entera).</summary>
+        public void SelectBrush(BrushDefinition brush)
+        {
+            SelectedBrush = brush;
+            ToolsChanged?.Invoke();
         }
 
         public void SelectPigment(PigmentDefinition pigment)
@@ -195,15 +221,24 @@ namespace TheLivingCanvas.Painting
 
             if (overCanvas && strokeAction.action.IsPressed())
             {
+                bool fill = SelectedBrush != null && SelectedBrush.Kind == BrushKind.Fill;
                 if (strokeSurface != surface)
                 {
                     Color color = EraserActive || SelectedPigment == null ? surface.BaseColor : SelectedPigment.Color;
-                    surface.BeginStroke(uv, brushRadius, color);
+                    if (fill)
+                    {
+                        var template = paintMode.ActiveCanvas.Crop.Template;
+                        surface.FillZone(uv, PaintEvaluator.ZoneMap(template, surface.Width, surface.Height), color);
+                    }
+                    else
+                    {
+                        surface.BeginStroke(uv, brushRadius, color);
+                    }
                     strokeSurface = surface;
                 }
-                else
+                else if (!fill)
                 {
-                    surface.ContinueStroke(uv);
+                    surface.ContinueStroke(uv); // Fill actúa una vez por clic: mantener pulsado no rellena más
                 }
             }
             else

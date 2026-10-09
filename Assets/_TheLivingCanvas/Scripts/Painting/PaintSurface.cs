@@ -155,6 +155,26 @@ namespace TheLivingCanvas.Painting
             dirty = true;
         }
 
+        /// <summary>
+        /// Rellena de golpe la zona de <paramref name="zoneMap"/> que hay bajo <paramref name="uv"/> (un paso de
+        /// deshacer). Fuera de toda zona no hace nada; devuelve si rellenó algo.
+        /// </summary>
+        public bool FillZone(Vector2 uv, int[] zoneMap, Color color)
+        {
+            Vector2 p = UvToPixel(uv);
+            int x = Mathf.Clamp((int)p.x, 0, width - 1), y = Mathf.Clamp((int)p.y, 0, height - 1);
+            int zone = zoneMap[y * width + x];
+            if (zone < 0) return false;
+
+            history.Record(pixels);
+            Color32 fill = color;
+            for (int i = 0; i < pixels.Length; i++)
+                if (zoneMap[i] == zone)
+                    pixels[i] = fill;
+            dirty = true;
+            return true;
+        }
+
         public void BeginStroke(Vector2 uv, float radiusPx, Color color)
         {
             history.Record(pixels);

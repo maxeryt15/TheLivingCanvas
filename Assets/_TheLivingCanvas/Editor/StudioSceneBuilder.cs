@@ -286,6 +286,8 @@ namespace TheLivingCanvas.EditorTools
             paletteProp.arraySize = pigments.Length;
             for (int i = 0; i < pigments.Length; i++)
                 paletteProp.GetArrayElementAtIndex(i).objectReferenceValue = pigments[i];
+            // Solo el pincel redondo al empezar; el resto se compra en la tienda.
+            SetArray(brushSo.FindProperty("brushes"), GetOrCreateBrushes().Take(StartingBrushes).ToArray());
             brushSo.ApplyModifiedPropertiesWithoutUndo();
 
             // El mensaje vive en el HUD raíz para que la enhorabuena siga visible al salir del modo pintura.
@@ -656,7 +658,11 @@ namespace TheLivingCanvas.EditorTools
             slider.transform.SetParent(panel.transform, false);
             slider.AddComponent<LayoutElement>().preferredHeight = 30f;
 
-            var eraser = CreateButton(resources, panel.transform, "EraserButton", "Eraser", 24, font);
+            // Fila de herramientas: un botón por pincel (PaintToolsUI los clona delante) y el borrador.
+            var toolsRow = CreateRow(panel.transform, "ToolsRow");
+            var brushTemplate = CreateButton(resources, toolsRow, "BrushTemplate", "Brush", 18, font);
+            ConfigureHighlight(brushTemplate.AddComponent<Outline>(), cream);
+            var eraser = CreateButton(resources, toolsRow, "EraserButton", "Eraser", 18, font);
             ConfigureHighlight(eraser.AddComponent<Outline>(), cream);
 
             var historyRow = CreateRow(panel.transform, "HistoryRow");
@@ -683,6 +689,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("swatchContainer").objectReferenceValue = swatches.transform;
             so.FindProperty("swatchTemplate").objectReferenceValue = template.GetComponent<Button>();
             so.FindProperty("sizeSlider").objectReferenceValue = slider.GetComponent<Slider>();
+            so.FindProperty("brushTemplate").objectReferenceValue = brushTemplate.GetComponent<Button>();
             so.FindProperty("eraserButton").objectReferenceValue = eraser.GetComponent<Button>();
             so.FindProperty("undoButton").objectReferenceValue = undo.GetComponent<Button>();
             so.FindProperty("redoButton").objectReferenceValue = redo.GetComponent<Button>();
@@ -742,6 +749,29 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Los 6 pigmentos del vertical slice, en el orden de la paleta.</summary>
+        /// <summary>Los primeros pinceles se tienen desde el principio.</summary>
+        const int StartingBrushes = 1;
+
+        static BrushDefinition[] GetOrCreateBrushes() => new[]
+        {
+            GetOrCreateBrush("round", "Round", BrushKind.Round),
+            GetOrCreateBrush("fill", "Fill", BrushKind.Fill),
+        };
+
+        static BrushDefinition GetOrCreateBrush(string id, string displayName, BrushKind kind)
+        {
+            var path = $"{Root}/Data/Brushes/Brush_{id}.asset";
+            var brush = AssetDatabase.LoadAssetAtPath<BrushDefinition>(path);
+            if (brush == null)
+            {
+                brush = ScriptableObject.CreateInstance<BrushDefinition>();
+                AssetDatabase.CreateAsset(brush, path);
+            }
+            brush.EditorSetup(id, displayName, kind);
+            EditorUtility.SetDirty(brush);
+            return brush;
+        }
+
         /// <summary>Los primeros pigmentos de la paleta se tienen desde el principio.</summary>
         const int StartingPigments = 3;
 
@@ -1321,6 +1351,21 @@ namespace TheLivingCanvas.EditorTools
                 offers.Add(refill);
             }
 
+            foreach (var brush in GetOrCreateBrushes().Skip(StartingBrushes))
+            {
+                var path = $"{Root}/Data/Shop/Offer_Brush_{brush.Id}.asset";
+                var offer = AssetDatabase.LoadAssetAtPath<BrushOffer>(path);
+                if (offer == null)
+                {
+                    offer = ScriptableObject.CreateInstance<BrushOffer>();
+                    AssetDatabase.CreateAsset(offer, path);
+                }
+                offer.EditorSetupOffer($"{brush.DisplayName} brush", BrushDescription(brush.Kind), 40, null);
+                offer.EditorSetBrush(brush);
+                EditorUtility.SetDirty(offer);
+                offers.Add(offer);
+            }
+
             foreach (var crop in GetOrCreateCrops().Skip(StartingCrops))
             {
                 var path = $"{Root}/Data/Shop/Offer_Sketch_{crop.Id}.asset";
@@ -1504,6 +1549,12 @@ namespace TheLivingCanvas.EditorTools
             SetModalPanelRefs(so, ui, player, rig);
             so.ApplyModifiedPropertiesWithoutUndo();
         }
+
+        static string BrushDescription(BrushKind kind) => kind switch
+        {
+            BrushKind.Fill => "Click a zone of the sketch to fill it in one go.",
+            _ => "A new brush for your palette."
+        };
 
         /// <summary>Puesto de la tienda junto a la pared del fondo + panel de compra.</summary>
         static void BuildShop(Transform hud, Transform environment, GameObject player, GameObject rig)

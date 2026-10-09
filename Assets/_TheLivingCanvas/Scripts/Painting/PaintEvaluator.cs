@@ -89,9 +89,7 @@ namespace TheLivingCanvas.Painting
         public static PaintingResult Evaluate(PaintSurface surface, PaintTemplate template, IReadOnlyList<CropVariant> variants = null)
         {
             int w = surface.Width, h = surface.Height;
-            var key = (template, w, h);
-            if (!zoneMapCache.TryGetValue(key, out int[] zoneMap))
-                zoneMapCache[key] = zoneMap = template.BuildZoneMap(w, h);
+            int[] zoneMap = ZoneMap(template, w, h);
 
             var zones = template.Zones;
             int n = zones.Length;
@@ -189,6 +187,15 @@ namespace TheLivingCanvas.Painting
             if (result.Quality == PaintingQuality.Masterpiece && !result.Zones.TrueForAll(z => z.ColorFit >= MasterpieceMinColorFit))
                 result.Quality = PaintingQuality.Excellent;
             return result;
+        }
+
+        /// <summary>Mapa de zonas de la plantilla a esa resolución (calculado una vez y reutilizado).</summary>
+        public static int[] ZoneMap(PaintTemplate template, int width, int height)
+        {
+            var key = (template, width, height);
+            if (!zoneMapCache.TryGetValue(key, out int[] zoneMap))
+                zoneMapCache[key] = zoneMap = template.BuildZoneMap(width, height);
+            return zoneMap;
         }
 
         static int DistanceSq(Color32 a, Color32 b)

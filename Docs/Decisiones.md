@@ -27,3 +27,4 @@
 | 2026-10-09 | Fase 8: el pigmento se gasta al terminar la pintura según el área pintada de cada color (pintar, deshacer y borrar es gratis); si falta, Finish lo dice | Sin frustración a mitad de pintura y sin reembolsos por deshacer. |
 | 2026-10-09 | Pigmento: se compra en la tienda (recargas) y se muele la cosecha en un mortero (cada cultivo da su color; las variantes, el suyo) | Cierra el bucle PAINT → GROW → HARVEST → CREATE. |
 | 2026-10-09 | Se empieza con amarillo, ocre y verde para ~3 girasoles; sin límite de almacenamiento por ahora (capacidad, en la Fase 11) | Sin gestión extra hasta que haga falta. |
+| 2026-10-09 | Fase 9: pinceles que cambian cómo se pinta: Fill (rellena una zona de la plantilla) y Glaze (veladura semitransparente que mezcla colores, ej. amarillo sobre rojo = naranja). Se compran una vez en la tienda | Mezclar colores abre posibilidades; rellenar combate la repetición (riesgo D2). |
