@@ -1,6 +1,7 @@
 using System.Linq;
 using TheLivingCanvas.Core;
 using TheLivingCanvas.Data;
+using TheLivingCanvas.Economy;
 using TheLivingCanvas.Growth;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
@@ -89,7 +90,9 @@ namespace TheLivingCanvas.EditorTools
             var placer = BuildPaintingPlacer(hud.transform, player);
             BuildInventoryUI(hud.transform, player.GetComponent<PlayerInventory>(), placer, paintMode,
                 rig.GetComponent<CursorLock>(), rig.GetComponent<CameraModeController>());
+            BuildCoinCounter(hud.transform, player.GetComponent<Wallet>());
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
+            BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -138,6 +141,7 @@ namespace TheLivingCanvas.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
 
             root.AddComponent<PlayerInventory>();
+            root.AddComponent<Wallet>();
             var interactor = new SerializedObject(root.AddComponent<PlayerInteractor>());
             interactor.FindProperty("interactAction").objectReferenceValue = GetAction("Player/Interact");
             interactor.ApplyModifiedPropertiesWithoutUndo();
@@ -719,7 +723,7 @@ namespace TheLivingCanvas.EditorTools
                 AssetDatabase.CreateAsset(crop, cropPath);
             }
             crop.EditorSetup("sunflower", "Sunflower", template, 20f, BuildSunflowerPlantPrefab(),
-                PaintTemplateGenerator.GenerateSunflowerIcon($"{Root}/Art/Textures/Icon_Sunflower.png"));
+                PaintTemplateGenerator.GenerateSunflowerIcon($"{Root}/Art/Textures/Icon_Sunflower.png"), 10);
             EditorUtility.SetDirty(crop);
             return crop;
         }
@@ -918,6 +922,49 @@ namespace TheLivingCanvas.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
             panel.SetActive(false);
             return hud;
+        }
+
+        /// <summary>Monedas arriba a la derecha, con el "+30" debajo.</summary>
+        static void BuildCoinCounter(Transform hud, Wallet wallet)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var panel = CreatePanel(hud, "CoinCounter", AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd"),
+                new Color(0.30f, 0.20f, 0.13f, 0.9f), new Vector2(1f, 1f), new Vector2(-30f, -30f), new Vector2(240f, 64f));
+            var label = AddStretchedText(panel.transform, "Label", 30, font, cream, TextAnchor.MiddleCenter);
+
+            var delta = AddStretchedText(panel.transform, "Delta", 26, font, cream, TextAnchor.UpperCenter);
+            var deltaRect = (RectTransform)delta.transform;
+            deltaRect.anchorMin = new Vector2(0f, 0f);
+            deltaRect.anchorMax = new Vector2(1f, 0f);
+            deltaRect.offsetMin = new Vector2(0f, -40f);
+            deltaRect.offsetMax = new Vector2(0f, -6f);
+
+            var counter = panel.AddComponent<CoinCounterUI>();
+            var so = new SerializedObject(counter);
+            so.FindProperty("wallet").objectReferenceValue = wallet;
+            so.FindProperty("label").objectReferenceValue = label;
+            so.FindProperty("deltaLabel").objectReferenceValue = delta;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Caja de venta placeholder junto a la pared izquierda.</summary>
+        static void BuildSellCrate(Transform parent, Vector3 position)
+        {
+            var crateMat = GetOrCreateMaterial("M_SellCrate_Wood", new Color(0.62f, 0.45f, 0.26f));
+            var crate = new GameObject("SellCrate");
+            crate.transform.SetParent(parent);
+            crate.transform.localPosition = position;
+            var box = crate.AddComponent<BoxCollider>();
+            box.center = new Vector3(0f, 0.3f, 0f);
+            box.size = new Vector3(0.9f, 0.6f, 0.7f);
+
+            CreatePart(PrimitiveType.Cube, "Base", crate.transform, new Vector3(0f, 0.05f, 0f), new Vector3(0.9f, 0.1f, 0.7f), crateMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Side_Front", crate.transform, new Vector3(0f, 0.3f, -0.33f), new Vector3(0.9f, 0.5f, 0.04f), crateMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Side_Back", crate.transform, new Vector3(0f, 0.3f, 0.33f), new Vector3(0.9f, 0.5f, 0.04f), crateMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Side_Left", crate.transform, new Vector3(-0.43f, 0.3f, 0f), new Vector3(0.04f, 0.5f, 0.62f), crateMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Side_Right", crate.transform, new Vector3(0.43f, 0.3f, 0f), new Vector3(0.04f, 0.5f, 0.62f), crateMat, Quaternion.identity);
+            crate.AddComponent<SellCrate>();
         }
 
         /// <summary>Lámpara de prueba sobre la mesa (Fase 1C).</summary>

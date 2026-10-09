@@ -14,3 +14,8 @@
 | 2026-10-08 | La pintura del inventario se coloca en el suelo como parcela y de ella crece el girasol 3D procedural, con los colores pintados por zona y tamaño según la calidad | Mantiene "pintas lo que crece" sin la transición cinemática. |
 | 2026-10-08 | Cosecha: Sunflower ×(1–4 según calidad) + 1 semilla que guarda la pintura y la recrea al plantarla; la parcela se consume | Decisión del usuario. Ojo: con semillas una pintura rinde para siempre; revisar en la economía (Fase 6). |
 | 2026-10-08 | Se descarta la animación pintura → cultivo (4C/4D). Al terminar, la pintura se recoge del caballete con Interact y va al inventario (placeholder); el caballete recibe un lienzo nuevo | Decisión del usuario. Qué se hace con las pinturas del inventario queda por definir. |
+| 2026-10-09 | Semillas que se desvanecen: cada replantado baja la pintura un nivel de calidad; una cosecha Normal no da semilla | Resuelve que una pintura rinda para siempre y premia volver a pintar bien. |
+| 2026-10-09 | Los lienzos en blanco cuestan monedas (baratos); se empieza con algunos | Mete la pintura en la economía y da motivo para vender. |
+| 2026-10-09 | Precio de venta fijo por cultivo (Sunflower: 10); la calidad ya decide cuántas unidades se cosechan | Pilas simples en el inventario. |
+| 2026-10-09 | Primer upgrade: paquete de pigmentos (colores nuevos en la paleta) | Cambia lo que se pinta (regla de oro D3) y tiñe el girasol 3D. |
+| 2026-10-09 | Venta (6A): una caja de venta vende toda la cosecha al interactuar, sin panel | Mínimo para el slice; el panel llega con la tienda si hace falta. |

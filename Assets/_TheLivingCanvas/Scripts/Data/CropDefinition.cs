@@ -16,6 +16,8 @@ namespace TheLivingCanvas.Data
         [SerializeField] CropPlant plantPrefab;
         [Tooltip("Icono de la cosecha en el inventario.")]
         [SerializeField] Texture2D icon;
+        [Tooltip("Monedas por unidad cosechada al venderla.")]
+        [SerializeField] int sellPrice = 10;
 
         public string Id => id;
         public string DisplayName => displayName;
@@ -23,10 +25,11 @@ namespace TheLivingCanvas.Data
         public float GrowthDuration => growthDuration;
         public CropPlant PlantPrefab => plantPrefab;
         public Texture2D Icon => icon;
+        public int SellPrice => sellPrice;
 
 #if UNITY_EDITOR
         public void EditorSetup(string newId, string newDisplayName, PaintTemplate newTemplate, float newGrowthDuration,
-            CropPlant newPlantPrefab, Texture2D newIcon)
+            CropPlant newPlantPrefab, Texture2D newIcon, int newSellPrice)
         {
             id = newId;
             displayName = newDisplayName;
@@ -34,6 +37,7 @@ namespace TheLivingCanvas.Data
             growthDuration = newGrowthDuration;
             plantPrefab = newPlantPrefab;
             icon = newIcon;
+            sellPrice = newSellPrice;
         }
 #endif
     }
