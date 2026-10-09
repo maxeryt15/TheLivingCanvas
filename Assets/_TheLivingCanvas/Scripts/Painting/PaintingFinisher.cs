@@ -42,7 +42,9 @@ namespace TheLivingCanvas.Painting
             var variant = canvas.Crop.FindVariant(result);
             string name = (variant?.displayName ?? canvas.Crop.DisplayName).ToLowerInvariant();
             string rarity = variant != null ? $"  ·  {variant.rarity} variant!" : string.Empty;
-            feedback.Show($"Your {name} painting is finished! Quality: {result.Quality}{rarity}\nTake it from the easel.", success: true);
+            string filled = result.CappedByFill
+                ? "\n(Mostly filled: paint by hand for a Masterpiece.)" : string.Empty;
+            feedback.Show($"Your {name} painting is finished! Quality: {result.Quality}{rarity}{filled}\nTake it from the easel.", success: true);
         }
 
         static string MissingPaintMessage(PaintingResult result)

@@ -9,6 +9,12 @@ namespace TheLivingCanvas.Painting
     [RequireComponent(typeof(MeshCollider), typeof(MeshRenderer))]
     public class PaintSurface : MonoBehaviour
     {
+        /// <summary>
+        /// Alfa con que el pincel Fill marca sus píxeles (el resto de la pintura usa 255). Va dentro del propio
+        /// píxel, así deshacer/rehacer lo conserva; pintar encima a mano lo devuelve a 255. El lienzo es opaco.
+        /// </summary>
+        public const byte FillAlpha = 254;
+
         [Tooltip("Resolución de la pintura. Mantener la proporción del lienzo (1 × 0.8 m → 5:4).")]
         [SerializeField] int width = 640;
         [SerializeField] int height = 512;
@@ -168,6 +174,7 @@ namespace TheLivingCanvas.Painting
 
             history.Record(pixels);
             Color32 fill = color;
+            fill.a = FillAlpha;
             for (int i = 0; i < pixels.Length; i++)
                 if (zoneMap[i] == zone)
                     pixels[i] = fill;

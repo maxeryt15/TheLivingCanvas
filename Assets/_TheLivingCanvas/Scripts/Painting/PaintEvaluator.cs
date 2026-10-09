@@ -35,6 +35,10 @@ namespace TheLivingCanvas.Painting
         public PaintingQuality Quality;
         /// <summary>Modo indulgente: basta con cubrir cada zona; el color no bloquea.</summary>
         public bool CanComeToLife;
+        /// <summary>Fracción de la pintura de las zonas hecha con el pincel Fill (0–1).</summary>
+        public float FillShare;
+        /// <summary>Habría sido Masterpiece, pero se hizo sobre todo con Fill.</summary>
+        public bool CappedByFill;
 
         /// <summary>
         /// Copia "desvanecida" (para las semillas): un nivel de calidad menos y los colores de cada zona
@@ -82,6 +86,7 @@ namespace TheLivingCanvas.Painting
         const float FullCoverage = 0.9f;             // a partir de aquí la cobertura cuenta como completa
         const float MaxSpillPenalty = 0.15f;
         const float MasterpieceMinColorFit = 0.6f;   // Masterpiece exige buen color en todas las zonas
+        const float MaxFillShareForMasterpiece = 0.5f; // una pintura hecha sobre todo con Fill llega como mucho a Excellent
 
         static readonly Dictionary<(PaintTemplate, int, int), int[]> zoneMapCache = new();
 
@@ -96,7 +101,7 @@ namespace TheLivingCanvas.Painting
             var zonePixels = new int[n];
             var paintedPixels = new int[n];
             var colorSum = new Vector3[n];
-            int outsidePixels = 0, outsidePainted = 0;
+            int outsidePixels = 0, outsidePainted = 0, filledPixels = 0;
 
             var pixels = surface.Pixels;
             Color32 canvas = surface.BaseColor;
@@ -119,6 +124,7 @@ namespace TheLivingCanvas.Painting
                 zonePixels[z]++;
                 if (!painted) continue;
                 paintedPixels[z]++;
+                if (c.a == PaintSurface.FillAlpha) filledPixels++;
                 colorSum[z] += new Vector3(c.r, c.g, c.b);
             }
 
@@ -184,8 +190,16 @@ namespace TheLivingCanvas.Painting
                 < 0.9f => PaintingQuality.Excellent,
                 _ => PaintingQuality.Masterpiece
             };
-            if (result.Quality == PaintingQuality.Masterpiece && !result.Zones.TrueForAll(z => z.ColorFit >= MasterpieceMinColorFit))
-                result.Quality = PaintingQuality.Excellent;
+            int totalPainted = 0;
+            foreach (int count in paintedPixels) totalPainted += count;
+            result.FillShare = totalPainted > 0 ? (float)filledPixels / totalPainted : 0f;
+            if (result.Quality == PaintingQuality.Masterpiece)
+            {
+                bool colorOk = result.Zones.TrueForAll(z => z.ColorFit >= MasterpieceMinColorFit);
+                result.CappedByFill = colorOk && result.FillShare > MaxFillShareForMasterpiece;
+                if (!colorOk || result.CappedByFill)
+                    result.Quality = PaintingQuality.Excellent;
+            }
             return result;
         }
 

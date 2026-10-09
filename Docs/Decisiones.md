@@ -28,3 +28,4 @@
 | 2026-10-09 | Pigmento: se compra en la tienda (recargas) y se muele la cosecha en un mortero (cada cultivo da su color; las variantes, el suyo) | Cierra el bucle PAINT → GROW → HARVEST → CREATE. |
 | 2026-10-09 | Se empieza con amarillo, ocre y verde para ~3 girasoles; sin límite de almacenamiento por ahora (capacidad, en la Fase 11) | Sin gestión extra hasta que haga falta. |
 | 2026-10-09 | Fase 9: pinceles que cambian cómo se pinta: Fill (rellena una zona de la plantilla) y Glaze (veladura semitransparente que mezcla colores, ej. amarillo sobre rojo = naranja). Se compran una vez en la tienda | Mezclar colores abre posibilidades; rellenar combate la repetición (riesgo D2). |
+| 2026-10-09 | Pincel Fill: una pintura hecha sobre todo (>50 %) con Fill llega como mucho a Excellent, y lo rellenado cuesta 1.5× de pigmento | Decisión del usuario (b + c): Fill acelera, pero la Masterpiece se gana pintando a mano. |
