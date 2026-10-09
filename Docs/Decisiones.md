@@ -17,5 +17,5 @@
 | 2026-10-09 | Semillas que se desvanecen: cada replantado baja la pintura un nivel de calidad; una cosecha Normal no da semilla | Resuelve que una pintura rinda para siempre y premia volver a pintar bien. |
 | 2026-10-09 | Los lienzos en blanco cuestan monedas (baratos); se empieza con algunos | Mete la pintura en la economía y da motivo para vender. |
 | 2026-10-09 | Precio de venta fijo por cultivo (Sunflower: 10); la calidad ya decide cuántas unidades se cosechan | Pilas simples en el inventario. |
-| 2026-10-09 | Primer upgrade: paquete de pigmentos (colores nuevos en la paleta) | Cambia lo que se pinta (regla de oro D3) y tiñe el girasol 3D. |
+| 2026-10-09 | Primer upgrade: pigmentos en la tienda. Se empieza con los 3 colores del girasol (amarillo, ocre, verde); azul, rojo y blanco se compran uno a uno (15 monedas, placeholder) | Decisión del usuario. Cambia lo que se pinta (regla de oro D3) y tiñe el girasol 3D. |
 | 2026-10-09 | Venta (6A): una caja de venta vende toda la cosecha al interactuar, sin panel | Mínimo para el slice; el panel llega con la tienda si hace falta. |

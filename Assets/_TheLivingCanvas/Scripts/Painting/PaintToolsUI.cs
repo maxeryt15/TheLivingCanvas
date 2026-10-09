@@ -32,14 +32,9 @@ namespace TheLivingCanvas.Painting
         {
             swatchTemplate.gameObject.SetActive(false);
             foreach (var pigment in brush.Palette)
-            {
-                var swatch = Instantiate(swatchTemplate, swatchContainer);
-                swatch.name = $"Swatch_{pigment.Id}";
-                swatch.gameObject.SetActive(true);
-                swatch.image.color = pigment.Color;
-                swatch.onClick.AddListener(() => brush.SelectPigment(pigment));
-                swatchHighlights[pigment] = swatch.GetComponent<Outline>();
-            }
+                AddSwatch(pigment);
+            // Suscrito siempre (no solo con el panel visible): se compran pigmentos sin estar pintando.
+            brush.PigmentAdded += AddSwatch;
 
             eraserHighlight = eraserButton.GetComponent<Outline>();
             eraserButton.onClick.AddListener(() => brush.SetEraser(!brush.EraserActive));
@@ -56,6 +51,18 @@ namespace TheLivingCanvas.Painting
             hintsHighlight = hintsButton.GetComponent<Outline>();
             guideButton.onClick.AddListener(() => brush.SetShowGuide(!brush.ShowGuide));
             hintsButton.onClick.AddListener(() => brush.SetShowColorHints(!brush.ShowColorHints));
+        }
+
+        void OnDestroy() => brush.PigmentAdded -= AddSwatch;
+
+        void AddSwatch(PigmentDefinition pigment)
+        {
+            var swatch = Instantiate(swatchTemplate, swatchContainer);
+            swatch.name = $"Swatch_{pigment.Id}";
+            swatch.gameObject.SetActive(true);
+            swatch.image.color = pigment.Color;
+            swatch.onClick.AddListener(() => brush.SelectPigment(pigment));
+            swatchHighlights[pigment] = swatch.GetComponent<Outline>();
         }
 
         void Update()

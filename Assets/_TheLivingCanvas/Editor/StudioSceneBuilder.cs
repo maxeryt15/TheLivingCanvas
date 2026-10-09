@@ -271,7 +271,8 @@ namespace TheLivingCanvas.EditorTools
             brushSo.FindProperty("redoAction").objectReferenceValue = GetAction("Paint/Redo");
             brushSo.FindProperty("cursorRing").objectReferenceValue = ring;
             var paletteProp = brushSo.FindProperty("palette");
-            var pigments = GetOrCreatePalette();
+            // Solo los colores del girasol al empezar; el resto se compra en la tienda.
+            var pigments = GetOrCreatePalette().Take(StartingPigments).ToArray();
             paletteProp.arraySize = pigments.Length;
             for (int i = 0; i < pigments.Length; i++)
                 paletteProp.GetArrayElementAtIndex(i).objectReferenceValue = pigments[i];
@@ -685,6 +686,9 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Los 6 pigmentos del vertical slice, en el orden de la paleta.</summary>
+        /// <summary>Los primeros pigmentos de la paleta se tienen desde el principio.</summary>
+        const int StartingPigments = 3;
+
         static PigmentDefinition[] GetOrCreatePalette() => new[]
         {
             GetOrCreatePigment("sunflower_yellow", "Sunflower Yellow", new Color(0.98f, 0.78f, 0.15f)),
@@ -984,7 +988,22 @@ namespace TheLivingCanvas.EditorTools
             canvas.EditorSetupOffer("Blank canvas", "A fresh canvas for the easel.", 5, null);
             EditorUtility.SetDirty(canvas);
 
-            return new ShopOffer[] { canvas };
+            var offers = new System.Collections.Generic.List<ShopOffer> { canvas };
+            foreach (var pigment in GetOrCreatePalette().Skip(StartingPigments))
+            {
+                var path = $"{Root}/Data/Shop/Offer_Pigment_{pigment.Id}.asset";
+                var offer = AssetDatabase.LoadAssetAtPath<PigmentOffer>(path);
+                if (offer == null)
+                {
+                    offer = ScriptableObject.CreateInstance<PigmentOffer>();
+                    AssetDatabase.CreateAsset(offer, path);
+                }
+                offer.EditorSetupOffer(pigment.DisplayName, "A new color for your palette.", 15, null);
+                offer.EditorSetPigment(pigment);
+                EditorUtility.SetDirty(offer);
+                offers.Add(offer);
+            }
+            return offers.ToArray();
         }
 
         /// <summary>Puesto de la tienda junto a la pared del fondo + panel de compra.</summary>
@@ -1008,7 +1027,7 @@ namespace TheLivingCanvas.EditorTools
             rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
 
             var panel = CreatePanel(root.transform, "Panel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 0.95f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 560f));
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 680f));
             panel.GetComponent<Image>().raycastTarget = true; // los clics no atraviesan el panel
             var title = AddStretchedText(panel.transform, "Title", 32, font, cream, TextAnchor.UpperCenter);
             title.text = "Shop";

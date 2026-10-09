@@ -40,6 +40,8 @@ namespace TheLivingCanvas.Painting
 
         /// <summary>Se dispara cuando cambia el pigmento, el tamaño o el borrador (para refrescar la UI).</summary>
         public event Action ToolsChanged;
+        /// <summary>Se dispara con cada pigmento nuevo en la paleta (ej. comprado en la tienda).</summary>
+        public event Action<PigmentDefinition> PigmentAdded;
 
         public IReadOnlyList<PigmentDefinition> Palette => palette;
         public PigmentDefinition SelectedPigment { get; private set; }
@@ -107,6 +109,17 @@ namespace TheLivingCanvas.Painting
         void OnUndoInput(InputAction.CallbackContext _) => Undo();
 
         void OnRedoInput(InputAction.CallbackContext _) => Redo();
+
+        public bool HasPigment(PigmentDefinition pigment) => palette.Contains(pigment);
+
+        /// <summary>Añade un pigmento a la paleta (false si ya estaba).</summary>
+        public bool AddPigment(PigmentDefinition pigment)
+        {
+            if (pigment == null || palette.Contains(pigment)) return false;
+            palette.Add(pigment);
+            PigmentAdded?.Invoke(pigment);
+            return true;
+        }
 
         public void SelectPigment(PigmentDefinition pigment)
         {
