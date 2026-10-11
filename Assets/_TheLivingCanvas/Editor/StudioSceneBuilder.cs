@@ -1357,6 +1357,20 @@ namespace TheLivingCanvas.EditorTools
             return offer;
         }
 
+        static CanvasUpgradeOffer GetOrCreateFineCanvasOffer(string path)
+        {
+            var offer = AssetDatabase.LoadAssetAtPath<CanvasUpgradeOffer>(path);
+            if (offer == null)
+            {
+                offer = ScriptableObject.CreateInstance<CanvasUpgradeOffer>();
+                AssetDatabase.CreateAsset(offer, path);
+            }
+            offer.EditorSetupOffer("Fine canvas weave", "Your easel canvases get a finer weave: paint with more detail.", 60, null);
+            offer.EditorSetResolution(new Vector2Int(960, 768));
+            EditorUtility.SetDirty(offer);
+            return offer;
+        }
+
         /// <summary>Ofertas de la tienda (assets en Data/Shop).</summary>
         static ShopOffer[] GetOrCreateShopOffers()
         {
@@ -1413,6 +1427,8 @@ namespace TheLivingCanvas.EditorTools
                 EditorUtility.SetDirty(offer);
                 offers.Add(offer);
             }
+
+            offers.Add(GetOrCreateFineCanvasOffer($"{Root}/Data/Shop/Offer_Upgrade_fine_canvas.asset"));
 
             foreach (var crop in GetOrCreateCrops().Skip(StartingCrops))
             {

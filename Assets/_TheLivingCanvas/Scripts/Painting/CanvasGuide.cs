@@ -15,6 +15,7 @@ namespace TheLivingCanvas.Painting
 
         PaintSurface surface;
         PaintTemplate template;
+        Vector2Int builtSize;
         Color32[] outline;
         Color32[] hints;
 
@@ -23,7 +24,10 @@ namespace TheLivingCanvas.Painting
         /// <summary>Cambia la plantilla (null quita la guía).</summary>
         public void SetTemplate(PaintTemplate newTemplate)
         {
-            if (newTemplate == template) return;
+            // Con otra resolución hay que reconstruir las capas aunque la plantilla sea la misma.
+            var size = new Vector2Int(surface.Width, surface.Height);
+            if (newTemplate == template && size == builtSize) return;
+            builtSize = size;
             template = newTemplate;
             outline = hints = null;
             if (template != null)

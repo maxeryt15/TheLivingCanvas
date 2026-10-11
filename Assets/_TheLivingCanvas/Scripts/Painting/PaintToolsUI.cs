@@ -51,7 +51,6 @@ namespace TheLivingCanvas.Painting
             eraserButton.onClick.AddListener(() => brush.SetEraser(!brush.EraserActive));
 
             sizeSlider.minValue = brush.MinBrushRadius;
-            sizeSlider.maxValue = brush.MaxBrushRadius;
             sizeSlider.onValueChanged.AddListener(brush.SetBrushRadius);
 
             undoButton.onClick.AddListener(brush.Undo);
@@ -123,6 +122,7 @@ namespace TheLivingCanvas.Painting
             eraserHighlight.enabled = brush.EraserActive;
             guideHighlight.enabled = brush.ShowGuide;
             hintsHighlight.enabled = brush.ShowColorHints;
+            sizeSlider.maxValue = brush.MaxBrushRadius; // depende de la resolución del lienzo activo
             sizeSlider.SetValueWithoutNotify(brush.BrushRadius);
         }
     }

@@ -60,7 +60,9 @@ namespace TheLivingCanvas.Painting
         public bool ShowColorHints { get; private set; }
         public float BrushRadius => brushRadius;
         public float MinBrushRadius => minBrushRadius;
-        public float MaxBrushRadius => maxBrushRadius;
+        /// <summary>Crece con la resolución del lienzo activo para conservar el mismo tamaño físico máximo.</summary>
+        public float MaxBrushRadius =>
+            ActiveSurface == null ? maxBrushRadius : maxBrushRadius * ActiveSurface.Width / PaintSurface.ReferenceWidth;
 
         PaintSurface ActiveSurface => paintMode.IsPainting ? paintMode.ActiveCanvas.Surface : null;
         public bool CanUndo => ActiveSurface != null && ActiveSurface.CanUndo;
@@ -184,7 +186,7 @@ namespace TheLivingCanvas.Painting
 
         public void SetBrushRadius(float radius)
         {
-            float clamped = Mathf.Clamp(radius, minBrushRadius, maxBrushRadius);
+            float clamped = Mathf.Clamp(radius, minBrushRadius, MaxBrushRadius);
             if (Mathf.Approximately(clamped, brushRadius)) return;
             brushRadius = clamped;
             ToolsChanged?.Invoke();

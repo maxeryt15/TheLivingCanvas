@@ -15,6 +15,10 @@ namespace TheLivingCanvas.Painting
         /// </summary>
         public const byte FillAlpha = 254;
 
+        /// <summary>Resolución de referencia: el pigmento y el tamaño máximo del pincel se miden respecto a ella.</summary>
+        public const int ReferenceWidth = 640;
+        public const int ReferenceHeight = 512;
+
         [Tooltip("Resolución de la pintura. Mantener la proporción del lienzo (1 × 0.8 m → 5:4).")]
         [SerializeField] int width = 640;
         [SerializeField] int height = 512;
@@ -65,6 +69,26 @@ namespace TheLivingCanvas.Painting
         void Awake()
         {
             meshCollider = GetComponent<MeshCollider>();
+            AllocateBuffers();
+            GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.white);
+        }
+
+        /// <summary>
+        /// Cambia la resolución (misma superficie física, más o menos píxeles). Solo con la pintura parada:
+        /// descarta pintura, guía e historial, que están dimensionados para la resolución anterior.
+        /// </summary>
+        public void SetResolution(int newWidth, int newHeight)
+        {
+            if (newWidth == width && newHeight == height) return;
+            width = newWidth;
+            height = newHeight;
+            Destroy(texture);
+            AllocateBuffers();
+        }
+
+        /// <summary>Crea todo lo que depende del tamaño: píxeles, textura mostrada, historial y búferes de trazo.</summary>
+        void AllocateBuffers()
+        {
             texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
             {
                 name = "PaintTexture",
@@ -72,12 +96,14 @@ namespace TheLivingCanvas.Painting
                 filterMode = FilterMode.Bilinear
             };
             pixels = new Color32[width * height];
+            // Los demás se crean al usarlos, con el tamaño nuevo.
+            display = null;
+            strokeBase = null;
+            strokeCoverage = null;
+            guideOutline = guideHints = null;
             history = new PaintHistory(undoSteps);
             FillBase();
-
-            var material = GetComponent<MeshRenderer>().material;
-            material.SetTexture("_BaseMap", texture);
-            material.SetColor("_BaseColor", Color.white);
+            GetComponent<MeshRenderer>().material.SetTexture("_BaseMap", texture);
         }
 
         void OnDestroy() => Destroy(texture);

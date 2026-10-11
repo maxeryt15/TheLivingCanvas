@@ -34,6 +34,8 @@ namespace TheLivingCanvas.Painting
         public CropDefinition Crop { get; private set; }
         /// <summary>Tipo del lienzo puesto (null con el caballete vacío).</summary>
         public CanvasType CanvasType { get; private set; }
+        /// <summary>Resolución de los lienzos que se pongan a partir de ahora (la mejora de tienda la sube; el lienzo ya puesto no cambia).</summary>
+        public Vector2Int CanvasResolution { get; set; } = new(PaintSurface.ReferenceWidth, PaintSurface.ReferenceHeight);
         public bool IsFinished => finishedResult != null;
         public string Prompt =>
             IsFinished ? "Take painting"
@@ -79,6 +81,7 @@ namespace TheLivingCanvas.Painting
             if (hasCanvas || !interactor.GetComponent<PlayerInventory>().TryConsume(BlankCanvasItem.KeyFor(canvasType))) return;
             CanvasType = canvasType;
             Crop = crop;
+            surface.SetResolution(CanvasResolution.x, CanvasResolution.y); // antes que la guía, que se construye al tamaño de la superficie
             guide.SetTemplate(crop.Template);
             surface.ResetToBlank();
             SetHasCanvas(true);

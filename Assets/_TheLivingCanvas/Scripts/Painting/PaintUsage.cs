@@ -11,7 +11,10 @@ namespace TheLivingCanvas.Painting
     /// </summary>
     public static class PaintUsage
     {
-        /// <summary>Un girasol completo ronda 45 de amarillo, 8 de ocre y 10 de verde.</summary>
+        /// <summary>
+        /// Píxeles por unidad a la resolución de referencia (<see cref="PaintSurface.ReferenceWidth"/> × <see cref="PaintSurface.ReferenceHeight"/>);
+        /// a otra resolución se escala por el área. Un girasol completo ronda 45 de amarillo, 8 de ocre y 10 de verde.
+        /// </summary>
         public const int PixelsPerUnit = 1000;
         const int CanvasTolerance = 30 * 30; // igual que PaintEvaluator: "tela sin pintar"
         public const float FillCostMultiplier = 1.5f;
@@ -19,6 +22,9 @@ namespace TheLivingCanvas.Painting
         /// <summary>Unidades por pigmento (solo los que redondean a 1 o más: las motas sueltas no cuentan).</summary>
         public static Dictionary<PigmentDefinition, int> Measure(PaintSurface surface, IReadOnlyList<PigmentDefinition> palette)
         {
+            // Mismo área pintada, mismo coste: con más resolución cada unidad necesita proporcionalmente más píxeles.
+            float pixelsPerUnit = PixelsPerUnit * (surface.Width * surface.Height) / (float)(PaintSurface.ReferenceWidth * PaintSurface.ReferenceHeight);
+
             var counts = new float[palette.Count];
             var colors = new Color32[palette.Count];
             for (int p = 0; p < palette.Count; p++)
@@ -45,7 +51,7 @@ namespace TheLivingCanvas.Painting
             var usage = new Dictionary<PigmentDefinition, int>();
             for (int p = 0; p < palette.Count; p++)
             {
-                int units = Mathf.RoundToInt(counts[p] / PixelsPerUnit);
+                int units = Mathf.RoundToInt(counts[p] / pixelsPerUnit);
                 if (units > 0) usage[palette[p]] = units;
             }
             return usage;
