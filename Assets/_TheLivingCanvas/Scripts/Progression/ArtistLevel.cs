@@ -70,12 +70,19 @@ namespace TheLivingCanvas.Progression
         /// <summary>Se subió de nivel: nivel nuevo.</summary>
         public event Action<int> LeveledUp;
 
+        /// <summary>Si ya se pintó el cultivo (o la variante) alguna vez: lo usa la colección de la galería.</summary>
+        public bool IsDiscovered(CropDefinition crop) => discovered.Contains(crop.Id);
+
+        public bool IsDiscovered(CropDefinition crop, CropVariant variant) => discovered.Contains(Key(crop, variant));
+
+        static string Key(CropDefinition crop, CropVariant variant) => $"{crop.Id}:{variant.id}";
+
         /// <summary>Da la XP de una pintura terminada; la variante puede ser null si no salió ninguna.</summary>
         public XpGain AwardPainting(PaintingQuality quality, CropDefinition crop, CropVariant variant)
         {
             int gained = xpPerQuality[(int)quality];
             bool newCrop = discovered.Add(crop.Id);
-            bool newVariant = variant != null && discovered.Add($"{crop.Id}:{variant.id}");
+            bool newVariant = variant != null && discovered.Add(Key(crop, variant));
             if (newCrop) gained += discoveryBonus;
             if (newVariant) gained += discoveryBonus;
 

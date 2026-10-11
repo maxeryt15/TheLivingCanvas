@@ -1821,8 +1821,85 @@ namespace TheLivingCanvas.EditorTools
             BuildGalleryFrame(gallery, "Frame_L2", new Vector3(-5.9f, 1.6f, 11.5f), Quaternion.Euler(0f, -90f, 0f), woodMat, hangUi, inventory);
             BuildGalleryFrame(gallery, "Frame_R1", new Vector3(5.9f, 1.6f, 8.5f), Quaternion.Euler(0f, 90f, 0f), woodMat, hangUi, inventory);
             BuildGalleryFrame(gallery, "Frame_R2", new Vector3(5.9f, 1.6f, 11.5f), Quaternion.Euler(0f, 90f, 0f), woodMat, hangUi, inventory);
-            BuildGalleryFrame(gallery, "Frame_B1", new Vector3(-2.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
-            BuildGalleryFrame(gallery, "Frame_B2", new Vector3(2.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
+            BuildGalleryFrame(gallery, "Frame_B1", new Vector3(-3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
+            BuildGalleryFrame(gallery, "Frame_B2", new Vector3(3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
+            BuildCollectionBoard(hud, gallery, player, rig, woodMat);
+        }
+
+        /// <summary>Tablón de corcho en el centro de la pared del fondo + panel con la colección de cultivos y variantes.</summary>
+        static void BuildCollectionBoard(Transform hud, Transform gallery, GameObject player, GameObject rig, Material woodMat)
+        {
+            var corkMat = GetOrCreateMaterial("M_Gallery_Board", new Color(0.72f, 0.52f, 0.32f));
+
+            var ui = BuildListPanel(hud, "CollectionUI", "Collection", new Vector2(760f, 640f));
+            var collectionUi = ui.Root.AddComponent<CollectionUI>();
+            var uiSo = new SerializedObject(collectionUi);
+            SetModalPanelRefs(uiSo, ui, player, rig);
+            uiSo.FindProperty("messageLabel").objectReferenceValue = ui.Message;
+            uiSo.ApplyModifiedPropertiesWithoutUndo();
+
+            // Como los marcos: +Z local hacia la pared, el tablón se ve desde -Z.
+            var board = new GameObject("CollectionBoard");
+            board.transform.SetParent(gallery, false);
+            board.transform.SetPositionAndRotation(new Vector3(0f, 1.6f, 13.9f), Quaternion.identity);
+
+            var box = board.AddComponent<BoxCollider>();
+            box.isTrigger = true;
+            box.center = new Vector3(0f, 0f, -0.3f);
+            box.size = new Vector3(2.4f, 1.7f, 0.6f);
+
+            CreatePart(PrimitiveType.Cube, "Cork", board.transform, new Vector3(0f, 0f, -0.02f), new Vector3(2f, 1.3f, 0.04f), corkMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Border_Top", board.transform, new Vector3(0f, 0.7f, -0.04f), new Vector3(2.2f, 0.1f, 0.08f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Border_Bottom", board.transform, new Vector3(0f, -0.7f, -0.04f), new Vector3(2.2f, 0.1f, 0.08f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Border_Left", board.transform, new Vector3(-1.05f, 0f, -0.04f), new Vector3(0.1f, 1.3f, 0.08f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Border_Right", board.transform, new Vector3(1.05f, 0f, -0.04f), new Vector3(0.1f, 1.3f, 0.08f), woodMat, Quaternion.identity);
+
+            // Tarjetas clavadas de adorno (sin collider).
+            var cards = new[]
+            {
+                (new Vector3(-0.8f, 0.4f, -0.05f), 6f, new Color(0.98f, 0.85f, 0.35f)),
+                (new Vector3(0.8f, 0.42f, -0.05f), -5f, new Color(0.95f, 0.5f, 0.4f)),
+                (new Vector3(-0.85f, -0.4f, -0.05f), -4f, new Color(0.55f, 0.75f, 0.9f)),
+                (new Vector3(0.85f, -0.38f, -0.05f), 7f, new Color(0.6f, 0.82f, 0.5f))
+            };
+            for (int i = 0; i < cards.Length; i++)
+            {
+                var (position, angle, color) = cards[i];
+                var card = CreatePart(PrimitiveType.Cube, $"Card_{i + 1}", board.transform, position, new Vector3(0.3f, 0.4f, 0.01f),
+                    GetOrCreateMaterial($"M_Gallery_Card_{i + 1}", color), Quaternion.Euler(0f, 0f, angle));
+                Object.DestroyImmediate(card.GetComponent<Collider>());
+            }
+
+            // Canvas en el mundo: 1 unidad de UI = 1 mm.
+            var canvasGo = new GameObject("Text", typeof(RectTransform), typeof(Canvas));
+            canvasGo.transform.SetParent(board.transform, false);
+            canvasGo.transform.localPosition = new Vector3(0f, 0f, -0.05f);
+            canvasGo.transform.localScale = Vector3.one * 0.001f;
+            ((RectTransform)canvasGo.transform).sizeDelta = new Vector2(1100f, 600f);
+            canvasGo.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
+
+            var textGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            textGo.transform.SetParent(canvasGo.transform, false);
+            var textRect = (RectTransform)textGo.transform;
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = textRect.offsetMax = Vector2.zero;
+            var label = textGo.GetComponent<Text>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.alignment = TextAnchor.MiddleCenter;
+            label.color = new Color(0.2f, 0.12f, 0.06f);
+            label.resizeTextForBestFit = true;
+            label.resizeTextMinSize = 20;
+            label.resizeTextMaxSize = 200;
+            label.raycastTarget = false;
+
+            var component = board.AddComponent<CollectionBoard>();
+            var so = new SerializedObject(component);
+            so.FindProperty("collectionUI").objectReferenceValue = collectionUi;
+            so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
+            SetArray(so.FindProperty("crops"), GetOrCreateCrops());
+            so.FindProperty("label").objectReferenceValue = label;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Marco de madera (hueco 1,5 x 1,2 m), cuadro oculto hasta colgar algo y placa con los datos debajo.</summary>
