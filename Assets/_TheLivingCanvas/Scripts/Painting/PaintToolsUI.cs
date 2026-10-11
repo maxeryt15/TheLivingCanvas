@@ -20,6 +20,11 @@ namespace TheLivingCanvas.Painting
         [Tooltip("Botón de pincel desactivado, en la fila del borrador: se clona por cada pincel delante del borrador.")]
         [SerializeField] Button brushTemplate;
         [SerializeField] Button eraserButton;
+        [Tooltip("Botones de herramientas compradas, desactivados hasta tenerlas (segunda fila).")]
+        [SerializeField] Button eyedropperButton;
+        [SerializeField] Button symmetryButton;
+        [Tooltip("Muestra del color copiado con el cuentagotas; oculta hasta copiar uno.")]
+        [SerializeField] Button pickedButton;
         [SerializeField] Button undoButton;
         [SerializeField] Button redoButton;
         [SerializeField] Button clearButton;
@@ -30,6 +35,9 @@ namespace TheLivingCanvas.Painting
         readonly Dictionary<PigmentDefinition, Text> swatchAmounts = new();
         readonly Dictionary<BrushDefinition, Outline> brushHighlights = new();
         Outline eraserHighlight;
+        Outline eyedropperHighlight;
+        Outline symmetryHighlight;
+        Outline pickedHighlight;
         Outline guideHighlight;
         Outline hintsHighlight;
 
@@ -50,6 +58,15 @@ namespace TheLivingCanvas.Painting
             eraserHighlight = eraserButton.GetComponent<Outline>();
             eraserButton.onClick.AddListener(() => brush.SetEraser(!brush.EraserActive));
 
+            eyedropperHighlight = eyedropperButton.GetComponent<Outline>();
+            symmetryHighlight = symmetryButton.GetComponent<Outline>();
+            pickedHighlight = pickedButton.GetComponent<Outline>();
+            eyedropperButton.onClick.AddListener(() => brush.SetEyedropper(!brush.EyedropperActive));
+            symmetryButton.onClick.AddListener(() => brush.SetSymmetry(!brush.SymmetryActive));
+            pickedButton.onClick.AddListener(brush.SelectPickedColor);
+            ShowOwnedTools();
+            brush.ToolAdded += OnToolAdded;
+
             sizeSlider.minValue = brush.MinBrushRadius;
             sizeSlider.onValueChanged.AddListener(brush.SetBrushRadius);
 
@@ -67,6 +84,7 @@ namespace TheLivingCanvas.Painting
         {
             brush.PigmentAdded -= AddSwatch;
             brush.BrushAdded -= AddBrushButton;
+            brush.ToolAdded -= OnToolAdded;
             stock.Changed -= RefreshAmounts;
         }
 
@@ -80,6 +98,14 @@ namespace TheLivingCanvas.Painting
             button.onClick.AddListener(() => brush.SelectBrush(b));
             brushHighlights[b] = button.GetComponent<Outline>(); // se marca en Refresh (al mostrarse el panel)
         }
+
+        void ShowOwnedTools()
+        {
+            eyedropperButton.gameObject.SetActive(brush.HasTool(PaintTool.Eyedropper));
+            symmetryButton.gameObject.SetActive(brush.HasTool(PaintTool.Symmetry));
+        }
+
+        void OnToolAdded(PaintTool _) => ShowOwnedTools();
 
         void AddSwatch(PigmentDefinition pigment)
         {
@@ -115,11 +141,18 @@ namespace TheLivingCanvas.Painting
 
         void Refresh()
         {
+            bool picked = brush.PickedColor.HasValue;
             foreach (var pair in swatchHighlights)
-                pair.Value.enabled = !brush.EraserActive && pair.Key == brush.SelectedPigment;
+                pair.Value.enabled = !brush.EraserActive && !picked && pair.Key == brush.SelectedPigment;
             foreach (var pair in brushHighlights)
                 pair.Value.enabled = pair.Key == brush.SelectedBrush;
             eraserHighlight.enabled = brush.EraserActive;
+            eyedropperHighlight.enabled = brush.EyedropperActive;
+            symmetryHighlight.enabled = brush.SymmetryActive;
+            pickedButton.gameObject.SetActive(picked);
+            if (picked)
+                pickedButton.image.color = brush.PickedColor.Value;
+            pickedHighlight.enabled = picked && !brush.EraserActive;
             guideHighlight.enabled = brush.ShowGuide;
             hintsHighlight.enabled = brush.ShowColorHints;
             sizeSlider.maxValue = brush.MaxBrushRadius; // depende de la resolución del lienzo activo

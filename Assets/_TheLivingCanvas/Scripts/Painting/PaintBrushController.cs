@@ -8,6 +8,13 @@ using UnityEngine.UI;
 
 namespace TheLivingCanvas.Painting
 {
+    /// <summary>Herramientas de pintura que se compran una vez en la tienda.</summary>
+    public enum PaintTool
+    {
+        Eyedropper,
+        Symmetry
+    }
+
     /// <summary>
     /// Mientras se pinta: proyecta el puntero sobre el lienzo activo, dibuja un aro del tamaño
     /// del pincel y pinta con el botón izquierdo / punta del lápiz. Guarda el estado de las
@@ -41,6 +48,7 @@ namespace TheLivingCanvas.Painting
         Texture2D ringTexture;
         Canvas uiCanvas;
         CanvasInteractable guidedCanvas;
+        bool pickHeld; // el clic que copió el color sigue pulsado: no debe empezar un trazo
 
         /// <summary>Se dispara cuando cambia el pigmento, el tamaño o el borrador (para refrescar la UI).</summary>
         public event Action ToolsChanged;
@@ -54,6 +62,11 @@ namespace TheLivingCanvas.Painting
         public event Action<BrushDefinition> BrushAdded;
         public PigmentDefinition SelectedPigment { get; private set; }
         public bool EraserActive { get; private set; }
+        /// <summary>Color copiado de la pintura con el cuentagotas; sustituye al del pigmento hasta elegir otro.</summary>
+        public Color? PickedColor { get; private set; }
+        /// <summary>Cuentagotas armado: el próximo clic sobre pintura copia su color.</summary>
+        public bool EyedropperActive { get; private set; }
+        public bool SymmetryActive { get; private set; }
         /// <summary>Contorno tenue de la plantilla.</summary>
         public bool ShowGuide { get; private set; } = true;
         /// <summary>Pista del color sugerido dentro de cada zona.</summary>
@@ -63,6 +76,11 @@ namespace TheLivingCanvas.Painting
         /// <summary>Crece con la resolución del lienzo activo para conservar el mismo tamaño físico máximo.</summary>
         public float MaxBrushRadius =>
             ActiveSurface == null ? maxBrushRadius : maxBrushRadius * ActiveSurface.Width / PaintSurface.ReferenceWidth;
+
+        /// <summary>Se dispara con cada herramienta nueva (ej. comprada en la tienda).</summary>
+        public event Action<PaintTool> ToolAdded;
+
+        readonly HashSet<PaintTool> tools = new();
 
         PaintSurface ActiveSurface => paintMode.IsPainting ? paintMode.ActiveCanvas.Surface : null;
         public bool CanUndo => ActiveSurface != null && ActiveSurface.CanUndo;
@@ -144,6 +162,16 @@ namespace TheLivingCanvas.Painting
             return true;
         }
 
+        public bool HasTool(PaintTool tool) => tools.Contains(tool);
+
+        /// <summary>Añade una herramienta (false si ya la tenía).</summary>
+        public bool AddTool(PaintTool tool)
+        {
+            if (!tools.Add(tool)) return false;
+            ToolAdded?.Invoke(tool);
+            return true;
+        }
+
         /// <summary>Cambia de pincel; el borrador sigue como estaba (con Fill, borra la zona entera).</summary>
         public void SelectBrush(BrushDefinition brush)
         {
@@ -154,6 +182,7 @@ namespace TheLivingCanvas.Painting
         public void SelectPigment(PigmentDefinition pigment)
         {
             SelectedPigment = pigment;
+            PickedColor = null;
             EraserActive = false;
             ToolsChanged?.Invoke();
         }
@@ -161,6 +190,25 @@ namespace TheLivingCanvas.Painting
         public void SetEraser(bool active)
         {
             EraserActive = active;
+            ToolsChanged?.Invoke();
+        }
+
+        public void SetEyedropper(bool active)
+        {
+            EyedropperActive = active;
+            ToolsChanged?.Invoke();
+        }
+
+        public void SetSymmetry(bool active)
+        {
+            SymmetryActive = active;
+            ToolsChanged?.Invoke();
+        }
+
+        /// <summary>Vuelve al color copiado con el cuentagotas (también quita el borrador).</summary>
+        public void SelectPickedColor()
+        {
+            EraserActive = false;
             ToolsChanged?.Invoke();
         }
 
@@ -223,21 +271,28 @@ namespace TheLivingCanvas.Painting
             bool overCanvas = surface.Raycast(ray, out Vector2 uv, out RaycastHit hit) && !overUi;
             UpdateCursor(overCanvas, hit, surface);
 
-            if (overCanvas && strokeAction.action.IsPressed())
+            bool pressed = strokeAction.action.IsPressed();
+            if (!pressed)
+                pickHeld = false;
+            if (EyedropperActive && overCanvas && strokeAction.action.WasPressedThisFrame())
+                TryPickColor(surface, uv);
+
+            // Con el cuentagotas armado (o recién usado, hasta soltar el botón) no se pinta.
+            if (overCanvas && pressed && !EyedropperActive && !pickHeld)
             {
                 bool fill = SelectedBrush != null && SelectedBrush.Kind == BrushKind.Fill;
                 if (strokeSurface != surface)
                 {
-                    Color color = EraserActive || SelectedPigment == null ? surface.BaseColor : SelectedPigment.Color;
+                    Color color = StrokeColor(surface);
                     if (fill)
                     {
                         var template = paintMode.ActiveCanvas.Crop.Template;
-                        surface.FillZone(uv, PaintEvaluator.ZoneMap(template, surface.Width, surface.Height), color);
+                        surface.FillZone(uv, PaintEvaluator.ZoneMap(template, surface.Width, surface.Height), color, SymmetryActive);
                     }
                     else
                     {
                         bool glaze = SelectedBrush != null && SelectedBrush.Kind == BrushKind.Glaze;
-                        surface.BeginStroke(uv, brushRadius, color, glaze ? glazeOpacity : 1f);
+                        surface.BeginStroke(uv, brushRadius, color, glaze ? glazeOpacity : 1f, SymmetryActive);
                     }
                     strokeSurface = surface;
                 }
@@ -251,6 +306,24 @@ namespace TheLivingCanvas.Painting
                 // Salir del lienzo corta el trazo; al volver empieza uno nuevo.
                 strokeSurface = null;
             }
+        }
+
+        /// <summary>Copia el color bajo el puntero; sobre tela sin pintar no hay nada que copiar y sigue armado.</summary>
+        void TryPickColor(PaintSurface surface, Vector2 uv)
+        {
+            if (!surface.TrySamplePaint(uv, out Color sampled)) return;
+            PickedColor = sampled;
+            EraserActive = false;
+            EyedropperActive = false;
+            pickHeld = true;
+            ToolsChanged?.Invoke();
+        }
+
+        Color StrokeColor(PaintSurface surface)
+        {
+            if (EraserActive) return surface.BaseColor;
+            if (PickedColor.HasValue) return PickedColor.Value;
+            return SelectedPigment != null ? SelectedPigment.Color : surface.BaseColor;
         }
 
         void UpdateCursor(bool overCanvas, RaycastHit hit, PaintSurface surface)

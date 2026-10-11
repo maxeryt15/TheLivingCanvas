@@ -617,7 +617,7 @@ namespace TheLivingCanvas.EditorTools
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0f, 0.5f);
             panelRect.pivot = new Vector2(0f, 0.5f);
             panelRect.anchoredPosition = new Vector2(40f, 0f);
-            panelRect.sizeDelta = new Vector2(300f, 860f); // ancho para 4 botones en la fila de herramientas
+            panelRect.sizeDelta = new Vector2(300f, 980f); // ancho para 4 botones en la fila de herramientas; alto: ver suma de la columna (960)
             var panelImage = panel.GetComponent<Image>();
             panelImage.sprite = resources.standard;
             panelImage.type = Image.Type.Sliced;
@@ -678,6 +678,26 @@ namespace TheLivingCanvas.EditorTools
                 label.resizeTextMaxSize = 18;
             }
 
+            // Herramientas compradas: PaintToolsUI activa cada botón al tenerla; la muestra, al copiar un color.
+            var toolsRow2 = CreateRow(panel.transform, "ToolsRow2");
+            var eyedropper = CreateButton(resources, toolsRow2, "EyedropperButton", "Eyedropper", 18, font);
+            var symmetry = CreateButton(resources, toolsRow2, "SymmetryButton", "Symmetry", 18, font);
+            var picked = CreateButton(resources, toolsRow2, "PickedButton", "Picked", 18, font);
+            foreach (var toolButton in new[] { eyedropper, symmetry, picked })
+            {
+                ConfigureHighlight(toolButton.AddComponent<Outline>(), cream);
+                var label = toolButton.GetComponentInChildren<Text>();
+                label.resizeTextForBestFit = true;
+                label.resizeTextMinSize = 11;
+                label.resizeTextMaxSize = 18;
+                toolButton.SetActive(false);
+            }
+            var pickedLabel = picked.GetComponentInChildren<Text>();
+            pickedLabel.color = Color.white; // se lee sobre cualquier color copiado
+            var pickedShadow = pickedLabel.gameObject.AddComponent<Shadow>();
+            pickedShadow.effectColor = new Color(0f, 0f, 0f, 0.8f);
+            pickedShadow.effectDistance = new Vector2(1.5f, -1.5f);
+
             var historyRow = CreateRow(panel.transform, "HistoryRow");
             var undo = CreateButton(resources, historyRow, "UndoButton", "Undo", 19, font);
             var redo = CreateButton(resources, historyRow, "RedoButton", "Redo", 19, font);
@@ -704,6 +724,9 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("sizeSlider").objectReferenceValue = slider.GetComponent<Slider>();
             so.FindProperty("brushTemplate").objectReferenceValue = brushTemplate.GetComponent<Button>();
             so.FindProperty("eraserButton").objectReferenceValue = eraser.GetComponent<Button>();
+            so.FindProperty("eyedropperButton").objectReferenceValue = eyedropper.GetComponent<Button>();
+            so.FindProperty("symmetryButton").objectReferenceValue = symmetry.GetComponent<Button>();
+            so.FindProperty("pickedButton").objectReferenceValue = picked.GetComponent<Button>();
             so.FindProperty("undoButton").objectReferenceValue = undo.GetComponent<Button>();
             so.FindProperty("redoButton").objectReferenceValue = redo.GetComponent<Button>();
             so.FindProperty("clearButton").objectReferenceValue = clear.GetComponent<Button>();
@@ -1458,6 +1481,25 @@ namespace TheLivingCanvas.EditorTools
                 offers.Add(offer);
             }
 
+            foreach (var (tool, id, name, description) in new[]
+            {
+                (PaintTool.Eyedropper, "eyedropper", "Eyedropper", "Pick any color from your painting — even glaze mixes — and paint with it."),
+                (PaintTool.Symmetry, "symmetry", "Symmetry", "Mirror every stroke across the middle of the canvas.")
+            })
+            {
+                var path = $"{Root}/Data/Shop/Offer_Tool_{id}.asset";
+                var offer = AssetDatabase.LoadAssetAtPath<ToolOffer>(path);
+                if (offer == null)
+                {
+                    offer = ScriptableObject.CreateInstance<ToolOffer>();
+                    AssetDatabase.CreateAsset(offer, path);
+                }
+                offer.EditorSetupOffer(name, description, 30, null);
+                offer.EditorSetTool(tool);
+                EditorUtility.SetDirty(offer);
+                offers.Add(offer);
+            }
+
             offers.Add(GetOrCreateFineCanvasOffer($"{Root}/Data/Shop/Offer_Upgrade_fine_canvas.asset"));
 
             foreach (var crop in GetOrCreateCrops().Skip(StartingCrops))
@@ -1485,8 +1527,9 @@ namespace TheLivingCanvas.EditorTools
         /// <summary>Nivel de artista que pide cada oferta (por nombre de asset); lo no listado es de nivel 1.</summary>
         static int RequiredLevel(string offerName) => offerName switch
         {
-            "Offer_Pigment_carmine" or "Offer_Sketch_tomato" or "Offer_Brush_fill" => 2,
-            "Offer_Pigment_ultramarine" or "Offer_Pigment_titanium_white" or "Offer_Canvas_large" or "Offer_Brush_glaze" => 3,
+            "Offer_Pigment_carmine" or "Offer_Sketch_tomato" or "Offer_Brush_fill" or "Offer_Tool_symmetry" => 2,
+            "Offer_Pigment_ultramarine" or "Offer_Pigment_titanium_white" or "Offer_Canvas_large" or "Offer_Brush_glaze"
+                or "Offer_Tool_eyedropper" => 3,
             "Offer_Sketch_glowbell" or "Offer_Upgrade_fine_canvas" => 4,
             _ => 1
         };

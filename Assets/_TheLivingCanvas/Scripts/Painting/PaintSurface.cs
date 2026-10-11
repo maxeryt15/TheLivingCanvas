@@ -18,6 +18,7 @@ namespace TheLivingCanvas.Painting
         /// <summary>Resolución de referencia: el pigmento y el tamaño máximo del pincel se miden respecto a ella.</summary>
         public const int ReferenceWidth = 640;
         public const int ReferenceHeight = 512;
+        const int CanvasTolerance = 30 * 30; // distancia RGB² para considerar "tela sin pintar" (como PaintEvaluator)
 
         [Tooltip("Resolución de la pintura. Mantener la proporción del lienzo (1 × 0.8 m → 5:4).")]
         [SerializeField] int width = 640;
@@ -50,6 +51,7 @@ namespace TheLivingCanvas.Painting
         // Veladura (opacidad < 1): se mezcla con la pintura de antes del trazo y cada píxel guarda la cobertura
         // máxima del trazo, así los estampados que se solapan dentro de un mismo trazo no se acumulan.
         float strokeOpacity = 1f;
+        bool strokeMirror;
         Color32[] strokeBase;
         float[] strokeCoverage;
 
@@ -193,32 +195,52 @@ namespace TheLivingCanvas.Painting
         }
 
         /// <summary>
-        /// Rellena de golpe la zona de <paramref name="zoneMap"/> que hay bajo <paramref name="uv"/> (un paso de
-        /// deshacer). Fuera de toda zona no hace nada; devuelve si rellenó algo.
+        /// Color de la pintura bajo <paramref name="uv"/> (opaco, sin la marca de Fill). Falla sobre tela sin pintar:
+        /// no hay nada que copiar.
         /// </summary>
-        public bool FillZone(Vector2 uv, int[] zoneMap, Color color)
+        public bool TrySamplePaint(Vector2 uv, out Color color)
         {
             Vector2 p = UvToPixel(uv);
-            int x = Mathf.Clamp((int)p.x, 0, width - 1), y = Mathf.Clamp((int)p.y, 0, height - 1);
-            int zone = zoneMap[y * width + x];
-            if (zone < 0) return false;
+            Color32 c = pixels[ClampedIndex(p)];
+            c.a = 255;
+            color = c;
+            int dr = c.r - baseColor.r, dg = c.g - baseColor.g, db = c.b - baseColor.b;
+            return dr * dr + dg * dg + db * db > CanvasTolerance;
+        }
+
+        int ClampedIndex(Vector2 p) =>
+            Mathf.Clamp((int)p.y, 0, height - 1) * width + Mathf.Clamp((int)p.x, 0, width - 1);
+
+        /// <summary>
+        /// Rellena de golpe la zona de <paramref name="zoneMap"/> que hay bajo <paramref name="uv"/> (un paso de
+        /// deshacer). Con <paramref name="mirror"/> rellena también la zona del punto simétrico. Fuera de toda zona
+        /// no hace nada; devuelve si rellenó algo.
+        /// </summary>
+        public bool FillZone(Vector2 uv, int[] zoneMap, Color color, bool mirror = false)
+        {
+            Vector2 p = UvToPixel(uv);
+            int zone = zoneMap[ClampedIndex(p)];
+            int mirrorZone = mirror ? zoneMap[ClampedIndex(MirrorPixel(p))] : -1;
+            if (zone < 0 && mirrorZone < 0) return false;
 
             history.Record(pixels);
             Color32 fill = color;
             fill.a = FillAlpha;
             for (int i = 0; i < pixels.Length; i++)
-                if (zoneMap[i] == zone)
+                if (zoneMap[i] >= 0 && (zoneMap[i] == zone || zoneMap[i] == mirrorZone))
                     pixels[i] = fill;
             dirty = true;
             return true;
         }
 
         /// <param name="opacity">1 = opaco; menos de 1 = veladura que deja ver lo de debajo.</param>
-        public void BeginStroke(Vector2 uv, float radiusPx, Color color, float opacity = 1f)
+        /// <param name="mirror">Repite cada estampado simétrico respecto al eje vertical central del lienzo.</param>
+        public void BeginStroke(Vector2 uv, float radiusPx, Color color, float opacity = 1f, bool mirror = false)
         {
             history.Record(pixels);
             strokeRadius = radiusPx;
             strokeColor = color;
+            strokeMirror = mirror;
             strokeOpacity = Mathf.Clamp01(opacity);
             if (strokeOpacity < 1f)
             {
@@ -253,7 +275,19 @@ namespace TheLivingCanvas.Painting
 
         Vector2 UvToPixel(Vector2 uv) => new(uv.x * width, uv.y * height);
 
+        Vector2 MirrorPixel(Vector2 p) => new(width - p.x, p.y);
+
+        /// <summary>
+        /// El reflejo va dentro del mismo trazo: la veladura comparte la cobertura y no se acumula en el eje.
+        /// </summary>
         void Stamp(Vector2 center)
+        {
+            StampDisc(center);
+            if (strokeMirror)
+                StampDisc(MirrorPixel(center));
+        }
+
+        void StampDisc(Vector2 center)
         {
             float r = strokeRadius;
             int xMin = Mathf.Max(0, Mathf.FloorToInt(center.x - r));
