@@ -2,6 +2,7 @@ using System.Linq;
 using TheLivingCanvas.Core;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Economy;
+using TheLivingCanvas.Gallery;
 using TheLivingCanvas.Growth;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
@@ -56,7 +57,10 @@ namespace TheLivingCanvas.EditorTools
             // Entorno: un estudio abierto por dos lados para que la cámara en 3ª persona vea bien.
             var environment = new GameObject("Environment");
             CreateBlock("Floor", environment.transform, new Vector3(0f, -0.1f, 0f), new Vector3(12f, 0.2f, 12f), floorMat);
-            CreateBlock("Wall_Back", environment.transform, new Vector3(0f, 1.5f, 6f), new Vector3(12f, 3f, 0.2f), wallMat);
+            // Pared del fondo con un vano de 2 m x 2,4 m en x = 0: da paso a la galería.
+            CreateBlock("Wall_Back_Left", environment.transform, new Vector3(-3.5f, 1.5f, 6f), new Vector3(5f, 3f, 0.2f), wallMat);
+            CreateBlock("Wall_Back_Right", environment.transform, new Vector3(3.5f, 1.5f, 6f), new Vector3(5f, 3f, 0.2f), wallMat);
+            CreateBlock("Wall_Back_Lintel", environment.transform, new Vector3(0f, 2.7f, 6f), new Vector3(2f, 0.6f, 0.2f), wallMat);
             CreateBlock("Wall_Left", environment.transform, new Vector3(-6f, 1.5f, 0f), new Vector3(0.2f, 3f, 12f), wallMat);
             CreateBlock("Table", environment.transform, new Vector3(-4.5f, 0.4f, 4.5f), new Vector3(2f, 0.8f, 1f), accentMat);
 
@@ -104,6 +108,7 @@ namespace TheLivingCanvas.EditorTools
             BuildCropPicker(hud.transform, player, rig);
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
             BuildGarden(player.GetComponent<ArtistLevel>());
+            BuildGallery(hud.transform, player, rig, wallMat);
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -1772,6 +1777,118 @@ namespace TheLivingCanvas.EditorTools
             var stationSo = new SerializedObject(station.AddComponent<MortarStation>());
             stationSo.FindProperty("mortar").objectReferenceValue = mortar;
             stationSo.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>
+        /// Galería detrás del estudio (x de -6 a 6, z de 6 a 14), sin techo: suelo, paredes y 6 marcos vacíos
+        /// (2 por pared lateral y 2 al fondo) + el panel para colgar pinturas.
+        /// </summary>
+        static void BuildGallery(Transform hud, GameObject player, GameObject rig, Material wallMat)
+        {
+            var floorMat = GetOrCreateMaterial("M_Gallery_Floor", new Color(0.74f, 0.68f, 0.60f));
+            var woodMat = GetOrCreateMaterial("M_Gallery_Frame", new Color(0.25f, 0.17f, 0.11f));
+
+            var ui = BuildListPanel(hud, "GalleryHangUI", "Hang a painting", new Vector2(760f, 640f));
+            var hangUi = ui.Root.AddComponent<GalleryHangUI>();
+            var so = new SerializedObject(hangUi);
+            SetModalPanelRefs(so, ui, player, rig);
+            so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+            so.FindProperty("messageLabel").objectReferenceValue = ui.Message;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var gallery = new GameObject("Gallery").transform;
+            CreateBlock("Floor", gallery, new Vector3(0f, -0.1f, 10f), new Vector3(12f, 0.2f, 8f), floorMat);
+            CreateBlock("Wall_Left", gallery, new Vector3(-6f, 1.5f, 10f), new Vector3(0.2f, 3f, 8f), wallMat);
+            CreateBlock("Wall_Right", gallery, new Vector3(6f, 1.5f, 10f), new Vector3(0.2f, 3f, 8f), wallMat);
+            CreateBlock("Wall_Back", gallery, new Vector3(0f, 1.5f, 14f), new Vector3(12.2f, 3f, 0.2f), wallMat);
+
+            // Luz cálida suave para que la sala no quede a oscuras.
+            foreach (float z in new[] { 8.5f, 11.5f })
+            {
+                var lightGo = new GameObject("Light");
+                lightGo.transform.SetParent(gallery, false);
+                lightGo.transform.localPosition = new Vector3(0f, 2.6f, z);
+                var light = lightGo.AddComponent<Light>();
+                light.type = LightType.Point;
+                light.color = new Color(1f, 0.9f, 0.75f);
+                light.range = 8f;
+                light.intensity = 2f;
+            }
+
+            // Cada marco mira hacia dentro de la sala: su +Z local apunta a la pared.
+            var inventory = player.GetComponent<PlayerInventory>();
+            BuildGalleryFrame(gallery, "Frame_L1", new Vector3(-5.9f, 1.6f, 8.5f), Quaternion.Euler(0f, -90f, 0f), woodMat, hangUi, inventory);
+            BuildGalleryFrame(gallery, "Frame_L2", new Vector3(-5.9f, 1.6f, 11.5f), Quaternion.Euler(0f, -90f, 0f), woodMat, hangUi, inventory);
+            BuildGalleryFrame(gallery, "Frame_R1", new Vector3(5.9f, 1.6f, 8.5f), Quaternion.Euler(0f, 90f, 0f), woodMat, hangUi, inventory);
+            BuildGalleryFrame(gallery, "Frame_R2", new Vector3(5.9f, 1.6f, 11.5f), Quaternion.Euler(0f, 90f, 0f), woodMat, hangUi, inventory);
+            BuildGalleryFrame(gallery, "Frame_B1", new Vector3(-2.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
+            BuildGalleryFrame(gallery, "Frame_B2", new Vector3(2.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
+        }
+
+        /// <summary>Marco de madera (hueco 1,5 x 1,2 m), cuadro oculto hasta colgar algo y placa con los datos debajo.</summary>
+        static void BuildGalleryFrame(Transform parent, string name, Vector3 position, Quaternion rotation, Material woodMat,
+            GalleryHangUI hangUi, PlayerInventory inventory)
+        {
+            var canvasMat = GetOrCreateMaterial("M_Gallery_Canvas", new Color(0.95f, 0.93f, 0.88f));
+            var plaqueMat = GetOrCreateMaterial("M_Gallery_Plaque", new Color(0.78f, 0.63f, 0.32f));
+
+            var frame = new GameObject(name);
+            frame.transform.SetParent(parent, false);
+            frame.transform.SetPositionAndRotation(position, rotation);
+
+            // Volumen de interacción que sale de la pared hacia la sala (trigger: no estorba al jugador).
+            var box = frame.AddComponent<BoxCollider>();
+            box.isTrigger = true;
+            box.center = new Vector3(0f, -0.1f, -0.3f);
+            box.size = new Vector3(1.8f, 1.6f, 0.6f);
+
+            CreatePart(PrimitiveType.Cube, "Backing", frame.transform, new Vector3(0f, 0f, -0.02f), new Vector3(1.5f, 1.2f, 0.04f), canvasMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Border_Top", frame.transform, new Vector3(0f, 0.65f, -0.04f), new Vector3(1.7f, 0.1f, 0.08f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Border_Bottom", frame.transform, new Vector3(0f, -0.65f, -0.04f), new Vector3(1.7f, 0.1f, 0.08f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Border_Left", frame.transform, new Vector3(-0.8f, 0f, -0.04f), new Vector3(0.1f, 1.2f, 0.08f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Border_Right", frame.transform, new Vector3(0.8f, 0f, -0.04f), new Vector3(0.1f, 1.2f, 0.08f), woodMat, Quaternion.identity);
+
+            // El quad se ve desde -Z (la sala); GalleryFrame le da su propia instancia de material al colgar.
+            var picture = CreatePart(PrimitiveType.Quad, "Picture", frame.transform, new Vector3(0f, 0f, -0.045f), new Vector3(1.4f, 1.1f, 1f), canvasMat, Quaternion.identity);
+            Object.DestroyImmediate(picture.GetComponent<Collider>());
+
+            var plaque = new GameObject("Plaque");
+            plaque.transform.SetParent(frame.transform, false);
+            plaque.transform.localPosition = new Vector3(0f, -0.93f, 0f);
+            CreatePart(PrimitiveType.Cube, "Plate", plaque.transform, new Vector3(0f, 0f, -0.02f), new Vector3(1.2f, 0.3f, 0.04f), plaqueMat, Quaternion.identity);
+
+            // Canvas en el mundo: 1 unidad de UI = 1 mm.
+            var canvasGo = new GameObject("Text", typeof(RectTransform), typeof(Canvas));
+            canvasGo.transform.SetParent(plaque.transform, false);
+            canvasGo.transform.localPosition = new Vector3(0f, 0f, -0.045f);
+            canvasGo.transform.localScale = Vector3.one * 0.001f;
+            ((RectTransform)canvasGo.transform).sizeDelta = new Vector2(1200f, 300f);
+            canvasGo.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
+
+            var textGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            textGo.transform.SetParent(canvasGo.transform, false);
+            var textRect = (RectTransform)textGo.transform;
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = new Vector2(20f, 0f);
+            textRect.offsetMax = new Vector2(-20f, 0f);
+            var label = textGo.GetComponent<Text>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.alignment = TextAnchor.MiddleCenter;
+            label.color = new Color(0.2f, 0.12f, 0.06f);
+            label.resizeTextForBestFit = true;
+            label.resizeTextMinSize = 20;
+            label.resizeTextMaxSize = 110;
+            label.raycastTarget = false;
+
+            var component = frame.AddComponent<GalleryFrame>();
+            var so = new SerializedObject(component);
+            so.FindProperty("hangUI").objectReferenceValue = hangUi;
+            so.FindProperty("inventory").objectReferenceValue = inventory;
+            so.FindProperty("picture").objectReferenceValue = picture.GetComponent<MeshRenderer>();
+            so.FindProperty("plaque").objectReferenceValue = plaque;
+            so.FindProperty("plaqueText").objectReferenceValue = label;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Selector de cultivo al poner un lienzo en el caballete.</summary>
