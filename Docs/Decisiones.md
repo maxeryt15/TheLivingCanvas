@@ -32,3 +32,7 @@
 | 2026-10-11 | Fase 10A (por defecto, a revisar): tipos de lienzo como datos (CanvasType). Lienzo estándar (5) y lienzo grande (15): cosecha ×2, pigmento ×2, parcela más grande. Si se tiene más de un tipo, al cargar el caballete se elige primero el lienzo y luego el cultivo | El usuario pidió avanzar; se toma la opción recomendada y se revisa al terminar la 10A. |
 | 2026-10-11 | 10B: sin lienzos especiales por ahora (quedan para la Fase 17) | Decisión del usuario. |
 | 2026-10-11 | 10C: mejora "lienzo de trama fina" (compra única): el lienzo del caballete pasa de 640×512 a 960×768 para pintar con más detalle; pigmento y cosecha se normalizan al área (no cambian) | Decisión del usuario; no pisa al lienzo grande de la 10A. |
+| 2026-10-11 | Fase 11: nivel de artista con XP por pintar (más por mejor calidad y un extra al descubrir por primera vez un cultivo o una variante) | Premia pintar bien y explorar colores. |
+| 2026-10-11 | Cada oferta de la tienda pide un nivel mínimo; lo bloqueado se ve con "Level N" como meta | Aprovecha todos los desbloqueos que ya existen. |
+| 2026-10-11 | Primera zona nueva: el Jardín (exterior junto al estudio, más espacio para parcelas), que se abre a cierto nivel | Zona 2 del prompt maestro. |
+| 2026-10-11 | Herramientas nuevas: cuentagotas (toma cualquier color de la pintura, incluidas las mezclas del Glaze, y lo usa como color opaco) y simetría (espejo vertical, cuenta como pintado a mano) | Cambian cómo se pinta (regla de oro D3). |
