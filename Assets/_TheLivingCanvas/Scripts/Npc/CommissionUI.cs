@@ -48,7 +48,7 @@ namespace TheLivingCanvas.Npcs
                 give.GetComponentInChildren<Text>().text = "Give";
                 give.onClick.AddListener(() =>
                 {
-                    inventory.Remove(painting);
+                    if (!inventory.Remove(painting)) return; // ya no está (fila vieja)
                     Close();
                     onGive(painting);
                 });

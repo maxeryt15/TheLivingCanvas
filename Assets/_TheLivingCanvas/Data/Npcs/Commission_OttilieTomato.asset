@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a799e70e5eb3f49b51d6067ff8efea, type: 3}
+  m_Name: Commission_OttilieTomato
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
+  crop: {fileID: 11400000, guid: b19e841a2369a924a8b03d5fe795ec93, type: 2}
+  variantId: 
+  minQuality: 2
+  requestLines:
+  - Darling, you are back, and my appetite is wonderfully awake!
+  - 'This time I crave a tomato. Not a shy, pale thing: a bold, ripe, outrageously
+    red one. Excellent quality, if you please.'
+  - Paint it as though you could taste it, and bring it straight to me.
+  thanksLines:
+  - Splendid! I can practically smell the vine on it. Ripe, bold, and not a hint
+    of shyness.
+  - You have a real gift, my dear. Take this with my gratitude!
+  rewardCoins: 60
+  rewardXp: 40
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0

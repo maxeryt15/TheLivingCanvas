@@ -86,12 +86,18 @@ namespace TheLivingCanvas.Progression
             if (newCrop) gained += discoveryBonus;
             if (newVariant) gained += discoveryBonus;
 
+            return new XpGain(gained, newCrop, newVariant, AddXp(gained));
+        }
+
+        /// <summary>Suma XP directa (ej. recompensa de un encargo); devuelve si subió de nivel.</summary>
+        public bool AddXp(int amount)
+        {
             int levelBefore = Level;
-            xp += gained;
+            xp += amount;
             Changed?.Invoke();
             bool leveledUp = Level > levelBefore;
             if (leveledUp) LeveledUp?.Invoke(Level);
-            return new XpGain(gained, newCrop, newVariant, leveledUp);
+            return leveledUp;
         }
     }
 }

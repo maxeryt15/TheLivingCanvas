@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Commission_OttilieSunflower
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
   crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
+  variantId: 
   minQuality: 1
   requestLines:
   - Now then, darling, I have a little something to ask of you.
@@ -24,3 +25,7 @@ MonoBehaviour:
     be the very first jewel of my collection.
   - Mark my words, I shall have more requests for you soon. A collector's appetite
     is never satisfied!
+  rewardCoins: 40
+  rewardXp: 30
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0

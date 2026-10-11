@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a799e70e5eb3f49b51d6067ff8efea, type: 3}
+  m_Name: Commission_OttilieBlueSunflower
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
+  crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
+  variantId: blue
+  minQuality: 1
+  requestLines:
+  - Come closer, darling, and keep your voice down. I have heard a rumour.
+  - They say there is a sunflower out there with petals as blue as a summer evening.
+    A Blue Sunflower! I can think of nothing else.
+  - I suspect you would need some blue for those petals. Bring me one, Good quality
+    or better, and I shall reward you handsomely.
+  thanksLines:
+  - A blue sunflower! The rumours were true, and I am positively giddy.
+  - Here, a colour you won't find in any shop. Treat it kindly, and paint something
+    wonderful with it!
+  rewardCoins: 80
+  rewardXp: 50
+  rewardPigment: {fileID: 11400000, guid: 285d40588d0c74248802bd0304e63f35, type: 2}
+  rewardPigmentAmount: 30

@@ -109,7 +109,7 @@ namespace TheLivingCanvas.EditorTools
             BuildCropPicker(hud.transform, player, rig);
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
             BuildGarden(player.GetComponent<ArtistLevel>());
-            BuildGallery(hud.transform, player, rig, wallMat);
+            BuildGallery(hud.transform, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>());
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -1790,7 +1790,7 @@ namespace TheLivingCanvas.EditorTools
         /// Galería detrás del estudio (x de -6 a 6, z de 6 a 14), sin techo: suelo, paredes y 6 marcos vacíos
         /// (2 por pared lateral y 2 al fondo) + el panel para colgar pinturas.
         /// </summary>
-        static void BuildGallery(Transform hud, GameObject player, GameObject rig, Material wallMat)
+        static void BuildGallery(Transform hud, GameObject player, GameObject rig, Material wallMat, PaintBrushController brush)
         {
             var floorMat = GetOrCreateMaterial("M_Gallery_Floor", new Color(0.74f, 0.68f, 0.60f));
             var woodMat = GetOrCreateMaterial("M_Gallery_Frame", new Color(0.25f, 0.17f, 0.11f));
@@ -1831,11 +1831,11 @@ namespace TheLivingCanvas.EditorTools
             BuildGalleryFrame(gallery, "Frame_B1", new Vector3(-3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildGalleryFrame(gallery, "Frame_B2", new Vector3(3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildCollectionBoard(hud, gallery, player, rig, woodMat);
-            BuildNpc(hud, gallery, player, rig);
+            BuildNpc(hud, gallery, player, rig, brush);
         }
 
         /// <summary>Ottilie Vane, coleccionista excéntrica (figura de primitivas) + el panel de diálogo al pie de la pantalla.</summary>
-        static void BuildNpc(Transform hud, Transform gallery, GameObject player, GameObject rig)
+        static void BuildNpc(Transform hud, Transform gallery, GameObject player, GameObject rig, PaintBrushController brush)
         {
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var cream = new Color(1f, 0.95f, 0.82f);
@@ -1901,14 +1901,10 @@ namespace TheLivingCanvas.EditorTools
                 definition = ScriptableObject.CreateInstance<NpcDefinition>();
                 AssetDatabase.CreateAsset(definition, definitionPath);
             }
-            var commissionPath = $"{Root}/Data/Npcs/Commission_OttilieSunflower.asset";
-            var commission = AssetDatabase.LoadAssetAtPath<CommissionDefinition>(commissionPath);
-            if (commission == null)
-            {
-                commission = ScriptableObject.CreateInstance<CommissionDefinition>();
-                AssetDatabase.CreateAsset(commission, commissionPath);
-            }
-            commission.EditorSetup(GetOrCreateSunflowerCrop(), PaintingQuality.Good, new[]
+            // Violet solo se consigue como recompensa: no entra en GetOrCreatePalette() (esa lista también genera las ofertas de la tienda).
+            var violet = GetOrCreatePigment("violet", "Violet", new Color(0.52f, 0.30f, 0.68f));
+            var sunflower = GetOrCreateSunflowerCrop();
+            var sunflowerCommission = GetOrCreateCommission("Commission_OttilieSunflower", sunflower, null, PaintingQuality.Good, new[]
             {
                 "Now then, darling, I have a little something to ask of you.",
                 "I would simply adore a sunflower painting for my collection. A proper one, mind: Good quality or better.",
@@ -1917,8 +1913,27 @@ namespace TheLivingCanvas.EditorTools
             {
                 "Oh, it is magnificent! Look at those petals, they practically hum. This will be the very first jewel of my collection.",
                 "Mark my words, I shall have more requests for you soon. A collector's appetite is never satisfied!"
-            });
-            EditorUtility.SetDirty(commission);
+            }, 40, 30);
+            var tomatoCommission = GetOrCreateCommission("Commission_OttilieTomato", GetOrCreateTomatoCrop(), null, PaintingQuality.Excellent, new[]
+            {
+                "Darling, you are back, and my appetite is wonderfully awake!",
+                "This time I crave a tomato. Not a shy, pale thing: a bold, ripe, outrageously red one. Excellent quality, if you please.",
+                "Paint it as though you could taste it, and bring it straight to me."
+            }, new[]
+            {
+                "Splendid! I can practically smell the vine on it. Ripe, bold, and not a hint of shyness.",
+                "You have a real gift, my dear. Take this with my gratitude!"
+            }, 60, 40);
+            var blueCommission = GetOrCreateCommission("Commission_OttilieBlueSunflower", sunflower, "blue", PaintingQuality.Good, new[]
+            {
+                "Come closer, darling, and keep your voice down. I have heard a rumour.",
+                "They say there is a sunflower out there with petals as blue as a summer evening. A Blue Sunflower! I can think of nothing else.",
+                "I suspect you would need some blue for those petals. Bring me one, Good quality or better, and I shall reward you handsomely."
+            }, new[]
+            {
+                "A blue sunflower! The rumours were true, and I am positively giddy.",
+                "Here, a colour you won't find in any shop. Treat it kindly, and paint something wonderful with it!"
+            }, 80, 50, violet, 30);
 
             definition.EditorSetup("Ottilie Vane", new[]
             {
@@ -1926,7 +1941,7 @@ namespace TheLivingCanvas.EditorTools
                 "Rare pigments make my heart flutter. And paintings that grow? Darling, I would cross three counties for one.",
                 "Keep your brushes wet and your garden wilder than is sensible. The best colours always sprout where nobody planned them.",
                 "I may have a request or two for you, once you have settled in. Do come and chat again soon!"
-            }, new[] { commission });
+            }, new[] { sunflowerCommission, tomatoCommission, blueCommission });
             EditorUtility.SetDirty(definition);
 
             // Figura de ~1,75 m: un único CapsuleCollider en la raíz (CreatePart quita los de las primitivas).
@@ -1962,7 +1977,26 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("definition").objectReferenceValue = definition;
             so.FindProperty("dialogueUI").objectReferenceValue = dialogueUi;
             so.FindProperty("commissionUI").objectReferenceValue = commissionUi;
+            so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
+            so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
+            so.FindProperty("brush").objectReferenceValue = brush;
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static CommissionDefinition GetOrCreateCommission(string fileName, CropDefinition crop, string variantId, PaintingQuality minQuality,
+            string[] requestLines, string[] thanksLines, int rewardCoins, int rewardXp, PigmentDefinition rewardPigment = null, int rewardPigmentAmount = 0)
+        {
+            var path = $"{Root}/Data/Npcs/{fileName}.asset";
+            var commission = AssetDatabase.LoadAssetAtPath<CommissionDefinition>(path);
+            if (commission == null)
+            {
+                commission = ScriptableObject.CreateInstance<CommissionDefinition>();
+                AssetDatabase.CreateAsset(commission, path);
+            }
+            commission.EditorSetup(crop, variantId, minQuality, requestLines, thanksLines, rewardCoins, rewardXp, rewardPigment, rewardPigmentAmount);
+            EditorUtility.SetDirty(commission);
+            return commission;
         }
 
         /// <summary>Tablón de corcho en el centro de la pared del fondo + panel con la colección de cultivos y variantes.</summary>
