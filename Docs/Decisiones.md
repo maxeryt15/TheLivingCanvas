@@ -40,3 +40,7 @@
 | 2026-10-11 | Las pinturas se cuelgan y descuelgan en un marco desde el inventario; mientras cuelgan no se pueden plantar | Decisión real (exhibir o plantar) sin perder nada. |
 | 2026-10-11 | La galería muestra una placa por cuadro (nombre con variante, calidad, lienzo) y un tablero de colección con cultivos y variantes descubiertos y por descubrir. Logros, más adelante | Usa lo que ya registra el nivel de artista. |
 | 2026-10-11 | La galería no da beneficios de juego por ahora; los visitantes y encargos llegan con los NPCs (Fase 13) | Lugar cozy para disfrutar lo pintado. |
+| 2026-10-11 | Fase 13: el primer NPC es una coleccionista excéntrica que está en la galería, con preferencias de color y rareza | Le da función a la galería; el pueblo llega en la Fase 14. |
+| 2026-10-11 | Primer encargo: una pintura concreta (cultivo + calidad mínima) que se entrega desde el inventario y se consume | La pintura sigue siendo el centro del juego. |
+| 2026-10-11 | Recompensa de encargos: monedas (más que vendiendo) + XP, y en algunos algo único que no está en la tienda (ej. un pigmento nuevo) | Motiva sin romper la economía. |
+| 2026-10-11 | Plan: 13A NPC + diálogo (SO con líneas, panel que avanza); 13B encargo y entrega; 13C recompensa y cadena de 2–3 encargos | Pasos pequeños y revisables. |

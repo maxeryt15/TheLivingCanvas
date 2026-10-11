@@ -6,6 +6,7 @@ using TheLivingCanvas.Gallery;
 using TheLivingCanvas.Growth;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
+using TheLivingCanvas.Npcs;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Player;
 using TheLivingCanvas.Progression;
@@ -1739,14 +1740,20 @@ namespace TheLivingCanvas.EditorTools
         /// <summary>Referencias comunes de un ModalPanel (cursor, cámara, interacción y cierre).</summary>
         static void SetModalPanelRefs(SerializedObject so, ListPanel ui, GameObject player, GameObject rig)
         {
+            SetModalBaseRefs(so, ui.Panel, ui.Close, player, rig);
+            so.FindProperty("rowContainer").objectReferenceValue = ui.Rows;
+            so.FindProperty("rowTemplate").objectReferenceValue = ui.RowTemplate;
+        }
+
+        /// <summary>Campos de ModalPanel que comparten todos los paneles, tengan o no filas.</summary>
+        static void SetModalBaseRefs(SerializedObject so, GameObject panel, Button closeButton, GameObject player, GameObject rig)
+        {
             so.FindProperty("interactor").objectReferenceValue = player.GetComponent<PlayerInteractor>();
             so.FindProperty("cursorLock").objectReferenceValue = rig.GetComponent<CursorLock>();
             so.FindProperty("cameraMode").objectReferenceValue = rig.GetComponent<CameraModeController>();
             so.FindProperty("exitAction").objectReferenceValue = GetAction("Paint/Exit");
-            so.FindProperty("panel").objectReferenceValue = ui.Panel;
-            so.FindProperty("closeButton").objectReferenceValue = ui.Close;
-            so.FindProperty("rowContainer").objectReferenceValue = ui.Rows;
-            so.FindProperty("rowTemplate").objectReferenceValue = ui.RowTemplate;
+            so.FindProperty("panel").objectReferenceValue = panel;
+            so.FindProperty("closeButton").objectReferenceValue = closeButton;
         }
 
         /// <summary>Mortero sobre un tocón junto a la pared del fondo + panel para moler la cosecha.</summary>
@@ -1824,6 +1831,110 @@ namespace TheLivingCanvas.EditorTools
             BuildGalleryFrame(gallery, "Frame_B1", new Vector3(-3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildGalleryFrame(gallery, "Frame_B2", new Vector3(3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildCollectionBoard(hud, gallery, player, rig, woodMat);
+            BuildNpc(hud, gallery, player, rig);
+        }
+
+        /// <summary>Ottilie Vane, coleccionista excéntrica (figura de primitivas) + el panel de diálogo al pie de la pantalla.</summary>
+        static void BuildNpc(Transform hud, Transform gallery, GameObject player, GameObject rig)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            var resources = new DefaultControls.Resources
+            {
+                standard = uiSprite,
+                background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd"),
+                knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd")
+            };
+
+            // Panel de diálogo: nombre arriba a la izquierda, la línea en el centro, Next abajo a la derecha.
+            var root = new GameObject("DialogueUI", typeof(RectTransform));
+            root.transform.SetParent(hud, false);
+            var rootRect = (RectTransform)root.transform;
+            rootRect.anchorMin = Vector2.zero;
+            rootRect.anchorMax = Vector2.one;
+            rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
+
+            var panel = CreatePanel(root.transform, "Panel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 0.95f),
+                new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(900f, 220f));
+            panel.GetComponent<Image>().raycastTarget = true; // los clics no atraviesan el panel
+
+            var speaker = AddStretchedText(panel.transform, "Speaker", 30, font, new Color(1f, 0.85f, 0.45f), TextAnchor.UpperLeft);
+            var speakerRect = (RectTransform)speaker.transform;
+            speakerRect.offsetMin = new Vector2(30f, 0f);
+            speakerRect.offsetMax = new Vector2(-200f, -16f);
+
+            var line = AddStretchedText(panel.transform, "Line", 26, font, cream, TextAnchor.UpperLeft);
+            var lineRect = (RectTransform)line.transform;
+            lineRect.offsetMin = new Vector2(30f, 80f);
+            lineRect.offsetMax = new Vector2(-30f, -60f);
+
+            var next = CreateButton(resources, panel.transform, "Next", "Next", 24, font);
+            next.GetComponent<Image>().color = new Color(0.55f, 0.75f, 0.45f);
+            var nextRect = (RectTransform)next.transform;
+            nextRect.anchorMin = nextRect.anchorMax = nextRect.pivot = new Vector2(1f, 0f);
+            nextRect.anchoredPosition = new Vector2(-24f, 16f);
+            nextRect.sizeDelta = new Vector2(160f, 52f);
+
+            var close = CreateButton(resources, panel.transform, "Close", "Close", 20, font);
+            var closeRect = (RectTransform)close.transform;
+            closeRect.anchorMin = closeRect.anchorMax = closeRect.pivot = new Vector2(1f, 1f);
+            closeRect.anchoredPosition = new Vector2(-16f, -14f);
+            closeRect.sizeDelta = new Vector2(120f, 40f);
+
+            var dialogueUi = root.AddComponent<DialogueUI>();
+            var uiSo = new SerializedObject(dialogueUi);
+            SetModalBaseRefs(uiSo, panel, close.GetComponent<Button>(), player, rig);
+            uiSo.FindProperty("speakerLabel").objectReferenceValue = speaker;
+            uiSo.FindProperty("lineLabel").objectReferenceValue = line;
+            uiSo.FindProperty("nextButton").objectReferenceValue = next.GetComponent<Button>();
+            uiSo.FindProperty("nextLabel").objectReferenceValue = next.GetComponentInChildren<Text>();
+            uiSo.ApplyModifiedPropertiesWithoutUndo();
+
+            // Datos del personaje.
+            if (!AssetDatabase.IsValidFolder($"{Root}/Data/Npcs"))
+                AssetDatabase.CreateFolder($"{Root}/Data", "Npcs");
+            var definitionPath = $"{Root}/Data/Npcs/Npc_OttilieVane.asset";
+            var definition = AssetDatabase.LoadAssetAtPath<NpcDefinition>(definitionPath);
+            if (definition == null)
+            {
+                definition = ScriptableObject.CreateInstance<NpcDefinition>();
+                AssetDatabase.CreateAsset(definition, definitionPath);
+            }
+            definition.EditorSetup("Ottilie Vane", new[]
+            {
+                "Oh! A new face among my favourite walls. I'm Ottilie Vane, and I collect colours the way other people collect teaspoons.",
+                "Rare pigments make my heart flutter. And paintings that grow? Darling, I would cross three counties for one.",
+                "Keep your brushes wet and your garden wilder than is sensible. The best colours always sprout where nobody planned them.",
+                "I may have a request or two for you, once you have settled in. Do come and chat again soon!"
+            });
+            EditorUtility.SetDirty(definition);
+
+            // Figura de ~1,75 m: un único CapsuleCollider en la raíz (CreatePart quita los de las primitivas).
+            var coatMat = GetOrCreateMaterial("M_Npc_Coat", new Color(0.30f, 0.12f, 0.30f));
+            var skinMat = GetOrCreateMaterial("M_Npc_Skin", new Color(0.93f, 0.74f, 0.60f));
+            var hatMat = GetOrCreateMaterial("M_Npc_Hat", new Color(0.85f, 0.70f, 0.30f));
+            var scarfMat = GetOrCreateMaterial("M_Npc_Scarf", new Color(0.90f, 0.40f, 0.30f));
+
+            var npc = new GameObject("Npc_OttilieVane");
+            npc.transform.SetParent(gallery, false);
+            npc.transform.SetPositionAndRotation(new Vector3(-3f, 0f, 10.5f), Quaternion.Euler(0f, 90f, 0f)); // mira al centro de la sala
+            var capsule = npc.AddComponent<CapsuleCollider>();
+            capsule.center = new Vector3(0f, 0.875f, 0f);
+            capsule.radius = 0.3f;
+            capsule.height = 1.75f;
+
+            CreatePart(PrimitiveType.Capsule, "Coat", npc.transform, new Vector3(0f, 0.6f, 0f), new Vector3(0.55f, 0.6f, 0.55f), coatMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cylinder, "Scarf", npc.transform, new Vector3(0f, 1.27f, 0f), new Vector3(0.34f, 0.04f, 0.34f), scarfMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Sphere, "Head", npc.transform, new Vector3(0f, 1.43f, 0f), Vector3.one * 0.26f, skinMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cylinder, "Hat_Brim", npc.transform, new Vector3(0f, 1.55f, 0f), new Vector3(0.5f, 0.012f, 0.5f), hatMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cylinder, "Hat_Crown", npc.transform, new Vector3(0f, 1.65f, 0f), new Vector3(0.2f, 0.1f, 0.2f), hatMat, Quaternion.identity);
+
+            var component = npc.AddComponent<Npc>();
+            var so = new SerializedObject(component);
+            so.FindProperty("definition").objectReferenceValue = definition;
+            so.FindProperty("dialogueUI").objectReferenceValue = dialogueUi;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Tablón de corcho en el centro de la pared del fondo + panel con la colección de cultivos y variantes.</summary>

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 934c68d71dbf39c47bb2843c2b430878, type: 3}
+  m_Name: Npc_OttilieVane
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.NpcDefinition
+  displayName: Ottilie Vane
+  greetingLines:
+  - Oh! A new face among my favourite walls. I'm Ottilie Vane, and I collect colours
+    the way other people collect teaspoons.
+  - Rare pigments make my heart flutter. And paintings that grow? Darling, I would
+    cross three counties for one.
+  - Keep your brushes wet and your garden wilder than is sensible. The best colours
+    always sprout where nobody planned them.
+  - I may have a request or two for you, once you have settled in. Do come and chat
+    again soon!

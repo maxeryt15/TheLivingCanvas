@@ -32,13 +32,13 @@ namespace TheLivingCanvas.Core
         protected virtual void OnEnable()
         {
             exitAction.action.performed += OnCloseRequested;
-            interactor.InteractAction.action.performed += OnCloseRequested;
+            interactor.InteractAction.action.performed += OnInteractRequested;
         }
 
         protected virtual void OnDisable()
         {
             exitAction.action.performed -= OnCloseRequested;
-            interactor.InteractAction.action.performed -= OnCloseRequested;
+            interactor.InteractAction.action.performed -= OnInteractRequested;
         }
 
         /// <summary>Muestra el panel; false si ya estaba abierto u otro panel tiene el cursor.</summary>
@@ -69,5 +69,13 @@ namespace TheLivingCanvas.Core
             // La misma pulsación de E que abre no debe cerrar.
             if (Time.frameCount != openedFrame) Close();
         }
+
+        void OnInteractRequested(InputAction.CallbackContext _)
+        {
+            if (Time.frameCount != openedFrame) OnInteractPressed();
+        }
+
+        /// <summary>Se pulsó Interact (E / A) con el panel abierto; por defecto cierra.</summary>
+        protected virtual void OnInteractPressed() => Close();
     }
 }
