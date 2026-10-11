@@ -62,7 +62,9 @@ namespace TheLivingCanvas.EditorTools
 
             // Límites invisibles en los lados abiertos para no caerse del suelo.
             CreateBoundary("Boundary_Front", environment.transform, new Vector3(0f, 1.5f, -6f), new Vector3(12f, 3f, 0.2f));
-            CreateBoundary("Boundary_Right", environment.transform, new Vector3(6f, 1.5f, 0f), new Vector3(0.2f, 3f, 12f));
+            // El lado derecho deja un hueco de 2 m en z = 0: lo cierra la puerta del jardín.
+            CreateBoundary("Boundary_Right_Front", environment.transform, new Vector3(6f, 1.5f, -3.5f), new Vector3(0.2f, 3f, 5f));
+            CreateBoundary("Boundary_Right_Back", environment.transform, new Vector3(6f, 1.5f, 3.5f), new Vector3(0.2f, 3f, 5f));
 
             // Luz cálida de media tarde.
             var sunGo = new GameObject("Sun");
@@ -101,6 +103,7 @@ namespace TheLivingCanvas.EditorTools
             BuildShop(hud.transform, environment.transform, player, rig);
             BuildCropPicker(hud.transform, player, rig);
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
+            BuildGarden(player.GetComponent<ArtistLevel>());
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -1366,6 +1369,86 @@ namespace TheLivingCanvas.EditorTools
             CreatePart(PrimitiveType.Cube, "Side_Left", crate.transform, new Vector3(-0.43f, 0.3f, 0f), new Vector3(0.04f, 0.5f, 0.62f), crateMat, Quaternion.identity);
             CreatePart(PrimitiveType.Cube, "Side_Right", crate.transform, new Vector3(0.43f, 0.3f, 0f), new Vector3(0.04f, 0.5f, 0.62f), crateMat, Quaternion.identity);
             crate.AddComponent<SellCrate>();
+        }
+
+        /// <summary>
+        /// Jardín al este del estudio (x de 6 a 18): césped al mismo nivel que el suelo, valla baja,
+        /// límites invisibles y la puerta que lo abre al llegar al nivel pedido.
+        /// </summary>
+        static void BuildGarden(ArtistLevel artistLevel)
+        {
+            var grassMat = GetOrCreateMaterial("M_Grass", new Color(0.42f, 0.62f, 0.30f));
+            var woodMat = GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f));
+            var bushMat = GetOrCreateMaterial("M_Garden_Bush", new Color(0.24f, 0.45f, 0.22f));
+            var stoneMat = GetOrCreateMaterial("M_Mortar_Stone", new Color(0.62f, 0.6f, 0.56f));
+
+            var garden = new GameObject("Garden").transform;
+            CreateBlock("Lawn", garden, new Vector3(12f, -0.1f, 0f), new Vector3(12f, 0.2f, 12f), grassMat);
+
+            // La valla es decorativa; quien frena al jugador son los límites invisibles.
+            BuildFenceLine(garden, "Fence_South", new Vector3(6f, 0f, -6f), new Vector3(18f, 0f, -6f), woodMat);
+            BuildFenceLine(garden, "Fence_East", new Vector3(18f, 0f, -6f), new Vector3(18f, 0f, 6f), woodMat);
+            BuildFenceLine(garden, "Fence_North", new Vector3(18f, 0f, 6f), new Vector3(6f, 0f, 6f), woodMat);
+            CreateBoundary("Boundary_South", garden, new Vector3(12f, 1.5f, -6f), new Vector3(12f, 3f, 0.2f));
+            CreateBoundary("Boundary_East", garden, new Vector3(18f, 1.5f, 0f), new Vector3(0.2f, 3f, 12f));
+            CreateBoundary("Boundary_North", garden, new Vector3(12f, 1.5f, 6f), new Vector3(12f, 3f, 0.2f));
+
+            // Detalles sueltos, sin collider para no estorbar al colocar pinturas.
+            CreatePart(PrimitiveType.Sphere, "Bush_A", garden, new Vector3(16.8f, 0.4f, 4.8f), new Vector3(1.3f, 0.9f, 1.3f), bushMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Sphere, "Bush_B", garden, new Vector3(16.9f, 0.3f, -4.6f), new Vector3(1f, 0.7f, 1f), bushMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Sphere, "Stone_A", garden, new Vector3(8.2f, 0.1f, 4.9f), new Vector3(0.5f, 0.3f, 0.4f), stoneMat, Quaternion.Euler(0f, 30f, 0f));
+            CreatePart(PrimitiveType.Sphere, "Stone_B", garden, new Vector3(8.6f, 0.08f, -4.7f), new Vector3(0.4f, 0.25f, 0.35f), stoneMat, Quaternion.Euler(0f, 70f, 0f));
+
+            BuildGardenGate(garden, artistLevel, woodMat);
+        }
+
+        /// <summary>Valla baja entre dos puntos: postes cada ~2 m y dos travesaños, todo sin collider.</summary>
+        static void BuildFenceLine(Transform parent, string name, Vector3 from, Vector3 to, Material material)
+        {
+            var line = new GameObject(name).transform;
+            line.SetParent(parent, false);
+            var direction = to - from;
+            var rotation = Quaternion.LookRotation(direction);
+            foreach (float height in new[] { 0.35f, 0.7f })
+                CreatePart(PrimitiveType.Cube, "Rail", line, (from + to) / 2f + Vector3.up * height,
+                    new Vector3(0.06f, 0.08f, direction.magnitude), material, rotation);
+
+            int segments = Mathf.RoundToInt(direction.magnitude / 2f);
+            for (int i = 0; i <= segments; i++)
+                CreatePart(PrimitiveType.Cube, "Post", line, Vector3.Lerp(from, to, i / (float)segments) + Vector3.up * 0.4f,
+                    new Vector3(0.12f, 0.8f, 0.12f), material, Quaternion.identity);
+        }
+
+        /// <summary>Puerta en el hueco de x = 6: dos postes, un collider que cierra el paso y una hoja con bisagra en z = -1.</summary>
+        static void BuildGardenGate(Transform parent, ArtistLevel artistLevel, Material material)
+        {
+            var gate = new GameObject("GardenGate");
+            gate.transform.SetParent(parent, false);
+            gate.transform.position = new Vector3(6f, 0f, 0f);
+
+            // Capa "Ignore Raycast" como los límites: la cámara no se choca con la puerta.
+            var blocker = new GameObject("Blocker") { layer = 2 };
+            blocker.transform.SetParent(gate.transform, false);
+            blocker.transform.localPosition = new Vector3(0f, 1.5f, 0f);
+            var blockerBox = blocker.AddComponent<BoxCollider>();
+            blockerBox.size = new Vector3(0.2f, 3f, 2f);
+
+            foreach (float z in new[] { -1f, 1f })
+                CreatePart(PrimitiveType.Cube, "Post", gate.transform, new Vector3(0f, 0.55f, z), new Vector3(0.18f, 1.1f, 0.18f), material, Quaternion.identity);
+
+            var hinge = new GameObject("Hinge").transform;
+            hinge.SetParent(gate.transform, false);
+            hinge.localPosition = new Vector3(0f, 0f, -1f);
+            foreach (float height in new[] { 0.3f, 0.6f, 0.9f })
+                CreatePart(PrimitiveType.Cube, "Rail", hinge, new Vector3(0f, height, 0.95f), new Vector3(0.06f, 0.1f, 1.8f), material, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Brace", hinge, new Vector3(0f, 0.6f, 0.95f), new Vector3(0.06f, 0.1f, 1.9f), material, Quaternion.Euler(-25f, 0f, 0f));
+
+            var component = gate.AddComponent<GardenGate>();
+            var so = new SerializedObject(component);
+            so.FindProperty("artistLevel").objectReferenceValue = artistLevel;
+            so.FindProperty("blocker").objectReferenceValue = blockerBox;
+            so.FindProperty("hinge").objectReferenceValue = hinge;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Los tipos de lienzo (assets en Data/Canvases): el primero es el estándar, con el que empieza el jugador.</summary>

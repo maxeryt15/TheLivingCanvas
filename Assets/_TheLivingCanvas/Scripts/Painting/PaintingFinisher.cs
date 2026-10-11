@@ -62,7 +62,7 @@ namespace TheLivingCanvas.Painting
             if (gain.NewVariant) found.Add("new variant!");
             string message = $"+{gain.Xp} XP" + (found.Count > 0 ? $" ({string.Join(" ", found)})" : string.Empty);
             if (gain.LeveledUp)
-                message += $"\nLevel up! You are now level {level} — new items in the shop.";
+                message += $"\nLevel up! You are now level {level} — new things unlocked.";
             return message;
         }
 
