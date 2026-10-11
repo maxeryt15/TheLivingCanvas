@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Offer_Sketch_glowbell
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Economy.SketchOffer
   displayName: Glowbell sketch
-  description: Lets you paint glowbells on the easel.
+  description: Adds the glowbell to the crops you can paint.
   price: 30
   icon: {fileID: 0}
   crop: {fileID: 11400000, guid: 9e3e9bdcff2b9374f8330b0b39962dc0, type: 2}

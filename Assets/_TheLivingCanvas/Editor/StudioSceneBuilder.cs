@@ -146,7 +146,9 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("sprintAction").objectReferenceValue = GetAction("Player/Sprint");
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            root.AddComponent<PlayerInventory>();
+            var inventory = new SerializedObject(root.AddComponent<PlayerInventory>());
+            inventory.FindProperty("startingCanvasType").objectReferenceValue = GetOrCreateCanvasTypes()[0];
+            inventory.ApplyModifiedPropertiesWithoutUndo();
             root.AddComponent<Wallet>();
             root.AddComponent<PigmentStock>().EditorSetStartingAmounts(
                 GetOrCreatePalette().Take(StartingPigments).ToArray(), new[] { 150, 40, 50 });
@@ -1313,23 +1315,61 @@ namespace TheLivingCanvas.EditorTools
             crate.AddComponent<SellCrate>();
         }
 
+        /// <summary>Los tipos de lienzo (assets en Data/Canvases): el primero es el estándar, con el que empieza el jugador.</summary>
+        static CanvasType[] GetOrCreateCanvasTypes()
+        {
+            if (!AssetDatabase.IsValidFolder($"{Root}/Data/Canvases"))
+                AssetDatabase.CreateFolder($"{Root}/Data", "Canvases");
+
+            return new[]
+            {
+                GetOrCreateCanvasType("standard", "Standard canvas", "A plain canvas for the easel.", 1, 1f, 1f),
+                GetOrCreateCanvasType("large", "Large canvas", "A big canvas: twice the harvest, twice the paint.", 2, 2f, 1.4f),
+            };
+        }
+
+        static CanvasType GetOrCreateCanvasType(string id, string displayName, string description,
+            int harvestMultiplier, float pigmentMultiplier, float plotScale)
+        {
+            var path = $"{Root}/Data/Canvases/Canvas_{id}.asset";
+            var canvasType = AssetDatabase.LoadAssetAtPath<CanvasType>(path);
+            if (canvasType == null)
+            {
+                canvasType = ScriptableObject.CreateInstance<CanvasType>();
+                AssetDatabase.CreateAsset(canvasType, path);
+            }
+            canvasType.EditorSetup(id, displayName, description, harvestMultiplier, pigmentMultiplier, plotScale);
+            EditorUtility.SetDirty(canvasType);
+            return canvasType;
+        }
+
+        static CanvasOffer GetOrCreateCanvasOffer(string path, CanvasType canvasType, int price)
+        {
+            var offer = AssetDatabase.LoadAssetAtPath<CanvasOffer>(path);
+            if (offer == null)
+            {
+                offer = ScriptableObject.CreateInstance<CanvasOffer>();
+                AssetDatabase.CreateAsset(offer, path);
+            }
+            offer.EditorSetupOffer(canvasType.DisplayName, canvasType.Description, price, null);
+            offer.EditorSetCanvasType(canvasType);
+            EditorUtility.SetDirty(offer);
+            return offer;
+        }
+
         /// <summary>Ofertas de la tienda (assets en Data/Shop).</summary>
         static ShopOffer[] GetOrCreateShopOffers()
         {
             if (!AssetDatabase.IsValidFolder($"{Root}/Data/Shop"))
                 AssetDatabase.CreateFolder($"{Root}/Data", "Shop");
 
-            var canvasPath = $"{Root}/Data/Shop/Offer_Canvas.asset";
-            var canvas = AssetDatabase.LoadAssetAtPath<CanvasOffer>(canvasPath);
-            if (canvas == null)
+            var canvasTypes = GetOrCreateCanvasTypes();
+            var offers = new System.Collections.Generic.List<ShopOffer>
             {
-                canvas = ScriptableObject.CreateInstance<CanvasOffer>();
-                AssetDatabase.CreateAsset(canvas, canvasPath);
-            }
-            canvas.EditorSetupOffer("Blank canvas", "A fresh canvas for the easel.", 5, null);
-            EditorUtility.SetDirty(canvas);
-
-            var offers = new System.Collections.Generic.List<ShopOffer> { canvas };
+                // La del lienzo estándar conserva el nombre de archivo original.
+                GetOrCreateCanvasOffer($"{Root}/Data/Shop/Offer_Canvas.asset", canvasTypes[0], 5),
+                GetOrCreateCanvasOffer($"{Root}/Data/Shop/Offer_Canvas_large.asset", canvasTypes[1], 15),
+            };
             foreach (var pigment in GetOrCreatePalette().Skip(StartingPigments))
             {
                 var path = $"{Root}/Data/Shop/Offer_Pigment_{pigment.Id}.asset";
@@ -1383,7 +1423,7 @@ namespace TheLivingCanvas.EditorTools
                     offer = ScriptableObject.CreateInstance<SketchOffer>();
                     AssetDatabase.CreateAsset(offer, path);
                 }
-                offer.EditorSetupOffer($"{crop.DisplayName} sketch", $"Lets you paint {crop.DisplayName.ToLowerInvariant()}s on the easel.", 30, null);
+                offer.EditorSetupOffer($"{crop.DisplayName} sketch", $"Adds the {crop.DisplayName.ToLowerInvariant()} to the crops you can paint.", 30, null);
                 offer.EditorSetCrop(crop);
                 EditorUtility.SetDirty(offer);
                 offers.Add(offer);

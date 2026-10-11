@@ -4,17 +4,18 @@ using UnityEngine;
 
 namespace TheLivingCanvas.Inventory
 {
-    /// <summary>Una pintura terminada y recogida del caballete: su imagen, su cultivo, su variante y su calidad.</summary>
+    /// <summary>Una pintura terminada y recogida del caballete: su imagen, su cultivo, su variante, su lienzo y su calidad.</summary>
     public class PaintingItem : InventoryItem
     {
         /// <summary>La variante se decide aquí, con los colores recién pintados (las semillas la heredan).</summary>
-        public PaintingItem(CropDefinition crop, PaintingResult result, Texture2D image)
-            : this(crop, crop.FindVariant(result), result, image) { }
+        public PaintingItem(CropDefinition crop, CanvasType canvasType, PaintingResult result, Texture2D image)
+            : this(crop, crop.FindVariant(result), canvasType, result, image) { }
 
-        protected PaintingItem(CropDefinition crop, CropVariant variant, PaintingResult result, Texture2D image)
+        protected PaintingItem(CropDefinition crop, CropVariant variant, CanvasType canvasType, PaintingResult result, Texture2D image)
         {
             Crop = crop;
             Variant = variant;
+            CanvasType = canvasType;
             Result = result;
             Image = image;
         }
@@ -22,6 +23,8 @@ namespace TheLivingCanvas.Inventory
         public CropDefinition Crop { get; }
         /// <summary>null = el cultivo normal.</summary>
         public CropVariant Variant { get; }
+        /// <summary>El lienzo en que se pintó: decide la cosecha y el tamaño de la parcela.</summary>
+        public CanvasType CanvasType { get; }
         public PaintingResult Result { get; }
         public Texture2D Image { get; }
         /// <summary>0 = la pintura original; cada semilla replantada suma 1.</summary>
@@ -31,7 +34,7 @@ namespace TheLivingCanvas.Inventory
         public string CropName => Variant?.displayName ?? Crop.DisplayName;
 
         public override string DisplayName => $"{CropName} painting";
-        public override string Detail => Result.Quality.ToString();
+        public override string Detail => $"{Result.Quality} · {CanvasType.DisplayName}";
         public override Texture Icon => Image;
         public override string ToastText => $"+1 {DisplayName} ({Detail})";
     }
@@ -47,7 +50,7 @@ namespace TheLivingCanvas.Inventory
         const float FadePerGeneration = 0.3f;
 
         public SeedItem(PaintingItem parent)
-            : base(parent.Crop, parent.Variant, parent.Result.Faded(FadePerGeneration), FadeImage(parent.Image))
+            : base(parent.Crop, parent.Variant, parent.CanvasType, parent.Result.Faded(FadePerGeneration), FadeImage(parent.Image))
         {
             Generation = parent.Generation + 1;
         }

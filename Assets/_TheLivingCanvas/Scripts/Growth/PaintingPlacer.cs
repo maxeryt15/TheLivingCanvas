@@ -95,8 +95,9 @@ namespace TheLivingCanvas.Growth
         bool IsSpotClear()
         {
             Transform t = preview.transform;
-            int count = Physics.OverlapBoxNonAlloc(t.position + Vector3.up * (clearanceHalfExtents.y + 0.02f),
-                clearanceHalfExtents, overlaps, t.rotation, ~0, QueryTriggerInteraction.Ignore);
+            Vector3 halfExtents = clearanceHalfExtents * item.CanvasType.PlotScale; // la parcela grande necesita más hueco
+            int count = Physics.OverlapBoxNonAlloc(t.position + Vector3.up * (halfExtents.y + 0.02f),
+                halfExtents, overlaps, t.rotation, ~0, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < count; i++)
             {
                 var c = overlaps[i];

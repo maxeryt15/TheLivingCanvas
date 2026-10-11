@@ -26,6 +26,7 @@ namespace TheLivingCanvas.Growth
         public void Show(PaintingItem painting)
         {
             Painting = painting;
+            transform.localScale = Vector3.one * painting.CanvasType.PlotScale; // la planta, hija de la parcela, crece con ella
             paintingRenderer.material.SetTexture(BaseMap, painting.Image);
         }
 
@@ -51,7 +52,8 @@ namespace TheLivingCanvas.Growth
         {
             if (!CanInteract) return;
             var inventory = interactor.GetComponent<PlayerInventory>();
-            inventory.Add(new CropItem(Painting.Crop, Painting.Variant, CropPlant.HarvestAmount(Painting.Result.Quality)));
+            int amount = CropPlant.HarvestAmount(Painting.Result.Quality) * Painting.CanvasType.HarvestMultiplier;
+            inventory.Add(new CropItem(Painting.Crop, Painting.Variant, amount));
             if (SeedItem.CanSeed(Painting))
                 inventory.Add(new SeedItem(Painting));
             Destroy(gameObject); // la pintura se consume

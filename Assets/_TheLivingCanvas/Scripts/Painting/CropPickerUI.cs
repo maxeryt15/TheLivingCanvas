@@ -6,11 +6,14 @@ using UnityEngine.UI;
 
 namespace TheLivingCanvas.Painting
 {
-    /// <summary>Al poner un lienzo en el caballete: elegir qué cultivo pintar entre los que sabe el jugador.</summary>
+    /// <summary>
+    /// Al poner un lienzo en el caballete: elegir el tipo de lienzo (si el jugador tiene varios)
+    /// y qué cultivo pintar entre los que sabe. Las dos elecciones comparten el mismo panel de filas.
+    /// </summary>
     public class CropPickerUI : ModalPanel
     {
         [SerializeField] RectTransform rowContainer;
-        [Tooltip("Fila desactivada que se clona por cultivo (RawImage 'Icon', Text 'Name', Button 'Buy' con Text).")]
+        [Tooltip("Fila desactivada que se clona por opción (RawImage 'Icon', Text 'Name', Button 'Buy' con Text).")]
         [SerializeField] GameObject rowTemplate;
 
         readonly List<GameObject> rows = new();
@@ -21,30 +24,54 @@ namespace TheLivingCanvas.Painting
             rowTemplate.SetActive(false);
         }
 
-        public void Open(CanvasInteractable easel, IReadOnlyList<CropDefinition> crops)
+        /// <summary>Elegir el tipo de lienzo; después sigue el paso del cultivo.</summary>
+        public void Open(CanvasInteractable easel, IReadOnlyList<CanvasType> canvasTypes)
         {
             if (!TryOpen()) return;
+            Clear("Which canvas?");
+            foreach (var canvasType in canvasTypes)
+                AddRow(Texture2D.whiteTexture, canvasType.DisplayName, "Use", () => PickCanvas(easel, canvasType));
+        }
+
+        /// <summary>Elegir el cultivo que se pinta en un lienzo de <paramref name="canvasType"/>.</summary>
+        public void Open(CanvasInteractable easel, CanvasType canvasType, IReadOnlyList<CropDefinition> crops)
+        {
+            if (!TryOpen()) return;
+            Clear("What will you paint?");
+            foreach (var crop in crops)
+                AddRow(crop.Icon, crop.DisplayName, "Paint", () => PickCrop(easel, canvasType, crop));
+        }
+
+        void Clear(string title)
+        {
+            panel.transform.Find("Title").GetComponent<Text>().text = title;
             foreach (var row in rows)
                 Destroy(row);
             rows.Clear();
-
-            foreach (var crop in crops)
-            {
-                var row = Instantiate(rowTemplate, rowContainer);
-                row.SetActive(true);
-                row.transform.Find("Icon").GetComponent<RawImage>().texture = crop.Icon;
-                row.transform.Find("Name").GetComponent<Text>().text = crop.DisplayName;
-                var paint = row.transform.Find("Buy").GetComponent<Button>();
-                paint.GetComponentInChildren<Text>().text = "Paint";
-                paint.onClick.AddListener(() => Pick(easel, crop));
-                rows.Add(row);
-            }
         }
 
-        void Pick(CanvasInteractable easel, CropDefinition crop)
+        void AddRow(Texture icon, string label, string buttonText, UnityEngine.Events.UnityAction onClick)
+        {
+            var row = Instantiate(rowTemplate, rowContainer);
+            row.SetActive(true);
+            row.transform.Find("Icon").GetComponent<RawImage>().texture = icon;
+            row.transform.Find("Name").GetComponent<Text>().text = label;
+            var button = row.transform.Find("Buy").GetComponent<Button>();
+            button.GetComponentInChildren<Text>().text = buttonText;
+            button.onClick.AddListener(onClick);
+            rows.Add(row);
+        }
+
+        void PickCanvas(CanvasInteractable easel, CanvasType canvasType)
         {
             Close();
-            easel.StartPainting(interactor, crop);
+            easel.ChooseCrop(interactor, canvasType);
+        }
+
+        void PickCrop(CanvasInteractable easel, CanvasType canvasType, CropDefinition crop)
+        {
+            Close();
+            easel.StartPainting(interactor, canvasType, crop);
         }
     }
 }

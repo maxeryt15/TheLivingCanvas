@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -27,7 +28,9 @@ namespace TheLivingCanvas.Painting
                 return;
             }
 
-            var usage = PaintUsage.Measure(canvas.Surface, brush.Palette);
+            // El tipo de lienzo escala el gasto antes de comprobar si alcanza (se redondea hacia arriba).
+            var usage = PaintUsage.Measure(canvas.Surface, brush.Palette)
+                .ToDictionary(u => u.Key, u => Mathf.CeilToInt(u.Value * canvas.CanvasType.PigmentMultiplier));
             var shortage = stock.FindShortage(usage);
             if (shortage != null)
             {

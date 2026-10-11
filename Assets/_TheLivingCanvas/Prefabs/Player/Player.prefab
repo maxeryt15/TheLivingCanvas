@@ -251,6 +251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e56a9137162da7546a0f09f8d8f86409, type: 3}
   m_Name: 
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Inventory.PlayerInventory
+  startingCanvasType: {fileID: 11400000, guid: 2c1e25d7ef579bb4eb6b6f074f097877, type: 2}
   startingCanvases: 3
 --- !u!114 &7997938788624478519
 MonoBehaviour:

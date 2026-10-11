@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TheLivingCanvas.Data;
 using UnityEngine;
 
 namespace TheLivingCanvas.Inventory
@@ -7,6 +8,8 @@ namespace TheLivingCanvas.Inventory
     /// <summary>Inventario placeholder del jugador: una lista sin límite ni guardado (Fase 18).</summary>
     public class PlayerInventory : MonoBehaviour
     {
+        [Tooltip("Tipo de los lienzos en blanco con los que empieza el jugador.")]
+        [SerializeField] CanvasType startingCanvasType;
         [Tooltip("Lienzos en blanco con los que empieza el jugador.")]
         [SerializeField] int startingCanvases = 3;
 
@@ -23,7 +26,7 @@ namespace TheLivingCanvas.Inventory
         {
             // Sin aviso: ya los tenía al empezar.
             if (startingCanvases > 0)
-                items.Add(new BlankCanvasItem(startingCanvases));
+                items.Add(new BlankCanvasItem(startingCanvasType, startingCanvases));
         }
 
         public void Add(InventoryItem item)

@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f8c234f0dc69294c970cded98937352, type: 3}
   m_Name: Offer_Canvas
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Economy.CanvasOffer
-  displayName: Blank canvas
-  description: A fresh canvas for the easel.
+  displayName: Standard canvas
+  description: A plain canvas for the easel.
   price: 5
   icon: {fileID: 0}
+  canvasType: {fileID: 11400000, guid: 2c1e25d7ef579bb4eb6b6f074f097877, type: 2}
   quantity: 1

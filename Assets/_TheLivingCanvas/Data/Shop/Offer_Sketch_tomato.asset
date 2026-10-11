@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Offer_Sketch_tomato
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Economy.SketchOffer
   displayName: Tomato sketch
-  description: Lets you paint tomatos on the easel.
+  description: Adds the tomato to the crops you can paint.
   price: 30
   icon: {fileID: 0}
   crop: {fileID: 11400000, guid: b19e841a2369a924a8b03d5fe795ec93, type: 2}
