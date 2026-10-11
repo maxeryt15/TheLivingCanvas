@@ -16,5 +16,6 @@ MonoBehaviour:
   description: 'A big canvas: twice the harvest, twice the paint.'
   price: 15
   icon: {fileID: 0}
+  requiredLevel: 3
   canvasType: {fileID: 11400000, guid: fd5027bf80e2ef94d8443cc059b35f03, type: 2}
   quantity: 1

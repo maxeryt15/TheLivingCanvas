@@ -16,5 +16,6 @@ MonoBehaviour:
   description: A new color for your palette (+30).
   price: 15
   icon: {fileID: 0}
+  requiredLevel: 3
   pigment: {fileID: 11400000, guid: 0c535dcdf0b1d724881d0fa92fef7c51, type: 2}
   units: 30

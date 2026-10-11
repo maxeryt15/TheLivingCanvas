@@ -16,5 +16,6 @@ MonoBehaviour:
   description: +30 leaf green pigment.
   price: 8
   icon: {fileID: 0}
+  requiredLevel: 1
   pigment: {fileID: 11400000, guid: 640e085e4379ceb4e85af02a0c5193db, type: 2}
   units: 30

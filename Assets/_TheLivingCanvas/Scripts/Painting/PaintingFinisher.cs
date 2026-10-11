@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TheLivingCanvas.Progression;
 using UnityEngine;
 
 namespace TheLivingCanvas.Painting
@@ -7,7 +9,7 @@ namespace TheLivingCanvas.Painting
     /// <summary>
     /// Botón "Finish painting": evalúa el lienzo activo. Si falta pintura en alguna zona lo dice con
     /// amabilidad y se sigue pintando. Si pasa, gasta el pigmento que lleva la pintura (o avisa de cuál falta),
-    /// marca el lienzo como terminado (listo para recogerlo) y sale del modo pintura.
+    /// marca el lienzo como terminado (listo para recogerlo), da la XP de artista y sale del modo pintura.
     /// </summary>
     public class PaintingFinisher : MonoBehaviour
     {
@@ -15,6 +17,7 @@ namespace TheLivingCanvas.Painting
         [SerializeField] PaintFeedbackUI feedback;
         [SerializeField] PaintBrushController brush;
         [SerializeField] PigmentStock stock;
+        [SerializeField] ArtistLevel artistLevel;
 
         public void Finish()
         {
@@ -47,7 +50,20 @@ namespace TheLivingCanvas.Painting
             string rarity = variant != null ? $"  ·  {variant.rarity} variant!" : string.Empty;
             string filled = result.CappedByFill
                 ? "\n(Mostly filled: paint by hand for a Masterpiece.)" : string.Empty;
-            feedback.Show($"Your {name} painting is finished! Quality: {result.Quality}{rarity}{filled}\nTake it from the easel.", success: true);
+            var gain = artistLevel.AwardPainting(result.Quality, canvas.Crop, variant);
+            feedback.Show($"Your {name} painting is finished! Quality: {result.Quality}{rarity}{filled}\n"
+                + $"{XpMessage(gain, artistLevel.Level)}\nTake it from the easel.", success: true);
+        }
+
+        static string XpMessage(XpGain gain, int level)
+        {
+            var found = new List<string>();
+            if (gain.NewCrop) found.Add("new crop!");
+            if (gain.NewVariant) found.Add("new variant!");
+            string message = $"+{gain.Xp} XP" + (found.Count > 0 ? $" ({string.Join(" ", found)})" : string.Empty);
+            if (gain.LeveledUp)
+                message += $"\nLevel up! You are now level {level} — new items in the shop.";
+            return message;
         }
 
         static string MissingPaintMessage(PaintingResult result)

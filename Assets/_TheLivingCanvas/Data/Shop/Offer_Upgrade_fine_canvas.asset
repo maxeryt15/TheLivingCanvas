@@ -16,4 +16,5 @@ MonoBehaviour:
   description: 'Your easel canvases get a finer weave: paint with more detail.'
   price: 60
   icon: {fileID: 0}
+  requiredLevel: 4
   resolution: {x: 960, y: 768}

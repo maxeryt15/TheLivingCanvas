@@ -7,6 +7,7 @@ using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Player;
+using TheLivingCanvas.Progression;
 using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -94,6 +95,7 @@ namespace TheLivingCanvas.EditorTools
                 rig.GetComponent<CursorLock>(), rig.GetComponent<CameraModeController>(),
                 paintMode.GetComponent<PaintBrushController>(), player.GetComponent<PigmentStock>());
             BuildCoinCounter(hud.transform, player.GetComponent<Wallet>());
+            BuildLevelCounter(hud.transform, player.GetComponent<ArtistLevel>());
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
             BuildShop(hud.transform, environment.transform, player, rig);
@@ -150,6 +152,7 @@ namespace TheLivingCanvas.EditorTools
             inventory.FindProperty("startingCanvasType").objectReferenceValue = GetOrCreateCanvasTypes()[0];
             inventory.ApplyModifiedPropertiesWithoutUndo();
             root.AddComponent<Wallet>();
+            root.AddComponent<ArtistLevel>();
             root.AddComponent<PigmentStock>().EditorSetStartingAmounts(
                 GetOrCreatePalette().Take(StartingPigments).ToArray(), new[] { 150, 40, 50 });
             var sketchbook = new SerializedObject(root.AddComponent<Sketchbook>());
@@ -299,6 +302,7 @@ namespace TheLivingCanvas.EditorTools
             finisherSo.FindProperty("feedback").objectReferenceValue = BuildFeedback(hud.transform);
             finisherSo.FindProperty("brush").objectReferenceValue = brush;
             finisherSo.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
+            finisherSo.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
             finisherSo.ApplyModifiedPropertiesWithoutUndo();
 
             BuildPalettePanel(paintHud.transform, brush, finisher, player.GetComponent<PigmentStock>());
@@ -1296,6 +1300,32 @@ namespace TheLivingCanvas.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        /// <summary>Nivel de artista bajo el contador de monedas (deja libre el hueco del "+30"): texto y barra fina.</summary>
+        static void BuildLevelCounter(Transform hud, ArtistLevel artistLevel)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            var panel = CreatePanel(hud, "LevelCounter", sprite, new Color(0.30f, 0.20f, 0.13f, 0.9f),
+                new Vector2(1f, 1f), new Vector2(-30f, -145f), new Vector2(240f, 50f));
+            var label = AddStretchedText(panel.transform, "Label", 22, font, cream, TextAnchor.UpperCenter);
+            ((RectTransform)label.transform).offsetMin = new Vector2(0f, 14f);
+
+            var track = CreatePanel(panel.transform, "BarTrack", sprite, new Color(0.16f, 0.11f, 0.08f, 1f),
+                new Vector2(0.5f, 0f), new Vector2(0f, 8f), new Vector2(210f, 8f));
+            var fill = CreatePanel(track.transform, "BarFill", sprite, new Color(0.55f, 0.85f, 0.4f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(210f, 8f)).GetComponent<Image>();
+            fill.type = Image.Type.Filled;
+            fill.fillMethod = Image.FillMethod.Horizontal;
+
+            var counter = panel.AddComponent<LevelCounterUI>();
+            var so = new SerializedObject(counter);
+            so.FindProperty("level").objectReferenceValue = artistLevel;
+            so.FindProperty("label").objectReferenceValue = label;
+            so.FindProperty("fill").objectReferenceValue = fill;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         /// <summary>Caja de venta placeholder junto a la pared izquierda.</summary>
         static void BuildSellCrate(Transform parent, Vector3 position)
         {
@@ -1444,8 +1474,22 @@ namespace TheLivingCanvas.EditorTools
                 EditorUtility.SetDirty(offer);
                 offers.Add(offer);
             }
+            foreach (var offer in offers)
+            {
+                offer.EditorSetRequiredLevel(RequiredLevel(offer.name));
+                EditorUtility.SetDirty(offer);
+            }
             return offers.ToArray();
         }
+
+        /// <summary>Nivel de artista que pide cada oferta (por nombre de asset); lo no listado es de nivel 1.</summary>
+        static int RequiredLevel(string offerName) => offerName switch
+        {
+            "Offer_Pigment_carmine" or "Offer_Sketch_tomato" or "Offer_Brush_fill" => 2,
+            "Offer_Pigment_ultramarine" or "Offer_Pigment_titanium_white" or "Offer_Canvas_large" or "Offer_Brush_glaze" => 3,
+            "Offer_Sketch_glowbell" or "Offer_Upgrade_fine_canvas" => 4,
+            _ => 1
+        };
 
         /// <summary>Piezas de un panel con filas (tienda, selector de cultivo).</summary>
         struct ListPanel
@@ -1631,6 +1675,7 @@ namespace TheLivingCanvas.EditorTools
             SetModalPanelRefs(so, ui, player, rig);
             SetArray(so.FindProperty("offers"), GetOrCreateShopOffers());
             so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
             so.FindProperty("messageLabel").objectReferenceValue = ui.Message;
             so.ApplyModifiedPropertiesWithoutUndo();
 

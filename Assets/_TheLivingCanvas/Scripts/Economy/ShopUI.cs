@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TheLivingCanvas.Core;
+using TheLivingCanvas.Progression;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,11 +9,13 @@ namespace TheLivingCanvas.Economy
     /// <summary>
     /// Panel placeholder de la tienda: una fila por oferta que se puede comprar ahora (lo ya comprado y las
     /// recargas de colores que aún no se tienen no salen), con su precio y un botón Buy.
+    /// Las ofertas de un nivel de artista superior se listan, pero bloqueadas.
     /// </summary>
     public class ShopUI : ModalPanel
     {
         [SerializeField] ShopOffer[] offers;
         [SerializeField] Wallet wallet;
+        [SerializeField] ArtistLevel artistLevel;
         [SerializeField] RectTransform rowContainer;
         [Tooltip("Fila desactivada que se clona por oferta (RawImage 'Icon', Text 'Name', Button 'Buy' con Text).")]
         [SerializeField] GameObject rowTemplate;
@@ -31,12 +34,14 @@ namespace TheLivingCanvas.Economy
         {
             base.OnEnable();
             wallet.Changed += OnWalletChanged;
+            artistLevel.LeveledUp += OnLeveledUp;
         }
 
         protected override void OnDisable()
         {
             base.OnDisable();
             wallet.Changed -= OnWalletChanged;
+            artistLevel.LeveledUp -= OnLeveledUp;
         }
 
         public void Open(GameObject player)
@@ -52,9 +57,14 @@ namespace TheLivingCanvas.Economy
             if (IsOpen) RefreshButtons();
         }
 
+        void OnLeveledUp(int level)
+        {
+            if (IsOpen) RefreshButtons();
+        }
+
         public void Buy(ShopOffer offer)
         {
-            if (!offer.IsAvailable(buyer)) return;
+            if (!offer.IsAvailable(buyer) || offer.RequiredLevel > artistLevel.Level) return;
             if (!wallet.TrySpend(offer.Price))
             {
                 messageLabel.text = $"Not enough coins for {offer.DisplayName.ToLowerInvariant()}.";
@@ -89,8 +99,9 @@ namespace TheLivingCanvas.Economy
         {
             foreach (var (offer, buy) in rows)
             {
-                buy.interactable = wallet.CanAfford(offer.Price);
-                buy.GetComponentInChildren<Text>().text = $"Buy  {offer.Price}";
+                bool unlocked = offer.RequiredLevel <= artistLevel.Level;
+                buy.interactable = unlocked && wallet.CanAfford(offer.Price);
+                buy.GetComponentInChildren<Text>().text = unlocked ? $"Buy  {offer.Price}" : $"Level {offer.RequiredLevel}";
             }
         }
     }

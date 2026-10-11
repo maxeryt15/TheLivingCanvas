@@ -16,4 +16,5 @@ MonoBehaviour:
   description: A see-through layer that mixes with the colors below.
   price: 40
   icon: {fileID: 0}
+  requiredLevel: 3
   brush: {fileID: 11400000, guid: 9600eccf7ae2b244cbd1074835349983, type: 2}

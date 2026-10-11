@@ -16,4 +16,5 @@ MonoBehaviour:
   description: Adds the tomato to the crops you can paint.
   price: 30
   icon: {fileID: 0}
+  requiredLevel: 2
   crop: {fileID: 11400000, guid: b19e841a2369a924a8b03d5fe795ec93, type: 2}

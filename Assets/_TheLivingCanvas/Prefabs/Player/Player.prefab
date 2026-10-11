@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 309921310988699684}
   - component: {fileID: 1369985129268799377}
   - component: {fileID: 7997938788624478519}
+  - component: {fileID: 1263707594690434105}
   - component: {fileID: 5124207475027352058}
   - component: {fileID: 3612679850124350672}
   - component: {fileID: 8540552794212616525}
@@ -266,6 +267,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Economy.Wallet
   coins: 0
+--- !u!114 &1263707594690434105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6875788775779737426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce973fbe1f42698409e51ec369ac69e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Progression.ArtistLevel
+  levelThresholds: 000000003c000000960000002c010000
+  xpPerQuality: 0a000000140000002300000032000000
+  discoveryBonus: 25
 --- !u!114 &5124207475027352058
 MonoBehaviour:
   m_ObjectHideFlags: 0

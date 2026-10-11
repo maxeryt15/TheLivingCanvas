@@ -16,4 +16,5 @@ MonoBehaviour:
   description: Click a zone of the sketch to fill it in one go.
   price: 40
   icon: {fileID: 0}
+  requiredLevel: 2
   brush: {fileID: 11400000, guid: 79e3e6f2335ac9b4ab8119b52cc7337f, type: 2}

@@ -9,10 +9,13 @@ namespace TheLivingCanvas.Economy
         [SerializeField, TextArea] string description;
         [SerializeField] int price = 5;
         [SerializeField] Texture2D icon;
+        [Tooltip("Nivel de artista mínimo para comprarla.")]
+        [SerializeField] int requiredLevel = 1;
 
         public string DisplayName => displayName;
         public string Description => description;
         public int Price => price;
+        public int RequiredLevel => requiredLevel;
         public virtual Texture Icon => icon;
 
         /// <summary>false si ya no se puede comprar (ej. una mejora que ya se tiene).</summary>
@@ -29,6 +32,8 @@ namespace TheLivingCanvas.Economy
             price = newPrice;
             icon = newIcon;
         }
+
+        public void EditorSetRequiredLevel(int level) => requiredLevel = level;
 #endif
     }
 }
