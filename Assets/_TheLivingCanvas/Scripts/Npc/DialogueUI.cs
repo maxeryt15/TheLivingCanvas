@@ -1,3 +1,4 @@
+using System;
 using TheLivingCanvas.Core;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,8 @@ namespace TheLivingCanvas.Npcs
 
         string[] lines;
         int index;
+        string finalLabel;
+        Action finalAction;
 
         protected override void Awake()
         {
@@ -21,11 +24,14 @@ namespace TheLivingCanvas.Npcs
             nextButton.onClick.AddListener(Advance);
         }
 
-        public void Open(string speaker, string[] dialogueLines)
+        /// <summary>En la última línea el botón dice finalActionLabel (o "Close") y, al avanzar, cierra y ejecuta finalAction.</summary>
+        public void Open(string speaker, string[] dialogueLines, string finalActionLabel = null, Action finalAction = null)
         {
             if (!TryOpen()) return;
             speakerLabel.text = speaker;
             lines = dialogueLines;
+            finalLabel = finalActionLabel ?? "Close";
+            this.finalAction = finalAction;
             index = 0;
             ShowLine();
         }
@@ -40,6 +46,7 @@ namespace TheLivingCanvas.Npcs
             if (index >= lines.Length - 1)
             {
                 Close();
+                finalAction?.Invoke();
                 return;
             }
             index++;
@@ -49,7 +56,7 @@ namespace TheLivingCanvas.Npcs
         void ShowLine()
         {
             lineLabel.text = lines[index];
-            nextLabel.text = index >= lines.Length - 1 ? "Close" : "Next";
+            nextLabel.text = index >= lines.Length - 1 ? finalLabel : "Next";
         }
     }
 }

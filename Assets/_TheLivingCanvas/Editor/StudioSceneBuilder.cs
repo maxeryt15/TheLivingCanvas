@@ -1901,13 +1901,32 @@ namespace TheLivingCanvas.EditorTools
                 definition = ScriptableObject.CreateInstance<NpcDefinition>();
                 AssetDatabase.CreateAsset(definition, definitionPath);
             }
+            var commissionPath = $"{Root}/Data/Npcs/Commission_OttilieSunflower.asset";
+            var commission = AssetDatabase.LoadAssetAtPath<CommissionDefinition>(commissionPath);
+            if (commission == null)
+            {
+                commission = ScriptableObject.CreateInstance<CommissionDefinition>();
+                AssetDatabase.CreateAsset(commission, commissionPath);
+            }
+            commission.EditorSetup(GetOrCreateSunflowerCrop(), PaintingQuality.Good, new[]
+            {
+                "Now then, darling, I have a little something to ask of you.",
+                "I would simply adore a sunflower painting for my collection. A proper one, mind: Good quality or better.",
+                "Bring it to me when it is ready, and I shall be waiting with bated breath."
+            }, new[]
+            {
+                "Oh, it is magnificent! Look at those petals, they practically hum. This will be the very first jewel of my collection.",
+                "Mark my words, I shall have more requests for you soon. A collector's appetite is never satisfied!"
+            });
+            EditorUtility.SetDirty(commission);
+
             definition.EditorSetup("Ottilie Vane", new[]
             {
                 "Oh! A new face among my favourite walls. I'm Ottilie Vane, and I collect colours the way other people collect teaspoons.",
                 "Rare pigments make my heart flutter. And paintings that grow? Darling, I would cross three counties for one.",
                 "Keep your brushes wet and your garden wilder than is sensible. The best colours always sprout where nobody planned them.",
                 "I may have a request or two for you, once you have settled in. Do come and chat again soon!"
-            });
+            }, new[] { commission });
             EditorUtility.SetDirty(definition);
 
             // Figura de ~1,75 m: un único CapsuleCollider en la raíz (CreatePart quita los de las primitivas).
@@ -1930,10 +1949,19 @@ namespace TheLivingCanvas.EditorTools
             CreatePart(PrimitiveType.Cylinder, "Hat_Brim", npc.transform, new Vector3(0f, 1.55f, 0f), new Vector3(0.5f, 0.012f, 0.5f), hatMat, Quaternion.identity);
             CreatePart(PrimitiveType.Cylinder, "Hat_Crown", npc.transform, new Vector3(0f, 1.65f, 0f), new Vector3(0.2f, 0.1f, 0.2f), hatMat, Quaternion.identity);
 
+            var commissionList = BuildListPanel(hud, "CommissionUI", "Give a painting", new Vector2(760f, 640f));
+            var commissionUi = commissionList.Root.AddComponent<CommissionUI>();
+            var commissionSo = new SerializedObject(commissionUi);
+            SetModalPanelRefs(commissionSo, commissionList, player, rig);
+            commissionSo.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+            commissionSo.FindProperty("messageLabel").objectReferenceValue = commissionList.Message;
+            commissionSo.ApplyModifiedPropertiesWithoutUndo();
+
             var component = npc.AddComponent<Npc>();
             var so = new SerializedObject(component);
             so.FindProperty("definition").objectReferenceValue = definition;
             so.FindProperty("dialogueUI").objectReferenceValue = dialogueUi;
+            so.FindProperty("commissionUI").objectReferenceValue = commissionUi;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

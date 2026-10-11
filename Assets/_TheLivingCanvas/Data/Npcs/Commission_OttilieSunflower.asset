@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a799e70e5eb3f49b51d6067ff8efea, type: 3}
+  m_Name: Commission_OttilieSunflower
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
+  crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
+  minQuality: 1
+  requestLines:
+  - Now then, darling, I have a little something to ask of you.
+  - 'I would simply adore a sunflower painting for my collection. A proper one, mind:
+    Good quality or better.'
+  - Bring it to me when it is ready, and I shall be waiting with bated breath.
+  thanksLines:
+  - Oh, it is magnificent! Look at those petals, they practically hum. This will
+    be the very first jewel of my collection.
+  - Mark my words, I shall have more requests for you soon. A collector's appetite
+    is never satisfied!
