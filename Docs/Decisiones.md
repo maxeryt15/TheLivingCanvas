@@ -36,3 +36,7 @@
 | 2026-10-11 | Cada oferta de la tienda pide un nivel mínimo; lo bloqueado se ve con "Level N" como meta | Aprovecha todos los desbloqueos que ya existen. |
 | 2026-10-11 | Primera zona nueva: el Jardín (exterior junto al estudio, más espacio para parcelas), que se abre a cierto nivel | Zona 2 del prompt maestro. |
 | 2026-10-11 | Herramientas nuevas: cuentagotas (toma cualquier color de la pintura, incluidas las mezclas del Glaze, y lo usa como color opaco) y simetría (espejo vertical, cuenta como pintado a mano) | Cambian cómo se pinta (regla de oro D3). |
+| 2026-10-11 | Fase 12: la galería es una sala nueva detrás del estudio (puerta en la pared del fondo), con marcos vacíos en las paredes | Cerca de donde se pinta y se puede agrandar después. |
+| 2026-10-11 | Las pinturas se cuelgan y descuelgan en un marco desde el inventario; mientras cuelgan no se pueden plantar | Decisión real (exhibir o plantar) sin perder nada. |
+| 2026-10-11 | La galería muestra una placa por cuadro (nombre con variante, calidad, lienzo) y un tablero de colección con cultivos y variantes descubiertos y por descubrir. Logros, más adelante | Usa lo que ya registra el nivel de artista. |
+| 2026-10-11 | La galería no da beneficios de juego por ahora; los visitantes y encargos llegan con los NPCs (Fase 13) | Lugar cozy para disfrutar lo pintado. |
