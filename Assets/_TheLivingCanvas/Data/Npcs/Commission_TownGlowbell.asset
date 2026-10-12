@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a799e70e5eb3f49b51d6067ff8efea, type: 3}
+  m_Name: Commission_TownGlowbell
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
+  crop: {fileID: 11400000, guid: 9e3e9bdcff2b9374f8330b0b39962dc0, type: 2}
+  variantId: 
+  minQuality: 1
+  requestLines:
+  - Seeking a glowbell painting, Good quality or better. The nights are long and
+    my lamps could use some company.
+  - '- Ned, the lamplighter'
+  thanksLines:
+  - 'A note is pinned in reply: "Hung it by my door. It glows almost as nicely as
+    the real thing. Much obliged!"'
+  - '- Ned, the lamplighter'
+  rewardCoins: 70
+  rewardXp: 40
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0

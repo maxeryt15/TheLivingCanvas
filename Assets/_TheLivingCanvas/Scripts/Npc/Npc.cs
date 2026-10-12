@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Economy;
@@ -60,34 +59,10 @@ namespace TheLivingCanvas.Npcs
         void Deliver(PaintingItem painting)
         {
             var commission = Current;
-            var thanks = commission.ThanksLines.Append(PayReward(commission)).ToArray();
+            var thanks = commission.ThanksLines.Append(CommissionRewards.Pay(commission, wallet, artistLevel, stock, brush)).ToArray();
             commissionIndex++;
             requested = false;
             dialogueUI.Open(definition.DisplayName, thanks);
-        }
-
-        /// <summary>Entrega monedas, XP y pigmento del encargo; devuelve la línea que resume lo recibido.</summary>
-        string PayReward(CommissionDefinition commission)
-        {
-            var parts = new List<string>();
-            if (commission.RewardCoins > 0)
-            {
-                wallet.Add(commission.RewardCoins);
-                parts.Add($"+{commission.RewardCoins} coins");
-            }
-            if (commission.RewardXp > 0)
-            {
-                parts.Add($"+{commission.RewardXp} XP");
-                if (artistLevel.AddXp(commission.RewardXp)) parts.Add("Level up!");
-            }
-            var pigment = commission.RewardPigment;
-            if (pigment != null)
-            {
-                bool unlocked = brush.AddPigment(pigment); // false si ya estaba en la paleta
-                stock.Add(pigment, commission.RewardPigmentAmount);
-                parts.Add($"+{commission.RewardPigmentAmount} {pigment.DisplayName}" + (unlocked ? " (new color for your palette!)" : ""));
-            }
-            return "Reward: " + string.Join(" · ", parts);
         }
     }
 }

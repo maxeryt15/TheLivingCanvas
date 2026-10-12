@@ -112,9 +112,11 @@ namespace TheLivingCanvas.EditorTools
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
             BuildGarden(player.GetComponent<ArtistLevel>());
             var dialogueUi = BuildDialogueUI(hud.transform, player, rig);
-            BuildGallery(hud.transform, dialogueUi, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>());
+            var commissionUi = BuildCommissionUI(hud.transform, player, rig);
+            BuildGallery(hud.transform, dialogueUi, commissionUi, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>());
             var town = BuildTown();
             BuildArtDealer(hud.transform, town, dialogueUi, player, rig, paintMode.GetComponent<PaintBrushController>());
+            BuildNoticeBoard(town, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>());
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -1943,7 +1945,7 @@ namespace TheLivingCanvas.EditorTools
         /// Galería detrás del estudio (x de -6 a 6, z de 6 a 14), sin techo: suelo, paredes y 6 marcos vacíos
         /// (2 por pared lateral y 2 al fondo) + el panel para colgar pinturas.
         /// </summary>
-        static void BuildGallery(Transform hud, DialogueUI dialogueUi, GameObject player, GameObject rig, Material wallMat, PaintBrushController brush)
+        static void BuildGallery(Transform hud, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, GameObject rig, Material wallMat, PaintBrushController brush)
         {
             var floorMat = GetOrCreateMaterial("M_Gallery_Floor", new Color(0.74f, 0.68f, 0.60f));
             var woodMat = GetOrCreateMaterial("M_Gallery_Frame", new Color(0.25f, 0.17f, 0.11f));
@@ -1984,7 +1986,7 @@ namespace TheLivingCanvas.EditorTools
             BuildGalleryFrame(gallery, "Frame_B1", new Vector3(-3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildGalleryFrame(gallery, "Frame_B2", new Vector3(3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildCollectionBoard(hud, gallery, player, rig, woodMat);
-            BuildNpc(hud, gallery, dialogueUi, player, rig, brush);
+            BuildNpc(gallery, dialogueUi, commissionUi, player, brush);
         }
 
         /// <summary>Panel de diálogo compartido por todos los personajes.</summary>
@@ -2047,8 +2049,21 @@ namespace TheLivingCanvas.EditorTools
             return dialogueUi;
         }
 
+        /// <summary>Panel de entrega de pinturas, compartido por Ottilie y el tablón de encargos.</summary>
+        static CommissionUI BuildCommissionUI(Transform hud, GameObject player, GameObject rig)
+        {
+            var commissionList = BuildListPanel(hud, "CommissionUI", "Give a painting", new Vector2(760f, 640f));
+            var commissionUi = commissionList.Root.AddComponent<CommissionUI>();
+            var commissionSo = new SerializedObject(commissionUi);
+            SetModalPanelRefs(commissionSo, commissionList, player, rig);
+            commissionSo.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+            commissionSo.FindProperty("messageLabel").objectReferenceValue = commissionList.Message;
+            commissionSo.ApplyModifiedPropertiesWithoutUndo();
+            return commissionUi;
+        }
+
         /// <summary>Ottilie Vane, coleccionista excéntrica (figura de primitivas) en la galería.</summary>
-        static void BuildNpc(Transform hud, Transform gallery, DialogueUI dialogueUi, GameObject player, GameObject rig, PaintBrushController brush)
+        static void BuildNpc(Transform gallery, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, PaintBrushController brush)
         {
             // Datos del personaje.
             if (!AssetDatabase.IsValidFolder($"{Root}/Data/Npcs"))
@@ -2122,14 +2137,6 @@ namespace TheLivingCanvas.EditorTools
             CreatePart(PrimitiveType.Sphere, "Head", npc.transform, new Vector3(0f, 1.43f, 0f), Vector3.one * 0.26f, skinMat, Quaternion.identity);
             CreatePart(PrimitiveType.Cylinder, "Hat_Brim", npc.transform, new Vector3(0f, 1.55f, 0f), new Vector3(0.5f, 0.012f, 0.5f), hatMat, Quaternion.identity);
             CreatePart(PrimitiveType.Cylinder, "Hat_Crown", npc.transform, new Vector3(0f, 1.65f, 0f), new Vector3(0.2f, 0.1f, 0.2f), hatMat, Quaternion.identity);
-
-            var commissionList = BuildListPanel(hud, "CommissionUI", "Give a painting", new Vector2(760f, 640f));
-            var commissionUi = commissionList.Root.AddComponent<CommissionUI>();
-            var commissionSo = new SerializedObject(commissionUi);
-            SetModalPanelRefs(commissionSo, commissionList, player, rig);
-            commissionSo.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
-            commissionSo.FindProperty("messageLabel").objectReferenceValue = commissionList.Message;
-            commissionSo.ApplyModifiedPropertiesWithoutUndo();
 
             var component = npc.AddComponent<Npc>();
             var so = new SerializedObject(component);
@@ -2234,6 +2241,88 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
             so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
             so.FindProperty("brush").objectReferenceValue = brush;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>
+        /// Tablón de encargos de los vecinos, en el lado oeste de la plaza, mirando a la fuente.
+        /// Frente = +Z local (yaw 90 hacia +X); sólido, con tres notas que desaparecen al cumplir los encargos.
+        /// </summary>
+        static void BuildNoticeBoard(Transform town, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, PaintBrushController brush)
+        {
+            var woodMat = GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f));
+            var corkMat = GetOrCreateMaterial("M_Gallery_Board", new Color(0.72f, 0.52f, 0.32f));
+            var roofMat = GetOrCreateMaterial("M_Town_Roof", new Color(0.66f, 0.37f, 0.28f));
+            var noteMat = GetOrCreateMaterial("M_Town_Note", new Color(0.93f, 0.89f, 0.78f));
+
+            // Encargos de los vecinos (assets en Data/Npcs).
+            if (!AssetDatabase.IsValidFolder($"{Root}/Data/Npcs"))
+                AssetDatabase.CreateFolder($"{Root}/Data", "Npcs");
+            var tomato = GetOrCreateCommission("Commission_TownTomato", GetOrCreateTomatoCrop(), null, PaintingQuality.Good, new[]
+            {
+                "Wanted: one tomato painting, Good quality or better, to brighten my shop window. Nothing sells bread like a little colour.",
+                "- Mabel, the baker"
+            }, new[]
+            {
+                "A note is pinned in reply: \"It is perfect! The whole street has stopped to look at it. Thank you, dear painter.\"",
+                "- Mabel, the baker"
+            }, 35, 20);
+            var glowbell = GetOrCreateCommission("Commission_TownGlowbell", GetOrCreateGlowbellCrop(), null, PaintingQuality.Good, new[]
+            {
+                "Seeking a glowbell painting, Good quality or better. The nights are long and my lamps could use some company.",
+                "- Ned, the lamplighter"
+            }, new[]
+            {
+                "A note is pinned in reply: \"Hung it by my door. It glows almost as nicely as the real thing. Much obliged!\"",
+                "- Ned, the lamplighter"
+            }, 70, 40);
+            var redSunflower = GetOrCreateCommission("Commission_TownRedSunflower", GetOrCreateSunflowerCrop(), "red", PaintingQuality.Good, new[]
+            {
+                "Please can someone paint a RED sunflower? Red is my favourite colour in the whole world. I can pay with my savings!",
+                "- Pip, age 7"
+            }, new[]
+            {
+                "A note is pinned in reply: \"It is the best painting ever!!! I showed everyone. Thank you thank you thank you!\"",
+                "- Pip, age 7"
+            }, 60, 40);
+
+            // Raíz a (-4.6, 0, -17.5), libre de banco, farola (-4.6, 0, -20.6) y puesto (-3, 0, -13).
+            var root = new GameObject("CommissionBoard");
+            root.transform.SetParent(town, false);
+            root.transform.SetPositionAndRotation(new Vector3(-4.6f, 0f, -17.5f), Quaternion.Euler(0f, 90f, 0f));
+            var box = root.AddComponent<BoxCollider>();
+            box.center = new Vector3(0f, 1.2f, 0f);
+            box.size = new Vector3(2.0f, 2.4f, 0.4f);
+
+            CreatePart(PrimitiveType.Cube, "Post_Left", root.transform, new Vector3(-0.9f, 1.1f, 0f), new Vector3(0.1f, 2.2f, 0.1f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Post_Right", root.transform, new Vector3(0.9f, 1.1f, 0f), new Vector3(0.1f, 2.2f, 0.1f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Cork", root.transform, new Vector3(0f, 1.4f, 0.02f), new Vector3(1.7f, 1.1f, 0.06f), corkMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Roof", root.transform, new Vector3(0f, 2.3f, 0.05f), new Vector3(2.2f, 0.07f, 0.6f), roofMat, Quaternion.Euler(10f, 0f, 0f));
+
+            // Notas de papel clavadas al corcho (sin collider).
+            var noteSpots = new[]
+            {
+                (new Vector3(-0.5f, 1.55f, 0.06f), 5f),
+                (new Vector3(0.1f, 1.3f, 0.06f), -4f),
+                (new Vector3(0.55f, 1.6f, 0.06f), 7f)
+            };
+            var notes = new GameObject[noteSpots.Length];
+            for (int i = 0; i < noteSpots.Length; i++)
+            {
+                var (position, angle) = noteSpots[i];
+                notes[i] = CreatePart(PrimitiveType.Cube, $"Note_{i + 1}", root.transform, position, new Vector3(0.38f, 0.5f, 0.01f), noteMat, Quaternion.Euler(0f, 0f, angle));
+            }
+
+            var component = root.AddComponent<CommissionBoard>();
+            var so = new SerializedObject(component);
+            SetArray(so.FindProperty("commissions"), new[] { tomato, glowbell, redSunflower });
+            so.FindProperty("dialogueUI").objectReferenceValue = dialogueUi;
+            so.FindProperty("commissionUI").objectReferenceValue = commissionUi;
+            so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
+            so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
+            so.FindProperty("brush").objectReferenceValue = brush;
+            SetArray(so.FindProperty("notes"), notes);
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

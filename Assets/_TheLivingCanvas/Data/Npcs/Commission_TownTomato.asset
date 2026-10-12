@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a799e70e5eb3f49b51d6067ff8efea, type: 3}
+  m_Name: Commission_TownTomato
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
+  crop: {fileID: 11400000, guid: b19e841a2369a924a8b03d5fe795ec93, type: 2}
+  variantId: 
+  minQuality: 1
+  requestLines:
+  - 'Wanted: one tomato painting, Good quality or better, to brighten my shop window.
+    Nothing sells bread like a little colour.'
+  - '- Mabel, the baker'
+  thanksLines:
+  - 'A note is pinned in reply: "It is perfect! The whole street has stopped to look
+    at it. Thank you, dear painter."'
+  - '- Mabel, the baker'
+  rewardCoins: 35
+  rewardXp: 20
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0

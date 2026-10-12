@@ -48,4 +48,5 @@
 | 2026-10-11 | Fase 14: el pueblo está al sur del estudio y del jardín (x -12..18, z -26..-6), se sale por un hueco en el frente del estudio y está abierto desde el inicio | Queda a mano y es el centro social; nada que desbloquear. |
 | 2026-10-11 | Pueblo en greybox con materiales planos (como el resto de Studio.unity) hasta aprobar el prototipo painterly | `ART_DIRECTION.md`: no montar muchos assets antes de validar el estilo. |
 | 2026-10-11 | La tienda se queda en el estudio. En la plaza hay un puesto con un marchante de arte que compra pinturas (precio según cultivo, calidad y rareza) | Decisión del usuario: nueva elección entre plantar, colgar o vender; la pintura sigue siendo el centro. |
+| 2026-10-11 | 14C: encargos del pueblo en un tablón de anuncios en la plaza (notas firmadas por vecinos, de a una, en cadena), recompensa monedas + XP | Decisión del usuario: abre los encargos a más gente del pueblo sin crear NPCs nuevos. |
 | 2026-10-11 | Plan: 14A espacio (suelo, camino, plaza, fuente, casas de fachada, límites); 14B marchante de arte; 14C encargos del pueblo | Pasos pequeños y revisables. |
