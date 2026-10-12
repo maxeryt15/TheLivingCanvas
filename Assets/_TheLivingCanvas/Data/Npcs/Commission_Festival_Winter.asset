@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a799e70e5eb3f49b51d6067ff8efea, type: 3}
+  m_Name: Commission_Festival_Winter
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
+  crop: {fileID: 0}
+  variantId: 
+  minQuality: 1
+  requestLines:
+  - Warm cocoa, cold noses, and a festival! Enter any painting with Frost Lilac,
+    Good quality or better.
+  thanksLines:
+  - Like frost on a window! A lilac ribbon for you.
+  - A Winter trophy now sits in your gallery.
+  rewardCoins: 120
+  rewardXp: 60
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0
+  style: {fileID: 0}
+  requiredPigment: {fileID: 11400000, guid: 397bef72135613c4dae365e0dfbfe8ef, type: 2}

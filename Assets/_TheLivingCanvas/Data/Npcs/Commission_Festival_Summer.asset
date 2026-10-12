@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a799e70e5eb3f49b51d6067ff8efea, type: 3}
+  m_Name: Commission_Festival_Summer
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
+  crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
+  variantId: 
+  minQuality: 2
+  requestLines:
+  - Summer festival, warm and bright! This year the judges want a sunflower painting,
+    Excellent quality or better.
+  thanksLines:
+  - Pure sunshine on canvas! A blue ribbon for you.
+  - A Summer trophy now sits in your gallery.
+  rewardCoins: 120
+  rewardXp: 60
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0
+  style: {fileID: 0}
+  requiredPigment: {fileID: 0}

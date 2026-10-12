@@ -81,10 +81,10 @@ namespace TheLivingCanvas.Data
         }
 
         /// <summary>Distancia RGB² máxima entre lo pintado y el pigmento de la variante (~0.25 por canal).</summary>
-        const float MaxVariantDistance = 0.06f;
+        public const float MaxVariantDistance = 0.06f;
         const float SwirlVariantWiden = 1.5f;
 
-        static float ColorDistance(Color a, Color b) =>
+        public static float ColorDistance(Color a, Color b) =>
             new Vector3(a.r - b.r, a.g - b.g, a.b - b.b).sqrMagnitude;
 
 #if UNITY_EDITOR

@@ -29,3 +29,4 @@ MonoBehaviour:
   rewardPigment: {fileID: 0}
   rewardPigmentAmount: 0
   style: {fileID: 11400000, guid: eea2b76178789a242839dfb2484fe9c4, type: 2}
+  requiredPigment: {fileID: 0}

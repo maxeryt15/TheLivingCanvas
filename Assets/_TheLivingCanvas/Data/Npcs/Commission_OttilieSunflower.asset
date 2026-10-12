@@ -30,3 +30,4 @@ MonoBehaviour:
   rewardPigment: {fileID: 0}
   rewardPigmentAmount: 0
   style: {fileID: 0}
+  requiredPigment: {fileID: 0}

@@ -129,10 +129,11 @@ namespace TheLivingCanvas.EditorTools
             BuildGarden(player.GetComponent<ArtistLevel>());
             var dialogueUi = BuildDialogueUI(hud.transform, player, rig);
             var commissionUi = BuildCommissionUI(hud.transform, player, rig);
-            BuildGallery(hud.transform, dialogueUi, commissionUi, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>(), seasonClock);
+            var gallery = BuildGallery(hud.transform, dialogueUi, commissionUi, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>(), seasonClock);
             var town = BuildTown();
             BuildArtDealer(hud.transform, town, dialogueUi, player, rig, paintMode.GetComponent<PaintBrushController>(), seasonClock);
             BuildNoticeBoard(town, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>());
+            BuildFestival(town, gallery, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>(), seasonClock);
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -2219,7 +2220,7 @@ namespace TheLivingCanvas.EditorTools
         /// Galería detrás del estudio (x de -6 a 6, z de 6 a 14), sin techo: suelo, paredes y 6 marcos vacíos
         /// (2 por pared lateral y 2 al fondo) + el panel para colgar pinturas.
         /// </summary>
-        static void BuildGallery(Transform hud, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, GameObject rig, Material wallMat, PaintBrushController brush, SeasonClock seasonClock)
+        static Transform BuildGallery(Transform hud, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, GameObject rig, Material wallMat, PaintBrushController brush, SeasonClock seasonClock)
         {
             var floorMat = GetOrCreateMaterial("M_Gallery_Floor", new Color(0.74f, 0.68f, 0.60f));
             var woodMat = GetOrCreateMaterial("M_Gallery_Frame", new Color(0.25f, 0.17f, 0.11f));
@@ -2261,6 +2262,7 @@ namespace TheLivingCanvas.EditorTools
             BuildGalleryFrame(gallery, "Frame_B2", new Vector3(3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildCollectionBoard(hud, gallery, player, rig, woodMat);
             BuildNpc(gallery, dialogueUi, commissionUi, player, brush, seasonClock);
+            return gallery;
         }
 
         /// <summary>Panel de diálogo compartido por todos los personajes.</summary>
@@ -2547,6 +2549,118 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>
+        /// Festival de temporada en la plaza: puesto del juez en el lado sureste (mirando a la fuente), banderines y,
+        /// en la galería, una vitrina baja en la pared oeste con un trofeo por estación. Puesto y banderines solo existen durante el festival.
+        /// </summary>
+        static void BuildFestival(Transform town, Transform gallery, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, PaintBrushController brush, SeasonClock seasonClock)
+        {
+            var woodMat = GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f));
+            var galleryWoodMat = GetOrCreateMaterial("M_Gallery_Frame", new Color(0.25f, 0.17f, 0.11f));
+            var awningMat = GetOrCreateMaterial("M_Festival_Awning", new Color(0.82f, 0.36f, 0.36f));
+            var goldMat = GetOrCreateMaterial("M_Festival_Gold", new Color(0.85f, 0.70f, 0.30f));
+
+            // Concursos por estación (orden del enum Season); los de pigmento piden el color de temporada.
+            if (!AssetDatabase.IsValidFolder($"{Root}/Data/Npcs"))
+                AssetDatabase.CreateFolder($"{Root}/Data", "Npcs");
+            var sunflower = GetOrCreateSunflowerCrop();
+            var seasonData = new[]
+            {
+                (Season.Spring, "blossom_pink", "Blossom Pink", new Color(0.93f, 0.62f, 0.70f), (CropDefinition)null, PaintingQuality.Good,
+                    "The blossoms are out and so is the festival! Enter any painting with Blossom Pink, Good quality or better.",
+                    "Petals on the breeze, and a pink ribbon for you!"),
+                (Season.Summer, "sky_blue", "Sky Blue", new Color(0.55f, 0.75f, 0.92f), sunflower, PaintingQuality.Excellent,
+                    "Summer festival, warm and bright! This year the judges want a sunflower painting, Excellent quality or better.",
+                    "Pure sunshine on canvas! A blue ribbon for you."),
+                (Season.Autumn, "burnt_orange", "Burnt Orange", new Color(0.80f, 0.42f, 0.15f), (CropDefinition)null, PaintingQuality.Good,
+                    "Leaves are turning and the lanterns are lit! Enter any painting with Burnt Orange, Good quality or better.",
+                    "Cosy as a bonfire! An orange ribbon for you."),
+                (Season.Winter, "frost_lilac", "Frost Lilac", new Color(0.76f, 0.72f, 0.88f), (CropDefinition)null, PaintingQuality.Good,
+                    "Warm cocoa, cold noses, and a festival! Enter any painting with Frost Lilac, Good quality or better.",
+                    "Like frost on a window! A lilac ribbon for you.")
+            };
+            var contests = new CommissionDefinition[seasonData.Length];
+            var trophies = new GameObject[seasonData.Length];
+            var seasonMats = new Material[seasonData.Length];
+            var shelfPos = new Vector3(-5.7f, 0f, 10f);
+            CreateBlock("Trophy_Shelf", gallery, shelfPos + new Vector3(0f, 0.45f, 0f), new Vector3(0.4f, 0.9f, 1.4f), galleryWoodMat);
+            for (int i = 0; i < seasonData.Length; i++)
+            {
+                var (season, id, pigmentName, color, crop, quality, request, thanks) = seasonData[i];
+                var pigment = crop == null ? GetOrCreatePigment(id, pigmentName, color) : null;
+                contests[i] = GetOrCreateCommission($"Commission_Festival_{season}", crop, null, quality,
+                    new[] { request }, new[] { thanks, $"A {season} trophy now sits in your gallery." }, 120, 60, null, 0, null, pigment);
+                seasonMats[i] = GetOrCreateMaterial($"M_Festival_{season}", color);
+
+                // Copa de trofeo (base, pie y copa) sobre la vitrina; oculta hasta ganar el concurso.
+                var trophy = new GameObject($"Trophy_{season}").transform;
+                trophy.SetParent(gallery, false);
+                trophy.localPosition = shelfPos + new Vector3(0f, 0.9f, -0.45f + i * 0.3f);
+                CreatePart(PrimitiveType.Cylinder, "Base", trophy, new Vector3(0f, 0.015f, 0f), new Vector3(0.14f, 0.015f, 0.14f), goldMat, Quaternion.identity);
+                CreatePart(PrimitiveType.Cylinder, "Stem", trophy, new Vector3(0f, 0.1f, 0f), new Vector3(0.04f, 0.07f, 0.04f), goldMat, Quaternion.identity);
+                CreatePart(PrimitiveType.Sphere, "Cup", trophy, new Vector3(0f, 0.24f, 0f), Vector3.one * 0.16f, seasonMats[i], Quaternion.identity);
+                trophies[i] = trophy.gameObject;
+            }
+
+            // Raíz siempre activa en (3.4, 0, -18.6), libre de bancos (3.9, -16) y farola (4.6, -20.6); el frente (+Z) mira a la fuente.
+            var root = new GameObject("FestivalStand");
+            root.transform.SetParent(town, false);
+            var standPos = new Vector3(3.4f, 0f, -18.6f);
+            root.transform.SetPositionAndRotation(standPos, Quaternion.LookRotation(new Vector3(0f, 0f, -16f) - standPos));
+
+            var stall = new GameObject("Stall");
+            stall.transform.SetParent(root.transform, false);
+            var box = stall.AddComponent<BoxCollider>();
+            box.center = new Vector3(0f, 0.45f, 0f);
+            box.size = new Vector3(1.8f, 0.9f, 0.6f);
+            CreatePart(PrimitiveType.Cube, "Counter", stall.transform, new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 0.6f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Post_Left", stall.transform, new Vector3(-0.85f, 1.25f, -0.25f), new Vector3(0.08f, 2.5f, 0.08f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Post_Right", stall.transform, new Vector3(0.85f, 1.25f, -0.25f), new Vector3(0.08f, 2.5f, 0.08f), woodMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Awning", stall.transform, new Vector3(0f, 2.45f, 0.05f), new Vector3(2f, 0.08f, 0.9f), awningMat, Quaternion.Euler(12f, 0f, 0f));
+            CreatePart(PrimitiveType.Cylinder, "Rosette", stall.transform, new Vector3(0f, 0.65f, 0.31f), new Vector3(0.3f, 0.01f, 0.3f), goldMat, Quaternion.Euler(90f, 0f, 0f));
+
+            // Banderines: dos postes al norte de la plaza y las farolas del sur como anclas de cuatro cuerdas.
+            // Hijo del pueblo (no del puesto, que está girado): las posiciones son de mundo = locales del pueblo.
+            var bunting = new GameObject("Bunting").transform;
+            bunting.SetParent(town, false);
+            var northWest = new Vector3(-4.8f, 3f, -11.2f);
+            var northEast = new Vector3(4.8f, 3f, -11.2f);
+            var southWest = new Vector3(-4.6f, 3f, -20.6f);
+            var southEast = new Vector3(4.6f, 3f, -20.6f);
+            foreach (var top in new[] { northWest, northEast })
+                CreatePart(PrimitiveType.Cylinder, "Pole", bunting, new Vector3(top.x, top.y * 0.5f, top.z), new Vector3(0.1f, top.y * 0.5f, 0.1f), woodMat, Quaternion.identity);
+            BuildBuntingLine(bunting, northWest, northEast, woodMat, seasonMats);
+            BuildBuntingLine(bunting, southWest, southEast, woodMat, seasonMats);
+            BuildBuntingLine(bunting, northWest, southWest, woodMat, seasonMats);
+            BuildBuntingLine(bunting, northEast, southEast, woodMat, seasonMats);
+
+            var component = root.AddComponent<FestivalStand>();
+            var so = new SerializedObject(component);
+            so.FindProperty("clock").objectReferenceValue = seasonClock;
+            SetArray(so.FindProperty("contests"), contests);
+            SetArray(so.FindProperty("trophies"), trophies);
+            SetArray(so.FindProperty("festivalVisuals"), new Object[] { stall, bunting.gameObject });
+            so.FindProperty("dialogueUI").objectReferenceValue = dialogueUi;
+            so.FindProperty("commissionUI").objectReferenceValue = commissionUi;
+            so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
+            so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
+            so.FindProperty("brush").objectReferenceValue = brush;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Cuerda entre dos puntos con gallardetes (rombos) de colores colgando a intervalos.</summary>
+        static void BuildBuntingLine(Transform parent, Vector3 from, Vector3 to, Material ropeMat, Material[] flagMats)
+        {
+            var dir = to - from;
+            var look = Quaternion.LookRotation(dir);
+            CreatePart(PrimitiveType.Cube, "Rope", parent, (from + to) * 0.5f, new Vector3(0.02f, 0.02f, dir.magnitude), ropeMat, look);
+            int count = Mathf.FloorToInt(dir.magnitude / 0.8f);
+            for (int i = 0; i < count; i++)
+                CreatePart(PrimitiveType.Cube, "Flag", parent, Vector3.Lerp(from, to, (i + 0.5f) / count) + Vector3.down * 0.17f,
+                    new Vector3(0.22f, 0.22f, 0.015f), flagMats[i % flagMats.Length], look * Quaternion.Euler(0f, 90f, 45f));
+        }
+
+        /// <summary>
         /// Tablón de encargos de los vecinos, en el lado oeste de la plaza, mirando a la fuente.
         /// Frente = +Z local (yaw 90 hacia +X); sólido, con tres notas que desaparecen al cumplir los encargos.
         /// </summary>
@@ -2642,7 +2756,7 @@ namespace TheLivingCanvas.EditorTools
 
         static CommissionDefinition GetOrCreateCommission(string fileName, CropDefinition crop, string variantId, PaintingQuality minQuality,
             string[] requestLines, string[] thanksLines, int rewardCoins, int rewardXp, PigmentDefinition rewardPigment = null, int rewardPigmentAmount = 0,
-            StyleDefinition style = null)
+            StyleDefinition style = null, PigmentDefinition requiredPigment = null)
         {
             var path = $"{Root}/Data/Npcs/{fileName}.asset";
             var commission = AssetDatabase.LoadAssetAtPath<CommissionDefinition>(path);
@@ -2651,7 +2765,7 @@ namespace TheLivingCanvas.EditorTools
                 commission = ScriptableObject.CreateInstance<CommissionDefinition>();
                 AssetDatabase.CreateAsset(commission, path);
             }
-            commission.EditorSetup(crop, variantId, minQuality, requestLines, thanksLines, rewardCoins, rewardXp, rewardPigment, rewardPigmentAmount, style);
+            commission.EditorSetup(crop, variantId, minQuality, requestLines, thanksLines, rewardCoins, rewardXp, rewardPigment, rewardPigmentAmount, style, requiredPigment);
             EditorUtility.SetDirty(commission);
             return commission;
         }

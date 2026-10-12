@@ -30,3 +30,4 @@ MonoBehaviour:
   rewardPigment: {fileID: 11400000, guid: 285d40588d0c74248802bd0304e63f35, type: 2}
   rewardPigmentAmount: 30
   style: {fileID: 0}
+  requiredPigment: {fileID: 0}
