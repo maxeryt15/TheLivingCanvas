@@ -343,6 +343,8 @@ namespace TheLivingCanvas.EditorTools
             SetArray(brushSo.FindProperty("brushes"), GetOrCreateBrushes().Take(StartingBrushes).ToArray());
             brushSo.ApplyModifiedPropertiesWithoutUndo();
 
+            BuildHeldBrush(brush);
+
             // El mensaje vive en el HUD raíz para que la enhorabuena siga visible al salir del modo pintura.
             var finisher = paintMode.gameObject.AddComponent<PaintingFinisher>();
             var finisherSo = new SerializedObject(finisher);
@@ -356,6 +358,32 @@ namespace TheLivingCanvas.EditorTools
             BuildPalettePanel(paintHud.transform, paintMode, brush, finisher, player.GetComponent<PigmentStock>());
             BuildCoverageReadout(paintHud.transform, paintMode, brush);
             return paintMode;
+        }
+
+        /// <summary>Pincel en mano de primera persona: mango, virola y punta (punta en el origen, mango hacia +Y); HeldBrush lo coloca en el lienzo.</summary>
+        static void BuildHeldBrush(PaintBrushController brush)
+        {
+            var root = new GameObject("HeldBrush");
+            var visual = new GameObject("Visual").transform;
+            visual.SetParent(root.transform, false);
+            var tipMat = GetOrCreateMaterial("M_HeldBrush_Tip", Color.white); // el color real va por MaterialPropertyBlock
+            var ferruleMat = GetOrCreateMaterial("M_HeldBrush_Ferrule", new Color(0.62f, 0.62f, 0.66f));
+            var handleMat = GetOrCreateMaterial("M_HeldBrush_Handle", new Color(0.55f, 0.36f, 0.20f));
+            var tip = CreatePart(PrimitiveType.Sphere, "Tip", visual, new Vector3(0f, 0.02f, 0f), new Vector3(0.016f, 0.04f, 0.016f), tipMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cylinder, "Ferrule", visual, new Vector3(0f, 0.065f, 0f), new Vector3(0.014f, 0.025f, 0.014f), ferruleMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cylinder, "Handle", visual, new Vector3(0f, 0.2f, 0f), new Vector3(0.011f, 0.11f, 0.011f), handleMat, Quaternion.identity);
+            foreach (var r in visual.GetComponentsInChildren<MeshRenderer>())
+            {
+                r.shadowCastingMode = ShadowCastingMode.Off;
+                r.receiveShadows = false;
+            }
+
+            var held = root.AddComponent<HeldBrush>();
+            var so = new SerializedObject(held);
+            so.FindProperty("brush").objectReferenceValue = brush;
+            so.FindProperty("visual").objectReferenceValue = visual.gameObject;
+            so.FindProperty("tip").objectReferenceValue = tip.GetComponent<MeshRenderer>();
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Colocar pinturas del inventario en el suelo: controlador, aviso y prefab de la parcela.</summary>
@@ -2991,11 +3019,14 @@ namespace TheLivingCanvas.EditorTools
             capsule.radius = 0.3f;
             capsule.height = 1.75f;
 
-            CreatePart(PrimitiveType.Capsule, "Coat", npc.transform, new Vector3(0f, 0.6f, 0f), new Vector3(0.55f, 0.6f, 0.55f), coatMat, Quaternion.identity);
-            CreatePart(PrimitiveType.Cylinder, "Scarf", npc.transform, new Vector3(0f, 1.27f, 0f), new Vector3(0.34f, 0.04f, 0.34f), scarfMat, Quaternion.identity);
-            CreatePart(PrimitiveType.Sphere, "Head", npc.transform, new Vector3(0f, 1.43f, 0f), Vector3.one * 0.26f, skinMat, Quaternion.identity);
-            CreatePart(PrimitiveType.Cylinder, "Hat_Brim", npc.transform, new Vector3(0f, 1.55f, 0f), new Vector3(0.5f, 0.012f, 0.5f), hatMat, Quaternion.identity);
-            CreatePart(PrimitiveType.Cylinder, "Hat_Crown", npc.transform, new Vector3(0f, 1.65f, 0f), new Vector3(0.2f, 0.1f, 0.2f), hatMat, Quaternion.identity);
+            // El cuerpo cuelga de "Visual" (respira sin pelearse con el giro hacia el jugador, que mueve la raíz).
+            var visual = new GameObject("Visual").transform;
+            visual.SetParent(npc.transform, false);
+            CreatePart(PrimitiveType.Capsule, "Coat", visual, new Vector3(0f, 0.6f, 0f), new Vector3(0.55f, 0.6f, 0.55f), coatMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cylinder, "Scarf", visual, new Vector3(0f, 1.27f, 0f), new Vector3(0.34f, 0.04f, 0.34f), scarfMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Sphere, "Head", visual, new Vector3(0f, 1.43f, 0f), Vector3.one * 0.26f, skinMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cylinder, "Hat_Brim", visual, new Vector3(0f, 1.55f, 0f), new Vector3(0.5f, 0.012f, 0.5f), hatMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cylinder, "Hat_Crown", visual, new Vector3(0f, 1.65f, 0f), new Vector3(0.2f, 0.1f, 0.2f), hatMat, Quaternion.identity);
 
             var component = npc.AddComponent<Npc>();
             var so = new SerializedObject(component);
@@ -3007,6 +3038,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
             so.FindProperty("brush").objectReferenceValue = brush;
             so.FindProperty("seasons").objectReferenceValue = seasonClock;
+            so.FindProperty("visual").objectReferenceValue = visual;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -3093,11 +3125,13 @@ namespace TheLivingCanvas.EditorTools
             capsule.radius = 0.3f;
             capsule.height = 1.75f;
 
-            CreatePart(PrimitiveType.Capsule, "Coat", npc.transform, new Vector3(0f, 0.6f, 0f), new Vector3(0.5f, 0.6f, 0.5f), coatMat, Quaternion.identity);
-            CreatePart(PrimitiveType.Cube, "Cravat", npc.transform, new Vector3(0f, 1.2f, 0.14f), new Vector3(0.1f, 0.18f, 0.04f), cravatMat, Quaternion.identity);
-            CreatePart(PrimitiveType.Sphere, "Head", npc.transform, new Vector3(0f, 1.43f, 0f), Vector3.one * 0.26f, skinMat, Quaternion.identity);
-            CreatePart(PrimitiveType.Sphere, "Cap", npc.transform, new Vector3(0f, 1.53f, 0f), new Vector3(0.29f, 0.14f, 0.29f), capMat, Quaternion.identity);
-            CreatePart(PrimitiveType.Cube, "Cap_Visor", npc.transform, new Vector3(0f, 1.5f, 0.15f), new Vector3(0.2f, 0.015f, 0.14f), capMat, Quaternion.identity);
+            var visual = new GameObject("Visual").transform; // ver Ottilie: el cuerpo respira
+            visual.SetParent(npc.transform, false);
+            CreatePart(PrimitiveType.Capsule, "Coat", visual, new Vector3(0f, 0.6f, 0f), new Vector3(0.5f, 0.6f, 0.5f), coatMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Cravat", visual, new Vector3(0f, 1.2f, 0.14f), new Vector3(0.1f, 0.18f, 0.04f), cravatMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Sphere, "Head", visual, new Vector3(0f, 1.43f, 0f), Vector3.one * 0.26f, skinMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Sphere, "Cap", visual, new Vector3(0f, 1.53f, 0f), new Vector3(0.29f, 0.14f, 0.29f), capMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Cap_Visor", visual, new Vector3(0f, 1.5f, 0.15f), new Vector3(0.2f, 0.015f, 0.14f), capMat, Quaternion.identity);
 
             var component = npc.AddComponent<Npc>();
             var so = new SerializedObject(component);
@@ -3109,6 +3143,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
             so.FindProperty("brush").objectReferenceValue = brush;
             so.FindProperty("seasons").objectReferenceValue = seasonClock;
+            so.FindProperty("visual").objectReferenceValue = visual;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

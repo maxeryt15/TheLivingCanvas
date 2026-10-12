@@ -28,6 +28,7 @@ namespace TheLivingCanvas.Growth
         CropPlant plant;
         SeasonClock seasons;
         Mutation mutation;
+        bool harvested; // ya cosechada: se está deshaciendo
 
         public PaintingItem Painting { get; private set; }
         string HarvestName => (mutation != Mutation.None ? $"{mutation.Name().ToLowerInvariant()} " : string.Empty) + Painting.CropName.ToLowerInvariant();
@@ -35,7 +36,7 @@ namespace TheLivingCanvas.Growth
             ? $"Harvest {HarvestName} (in season +{CropDefinition.InSeasonBonus})"
             : $"Harvest {HarvestName}";
         bool InSeason => Painting.Crop.IsInSeason(seasons.Current);
-        public bool CanInteract => plant != null && plant.IsGrown;
+        public bool CanInteract => !harvested && plant != null && plant.IsGrown;
 
         public void Show(PaintingItem painting, SeasonClock seasonClock)
         {
@@ -49,6 +50,38 @@ namespace TheLivingCanvas.Growth
         {
             foreach (var c in colliders)
                 c.enabled = !preview;
+        }
+
+        /// <summary>Al confirmar la colocación: la parcela cae unos centímetros y rebota un poco hasta asentarse.</summary>
+        public void Settle() => StartCoroutine(SettleRoutine());
+
+        /// <summary>Ya cosechada y desapareciendo: no se guarda.</summary>
+        public bool Harvested => harvested;
+
+        /// <summary>Dónde queda apoyada (durante el asentado, la posición final; para el guardado).</summary>
+        public Vector3 RestPosition => settling ? rest : transform.position;
+
+        bool settling;
+        Vector3 rest;
+
+        IEnumerator SettleRoutine()
+        {
+            const float dropHeight = 0.15f;
+            const float fallSeconds = 0.2f;
+            const float bounceHeight = 0.02f;
+            const float bounceSeconds = 0.1f;
+            rest = transform.position;
+            settling = true;
+            for (float time = 0f; time < fallSeconds + bounceSeconds; time += Time.deltaTime)
+            {
+                float offset = time < fallSeconds
+                    ? dropHeight * (1f - Mathf.Pow(time / fallSeconds, 2f))
+                    : bounceHeight * Mathf.Sin((time - fallSeconds) / bounceSeconds * Mathf.PI);
+                transform.position = rest + Vector3.up * offset;
+                yield return null;
+            }
+            transform.position = rest;
+            settling = false;
         }
 
         /// <summary>La pintura ya está en el suelo: de ella crece la planta 3D de su cultivo.</summary>
@@ -91,6 +124,8 @@ namespace TheLivingCanvas.Growth
             spawned.Grow(Painting.Result, Painting.Crop.GrowthDuration * (Painting.Style != null ? Painting.Style.GrowthMultiplier : 1f));
             if (Painting.Style != null && Painting.Style.Kind == StyleKind.Swirl)
                 StartCoroutine(Swirl(spawned));
+            else
+                StartCoroutine(Sway(spawned));
             if (mutation == Mutation.Luminous)
                 StartCoroutine(Glow(spawned));
             if (startProgress < 1f)
@@ -171,6 +206,43 @@ namespace TheLivingCanvas.Growth
             }
         }
 
+        /// <summary>Adulta, la planta se mece con el viento: giro muy pequeño y lento, con fase propia (solo rotación, compone con la escala).</summary>
+        IEnumerator Sway(CropPlant swaying)
+        {
+            const float degrees = 1.5f;
+            const float radiansPerSecond = 0.6f;
+            float phase = Random.value * Mathf.PI * 2f;
+            while (swaying != null && !swaying.IsGrown) yield return null;
+            while (swaying != null)
+            {
+                float t = Time.time * radiansPerSecond + phase;
+                swaying.transform.localRotation = Quaternion.Euler(degrees * Mathf.Sin(t), 0f, degrees * Mathf.Sin(t * 0.73f + 1.3f));
+                yield return null;
+            }
+        }
+
+        /// <summary>Tras cosechar: las plantas se encogen hasta nada y la pintura se hunde un poco antes de desaparecer.</summary>
+        IEnumerator Vanish()
+        {
+            const float seconds = 0.35f;
+            const float sinkDistance = 0.03f;
+            const float endScale = 0.85f;
+            var plants = GetComponentsInChildren<CropPlant>();
+            var plantScales = plants.Select(p => p.transform.localScale).ToArray();
+            var startPosition = transform.position;
+            var startScale = transform.localScale;
+            for (float time = 0f; time < seconds; time += Time.deltaTime)
+            {
+                float eased = Mathf.SmoothStep(0f, 1f, time / seconds);
+                for (int i = 0; i < plants.Length; i++)
+                    plants[i].transform.localScale = plantScales[i] * (1f - eased);
+                transform.position = startPosition + Vector3.down * (sinkDistance * eased);
+                transform.localScale = startScale * Mathf.Lerp(1f, endScale, eased);
+                yield return null;
+            }
+            Destroy(gameObject); // la pintura se consume
+        }
+
         public void Interact(PlayerInteractor interactor)
         {
             if (!CanInteract) return;
@@ -190,7 +262,10 @@ namespace TheLivingCanvas.Growth
             TryPollinate(interactor.GetComponent<Sketchbook>());
             if (plant != null && Camera.main != null)
                 PaintBurst.HarvestFlurry(TopOf(plant), Camera.main.transform.position - plant.transform.position, ZoneColors());
-            Destroy(gameObject); // la pintura se consume
+            harvested = true;
+            StopAllCoroutines(); // Ripen / Sway / Swirl no deben pelearse con el encogido
+            SetPreview(true);    // sin colliders mientras se deshace
+            StartCoroutine(Vanish());
         }
 
         /// <summary>Polinización cruzada: con una planta adulta del cultivo compañero cerca, puede enseñar el boceto del híbrido.</summary>

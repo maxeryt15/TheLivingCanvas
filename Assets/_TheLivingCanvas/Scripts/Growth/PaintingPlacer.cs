@@ -122,6 +122,7 @@ namespace TheLivingCanvas.Growth
             preview.name = "PaintingPlot";
             preview.SetPreview(false);
             preview.StartGrowing();
+            preview.Settle();
             inventory.Remove(item);
             SfxPlayer.Play(Sfx.Place);
             End();
@@ -139,11 +140,11 @@ namespace TheLivingCanvas.Growth
         {
             foreach (var plot in FindObjectsByType<PaintingPlot>(FindObjectsSortMode.None))
             {
-                if (plot == preview) continue; // la vista previa aún no está plantada
+                if (plot == preview || plot.Harvested) continue; // la vista previa aún no está plantada; la cosechada ya no está
                 data.plots.Add(new PlotSave
                 {
                     painting = PaintingStore.ToSave(plot.Painting),
-                    position = plot.transform.position,
+                    position = plot.RestPosition,
                     rotation = plot.transform.rotation,
                     mutation = (int)plot.RolledMutation,
                     progress = plot.GrowthProgress

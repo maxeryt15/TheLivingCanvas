@@ -76,6 +76,12 @@ namespace TheLivingCanvas.Painting
         public bool ShowGuide { get; private set; } = true;
         /// <summary>Pista del color sugerido dentro de cada zona.</summary>
         public bool ShowColorHints { get; private set; }
+        /// <summary>El puntero está sobre el lienzo activo (no sobre la UI): <see cref="HitPoint"/> y <see cref="HitNormal"/> son válidos.</summary>
+        public bool HasHit { get; private set; }
+        public Vector3 HitPoint { get; private set; }
+        public Vector3 HitNormal { get; private set; }
+        /// <summary>Hay un trazo en curso.</summary>
+        public bool IsStroking => strokeSurface != null;
         public float BrushRadius => brushRadius;
         public float MinBrushRadius => minBrushRadius;
         /// <summary>Crece con la resolución del lienzo activo para conservar el mismo tamaño físico máximo.</summary>
@@ -296,6 +302,7 @@ namespace TheLivingCanvas.Painting
             if (surface == null || Camera.main == null)
             {
                 EndStroke();
+                HasHit = false;
                 cursorRing.gameObject.SetActive(false);
                 return;
             }
@@ -304,6 +311,9 @@ namespace TheLivingCanvas.Painting
             bool overUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
             Ray ray = Camera.main.ScreenPointToRay(pointAction.action.ReadValue<Vector2>());
             bool overCanvas = surface.Raycast(ray, out Vector2 uv, out RaycastHit hit) && !overUi;
+            HasHit = overCanvas;
+            HitPoint = hit.point;
+            HitNormal = hit.normal;
             UpdateCursor(overCanvas, hit, surface);
 
             bool pressed = strokeAction.action.IsPressed();

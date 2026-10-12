@@ -1,3 +1,4 @@
+using System.Collections;
 using TheLivingCanvas.Audio;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Player;
@@ -20,12 +21,22 @@ namespace TheLivingCanvas.Core
         [SerializeField] protected GameObject panel;
         [SerializeField] Button closeButton;
 
-        int openedFrame = -1;
+        const float OpenSeconds = 0.15f;
+        const float CloseSeconds = 0.12f;
+        const float ClosedScale = 0.96f;
 
-        public bool IsOpen => panel.activeSelf;
+        int openedFrame = -1;
+        CanvasGroup group;
+        Coroutine fade;
+
+        /// <summary>Estado lógico: pasa a false al llamar a Close, aunque el panel siga desvaneciéndose.</summary>
+        public bool IsOpen { get; private set; }
 
         protected virtual void Awake()
         {
+            group = panel.GetComponent<CanvasGroup>();
+            if (group == null) group = panel.AddComponent<CanvasGroup>();
+            group.alpha = 0f;
             panel.SetActive(false);
             closeButton.onClick.AddListener(Close);
         }
@@ -47,7 +58,9 @@ namespace TheLivingCanvas.Core
         {
             if (IsOpen || cursorLock.PointerMode) return false;
             openedFrame = Time.frameCount;
+            IsOpen = true;
             panel.SetActive(true);
+            StartFade(1f);
             interactor.enabled = false; // E cierra en lugar de interactuar
             cursorLock.PointerMode = true;
             cameraMode.SetLookInputEnabled(false);
@@ -59,12 +72,36 @@ namespace TheLivingCanvas.Core
         public virtual void Close()
         {
             if (!IsOpen) return;
-            panel.SetActive(false);
+            IsOpen = false;
+            StartFade(0f);
             exitAction.action.Disable();
             interactor.enabled = true;
             cursorLock.PointerMode = false;
             cameraMode.SetLookInputEnabled(true);
             SfxPlayer.Play(Sfx.UiClose);
+        }
+
+        /// <summary>Desvanece el panel hasta <paramref name="target"/> (0 o 1) con una ligera escala; usa tiempo sin escalar (la pausa pone timeScale a 0).</summary>
+        void StartFade(float target)
+        {
+            if (fade != null) StopCoroutine(fade);
+            fade = StartCoroutine(Fade(target));
+        }
+
+        IEnumerator Fade(float target)
+        {
+            bool opening = target > 0f;
+            group.blocksRaycasts = opening; // un panel que se cierra ya no recibe clics
+            float speed = 1f / (opening ? OpenSeconds : CloseSeconds);
+            var panelTransform = panel.transform;
+            while (!Mathf.Approximately(group.alpha, target))
+            {
+                group.alpha = Mathf.MoveTowards(group.alpha, target, speed * Time.unscaledDeltaTime);
+                panelTransform.localScale = Vector3.one * Mathf.Lerp(ClosedScale, 1f, group.alpha);
+                yield return null;
+            }
+            fade = null;
+            if (!opening) panel.SetActive(false);
         }
 
         void OnCloseRequested(InputAction.CallbackContext _)

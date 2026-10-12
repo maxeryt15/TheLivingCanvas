@@ -24,10 +24,25 @@ namespace TheLivingCanvas.Npcs
         [SerializeField] PigmentStock stock;
         [SerializeField] PaintBrushController brush;
         [SerializeField] SeasonClock seasons;
+        [Tooltip("Cuerpo del personaje (hijo de la raíz): respira sin tocar el giro hacia el jugador, que mueve la raíz.")]
+        [SerializeField] Transform visual;
 
         // Índice del encargo actual y si ya lo ha pedido.
         int commissionIndex;
         bool requested;
+
+        const float BreathAmplitude = 0.005f; // ±0,5 % de altura: ~1 % de oscilación total
+        const float BreathPeriodSeconds = 3.5f;
+
+        float breathPhase;
+
+        void Start() => breathPhase = Random.value * Mathf.PI * 2f; // que no respiren a la vez
+
+        void Update()
+        {
+            float breath = Mathf.Sin(Time.time * Mathf.PI * 2f / BreathPeriodSeconds + breathPhase);
+            visual.localScale = new Vector3(1f, 1f + BreathAmplitude * breath, 1f);
+        }
 
         CommissionDefinition Current => commissionIndex < definition.Commissions.Length ? definition.Commissions[commissionIndex] : null;
 
