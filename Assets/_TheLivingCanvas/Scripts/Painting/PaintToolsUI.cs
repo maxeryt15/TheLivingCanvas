@@ -13,6 +13,7 @@ namespace TheLivingCanvas.Painting
     {
         [SerializeField] PaintBrushController brush;
         [SerializeField] PigmentStock stock;
+        [SerializeField] PaintModeController paintMode;
         [SerializeField] RectTransform swatchContainer;
         [Tooltip("Botón de muestra desactivado que se clona por cada pigmento (con un Text 'Amount').")]
         [SerializeField] Button swatchTemplate;
@@ -30,6 +31,11 @@ namespace TheLivingCanvas.Painting
         [SerializeField] Button clearButton;
         [SerializeField] Button guideButton;
         [SerializeField] Button hintsButton;
+        [Tooltip("Nombre del color en uso (ayuda para daltonismo).")]
+        [SerializeField] Text currentColorLabel;
+        [Tooltip("Leyenda zona — color sugerido de la plantilla; se oculta si no hay ninguna.")]
+        [SerializeField] GameObject zoneLegendRoot;
+        [SerializeField] Text zoneLegendLabel;
 
         readonly Dictionary<PigmentDefinition, Outline> swatchHighlights = new();
         readonly Dictionary<PigmentDefinition, Text> swatchAmounts = new();
@@ -116,6 +122,7 @@ namespace TheLivingCanvas.Painting
             swatch.onClick.AddListener(() => brush.SelectPigment(pigment));
             swatchHighlights[pigment] = swatch.GetComponent<Outline>();
             swatchAmounts[pigment] = swatch.transform.Find("Amount").GetComponent<Text>();
+            swatch.transform.Find("NameStrip/Name").GetComponent<Text>().text = pigment.DisplayName;
             RefreshAmounts();
         }
 
@@ -135,6 +142,7 @@ namespace TheLivingCanvas.Painting
         {
             brush.ToolsChanged += Refresh;
             Refresh();
+            RefreshZoneLegend();
         }
 
         void OnDisable() => brush.ToolsChanged -= Refresh;
@@ -155,8 +163,34 @@ namespace TheLivingCanvas.Painting
             pickedHighlight.enabled = picked && !brush.EraserActive;
             guideHighlight.enabled = brush.ShowGuide;
             hintsHighlight.enabled = brush.ShowColorHints;
+            currentColorLabel.text = CurrentColorText(picked);
             sizeSlider.maxValue = brush.MaxBrushRadius; // depende de la resolución del lienzo activo
             sizeSlider.SetValueWithoutNotify(brush.BrushRadius);
+        }
+
+        string CurrentColorText(bool picked)
+        {
+            if (brush.EraserActive) return "Eraser";
+            if (brush.EyedropperActive) return "Eyedropper: click on paint";
+            if (picked) return "Color: Picked";
+            return brush.SelectedPigment != null ? $"Color: {brush.SelectedPigment.DisplayName}" : "Color: None";
+        }
+
+        /// <summary>La plantilla solo cambia entre sesiones de pintura, así que basta actualizarla al mostrarse el panel.</summary>
+        void RefreshZoneLegend()
+        {
+            var parts = new List<string>();
+            var canvas = paintMode.ActiveCanvas;
+            if (canvas != null && canvas.Crop != null)
+            {
+                foreach (var zone in canvas.Crop.Template.Zones)
+                {
+                    if (zone.suggestedPigment != null)
+                        parts.Add($"{zone.zoneName} — {zone.suggestedPigment.DisplayName}");
+                }
+            }
+            zoneLegendLabel.text = string.Join("  ·  ", parts);
+            zoneLegendRoot.SetActive(parts.Count > 0);
         }
     }
 }

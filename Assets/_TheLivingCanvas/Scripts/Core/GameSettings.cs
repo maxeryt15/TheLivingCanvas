@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace TheLivingCanvas.Core
@@ -8,9 +9,15 @@ namespace TheLivingCanvas.Core
         const string SensitivityKey = "settings.sensitivity";
         const string VolumeKey = "settings.volume";
         const string FullscreenKey = "settings.fullscreen";
+        const string UiScaleKey = "settings.uiScale";
 
         public const float MinSensitivity = 0.25f;
         public const float MaxSensitivity = 3f;
+        public const float MinUiScale = 0.8f;
+        public const float MaxUiScale = 1.5f;
+
+        /// <summary>Se dispara al cambiar el tamaño de la interfaz (lo aplica UiScaleApplier).</summary>
+        public static event Action UiScaleChanged;
 
         /// <summary>Multiplicador de la sensibilidad de la mirada.</summary>
         public static float Sensitivity
@@ -36,6 +43,17 @@ namespace TheLivingCanvas.Core
             {
                 PlayerPrefs.SetInt(FullscreenKey, value ? 1 : 0);
                 Screen.fullScreen = value;
+            }
+        }
+
+        /// <summary>Tamaño de la interfaz: 1 es el original, mayor agranda los canvas de pantalla.</summary>
+        public static float UiScale
+        {
+            get => Mathf.Clamp(PlayerPrefs.GetFloat(UiScaleKey, 1f), MinUiScale, MaxUiScale);
+            set
+            {
+                PlayerPrefs.SetFloat(UiScaleKey, value);
+                UiScaleChanged?.Invoke();
             }
         }
 

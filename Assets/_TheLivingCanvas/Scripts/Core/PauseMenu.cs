@@ -22,7 +22,12 @@ namespace TheLivingCanvas.Core
         [SerializeField] SaveManager saveManager;
         [SerializeField] Slider sensitivitySlider;
         [SerializeField] Slider volumeSlider;
+        [SerializeField] Slider uiScaleSlider;
         [SerializeField] Toggle fullscreenToggle;
+        [SerializeField] Button controlsButton;
+        [Tooltip("Panel con la lista de controles, encima del menú; se cierra con su botón Back.")]
+        [SerializeField] GameObject controlsPanel;
+        [SerializeField] Button controlsBackButton;
         [SerializeField] Button resumeButton;
         [SerializeField] Button newGameButton;
         [SerializeField] Text newGameLabel;
@@ -37,6 +42,9 @@ namespace TheLivingCanvas.Core
             resumeButton.onClick.AddListener(Close);
             newGameButton.onClick.AddListener(OnNewGameClicked);
             quitButton.onClick.AddListener(Quit);
+            controlsPanel.SetActive(false);
+            controlsButton.onClick.AddListener(() => controlsPanel.SetActive(true));
+            controlsBackButton.onClick.AddListener(() => controlsPanel.SetActive(false));
 
             sensitivitySlider.minValue = GameSettings.MinSensitivity;
             sensitivitySlider.maxValue = GameSettings.MaxSensitivity;
@@ -44,6 +52,9 @@ namespace TheLivingCanvas.Core
             volumeSlider.minValue = 0f;
             volumeSlider.maxValue = 1f;
             volumeSlider.onValueChanged.AddListener(value => GameSettings.Volume = value);
+            uiScaleSlider.minValue = GameSettings.MinUiScale;
+            uiScaleSlider.maxValue = GameSettings.MaxUiScale;
+            uiScaleSlider.onValueChanged.AddListener(value => GameSettings.UiScale = value);
             fullscreenToggle.onValueChanged.AddListener(value => GameSettings.Fullscreen = value);
         }
 
@@ -53,6 +64,7 @@ namespace TheLivingCanvas.Core
             cameraMode.SetLookSensitivity(GameSettings.Sensitivity);
             sensitivitySlider.SetValueWithoutNotify(GameSettings.Sensitivity);
             volumeSlider.SetValueWithoutNotify(GameSettings.Volume);
+            uiScaleSlider.SetValueWithoutNotify(GameSettings.UiScale);
             fullscreenToggle.SetIsOnWithoutNotify(GameSettings.Fullscreen);
         }
 
@@ -80,6 +92,7 @@ namespace TheLivingCanvas.Core
         {
             if (!IsOpen) return;
             base.Close();
+            controlsPanel.SetActive(false);
             Time.timeScale = 1f;
             ResetConfirm();
         }

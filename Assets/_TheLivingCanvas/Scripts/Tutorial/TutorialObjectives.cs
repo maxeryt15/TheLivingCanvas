@@ -35,6 +35,9 @@ namespace TheLivingCanvas.Tutorial
         [SerializeField] Wallet wallet;
         [SerializeField] GameObject panel;
         [SerializeField] Text label;
+        [Tooltip("Mientras se pinta el panel se oculta: la paleta ocupa esa esquina.")]
+        [SerializeField] PaintModeController paintMode;
+        [SerializeField] CanvasGroup group;
         [SerializeField] Color normalColor = new(1f, 0.95f, 0.82f);
         [SerializeField] Color doneColor = new(0.55f, 0.85f, 0.4f);
         [SerializeField] float tickSeconds = 1f;
@@ -48,6 +51,8 @@ namespace TheLivingCanvas.Tutorial
             Subscribe();
             Refresh();
         }
+
+        void Update() => group.alpha = paintMode.IsPainting ? 0f : 1f;
 
         void OnDisable()
         {

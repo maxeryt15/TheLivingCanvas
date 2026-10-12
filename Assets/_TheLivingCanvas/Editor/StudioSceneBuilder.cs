@@ -145,7 +145,7 @@ namespace TheLivingCanvas.EditorTools
             BuildCoinCounter(hud.transform, player.GetComponent<Wallet>());
             BuildLevelCounter(hud.transform, player.GetComponent<ArtistLevel>());
             BuildSeasonCounter(hud.transform, seasonClock);
-            BuildTutorialObjectives(hud.transform, player, paintMode.GetComponent<PaintingFinisher>(), placer);
+            BuildTutorialObjectives(hud.transform, player, paintMode, placer);
             var calendarUi = BuildCalendarUI(hud.transform, player, rig, seasonClock, paintMode, placer);
             BuildWallCalendar(environment.transform, calendarUi, seasonClock);
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
@@ -353,7 +353,7 @@ namespace TheLivingCanvas.EditorTools
             finisherSo.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
             finisherSo.ApplyModifiedPropertiesWithoutUndo();
 
-            BuildPalettePanel(paintHud.transform, brush, finisher, player.GetComponent<PigmentStock>());
+            BuildPalettePanel(paintHud.transform, paintMode, brush, finisher, player.GetComponent<PigmentStock>());
             BuildCoverageReadout(paintHud.transform, paintMode, brush);
             return paintMode;
         }
@@ -617,7 +617,7 @@ namespace TheLivingCanvas.EditorTools
             panel.transform.SetParent(parent, false);
             var rect = (RectTransform)panel.transform;
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(1f, 1f);
-            rect.anchoredPosition = new Vector2(-30f, -30f);
+            rect.anchoredPosition = new Vector2(-30f, -265f); // bajo monedas, nivel y estación
             rect.sizeDelta = new Vector2(320f, 0f);
             var layout = panel.GetComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(16, 16, 12, 12);
@@ -649,7 +649,7 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Paleta lateral de madera: muestras de color, tamaño, borrador y cómo salir.</summary>
-        static void BuildPalettePanel(Transform parent, PaintBrushController brush, PaintingFinisher finisher, PigmentStock stock)
+        static void BuildPalettePanel(Transform parent, PaintModeController paintMode, PaintBrushController brush, PaintingFinisher finisher, PigmentStock stock)
         {
             var resources = new DefaultControls.Resources
             {
@@ -666,7 +666,8 @@ namespace TheLivingCanvas.EditorTools
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0f, 0.5f);
             panelRect.pivot = new Vector2(0f, 0.5f);
             panelRect.anchoredPosition = new Vector2(40f, 0f);
-            panelRect.sizeDelta = new Vector2(300f, 980f); // ancho para 4 botones en la fila de herramientas; alto: ver suma de la columna (960)
+            panelRect.sizeDelta = new Vector2(300f, 1022f); // ancho para 4 botones en la fila de herramientas; alto: ver suma de la columna (1002)
+            panel.AddComponent<FitToScreenHeight>(); // con la interfaz agrandada no se sale por arriba ni por abajo
             var panelImage = panel.GetComponent<Image>();
             panelImage.sprite = resources.standard;
             panelImage.type = Image.Type.Sliced;
@@ -681,6 +682,7 @@ namespace TheLivingCanvas.EditorTools
             layout.childForceExpandHeight = false;
 
             AddLabel(panel.transform, "Title", "Palette", 30, 40f, font, cream);
+            var currentColor = AddLabel(panel.transform, "CurrentColor", "Color", 22, 28f, font, cream);
 
             // Muestras: PaintToolsUI clona la plantilla por cada pigmento de la paleta.
             var swatches = new GameObject("Swatches", typeof(RectTransform), typeof(GridLayoutGroup), typeof(LayoutElement));
@@ -700,12 +702,27 @@ namespace TheLivingCanvas.EditorTools
             templateImage.type = Image.Type.Sliced;
             template.GetComponent<Button>().targetGraphic = templateImage;
             ConfigureHighlight(template.GetComponent<Outline>(), cream);
-            var amount = AddStretchedText(template.transform, "Amount", 20, font, Color.white, TextAnchor.LowerRight);
-            ((RectTransform)amount.transform).offsetMax = new Vector2(-6f, 0f);
-            ((RectTransform)amount.transform).offsetMin = new Vector2(0f, 4f);
+            var amount = AddStretchedText(template.transform, "Amount", 20, font, Color.white, TextAnchor.UpperRight);
+            ((RectTransform)amount.transform).offsetMax = new Vector2(-6f, -4f);
+            ((RectTransform)amount.transform).offsetMin = new Vector2(0f, 30f); // deja libre la franja del nombre
             var amountShadow = amount.gameObject.AddComponent<Shadow>(); // legible sobre el blanco y el amarillo
             amountShadow.effectColor = new Color(0f, 0f, 0f, 0.8f);
             amountShadow.effectDistance = new Vector2(1.5f, -1.5f);
+
+            // Nombre del pigmento sobre una franja oscura: legible con cualquier color de muestra.
+            var nameStrip = CreatePanel(template.transform, "NameStrip", resources.standard, new Color(0.1f, 0.07f, 0.05f, 0.65f),
+                new Vector2(0.5f, 0f), Vector2.zero, new Vector2(0f, 30f));
+            var stripRect = (RectTransform)nameStrip.transform;
+            stripRect.anchorMin = Vector2.zero;
+            stripRect.anchorMax = new Vector2(1f, 0f);
+            stripRect.offsetMin = Vector2.zero;
+            stripRect.offsetMax = new Vector2(0f, 30f);
+            var swatchName = AddStretchedText(nameStrip.transform, "Name", 16, font, Color.white, TextAnchor.MiddleCenter);
+            swatchName.resizeTextForBestFit = true;
+            swatchName.resizeTextMinSize = 10;
+            swatchName.resizeTextMaxSize = 16;
+            ((RectTransform)swatchName.transform).offsetMin = new Vector2(3f, 0f);
+            ((RectTransform)swatchName.transform).offsetMax = new Vector2(-3f, 0f);
 
             AddLabel(panel.transform, "SizeLabel", "Brush size", 24, 30f, font, cream);
             var slider = DefaultControls.CreateSlider(resources);
@@ -764,10 +781,26 @@ namespace TheLivingCanvas.EditorTools
 
             AddLabel(panel.transform, "ExitHint", "Ctrl+Z undo  ·  Ctrl+Y redo\n[Esc] or [E] to exit", 17, 50f, font, cream);
 
+            // Leyenda de zonas: a la derecha de la paleta, arriba; PaintToolsUI la rellena con la plantilla.
+            var legend = CreatePanel(panel.transform, "ZoneLegend", resources.standard, new Color(0.12f, 0.09f, 0.07f, 0.8f),
+                new Vector2(1f, 1f), new Vector2(20f, 0f), new Vector2(640f, 64f));
+            legend.AddComponent<LayoutElement>().ignoreLayout = true;
+            ((RectTransform)legend.transform).pivot = new Vector2(0f, 1f);
+            var legendText = AddStretchedText(legend.transform, "Label", 22, font, cream, TextAnchor.MiddleLeft);
+            legendText.resizeTextForBestFit = true;
+            legendText.resizeTextMinSize = 14;
+            legendText.resizeTextMaxSize = 22;
+            ((RectTransform)legendText.transform).offsetMin = new Vector2(12f, 4f);
+            ((RectTransform)legendText.transform).offsetMax = new Vector2(-12f, -4f);
+
             var tools = panel.AddComponent<PaintToolsUI>();
             var so = new SerializedObject(tools);
             so.FindProperty("brush").objectReferenceValue = brush;
             so.FindProperty("stock").objectReferenceValue = stock;
+            so.FindProperty("paintMode").objectReferenceValue = paintMode;
+            so.FindProperty("currentColorLabel").objectReferenceValue = currentColor;
+            so.FindProperty("zoneLegendRoot").objectReferenceValue = legend;
+            so.FindProperty("zoneLegendLabel").objectReferenceValue = legendText;
             so.FindProperty("swatchContainer").objectReferenceValue = swatches.transform;
             so.FindProperty("swatchTemplate").objectReferenceValue = template.GetComponent<Button>();
             so.FindProperty("sizeSlider").objectReferenceValue = slider.GetComponent<Slider>();
@@ -811,7 +844,7 @@ namespace TheLivingCanvas.EditorTools
             return button;
         }
 
-        static void AddLabel(Transform parent, string name, string content, int fontSize, float height, Font font, Color color)
+        static Text AddLabel(Transform parent, string name, string content, int fontSize, float height, Font font, Color color)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(Text), typeof(LayoutElement));
             go.transform.SetParent(parent, false);
@@ -823,6 +856,7 @@ namespace TheLivingCanvas.EditorTools
             text.alignment = TextAnchor.MiddleCenter;
             text.color = color;
             text.raycastTarget = false;
+            return text;
         }
 
         /// <summary>Borde claro alrededor de la herramienta seleccionada (PaintToolsUI lo activa).</summary>
@@ -1533,7 +1567,8 @@ namespace TheLivingCanvas.EditorTools
             rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
 
             var panel = CreatePanel(root.transform, "Panel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 0.95f),
-                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(480f, 560f));
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(480f, 710f));
+            panel.AddComponent<FitToScreenHeight>();
             panel.GetComponent<Image>().raycastTarget = true; // los clics no atraviesan el panel
             var layout = panel.AddComponent<VerticalLayoutGroup>();
             layout.padding = new RectOffset(24, 24, 24, 24);
@@ -1557,6 +1592,12 @@ namespace TheLivingCanvas.EditorTools
             volume.transform.SetParent(panel.transform, false);
             volume.AddComponent<LayoutElement>().preferredHeight = 30f;
 
+            AddLabel(panel.transform, "UiScaleLabel", "Interface size", 24, 30f, font, cream);
+            var uiScale = DefaultControls.CreateSlider(resources);
+            uiScale.name = "UiScaleSlider";
+            uiScale.transform.SetParent(panel.transform, false);
+            uiScale.AddComponent<LayoutElement>().preferredHeight = 30f;
+
             var fullscreen = DefaultControls.CreateToggle(resources);
             fullscreen.name = "FullscreenToggle";
             fullscreen.transform.SetParent(panel.transform, false);
@@ -1568,6 +1609,7 @@ namespace TheLivingCanvas.EditorTools
             fullscreenLabel.color = cream;
 
             var resume = CreateButton(resources, panel.transform, "ResumeButton", "Resume", 24, font);
+            var controls = CreateButton(resources, panel.transform, "ControlsButton", "Controls", 24, font);
             var newGame = CreateButton(resources, panel.transform, "NewGameButton", "New game", 24, font);
             var quit = CreateButton(resources, panel.transform, "QuitButton", "Quit game", 24, font);
 
@@ -1578,6 +1620,8 @@ namespace TheLivingCanvas.EditorTools
             closeRect.anchoredPosition = new Vector2(-12f, -12f);
             closeRect.sizeDelta = new Vector2(44f, 44f);
 
+            var (controlsPanel, controlsBack) = BuildControlsPanel(panel.transform, uiSprite, resources, font, cream);
+
             var pauseMenu = root.AddComponent<PauseMenu>();
             var so = new SerializedObject(pauseMenu);
             SetModalBaseRefs(so, panel, close.GetComponent<Button>(), player, rig);
@@ -1586,12 +1630,72 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("saveManager").objectReferenceValue = saveManager;
             so.FindProperty("sensitivitySlider").objectReferenceValue = sensitivity.GetComponent<Slider>();
             so.FindProperty("volumeSlider").objectReferenceValue = volume.GetComponent<Slider>();
+            so.FindProperty("uiScaleSlider").objectReferenceValue = uiScale.GetComponent<Slider>();
             so.FindProperty("fullscreenToggle").objectReferenceValue = fullscreen.GetComponent<Toggle>();
+            so.FindProperty("controlsButton").objectReferenceValue = controls.GetComponent<Button>();
+            so.FindProperty("controlsPanel").objectReferenceValue = controlsPanel;
+            so.FindProperty("controlsBackButton").objectReferenceValue = controlsBack.GetComponent<Button>();
             so.FindProperty("resumeButton").objectReferenceValue = resume.GetComponent<Button>();
             so.FindProperty("newGameButton").objectReferenceValue = newGame.GetComponent<Button>();
             so.FindProperty("newGameLabel").objectReferenceValue = newGame.GetComponentInChildren<Text>();
             so.FindProperty("quitButton").objectReferenceValue = quit.GetComponent<Button>();
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>
+        /// Lista de controles (de PlayerControls.inputactions) encima del menú de pausa: tres columnas alineadas
+        /// línea a línea (acción, teclado y ratón, mando) y un botón Back.
+        /// </summary>
+        static (GameObject panel, GameObject backButton) BuildControlsPanel(Transform pausePanel, Sprite uiSprite,
+            DefaultControls.Resources resources, Font font, Color cream)
+        {
+            var panel = CreatePanel(pausePanel, "ControlsPanel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 1f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(780f, 700f));
+            panel.GetComponent<Image>().raycastTarget = true; // tapa el menú y los clics no lo atraviesan
+            panel.AddComponent<LayoutElement>().ignoreLayout = true;
+            var layout = panel.AddComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(30, 30, 24, 24);
+            layout.spacing = 14f;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+
+            AddLabel(panel.transform, "Title", "Controls", 34, 44f, font, cream);
+
+            var columns = new GameObject("Columns", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+            columns.transform.SetParent(panel.transform, false);
+            columns.GetComponent<LayoutElement>().flexibleHeight = 1f;
+            var row = columns.GetComponent<HorizontalLayoutGroup>();
+            row.spacing = 16f;
+            row.childControlWidth = row.childControlHeight = true;
+            row.childForceExpandWidth = row.childForceExpandHeight = false;
+
+            // Cada columna es un solo texto; las líneas en blanco separan secciones y mantienen las filas alineadas.
+            AddControlsColumn(columns.transform, "Actions", 230f, font, cream,
+                "<b>Action</b>\nMove\nLook\nSprint\nInteract\nInventory\nCalendar\nPause menu\n\n<b>Painting</b>\nPaint\nBrush size\nUndo\nRedo\nExit painting");
+            AddControlsColumn(columns.transform, "Keyboard", 280f, font, cream,
+                "<b>Keyboard / Mouse</b>\nW A S D\nMouse\nLeft Shift\nE\nI or Tab\nC\nEsc\n\n \nLeft mouse button\nMouse wheel or [ ]\nCtrl + Z\nCtrl + Y\nEsc or E");
+            AddControlsColumn(columns.transform, "Gamepad", 200f, font, cream,
+                "<b>Gamepad</b>\nLeft stick\nRight stick\nLeft stick click\nA\nY\nD-pad up\nStart\n\n \n-\n-\n-\n-\nB or A");
+
+            var back = CreateButton(resources, panel.transform, "BackButton", "Back", 24, font);
+            return (panel, back);
+        }
+
+        static void AddControlsColumn(Transform parent, string name, float width, Font font, Color color, string content)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Text), typeof(LayoutElement));
+            go.transform.SetParent(parent, false);
+            go.GetComponent<LayoutElement>().preferredWidth = width;
+            var text = go.GetComponent<Text>();
+            text.text = content;
+            text.font = font;
+            text.fontSize = 22;
+            text.alignment = TextAnchor.UpperLeft;
+            text.color = color;
+            text.horizontalOverflow = HorizontalWrapMode.Overflow; // una línea por fila, sin saltos que descuadren las columnas
+            text.raycastTarget = false;
         }
 
         /// <summary>Todos los assets de un tipo bajo Data/ (incluye los que no salen de las listas GetOrCreate*: violeta, de temporada, oro, híbrido).</summary>
@@ -1692,6 +1796,7 @@ namespace TheLivingCanvas.EditorTools
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.matchWidthOrHeight = 0.5f;
+            hud.AddComponent<UiScaleApplier>(); // aplica el tamaño de interfaz de las opciones
             hud.AddComponent<GraphicRaycaster>(); // necesario para que los botones reciban clics
 
             var panel = new GameObject("InteractionPrompt", typeof(RectTransform), typeof(Image));
@@ -1786,7 +1891,7 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Objetivo del tutorial arriba a la izquierda: cabecera "Next" y el texto del paso actual.</summary>
-        static void BuildTutorialObjectives(Transform hud, GameObject player, PaintingFinisher finisher, PaintingPlacer placer)
+        static void BuildTutorialObjectives(Transform hud, GameObject player, PaintModeController paintMode, PaintingPlacer placer)
         {
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var cream = new Color(1f, 0.95f, 0.82f);
@@ -1802,7 +1907,9 @@ namespace TheLivingCanvas.EditorTools
 
             var tutorial = panel.AddComponent<TutorialObjectives>();
             var so = new SerializedObject(tutorial);
-            so.FindProperty("finisher").objectReferenceValue = finisher;
+            so.FindProperty("finisher").objectReferenceValue = paintMode.GetComponent<PaintingFinisher>();
+            so.FindProperty("paintMode").objectReferenceValue = paintMode;
+            so.FindProperty("group").objectReferenceValue = panel.AddComponent<CanvasGroup>();
             so.FindProperty("placer").objectReferenceValue = placer;
             so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
             so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
