@@ -22,6 +22,9 @@ namespace TheLivingCanvas.Economy
         public int RequiredLevel => requiredLevel;
         public virtual Texture Icon => icon;
 
+        /// <summary>true si en los días de mercado cuesta la mitad (pigmentos y recargas).</summary>
+        public virtual bool HalfPriceOnMarketDay => false;
+
         /// <summary>false si la oferta es de una estación y no es la actual.</summary>
         public bool IsSoldIn(Season current) => !seasonal || current == season;
 

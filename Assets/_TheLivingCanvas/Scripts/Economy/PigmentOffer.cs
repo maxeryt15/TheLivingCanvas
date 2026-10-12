@@ -17,6 +17,8 @@ namespace TheLivingCanvas.Economy
         public PigmentDefinition Pigment => pigment;
         protected int Units => units;
 
+        public override bool HalfPriceOnMarketDay => true;
+
         /// <summary>Sin icono propio: una muestra del color (creada en runtime, no se guarda).</summary>
         public override Texture Icon
         {

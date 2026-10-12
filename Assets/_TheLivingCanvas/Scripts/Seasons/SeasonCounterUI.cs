@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace TheLivingCanvas.Seasons
 {
-    /// <summary>Estación actual y tiempo restante en el HUD: "Spring  ·  7:42" (+ "Festival!" en la segunda mitad).</summary>
+    /// <summary>Estación, día y hora en el HUD: "Spring 4  ·  9:40 am" (+ "Festival!" o "Market day" cuando toca).</summary>
     public class SeasonCounterUI : MonoBehaviour
     {
         [SerializeField] SeasonClock clock;
@@ -11,8 +11,8 @@ namespace TheLivingCanvas.Seasons
 
         void Update()
         {
-            int total = Mathf.CeilToInt(clock.SecondsLeft);
-            label.text = $"{clock.Current}  ·  {total / 60}:{total % 60:00}{(clock.IsFestival ? "  ·  Festival!" : "")}";
+            var extra = clock.IsFestival ? "  ·  Festival!" : clock.IsMarketDay ? "  ·  Market day" : "";
+            label.text = $"{clock.Current} {clock.Day}  ·  {clock.TimeText}{extra}";
         }
     }
 }

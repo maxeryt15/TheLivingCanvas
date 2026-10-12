@@ -23,6 +23,8 @@ namespace TheLivingCanvas.Economy
         [SerializeField] GameObject rowTemplate;
         [SerializeField] Text messageLabel;
 
+        const string MarketMessage = "Pigment Market today: pigments half price!";
+
         readonly List<(ShopOffer offer, Button buy)> rows = new();
         GameObject buyer;
 
@@ -38,6 +40,7 @@ namespace TheLivingCanvas.Economy
             wallet.Changed += OnWalletChanged;
             artistLevel.LeveledUp += OnLeveledUp;
             seasons.SeasonChanged += OnSeasonChanged;
+            seasons.DayChanged += OnDayChanged;
         }
 
         protected override void OnDisable()
@@ -46,14 +49,28 @@ namespace TheLivingCanvas.Economy
             wallet.Changed -= OnWalletChanged;
             artistLevel.LeveledUp -= OnLeveledUp;
             seasons.SeasonChanged -= OnSeasonChanged;
+            seasons.DayChanged -= OnDayChanged;
         }
 
         public void Open(GameObject player)
         {
             if (!TryOpen()) return;
             buyer = player;
-            messageLabel.text = string.Empty;
+            messageLabel.text = seasons.IsMarketDay ? MarketMessage : string.Empty;
             Rebuild();
+        }
+
+        /// <summary>Precio actual: la mitad (redondeado hacia arriba) en los días de mercado para los pigmentos.</summary>
+        int PriceOf(ShopOffer offer) =>
+            seasons.IsMarketDay && offer.HalfPriceOnMarketDay ? Mathf.CeilToInt(offer.Price / 2f) : offer.Price;
+
+        void OnDayChanged(int day)
+        {
+            if (!IsOpen) return;
+            // Solo se cambia el aviso del mercado, nunca un mensaje de compra.
+            if (messageLabel.text.Length == 0 || messageLabel.text == MarketMessage)
+                messageLabel.text = seasons.IsMarketDay ? MarketMessage : string.Empty;
+            RefreshButtons();
         }
 
         void OnWalletChanged(int total, int delta)
@@ -74,7 +91,7 @@ namespace TheLivingCanvas.Economy
         public void Buy(ShopOffer offer)
         {
             if (!offer.IsSoldIn(seasons.Current) || !offer.IsAvailable(buyer) || offer.RequiredLevel > artistLevel.Level) return;
-            if (!wallet.TrySpend(offer.Price))
+            if (!wallet.TrySpend(PriceOf(offer)))
             {
                 messageLabel.text = $"Not enough coins for {offer.DisplayName.ToLowerInvariant()}.";
                 return;
@@ -109,8 +126,10 @@ namespace TheLivingCanvas.Economy
             foreach (var (offer, buy) in rows)
             {
                 bool unlocked = offer.RequiredLevel <= artistLevel.Level;
-                buy.interactable = unlocked && wallet.CanAfford(offer.Price);
-                buy.GetComponentInChildren<Text>().text = unlocked ? $"Buy  {offer.Price}" : $"Level {offer.RequiredLevel}";
+                int price = PriceOf(offer);
+                buy.interactable = unlocked && wallet.CanAfford(price);
+                buy.GetComponentInChildren<Text>().text = !unlocked ? $"Level {offer.RequiredLevel}"
+                    : price != offer.Price ? $"Buy  {price} (-50%)" : $"Buy  {price}";
             }
         }
     }

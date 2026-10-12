@@ -121,6 +121,8 @@ namespace TheLivingCanvas.EditorTools
             BuildCoinCounter(hud.transform, player.GetComponent<Wallet>());
             BuildLevelCounter(hud.transform, player.GetComponent<ArtistLevel>());
             BuildSeasonCounter(hud.transform, seasonClock);
+            var calendarUi = BuildCalendarUI(hud.transform, player, rig, seasonClock, paintMode, placer);
+            BuildWallCalendar(environment.transform, calendarUi, seasonClock);
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
             BuildShop(hud.transform, environment.transform, player, rig, seasonClock);
@@ -134,6 +136,8 @@ namespace TheLivingCanvas.EditorTools
             BuildArtDealer(hud.transform, town, dialogueUi, player, rig, paintMode.GetComponent<PaintBrushController>(), seasonClock);
             BuildNoticeBoard(town, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>());
             BuildFestival(town, gallery, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>(), seasonClock);
+
+            BuildDayFade(hud.transform, seasonClock); // el último hijo del HUD: cubre todo lo demás
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -1555,19 +1559,213 @@ namespace TheLivingCanvas.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        /// <summary>Estación y tiempo restante, bajo el nivel de artista.</summary>
+        /// <summary>Estación, día y hora, bajo el nivel de artista.</summary>
         static void BuildSeasonCounter(Transform hud, SeasonClock clock)
         {
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var cream = new Color(1f, 0.95f, 0.82f);
             var sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
             var panel = CreatePanel(hud, "SeasonCounter", sprite, new Color(0.30f, 0.20f, 0.13f, 0.9f),
-                new Vector2(1f, 1f), new Vector2(-30f, -205f), new Vector2(240f, 40f));
+                new Vector2(1f, 1f), new Vector2(-30f, -205f), new Vector2(330f, 40f));
             var label = AddStretchedText(panel.transform, "Label", 22, font, cream, TextAnchor.MiddleCenter);
 
             var counter = panel.AddComponent<SeasonCounterUI>();
             var so = new SerializedObject(counter);
             so.FindProperty("clock").objectReferenceValue = clock;
+            so.FindProperty("label").objectReferenceValue = label;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>
+        /// Calendario (C / cruceta arriba): panel centrado con título y botones para hojear estaciones, cabecera de días de la
+        /// semana, cuadrícula de 7 columnas (las celdas las clona CalendarUI en runtime) y una línea con el próximo evento.
+        /// </summary>
+        static CalendarUI BuildCalendarUI(Transform hud, GameObject player, GameObject rig, SeasonClock clock,
+            PaintModeController paintMode, PaintingPlacer placer)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var brown = new Color(0.25f, 0.17f, 0.1f);
+            var uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            var resources = new DefaultControls.Resources
+            {
+                standard = uiSprite,
+                background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd"),
+                knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd")
+            };
+
+            var root = new GameObject("CalendarUI", typeof(RectTransform));
+            root.transform.SetParent(hud, false);
+            var rootRect = (RectTransform)root.transform;
+            rootRect.anchorMin = Vector2.zero;
+            rootRect.anchorMax = Vector2.one;
+            rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
+
+            var panel = CreatePanel(root.transform, "Panel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 0.95f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(940f, 620f));
+            panel.GetComponent<Image>().raycastTarget = true; // los clics no atraviesan el panel
+            var title = AddStretchedText(panel.transform, "Title", 32, font, cream, TextAnchor.UpperCenter);
+            ((RectTransform)title.transform).offsetMax = new Vector2(0f, -16f);
+
+            // Botones para hojear las 4 estaciones, a los lados del título.
+            var prev = CreateButton(resources, panel.transform, "Prev", "<", 28, font);
+            var next = CreateButton(resources, panel.transform, "Next", ">", 28, font);
+            foreach (var (button, x) in new[] { (prev, -300f), (next, 300f) })
+            {
+                var rect = (RectTransform)button.transform;
+                rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 1f);
+                rect.anchoredPosition = new Vector2(x, -12f);
+                rect.sizeDelta = new Vector2(70f, 50f);
+            }
+
+            // Cabecera con los días de la semana (7 x 118 px + 6 x 6 px de separación = 862 px).
+            var header = new GameObject("Weekdays", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+            header.transform.SetParent(panel.transform, false);
+            var headerRect = (RectTransform)header.transform;
+            headerRect.anchorMin = headerRect.anchorMax = headerRect.pivot = new Vector2(0.5f, 1f);
+            headerRect.anchoredPosition = new Vector2(0f, -76f);
+            headerRect.sizeDelta = new Vector2(862f, 28f);
+            var headerLayout = header.GetComponent<HorizontalLayoutGroup>();
+            headerLayout.spacing = 6f;
+            headerLayout.childControlWidth = headerLayout.childControlHeight = true;
+            headerLayout.childForceExpandWidth = headerLayout.childForceExpandHeight = true;
+            foreach (var day in new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" })
+                AddLabel(header.transform, day, day, 20, 28f, font, cream);
+
+            // Cuadrícula de días: 7 columnas.
+            var grid = new GameObject("Grid", typeof(RectTransform), typeof(GridLayoutGroup));
+            grid.transform.SetParent(panel.transform, false);
+            var gridRect = (RectTransform)grid.transform;
+            gridRect.anchorMin = gridRect.anchorMax = gridRect.pivot = new Vector2(0.5f, 1f);
+            gridRect.anchoredPosition = new Vector2(0f, -110f);
+            gridRect.sizeDelta = new Vector2(862f, 370f);
+            var gridLayout = grid.GetComponent<GridLayoutGroup>();
+            gridLayout.cellSize = new Vector2(118f, 88f);
+            gridLayout.spacing = new Vector2(6f, 6f);
+            gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            gridLayout.constraintCount = 7;
+
+            // Celda plantilla: número del día arriba a la izquierda y hasta 2 eventos abajo; el borde marca hoy.
+            var cell = new GameObject("CellTemplate", typeof(RectTransform), typeof(Image), typeof(Outline));
+            cell.transform.SetParent(grid.transform, false);
+            var cellImage = cell.GetComponent<Image>();
+            cellImage.sprite = uiSprite;
+            cellImage.type = Image.Type.Sliced;
+            cellImage.color = new Color(0.93f, 0.88f, 0.78f);
+            cellImage.raycastTarget = false;
+            var outline = cell.GetComponent<Outline>();
+            outline.effectDistance = new Vector2(3f, -3f);
+            outline.enabled = false;
+            var number = AddStretchedText(cell.transform, "Number", 22, font, brown, TextAnchor.UpperLeft);
+            number.fontStyle = FontStyle.Bold;
+            ((RectTransform)number.transform).offsetMin = new Vector2(8f, 0f);
+            ((RectTransform)number.transform).offsetMax = new Vector2(0f, -4f);
+            var events = AddStretchedText(cell.transform, "Events", 12, font, brown, TextAnchor.LowerCenter);
+            ((RectTransform)events.transform).offsetMin = new Vector2(3f, 3f);
+            ((RectTransform)events.transform).offsetMax = new Vector2(-3f, -26f);
+            cell.SetActive(false);
+
+            var footer = AddStretchedText(panel.transform, "Footer", 22, font, cream, TextAnchor.LowerCenter);
+            ((RectTransform)footer.transform).offsetMin = new Vector2(0f, 90f);
+
+            var close = CreateButton(resources, panel.transform, "Close", "Close", 24, font);
+            var closeRect = (RectTransform)close.transform;
+            closeRect.anchorMin = closeRect.anchorMax = closeRect.pivot = new Vector2(0.5f, 0f);
+            closeRect.anchoredPosition = new Vector2(0f, 20f);
+            closeRect.sizeDelta = new Vector2(200f, 56f);
+
+            var calendarUi = root.AddComponent<CalendarUI>();
+            var so = new SerializedObject(calendarUi);
+            SetModalBaseRefs(so, panel, close.GetComponent<Button>(), player, rig);
+            so.FindProperty("clock").objectReferenceValue = clock;
+            so.FindProperty("toggleAction").objectReferenceValue = GetAction("Player/Calendar");
+            so.FindProperty("paintMode").objectReferenceValue = paintMode;
+            so.FindProperty("placer").objectReferenceValue = placer;
+            so.FindProperty("titleLabel").objectReferenceValue = title;
+            so.FindProperty("footerLabel").objectReferenceValue = footer;
+            so.FindProperty("prevButton").objectReferenceValue = prev.GetComponent<Button>();
+            so.FindProperty("nextButton").objectReferenceValue = next.GetComponent<Button>();
+            so.FindProperty("cellContainer").objectReferenceValue = gridRect;
+            so.FindProperty("cellTemplate").objectReferenceValue = cell;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return calendarUi;
+        }
+
+        /// <summary>
+        /// Calendario de papel en la pared del fondo del estudio (cara visible hacia -Z), con la fecha de hoy escrita.
+        /// Como el tablón de la galería: +Z local hacia la pared y trigger que sale hacia la sala.
+        /// </summary>
+        static void BuildWallCalendar(Transform environment, CalendarUI calendarUi, SeasonClock clock)
+        {
+            var paperMat = GetOrCreateMaterial("M_WallCalendar_Paper", new Color(0.95f, 0.91f, 0.80f));
+            var stripMat = GetOrCreateMaterial("M_Accent_Terracotta", new Color(0.80f, 0.45f, 0.30f));
+
+            var wallCalendar = new GameObject("WallCalendar");
+            wallCalendar.transform.SetParent(environment);
+            wallCalendar.transform.localPosition = new Vector3(5.2f, 1.6f, 5.87f);
+            wallCalendar.transform.localRotation = Quaternion.identity;
+
+            var box = wallCalendar.AddComponent<BoxCollider>();
+            box.isTrigger = true;
+            box.center = new Vector3(0f, 0f, -0.3f);
+            box.size = new Vector3(1f, 1f, 0.6f);
+
+            CreatePart(PrimitiveType.Cube, "Paper", wallCalendar.transform, Vector3.zero, new Vector3(0.6f, 0.8f, 0.04f), paperMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Header", wallCalendar.transform, new Vector3(0f, 0.33f, -0.03f), new Vector3(0.6f, 0.14f, 0.02f), stripMat, Quaternion.identity);
+
+            // Canvas en el mundo: 1 unidad de UI = 1 mm.
+            var canvasGo = new GameObject("Text", typeof(RectTransform), typeof(Canvas));
+            canvasGo.transform.SetParent(wallCalendar.transform, false);
+            canvasGo.transform.localPosition = new Vector3(0f, -0.08f, -0.045f);
+            canvasGo.transform.localScale = Vector3.one * 0.001f;
+            ((RectTransform)canvasGo.transform).sizeDelta = new Vector2(520f, 440f);
+            canvasGo.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
+
+            var textGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
+            textGo.transform.SetParent(canvasGo.transform, false);
+            var textRect = (RectTransform)textGo.transform;
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = textRect.offsetMax = Vector2.zero;
+            var label = textGo.GetComponent<Text>();
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            label.alignment = TextAnchor.MiddleCenter;
+            label.color = new Color(0.2f, 0.12f, 0.06f);
+            label.resizeTextForBestFit = true;
+            label.resizeTextMinSize = 20;
+            label.resizeTextMaxSize = 160;
+            label.raycastTarget = false;
+
+            var so = new SerializedObject(wallCalendar.AddComponent<WallCalendar>());
+            so.FindProperty("calendarUI").objectReferenceValue = calendarUi;
+            so.FindProperty("clock").objectReferenceValue = clock;
+            so.FindProperty("label").objectReferenceValue = label;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Fundido a negro entre días con "Spring 4" en el centro; va el último en el HUD para tapar todo.</summary>
+        static void BuildDayFade(Transform hud, SeasonClock clock)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var root = new GameObject("DayFade", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
+            root.transform.SetParent(hud, false);
+            var rect = (RectTransform)root.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+            var image = root.GetComponent<Image>();
+            image.color = Color.black;
+            image.raycastTarget = false;
+            var group = root.GetComponent<CanvasGroup>();
+            group.alpha = 0f;
+            group.blocksRaycasts = false;
+            group.interactable = false;
+
+            var label = AddStretchedText(root.transform, "Label", 56, font, new Color(1f, 0.95f, 0.82f), TextAnchor.MiddleCenter);
+
+            var so = new SerializedObject(root.AddComponent<DayFadeUI>());
+            so.FindProperty("clock").objectReferenceValue = clock;
+            so.FindProperty("group").objectReferenceValue = group;
             so.FindProperty("label").objectReferenceValue = label;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
