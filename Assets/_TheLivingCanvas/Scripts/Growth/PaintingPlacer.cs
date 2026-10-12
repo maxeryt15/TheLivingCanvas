@@ -1,3 +1,4 @@
+using System;
 using TheLivingCanvas.Audio;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
@@ -41,6 +42,9 @@ namespace TheLivingCanvas.Growth
         int beganFrame;
 
         public bool IsPlacing => item != null;
+
+        /// <summary>Se dispara al confirmar la colocación de una pintura.</summary>
+        public event Action Placed;
 
         void OnEnable()
         {
@@ -121,6 +125,7 @@ namespace TheLivingCanvas.Growth
             inventory.Remove(item);
             SfxPlayer.Play(Sfx.Place);
             End();
+            Placed?.Invoke();
         }
 
         void OnCancel(InputAction.CallbackContext _)

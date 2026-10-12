@@ -14,6 +14,7 @@ using TheLivingCanvas.Player;
 using TheLivingCanvas.Progression;
 using TheLivingCanvas.Save;
 using TheLivingCanvas.Seasons;
+using TheLivingCanvas.Tutorial;
 using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -144,6 +145,7 @@ namespace TheLivingCanvas.EditorTools
             BuildCoinCounter(hud.transform, player.GetComponent<Wallet>());
             BuildLevelCounter(hud.transform, player.GetComponent<ArtistLevel>());
             BuildSeasonCounter(hud.transform, seasonClock);
+            BuildTutorialObjectives(hud.transform, player, paintMode.GetComponent<PaintingFinisher>(), placer);
             var calendarUi = BuildCalendarUI(hud.transform, player, rig, seasonClock, paintMode, placer);
             BuildWallCalendar(environment.transform, calendarUi, seasonClock);
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
@@ -1780,6 +1782,32 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("level").objectReferenceValue = artistLevel;
             so.FindProperty("label").objectReferenceValue = label;
             so.FindProperty("fill").objectReferenceValue = fill;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Objetivo del tutorial arriba a la izquierda: cabecera "Next" y el texto del paso actual.</summary>
+        static void BuildTutorialObjectives(Transform hud, GameObject player, PaintingFinisher finisher, PaintingPlacer placer)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var panel = CreatePanel(hud, "TutorialObjective", AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd"),
+                new Color(0.16f, 0.11f, 0.08f, 0.75f), new Vector2(0f, 1f), new Vector2(30f, -30f), new Vector2(380f, 90f));
+            var header = AddStretchedText(panel.transform, "Header", 16, font, new Color(0.85f, 0.7f, 0.4f), TextAnchor.UpperLeft);
+            ((RectTransform)header.transform).offsetMin = new Vector2(12f, 0f);
+            ((RectTransform)header.transform).offsetMax = new Vector2(-12f, -6f);
+            header.text = "Next";
+            var label = AddStretchedText(panel.transform, "Label", 22, font, cream, TextAnchor.MiddleLeft);
+            ((RectTransform)label.transform).offsetMin = new Vector2(12f, 4f);
+            ((RectTransform)label.transform).offsetMax = new Vector2(-12f, -26f);
+
+            var tutorial = panel.AddComponent<TutorialObjectives>();
+            var so = new SerializedObject(tutorial);
+            so.FindProperty("finisher").objectReferenceValue = finisher;
+            so.FindProperty("placer").objectReferenceValue = placer;
+            so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+            so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            so.FindProperty("panel").objectReferenceValue = panel;
+            so.FindProperty("label").objectReferenceValue = label;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

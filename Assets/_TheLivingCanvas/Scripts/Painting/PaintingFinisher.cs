@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,9 @@ namespace TheLivingCanvas.Painting
         [SerializeField] PaintBrushController brush;
         [SerializeField] PigmentStock stock;
         [SerializeField] ArtistLevel artistLevel;
+
+        /// <summary>Se dispara al terminar una pintura con éxito (no si falta pintura o pigmento).</summary>
+        public event Action Finished;
 
         public void Finish()
         {
@@ -60,6 +64,7 @@ namespace TheLivingCanvas.Painting
             var gain = artistLevel.AwardPainting(result.Quality, canvas.Crop, variant);
             feedback.Show($"Your {name} painting is finished! Quality: {result.Quality}{rarity}{filled}\n"
                 + $"{XpMessage(gain, artistLevel.Level)}\nTake it from the easel.", success: true);
+            Finished?.Invoke();
         }
 
         static string XpMessage(XpGain gain, int level)

@@ -38,6 +38,7 @@ namespace TheLivingCanvas.Save
         public List<NpcSave> npcs = new();
         public int boardCommissionIndex;
         public List<bool> festivalWon = new();
+        public int tutorialStep; // paso actual del tutorial; igual al total de pasos = terminado
 
         // Jugador
         public Vector3 playerPosition;
