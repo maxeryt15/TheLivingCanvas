@@ -1,5 +1,6 @@
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
+using TheLivingCanvas.Seasons;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -15,6 +16,7 @@ namespace TheLivingCanvas.Growth
         [SerializeField] PlayerInventory inventory;
         [SerializeField] PlayerInteractor interactor;
         [SerializeField] PaintingPlot plotPrefab;
+        [SerializeField] SeasonClock seasons;
         [SerializeField] InputActionReference confirmAction;
         [SerializeField] InputActionReference cancelAction;
         [SerializeField] GameObject hint;
@@ -56,7 +58,7 @@ namespace TheLivingCanvas.Growth
             beganFrame = Time.frameCount;
             preview = Instantiate(plotPrefab);
             preview.name = "PaintingPlot (preview)";
-            preview.Show(painting);
+            preview.Show(painting, seasons);
             preview.SetPreview(true);
 
             interactor.enabled = false; // E coloca en lugar de interactuar

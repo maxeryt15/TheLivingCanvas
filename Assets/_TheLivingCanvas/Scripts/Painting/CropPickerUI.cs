@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TheLivingCanvas.Core;
 using TheLivingCanvas.Data;
+using TheLivingCanvas.Seasons;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,8 @@ namespace TheLivingCanvas.Painting
         [SerializeField] RectTransform rowContainer;
         [Tooltip("Fila desactivada que se clona por opción (RawImage 'Icon', Text 'Name', Button 'Buy' con Text).")]
         [SerializeField] GameObject rowTemplate;
+
+        [SerializeField] SeasonClock seasons;
 
         readonly List<GameObject> rows = new();
 
@@ -39,8 +42,12 @@ namespace TheLivingCanvas.Painting
             if (!TryOpen()) return;
             Clear("What will you paint?");
             foreach (var crop in crops)
-                AddRow(crop.Icon, crop.DisplayName, "Paint", () => PickCrop(easel, canvasType, crop));
+                AddRow(crop.Icon, CropLabel(crop), "Paint", () => PickCrop(easel, canvasType, crop));
         }
+
+        string CropLabel(CropDefinition crop) => crop.IsInSeason(seasons.Current)
+            ? $"{crop.DisplayName} · in season! +{CropDefinition.InSeasonBonus} harvest"
+            : $"{crop.DisplayName} · best in {crop.FavoriteSeason}";
 
         void Clear(string title)
         {

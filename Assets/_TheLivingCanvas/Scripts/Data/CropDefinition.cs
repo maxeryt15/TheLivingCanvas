@@ -1,5 +1,6 @@
 using TheLivingCanvas.Growth;
 using TheLivingCanvas.Painting;
+using TheLivingCanvas.Seasons;
 using UnityEngine;
 
 namespace TheLivingCanvas.Data
@@ -25,6 +26,12 @@ namespace TheLivingCanvas.Data
         [Tooltip("Variantes por color; si ninguna encaja, sale el cultivo normal (Common).")]
         [SerializeField] CropVariant[] variants = System.Array.Empty<CropVariant>();
 
+        [Tooltip("Estación en la que rinde más: cosechar en ella da una unidad extra.")]
+        [SerializeField] Season favoriteSeason;
+
+        /// <summary>Unidades extra al cosechar en la estación favorita (se suman tras calidad × lienzo).</summary>
+        public const int InSeasonBonus = 1;
+
         public string Id => id;
         public string DisplayName => displayName;
         public PaintTemplate Template => template;
@@ -35,6 +42,9 @@ namespace TheLivingCanvas.Data
         public CropVariant[] Variants => variants;
         public PigmentDefinition Pigment => pigment;
         public int PigmentPerUnit => pigmentPerUnit;
+        public Season FavoriteSeason => favoriteSeason;
+
+        public bool IsInSeason(Season season) => season == favoriteSeason;
 
         /// <summary>
         /// Variante que corresponde a la pintura, o null (cultivo normal). En cada zona clave se compara el color
@@ -82,6 +92,8 @@ namespace TheLivingCanvas.Data
             icon = newIcon;
             sellPrice = newSellPrice;
         }
+
+        public void EditorSetFavoriteSeason(Season season) => favoriteSeason = season;
 
         public void EditorSetVariants(CropVariant[] newVariants) => variants = newVariants;
 

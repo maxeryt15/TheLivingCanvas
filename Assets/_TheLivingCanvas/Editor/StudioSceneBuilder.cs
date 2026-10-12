@@ -113,7 +113,7 @@ namespace TheLivingCanvas.EditorTools
             var rig = BuildCameraRig(player);
             var hud = BuildHud(player.GetComponent<PlayerInteractor>());
             var paintMode = BuildPaintMode(rig, player, hud);
-            var placer = BuildPaintingPlacer(hud.transform, player);
+            var placer = BuildPaintingPlacer(hud.transform, player, seasonClock);
             BuildInventoryUI(hud.transform, player.GetComponent<PlayerInventory>(), placer, paintMode,
                 rig.GetComponent<CursorLock>(), rig.GetComponent<CameraModeController>(),
                 paintMode.GetComponent<PaintBrushController>(), player.GetComponent<PigmentStock>());
@@ -123,7 +123,7 @@ namespace TheLivingCanvas.EditorTools
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
             BuildShop(hud.transform, environment.transform, player, rig);
-            BuildCropPicker(hud.transform, player, rig);
+            BuildCropPicker(hud.transform, player, rig, seasonClock);
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
             BuildGarden(player.GetComponent<ArtistLevel>());
             var dialogueUi = BuildDialogueUI(hud.transform, player, rig);
@@ -342,7 +342,7 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Colocar pinturas del inventario en el suelo: controlador, aviso y prefab de la parcela.</summary>
-        static PaintingPlacer BuildPaintingPlacer(Transform hud, GameObject player)
+        static PaintingPlacer BuildPaintingPlacer(Transform hud, GameObject player, SeasonClock seasonClock)
         {
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var hint = CreatePanel(hud, "PlacementHint", AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd"),
@@ -355,6 +355,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
             so.FindProperty("interactor").objectReferenceValue = player.GetComponent<PlayerInteractor>();
             so.FindProperty("plotPrefab").objectReferenceValue = BuildPaintingPlotPrefab();
+            so.FindProperty("seasons").objectReferenceValue = seasonClock;
             so.FindProperty("confirmAction").objectReferenceValue = GetAction("Player/Interact");
             so.FindProperty("cancelAction").objectReferenceValue = GetAction("Paint/Exit");
             so.FindProperty("hint").objectReferenceValue = hint;
@@ -901,6 +902,7 @@ namespace TheLivingCanvas.EditorTools
             crop.EditorSetup("tomato", "Tomato", template, 25f, BuildTomatoPlantPrefab(),
                 PaintTemplateGenerator.GenerateTomatoIcon($"{Root}/Art/Textures/Icon_Tomato.png"), 15);
             crop.EditorSetPigmentYield(palette[4], 10);
+            crop.EditorSetFavoriteSeason(Season.Autumn);
             crop.EditorSetVariants(new[]
             {
                 new CropVariant { id = "golden", displayName = "Golden Tomato", zoneName = "Tomatoes", pigment = palette[0], rarity = Rarity.Uncommon },
@@ -930,6 +932,7 @@ namespace TheLivingCanvas.EditorTools
             crop.EditorSetup("glowbell", "Glowbell", template, 30f, BuildGlowbellPlantPrefab(),
                 PaintTemplateGenerator.GenerateGlowbellIcon($"{Root}/Art/Textures/Icon_Glowbell.png"), 25);
             crop.EditorSetPigmentYield(palette[3], 10);
+            crop.EditorSetFavoriteSeason(Season.Winter);
             crop.EditorSetVariants(new[]
             {
                 new CropVariant { id = "sun", displayName = "Sun Glowbell", zoneName = "Glow", pigment = palette[0], rarity = Rarity.Uncommon },
@@ -1125,6 +1128,7 @@ namespace TheLivingCanvas.EditorTools
             crop.EditorSetup("sunflower", "Sunflower", template, 20f, BuildSunflowerPlantPrefab(),
                 PaintTemplateGenerator.GenerateSunflowerIcon($"{Root}/Art/Textures/Icon_Sunflower.png"), 10);
             crop.EditorSetPigmentYield(palette[0], 10);
+            crop.EditorSetFavoriteSeason(Season.Summer);
             crop.EditorSetVariants(new[]
             {
                 new CropVariant { id = "red", displayName = "Red Sunflower", zoneName = "Petals", pigment = palette[4], rarity = Rarity.Uncommon },
@@ -2523,12 +2527,13 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Selector de cultivo al poner un lienzo en el caballete.</summary>
-        static void BuildCropPicker(Transform hud, GameObject player, GameObject rig)
+        static void BuildCropPicker(Transform hud, GameObject player, GameObject rig, SeasonClock seasonClock)
         {
             var ui = BuildListPanel(hud, "CropPickerUI", "What will you paint?", new Vector2(760f, 560f));
             Object.DestroyImmediate(ui.Message.gameObject);
             var so = new SerializedObject(ui.Root.AddComponent<CropPickerUI>());
             SetModalPanelRefs(so, ui, player, rig);
+            so.FindProperty("seasons").objectReferenceValue = seasonClock;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

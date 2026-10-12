@@ -1,5 +1,7 @@
+using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
+using TheLivingCanvas.Seasons;
 using UnityEngine;
 
 namespace TheLivingCanvas.Growth
@@ -18,14 +20,19 @@ namespace TheLivingCanvas.Growth
         [SerializeField] Collider[] colliders;
 
         CropPlant plant;
+        SeasonClock seasons;
 
         public PaintingItem Painting { get; private set; }
-        public string Prompt => $"Harvest {Painting.CropName.ToLowerInvariant()}";
+        public string Prompt => InSeason
+            ? $"Harvest {Painting.CropName.ToLowerInvariant()} (in season +{CropDefinition.InSeasonBonus})"
+            : $"Harvest {Painting.CropName.ToLowerInvariant()}";
+        bool InSeason => Painting.Crop.IsInSeason(seasons.Current);
         public bool CanInteract => plant != null && plant.IsGrown;
 
-        public void Show(PaintingItem painting)
+        public void Show(PaintingItem painting, SeasonClock seasonClock)
         {
             Painting = painting;
+            seasons = seasonClock;
             transform.localScale = Vector3.one * painting.CanvasType.PlotScale; // la planta, hija de la parcela, crece con ella
             paintingRenderer.material.SetTexture(BaseMap, painting.Image);
         }
@@ -53,6 +60,7 @@ namespace TheLivingCanvas.Growth
             if (!CanInteract) return;
             var inventory = interactor.GetComponent<PlayerInventory>();
             int amount = CropPlant.HarvestAmount(Painting.Result.Quality) * Painting.CanvasType.HarvestMultiplier;
+            if (InSeason) amount += CropDefinition.InSeasonBonus;
             inventory.Add(new CropItem(Painting.Crop, Painting.Variant, amount));
             if (SeedItem.CanSeed(Painting))
                 inventory.Add(new SeedItem(Painting));
