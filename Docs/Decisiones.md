@@ -50,3 +50,7 @@
 | 2026-10-11 | La tienda se queda en el estudio. En la plaza hay un puesto con un marchante de arte que compra pinturas (precio según cultivo, calidad y rareza) | Decisión del usuario: nueva elección entre plantar, colgar o vender; la pintura sigue siendo el centro. |
 | 2026-10-11 | 14C: encargos del pueblo en un tablón de anuncios en la plaza (notas firmadas por vecinos, de a una, en cadena), recompensa monedas + XP | Decisión del usuario: abre los encargos a más gente del pueblo sin crear NPCs nuevos. |
 | 2026-10-11 | Plan: 14A espacio (suelo, camino, plaza, fuente, casas de fachada, límites); 14B marchante de arte; 14C encargos del pueblo | Pasos pequeños y revisables. |
+| 2026-10-11 | Fase 15: las estaciones (Spring → Summer → Autumn → Winter) pasan por tiempo de juego, ~8 min cada una (placeholder); el HUD muestra la estación y lo que falta | Simple y acorde a un crecimiento de 20 s; sin ciclo de días ni cama. |
+| 2026-10-11 | Cada cultivo tiene una estación favorita: en ella da +1 de cosecha; fuera de ella no cambia nada | Cozy: premia sin bloquear. |
+| 2026-10-11 | 15C: un pigmento de temporada que solo se vende en su estación, y líneas de saludo de los NPCs según la estación. El marchante no cambia; eventos de temporada a la Fase 17 | Decisión del usuario. |
+| 2026-10-11 | Plan: 15A reloj de estaciones + HUD + paisaje (sol y tintes greybox); 15B cultivos de temporada; 15C pigmento de temporada + diálogos | Pasos pequeños y revisables. |

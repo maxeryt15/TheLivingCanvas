@@ -10,6 +10,7 @@ using TheLivingCanvas.Npcs;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Player;
 using TheLivingCanvas.Progression;
+using TheLivingCanvas.Seasons;
 using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -77,10 +78,23 @@ namespace TheLivingCanvas.EditorTools
             var sunGo = new GameObject("Sun");
             var sun = sunGo.AddComponent<Light>();
             sun.type = LightType.Directional;
-            sun.color = new Color(1f, 0.88f, 0.72f);
-            sun.intensity = 1.6f;
+            sun.color = new Color(1f, 0.92f, 0.80f); // = Spring (SeasonVisuals)
+            sun.intensity = 1.5f;
             sun.shadows = LightShadows.Soft;
-            sunGo.transform.rotation = Quaternion.Euler(40f, -35f, 0f);
+            sunGo.transform.rotation = Quaternion.Euler(45f, -35f, 0f);
+
+            var seasons = new GameObject("Seasons");
+            var seasonClock = seasons.AddComponent<SeasonClock>();
+            var seasonVisuals = seasons.AddComponent<SeasonVisuals>();
+            var visualsSo = new SerializedObject(seasonVisuals);
+            visualsSo.FindProperty("clock").objectReferenceValue = seasonClock;
+            visualsSo.FindProperty("sun").objectReferenceValue = sun;
+            SetMaterials(visualsSo.FindProperty("foliageMaterials"),
+                GetOrCreateMaterial("M_Garden_Bush", new Color(0.24f, 0.45f, 0.22f)));
+            SetMaterials(visualsSo.FindProperty("groundMaterials"),
+                GetOrCreateMaterial("M_Grass", new Color(0.42f, 0.62f, 0.30f)),
+                GetOrCreateMaterial("M_Town_Grass", new Color(0.40f, 0.47f, 0.35f)));
+            visualsSo.ApplyModifiedPropertiesWithoutUndo();
 
             RenderSettings.sun = sun;
             RenderSettings.skybox = AssetDatabase.GetBuiltinExtraResource<Material>("Default-Skybox.mat");
@@ -105,6 +119,7 @@ namespace TheLivingCanvas.EditorTools
                 paintMode.GetComponent<PaintBrushController>(), player.GetComponent<PigmentStock>());
             BuildCoinCounter(hud.transform, player.GetComponent<Wallet>());
             BuildLevelCounter(hud.transform, player.GetComponent<ArtistLevel>());
+            BuildSeasonCounter(hud.transform, seasonClock);
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
             BuildShop(hud.transform, environment.transform, player, rig);
@@ -1363,6 +1378,30 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("label").objectReferenceValue = label;
             so.FindProperty("fill").objectReferenceValue = fill;
             so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Estación y tiempo restante, bajo el nivel de artista.</summary>
+        static void BuildSeasonCounter(Transform hud, SeasonClock clock)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            var panel = CreatePanel(hud, "SeasonCounter", sprite, new Color(0.30f, 0.20f, 0.13f, 0.9f),
+                new Vector2(1f, 1f), new Vector2(-30f, -205f), new Vector2(240f, 40f));
+            var label = AddStretchedText(panel.transform, "Label", 22, font, cream, TextAnchor.MiddleCenter);
+
+            var counter = panel.AddComponent<SeasonCounterUI>();
+            var so = new SerializedObject(counter);
+            so.FindProperty("clock").objectReferenceValue = clock;
+            so.FindProperty("label").objectReferenceValue = label;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void SetMaterials(SerializedProperty array, params Material[] materials)
+        {
+            array.arraySize = materials.Length;
+            for (int i = 0; i < materials.Length; i++)
+                array.GetArrayElementAtIndex(i).objectReferenceValue = materials[i];
         }
 
         /// <summary>Caja de venta placeholder junto a la pared izquierda.</summary>
