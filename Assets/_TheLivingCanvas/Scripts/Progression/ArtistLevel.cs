@@ -34,6 +34,8 @@ namespace TheLivingCanvas.Progression
 
         // Claves "cultivo" y "cultivo:variante" ya pintados, para dar el bono de descubrimiento una sola vez.
         readonly HashSet<string> discovered = new();
+        // Ids de los sets de la colección ya reclamados.
+        readonly HashSet<string> claimedSets = new();
         int xp;
 
         public int Xp => xp;
@@ -86,6 +88,16 @@ namespace TheLivingCanvas.Progression
         public bool DiscoverMutation(Mutation mutation)
         {
             if (!discovered.Add(Key(mutation))) return false;
+            Changed?.Invoke();
+            return true;
+        }
+
+        public bool IsClaimed(CollectionSet set) => claimedSets.Contains(set.Id);
+
+        /// <summary>Marca el set como reclamado; false si ya lo estaba.</summary>
+        public bool Claim(CollectionSet set)
+        {
+            if (!claimedSets.Add(set.Id)) return false;
             Changed?.Invoke();
             return true;
         }

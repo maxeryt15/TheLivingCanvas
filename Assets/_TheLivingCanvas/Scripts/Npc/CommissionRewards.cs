@@ -11,25 +11,28 @@ namespace TheLivingCanvas.Npcs
     public static class CommissionRewards
     {
         /// <summary>Entrega monedas, XP y pigmento del encargo; devuelve la línea que resume lo recibido.</summary>
-        public static string Pay(CommissionDefinition commission, Wallet wallet, ArtistLevel artistLevel, PigmentStock stock, PaintBrushController brush)
+        public static string Pay(CommissionDefinition commission, Wallet wallet, ArtistLevel artistLevel, PigmentStock stock, PaintBrushController brush) =>
+            Pay(commission.RewardCoins, commission.RewardXp, commission.RewardPigment, commission.RewardPigmentAmount, wallet, artistLevel, stock, brush);
+
+        /// <summary>Igual con las cantidades sueltas (también para los sets de la colección); el pigmento puede ser null.</summary>
+        public static string Pay(int coins, int xp, PigmentDefinition pigment, int pigmentAmount, Wallet wallet, ArtistLevel artistLevel, PigmentStock stock, PaintBrushController brush)
         {
             var parts = new List<string>();
-            if (commission.RewardCoins > 0)
+            if (coins > 0)
             {
-                wallet.Add(commission.RewardCoins);
-                parts.Add($"+{commission.RewardCoins} coins");
+                wallet.Add(coins);
+                parts.Add($"+{coins} coins");
             }
-            if (commission.RewardXp > 0)
+            if (xp > 0)
             {
-                parts.Add($"+{commission.RewardXp} XP");
-                if (artistLevel.AddXp(commission.RewardXp)) parts.Add("Level up!");
+                parts.Add($"+{xp} XP");
+                if (artistLevel.AddXp(xp)) parts.Add("Level up!");
             }
-            var pigment = commission.RewardPigment;
             if (pigment != null)
             {
                 bool unlocked = brush.AddPigment(pigment); // false si ya estaba en la paleta
-                stock.Add(pigment, commission.RewardPigmentAmount);
-                parts.Add($"+{commission.RewardPigmentAmount} {pigment.DisplayName}" + (unlocked ? " (new color for your palette!)" : ""));
+                stock.Add(pigment, pigmentAmount);
+                parts.Add($"+{pigmentAmount} {pigment.DisplayName}" + (unlocked ? " (new color for your palette!)" : ""));
             }
             return "Reward: " + string.Join(" · ", parts);
         }

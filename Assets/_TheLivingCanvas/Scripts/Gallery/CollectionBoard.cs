@@ -12,6 +12,7 @@ namespace TheLivingCanvas.Gallery
         [SerializeField] CollectionUI collectionUI;
         [SerializeField] ArtistLevel artistLevel;
         [SerializeField] CropDefinition[] crops;
+        [SerializeField] CollectionSet[] sets;
         [SerializeField] Text label;
 
         public string Prompt => "View collection";
@@ -25,7 +26,7 @@ namespace TheLivingCanvas.Gallery
 
         void OnDisable() => artistLevel.Changed -= Refresh;
 
-        public void Interact(PlayerInteractor interactor) => collectionUI.Open(artistLevel, crops);
+        public void Interact(PlayerInteractor interactor) => collectionUI.Open(artistLevel, crops, sets);
 
         /// <summary>Descubiertos y total (cada cultivo cuenta uno, más una por cada una de sus variantes y por cada mutación).</summary>
         public static (int found, int total) Count(ArtistLevel artistLevel, CropDefinition[] crops)
@@ -53,6 +54,8 @@ namespace TheLivingCanvas.Gallery
         {
             var (found, total) = Count(artistLevel, crops);
             label.text = $"Collection\n{found} / {total}";
+            if (System.Array.Exists(sets, set => set.IsComplete(artistLevel) && !artistLevel.IsClaimed(set)))
+                label.text += "\nReward ready!";
         }
     }
 }

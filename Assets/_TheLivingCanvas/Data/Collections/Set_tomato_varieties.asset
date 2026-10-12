@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbc399bfec6d3924c9a0ebfe389d5881, type: 3}
+  m_Name: Set_tomato_varieties
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CollectionSet
+  id: tomato_varieties
+  displayName: Tomato Varieties
+  entries:
+  - crop: {fileID: 11400000, guid: b19e841a2369a924a8b03d5fe795ec93, type: 2}
+    variantId: golden
+    mutation: 0
+  - crop: {fileID: 11400000, guid: b19e841a2369a924a8b03d5fe795ec93, type: 2}
+    variantId: indigo
+    mutation: 0
+  - crop: {fileID: 11400000, guid: b19e841a2369a924a8b03d5fe795ec93, type: 2}
+    variantId: ghost
+    mutation: 0
+  rewardCoins: 80
+  rewardXp: 50
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0

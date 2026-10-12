@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbc399bfec6d3924c9a0ebfe389d5881, type: 3}
+  m_Name: Set_sunflower_varieties
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CollectionSet
+  id: sunflower_varieties
+  displayName: Sunflower Varieties
+  entries:
+  - crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
+    variantId: red
+    mutation: 0
+  - crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
+    variantId: blue
+    mutation: 0
+  - crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
+    variantId: moon
+    mutation: 0
+  rewardCoins: 80
+  rewardXp: 50
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0

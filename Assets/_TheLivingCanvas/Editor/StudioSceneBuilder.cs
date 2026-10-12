@@ -2260,7 +2260,7 @@ namespace TheLivingCanvas.EditorTools
             BuildGalleryFrame(gallery, "Frame_R2", new Vector3(5.9f, 1.6f, 11.5f), Quaternion.Euler(0f, 90f, 0f), woodMat, hangUi, inventory);
             BuildGalleryFrame(gallery, "Frame_B1", new Vector3(-3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildGalleryFrame(gallery, "Frame_B2", new Vector3(3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
-            BuildCollectionBoard(hud, gallery, player, rig, woodMat);
+            BuildCollectionBoard(hud, gallery, player, rig, woodMat, brush);
             BuildNpc(gallery, dialogueUi, commissionUi, player, brush, seasonClock);
             return gallery;
         }
@@ -2754,6 +2754,42 @@ namespace TheLivingCanvas.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        /// <summary>Sets de la colección: el trío de jardín, uno por cultivo con variantes, las mutaciones y el híbrido.</summary>
+        static CollectionSet[] GetOrCreateCollectionSets()
+        {
+            var crops = GetOrCreateCrops(); // girasol, tomate, glowbell, híbrido
+            // Gold Leaf solo se consigue como recompensa: fuera de GetOrCreatePalette(), como Violet.
+            var goldLeaf = GetOrCreatePigment("gold_leaf", "Gold Leaf", new Color(0.85f, 0.68f, 0.25f));
+
+            var sets = new System.Collections.Generic.List<CollectionSet>
+            {
+                GetOrCreateCollectionSet("garden_trio", "Garden Trio", crops.Take(3).Select(c => new CollectionEntry { crop = c }).ToArray(), 60, 40)
+            };
+            foreach (var crop in crops.Take(3).Where(c => c.Variants.Length > 0))
+                sets.Add(GetOrCreateCollectionSet($"{crop.Id}_varieties", $"{crop.DisplayName} Varieties",
+                    crop.Variants.Select(v => new CollectionEntry { crop = crop, variantId = v.id }).ToArray(), 80, 50));
+            sets.Add(GetOrCreateCollectionSet("oddities", "Oddities", Mutations.All.Select(m => new CollectionEntry { mutation = m }).ToArray(), 100, 60, goldLeaf, 30));
+            sets.Add(GetOrCreateCollectionSet("cross_pollinator", "Cross-pollinator", new[] { new CollectionEntry { crop = crops[3] } }, 60, 40));
+            return sets.ToArray();
+        }
+
+        static CollectionSet GetOrCreateCollectionSet(string id, string displayName, CollectionEntry[] entries, int rewardCoins, int rewardXp,
+            PigmentDefinition rewardPigment = null, int rewardPigmentAmount = 0)
+        {
+            if (!AssetDatabase.IsValidFolder($"{Root}/Data/Collections"))
+                AssetDatabase.CreateFolder($"{Root}/Data", "Collections");
+            var path = $"{Root}/Data/Collections/Set_{id}.asset";
+            var set = AssetDatabase.LoadAssetAtPath<CollectionSet>(path);
+            if (set == null)
+            {
+                set = ScriptableObject.CreateInstance<CollectionSet>();
+                AssetDatabase.CreateAsset(set, path);
+            }
+            set.EditorSetup(id, displayName, entries, rewardCoins, rewardXp, rewardPigment, rewardPigmentAmount);
+            EditorUtility.SetDirty(set);
+            return set;
+        }
+
         static CommissionDefinition GetOrCreateCommission(string fileName, CropDefinition crop, string variantId, PaintingQuality minQuality,
             string[] requestLines, string[] thanksLines, int rewardCoins, int rewardXp, PigmentDefinition rewardPigment = null, int rewardPigmentAmount = 0,
             StyleDefinition style = null, PigmentDefinition requiredPigment = null)
@@ -2771,7 +2807,7 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Tablón de corcho en el centro de la pared del fondo + panel con la colección de cultivos y variantes.</summary>
-        static void BuildCollectionBoard(Transform hud, Transform gallery, GameObject player, GameObject rig, Material woodMat)
+        static void BuildCollectionBoard(Transform hud, Transform gallery, GameObject player, GameObject rig, Material woodMat, PaintBrushController brush)
         {
             var corkMat = GetOrCreateMaterial("M_Gallery_Board", new Color(0.72f, 0.52f, 0.32f));
 
@@ -2780,6 +2816,9 @@ namespace TheLivingCanvas.EditorTools
             var uiSo = new SerializedObject(collectionUi);
             SetModalPanelRefs(uiSo, ui, player, rig);
             uiSo.FindProperty("messageLabel").objectReferenceValue = ui.Message;
+            uiSo.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            uiSo.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
+            uiSo.FindProperty("brush").objectReferenceValue = brush;
             uiSo.ApplyModifiedPropertiesWithoutUndo();
 
             // Como los marcos: +Z local hacia la pared, el tablón se ve desde -Z.
@@ -2842,6 +2881,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("collectionUI").objectReferenceValue = collectionUi;
             so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
             SetArray(so.FindProperty("crops"), GetOrCreateCrops());
+            SetArray(so.FindProperty("sets"), GetOrCreateCollectionSets());
             so.FindProperty("label").objectReferenceValue = label;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
