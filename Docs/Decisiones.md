@@ -54,3 +54,4 @@
 | 2026-10-11 | Cada cultivo tiene una estación favorita: en ella da +1 de cosecha; fuera de ella no cambia nada | Cozy: premia sin bloquear. |
 | 2026-10-11 | 15C: un pigmento de temporada que solo se vende en su estación, y líneas de saludo de los NPCs según la estación. El marchante no cambia; eventos de temporada a la Fase 17 | Decisión del usuario. |
 | 2026-10-11 | Plan: 15A reloj de estaciones + HUD + paisaje (sol y tintes greybox); 15B cultivos de temporada; 15C pigmento de temporada + diálogos | Pasos pequeños y revisables. |
+| 2026-10-11 | Pigmentos de temporada: Blossom Pink (Spring), Sky Blue (Summer), Burnt Orange (Autumn), Frost Lilac (Winter); 20 monedas, +30, quedan para siempre. Su frasco de recarga (10) también se vende solo en su estación | Sin recarga, el color se acabaría para siempre; así se repone cada año. |
