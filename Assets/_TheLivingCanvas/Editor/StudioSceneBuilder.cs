@@ -66,7 +66,9 @@ namespace TheLivingCanvas.EditorTools
             CreateBlock("Table", environment.transform, new Vector3(-4.5f, 0.4f, 4.5f), new Vector3(2f, 0.8f, 1f), accentMat);
 
             // Límites invisibles en los lados abiertos para no caerse del suelo.
-            CreateBoundary("Boundary_Front", environment.transform, new Vector3(0f, 1.5f, -6f), new Vector3(12f, 3f, 0.2f));
+            // El frente deja un hueco de 3 m (x -1,5..1,5) para salir al pueblo.
+            CreateBoundary("Boundary_Front_Left", environment.transform, new Vector3(-3.75f, 1.5f, -6f), new Vector3(4.5f, 3f, 0.2f));
+            CreateBoundary("Boundary_Front_Right", environment.transform, new Vector3(3.75f, 1.5f, -6f), new Vector3(4.5f, 3f, 0.2f));
             // El lado derecho deja un hueco de 2 m en z = 0: lo cierra la puerta del jardín.
             CreateBoundary("Boundary_Right_Front", environment.transform, new Vector3(6f, 1.5f, -3.5f), new Vector3(0.2f, 3f, 5f));
             CreateBoundary("Boundary_Right_Back", environment.transform, new Vector3(6f, 1.5f, 3.5f), new Vector3(0.2f, 3f, 5f));
@@ -110,6 +112,7 @@ namespace TheLivingCanvas.EditorTools
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
             BuildGarden(player.GetComponent<ArtistLevel>());
             BuildGallery(hud.transform, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>());
+            BuildTown();
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -1378,6 +1381,153 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>
+        /// Pueblo greybox al sur del estudio y el jardín (x -12..18, z -26..-6): césped, camino desde
+        /// el hueco del estudio, plaza con fuente, casas de fachada, árboles, bancos y farolas sin luz.
+        /// Solo para caminar; lo sólido tiene collider y el resto son detalles sin collider.
+        /// </summary>
+        static void BuildTown()
+        {
+            var grassMat = GetOrCreateMaterial("M_Town_Grass", new Color(0.40f, 0.47f, 0.35f));
+            var pathMat = GetOrCreateMaterial("M_Town_Path", new Color(0.80f, 0.72f, 0.58f));
+            var plazaMat = GetOrCreateMaterial("M_Town_Plaza", new Color(0.70f, 0.64f, 0.56f));
+            var waterMat = GetOrCreateMaterial("M_Town_Water", new Color(0.32f, 0.42f, 0.51f));
+            var stoneMat = GetOrCreateMaterial("M_Mortar_Stone", new Color(0.62f, 0.6f, 0.56f));
+            var woodMat = GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f));
+            var bushMat = GetOrCreateMaterial("M_Garden_Bush", new Color(0.24f, 0.45f, 0.22f));
+            var lampMat = GetOrCreateMaterial("M_Town_Lamp", new Color(0.16f, 0.15f, 0.15f));
+            var lanternMat = GetOrCreateMaterial("M_Town_Lantern", new Color(0.95f, 0.80f, 0.50f));
+
+            var town = new GameObject("Town").transform;
+
+            // Suelo (techo en y = 0); camino y plaza apenas por encima para evitar z-fighting.
+            CreateBlock("Town_Ground", town, new Vector3(3f, -0.1f, -16f), new Vector3(30f, 0.2f, 20f), grassMat);
+            CreateBlock("Town_Path", town, new Vector3(0f, -0.09f, -8.5f), new Vector3(3f, 0.2f, 5f), pathMat);
+            CreateBlock("Town_Plaza", town, new Vector3(0f, -0.08f, -16f), new Vector3(10f, 0.2f, 10f), plazaMat);
+            // HUECO RESERVADO (Fase 14B): puesto de mercado alrededor de (-3, 0, -13), unos 4 x 4 m. No colocar nada aquí.
+
+            // Fuente: pila baja de piedra con collider, agua y columna central.
+            var fountain = new GameObject("Fountain").transform;
+            fountain.SetParent(town, false);
+            fountain.localPosition = new Vector3(0f, 0f, -16f);
+            var basin = TownPart(PrimitiveType.Cylinder, "Fountain_Basin", fountain, new Vector3(0f, 0.3f, 0f), new Vector3(2.6f, 0.3f, 2.6f), stoneMat, Quaternion.identity);
+            var basinCol = basin.AddComponent<MeshCollider>();
+            basinCol.sharedMesh = basin.GetComponent<MeshFilter>().sharedMesh;
+            basinCol.convex = true;
+            TownPart(PrimitiveType.Cylinder, "Fountain_Water", fountain, new Vector3(0f, 0.61f, 0f), new Vector3(2.2f, 0.02f, 2.2f), waterMat, Quaternion.identity);
+            TownPart(PrimitiveType.Cylinder, "Fountain_Column", fountain, new Vector3(0f, 0.9f, 0f), new Vector3(0.4f, 0.9f, 0.4f), stoneMat, Quaternion.identity);
+            TownPart(PrimitiveType.Cylinder, "Fountain_Bowl", fountain, new Vector3(0f, 1.75f, 0f), new Vector3(0.9f, 0.08f, 0.9f), stoneMat, Quaternion.identity);
+
+            // Casas de fachada mirando a la plaza (yaw: la puerta mira hacia (sin yaw, cos yaw)).
+            BuildHouse(town, "House_West_A", new Vector3(-9.5f, 0f, -13f), 90f, new Vector3(5f, 3.2f, 4f), 1.2f, 2);
+            BuildHouse(town, "House_West_B", new Vector3(-9.5f, 0f, -19f), 90f, new Vector3(4.5f, 3.8f, 3.6f), 1.0f, 1);
+            BuildHouse(town, "House_South", new Vector3(2f, 0f, -23.5f), 0f, new Vector3(5.5f, 3.4f, 4f), 1.3f, 2);
+            BuildHouse(town, "House_East", new Vector3(10f, 0f, -16f), -90f, new Vector3(5f, 4.0f, 4.2f), 1.1f, 2);
+
+            // Árboles: solo el tronco es sólido.
+            BuildTownTree(town, "Tree_A", new Vector3(-4.2f, 0f, -8f), 1.0f, woodMat, bushMat);
+            BuildTownTree(town, "Tree_B", new Vector3(5.0f, 0f, -8.5f), 1.2f, woodMat, bushMat);
+            BuildTownTree(town, "Tree_C", new Vector3(13.5f, 0f, -9f), 0.9f, woodMat, bushMat);
+            BuildTownTree(town, "Tree_D", new Vector3(14.5f, 0f, -22f), 1.1f, woodMat, bushMat);
+            BuildTownTree(town, "Tree_E", new Vector3(8.0f, 0f, -23.5f), 0.95f, woodMat, bushMat);
+            BuildTownTree(town, "Tree_F", new Vector3(-8.5f, 0f, -24f), 1.15f, woodMat, bushMat);
+
+            // Bancos junto a la plaza, mirando a la fuente (el lado del puesto queda libre).
+            BuildBench(town, "Bench_East", new Vector3(3.9f, 0f, -16f), 270f, woodMat);
+            BuildBench(town, "Bench_South", new Vector3(0f, 0f, -19.3f), 0f, woodMat);
+            BuildBench(town, "Bench_NorthEast", new Vector3(3.2f, 0f, -12.2f), 200f, woodMat);
+
+            // Farolas decorativas, sin luz real (rendimiento).
+            foreach (var p in new[] { new Vector3(-2.3f, 0f, -8f), new Vector3(2.3f, 0f, -8f), new Vector3(4.6f, 0f, -20.6f), new Vector3(-4.6f, 0f, -20.6f) })
+            {
+                TownPart(PrimitiveType.Cylinder, "Lamp_Post", town, p + new Vector3(0f, 1.4f, 0f), new Vector3(0.1f, 1.4f, 0.1f), lampMat, Quaternion.identity);
+                TownPart(PrimitiveType.Cube, "Lamp_Lantern", town, p + new Vector3(0f, 3.0f, 0f), new Vector3(0.3f, 0.4f, 0.3f), lanternMat, Quaternion.identity);
+            }
+
+            // Límites invisibles: oeste, este, sur y el tramo norte al oeste del estudio.
+            CreateBoundary("Boundary_Town_West", town, new Vector3(-12f, 1.5f, -16f), new Vector3(0.2f, 3f, 20f));
+            CreateBoundary("Boundary_Town_East", town, new Vector3(18f, 1.5f, -16f), new Vector3(0.2f, 3f, 20f));
+            CreateBoundary("Boundary_Town_South", town, new Vector3(3f, 1.5f, -26f), new Vector3(30f, 3f, 0.2f));
+            CreateBoundary("Boundary_Town_North_West", town, new Vector3(-9f, 1.5f, -6f), new Vector3(6f, 3f, 0.2f));
+        }
+
+        /// <summary>Primitiva decorativa del pueblo: sin collider y marcada como estática.</summary>
+        static GameObject TownPart(PrimitiveType type, string name, Transform parent, Vector3 position, Vector3 scale, Material material, Quaternion rotation)
+        {
+            var go = CreatePart(type, name, parent, position, scale, material, rotation);
+            go.isStatic = true;
+            return go;
+        }
+
+        /// <summary>
+        /// Casa de fachada (no se entra): cuerpo sólido, tejado a dos aguas, puerta y ventanas en la cara +Z local.
+        /// <paramref name="size"/> es (ancho, alto, fondo); <paramref name="doorOffset"/> desplaza la puerta en x.
+        /// </summary>
+        static void BuildHouse(Transform parent, string name, Vector3 position, float yaw, Vector3 size, float doorOffset, int windows)
+        {
+            var wallMat = GetOrCreateMaterial("M_Town_Wall", new Color(0.88f, 0.80f, 0.69f));
+            var roofMat = GetOrCreateMaterial("M_Town_Roof", new Color(0.66f, 0.37f, 0.28f));
+            var doorMat = GetOrCreateMaterial("M_Town_Door", new Color(0.32f, 0.42f, 0.51f));
+            var glassMat = GetOrCreateMaterial("M_Town_Window", new Color(0.35f, 0.40f, 0.45f));
+
+            var house = new GameObject(name).transform;
+            house.SetParent(parent, false);
+            house.localPosition = position;
+            house.localRotation = Quaternion.Euler(0f, yaw, 0f);
+
+            float w = size.x, h = size.y, d = size.z;
+            CreateBlock("Body", house, new Vector3(0f, h * 0.5f, 0f), size, wallMat);
+
+            // Tejado a dos aguas: dos losas inclinadas sobre el eje x (la cumbrera corre a lo largo del ancho).
+            const float angle = 35f;
+            float rad = angle * Mathf.Deg2Rad;
+            float slabLen = (d * 0.5f) / Mathf.Cos(rad) + 0.5f;
+            float slabY = h + (d * 0.25f) * Mathf.Tan(rad) + 0.05f;
+            for (int i = 0; i < 2; i++)
+            {
+                float side = i == 0 ? 1f : -1f; // +1 = lado de la fachada
+                var slab = CreateBlock(i == 0 ? "Roof_Front" : "Roof_Back", house,
+                    new Vector3(0f, slabY, side * d * 0.25f), new Vector3(w + 0.5f, 0.15f, slabLen), roofMat);
+                slab.transform.localRotation = Quaternion.Euler(side * angle, 0f, 0f);
+                Object.DestroyImmediate(slab.GetComponent<Collider>()); // el tejado queda fuera de alcance
+            }
+
+            // Puerta y ventanas pegadas a la fachada, sin collider.
+            float fz = d * 0.5f + 0.03f;
+            TownPart(PrimitiveType.Cube, "Door", house, new Vector3(doorOffset, 1.0f, fz), new Vector3(1.0f, 2.0f, 0.1f), doorMat, Quaternion.identity);
+            float winX = doorOffset > 0f ? -w * 0.28f : w * 0.28f;
+            TownPart(PrimitiveType.Cube, "Window_A", house, new Vector3(winX, 1.7f, fz), new Vector3(0.9f, 0.9f, 0.1f), glassMat, Quaternion.identity);
+            if (windows > 1)
+                TownPart(PrimitiveType.Cube, "Window_B", house, new Vector3(doorOffset, h - 0.8f, fz), new Vector3(0.9f, 0.7f, 0.1f), glassMat, Quaternion.identity);
+        }
+
+        /// <summary>Árbol: tronco sólido (cápsula) y copa de dos esferas sin collider.</summary>
+        static void BuildTownTree(Transform parent, string name, Vector3 position, float scale, Material trunkMat, Material leafMat)
+        {
+            var tree = new GameObject(name).transform;
+            tree.SetParent(parent, false);
+            tree.localPosition = position;
+            var trunk = TownPart(PrimitiveType.Cylinder, "Trunk", tree, new Vector3(0f, 1.1f * scale, 0f), new Vector3(0.35f * scale, 1.1f * scale, 0.35f * scale), trunkMat, Quaternion.identity);
+            var col = trunk.AddComponent<CapsuleCollider>(); // radio 0,5 y alto 2 en local = el cilindro
+            col.radius = 0.5f;
+            col.height = 2f;
+            TownPart(PrimitiveType.Sphere, "Crown_A", tree, new Vector3(0f, 2.8f * scale, 0f), Vector3.one * 2.4f * scale, leafMat, Quaternion.identity);
+            TownPart(PrimitiveType.Sphere, "Crown_B", tree, new Vector3(0.5f * scale, 3.5f * scale, 0.2f * scale), Vector3.one * 1.6f * scale, leafMat, Quaternion.identity);
+        }
+
+        /// <summary>Banco: asiento sólido y respaldo; mira hacia +Z local.</summary>
+        static void BuildBench(Transform parent, string name, Vector3 position, float yaw, Material woodMat)
+        {
+            var bench = new GameObject(name).transform;
+            bench.SetParent(parent, false);
+            bench.localPosition = position;
+            bench.localRotation = Quaternion.Euler(0f, yaw, 0f);
+            CreateBlock("Seat", bench, new Vector3(0f, 0.45f, 0f), new Vector3(1.6f, 0.1f, 0.5f), woodMat);
+            TownPart(PrimitiveType.Cube, "Back", bench, new Vector3(0f, 0.8f, -0.22f), new Vector3(1.6f, 0.5f, 0.06f), woodMat, Quaternion.identity);
+            TownPart(PrimitiveType.Cube, "Leg_L", bench, new Vector3(-0.7f, 0.2f, 0f), new Vector3(0.1f, 0.4f, 0.4f), woodMat, Quaternion.identity);
+            TownPart(PrimitiveType.Cube, "Leg_R", bench, new Vector3(0.7f, 0.2f, 0f), new Vector3(0.1f, 0.4f, 0.4f), woodMat, Quaternion.identity);
+        }
+
+        /// <summary>
         /// Jardín al este del estudio (x de 6 a 18): césped al mismo nivel que el suelo, valla baja,
         /// límites invisibles y la puerta que lo abre al llegar al nivel pedido.
         /// </summary>
@@ -2254,7 +2404,7 @@ namespace TheLivingCanvas.EditorTools
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.name = name;
-            go.transform.SetParent(parent);
+            go.transform.SetParent(parent, false); // false: bajo un padre girado (casas, bancos) gira con él
             go.transform.localPosition = position;
             go.transform.localScale = scale;
             go.GetComponent<MeshRenderer>().sharedMaterial = material;

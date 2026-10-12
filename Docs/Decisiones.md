@@ -45,3 +45,7 @@
 | 2026-10-11 | Recompensa de encargos: monedas (más que vendiendo) + XP, y en algunos algo único que no está en la tienda (ej. un pigmento nuevo) | Motiva sin romper la economía. |
 | 2026-10-11 | Plan: 13A NPC + diálogo (SO con líneas, panel que avanza); 13B encargo y entrega; 13C recompensa y cadena de 2–3 encargos | Pasos pequeños y revisables. |
 | 2026-10-11 | Arte: shader painterly en HLSL (`TLC/Painterly`) en vez de Shader Graph; Descoloración = global `_TLC_Descolor` + Volume de atmósfera; prototipo en escena aparte | HLSL es verificable y legible en texto; el global permite comparar normal/descolor y proteger el amarillo por material. Ver `ART_DIRECTION.md`. |
+| 2026-10-11 | Fase 14: el pueblo está al sur del estudio y del jardín (x -12..18, z -26..-6), se sale por un hueco en el frente del estudio y está abierto desde el inicio | Queda a mano y es el centro social; nada que desbloquear. |
+| 2026-10-11 | Pueblo en greybox con materiales planos (como el resto de Studio.unity) hasta aprobar el prototipo painterly | `ART_DIRECTION.md`: no montar muchos assets antes de validar el estilo. |
+| 2026-10-11 | La tienda se queda en el estudio. En la plaza hay un puesto con un marchante de arte que compra pinturas (precio según cultivo, calidad y rareza) | Decisión del usuario: nueva elección entre plantar, colgar o vender; la pintura sigue siendo el centro. |
+| 2026-10-11 | Plan: 14A espacio (suelo, camino, plaza, fuente, casas de fachada, límites); 14B marchante de arte; 14C encargos del pueblo | Pasos pequeños y revisables. |
