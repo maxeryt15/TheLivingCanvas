@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6402e72c03a595c4b8c7bb3a96ff7d0b, type: 3}
+  m_Name: Template_Sunbell
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.PaintTemplate
+  displayName: Sunbell
+  zoneMask: {fileID: 2800000, guid: 95563d8b73fe0f1439d4493a2a405cd9, type: 3}
+  zones:
+  - zoneName: Petals
+    channel: 0
+    suggestedPigment: {fileID: 11400000, guid: 8b670d75cc6ef944fb0ffb752328c817, type: 2}
+    minCoverage: 0.5
+    weight: 1
+    missingPaintHint: The petals and bells need a bit more paint.
+  - zoneName: Glow
+    channel: 2
+    suggestedPigment: {fileID: 11400000, guid: 25b02c9d887373f4cab1b54b2c5efffe, type: 2}
+    minCoverage: 0.5
+    weight: 0.8
+    missingPaintHint: The glowing heart still needs paint.
+  - zoneName: Stem & leaves
+    channel: 1
+    suggestedPigment: {fileID: 11400000, guid: 640e085e4379ceb4e85af02a0c5193db, type: 2}
+    minCoverage: 0.5
+    weight: 0.6
+    missingPaintHint: The stem and leaves need some color.

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a25a0de7e322034587870b3545df4b9, type: 3}
+  m_Name: Crop_Sunbell
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CropDefinition
+  id: sunbell
+  displayName: Sunbell
+  template: {fileID: 11400000, guid: 1d586d67f75bb6a40a8cda7c43194119, type: 2}
+  growthDuration: 35
+  plantPrefab: {fileID: 7687626385725326630, guid: 2424a26c85a431a459f219dcab966519, type: 3}
+  icon: {fileID: 2800000, guid: 25059e82a2200e4499204de0b8378b2c, type: 3}
+  sellPrice: 40
+  pigment: {fileID: 11400000, guid: 8b670d75cc6ef944fb0ffb752328c817, type: 2}
+  pigmentPerUnit: 10
+  variants: []
+  favoriteSeason: 0
+  crosses: []

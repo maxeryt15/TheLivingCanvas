@@ -29,6 +29,9 @@ namespace TheLivingCanvas.Data
         [Tooltip("Estación en la que rinde más: cosechar en ella da una unidad extra.")]
         [SerializeField] Season favoriteSeason;
 
+        [Tooltip("Cruces: si el compañero crece cerca al cosechar, puede enseñar el boceto del híbrido.")]
+        [SerializeField] CropCross[] crosses = System.Array.Empty<CropCross>();
+
         /// <summary>Unidades extra al cosechar en la estación favorita (se suman tras calidad × lienzo).</summary>
         public const int InSeasonBonus = 1;
 
@@ -43,6 +46,7 @@ namespace TheLivingCanvas.Data
         public PigmentDefinition Pigment => pigment;
         public int PigmentPerUnit => pigmentPerUnit;
         public Season FavoriteSeason => favoriteSeason;
+        public CropCross[] Crosses => crosses;
 
         public bool IsInSeason(Season season) => season == favoriteSeason;
 
@@ -97,6 +101,8 @@ namespace TheLivingCanvas.Data
         }
 
         public void EditorSetFavoriteSeason(Season season) => favoriteSeason = season;
+
+        public void EditorSetCrosses(CropCross[] newCrosses) => crosses = newCrosses;
 
         public void EditorSetVariants(CropVariant[] newVariants) => variants = newVariants;
 

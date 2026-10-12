@@ -3,6 +3,7 @@ using TheLivingCanvas.Data;
 using TheLivingCanvas.Economy;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
+using TheLivingCanvas.Painting;
 using TheLivingCanvas.Progression;
 using TheLivingCanvas.Seasons;
 using UnityEngine;
@@ -62,6 +63,8 @@ namespace TheLivingCanvas.Growth
 
         const float TwinOffset = 0.18f;
         const float GiantScale = 1.4f;
+        const float PollinationChance = 0.25f;
+        const float PollinationRadius = 2.5f;
 
         /// <summary>Encima de la pintura, desplazada en X local; la flor mira hacia quien la colocó (-Z de la parcela).</summary>
         CropPlant SpawnPlant(float offsetX)
@@ -138,7 +141,29 @@ namespace TheLivingCanvas.Growth
                 interactor.GetComponent<ArtistLevel>().DiscoverMutation(mutation);
             if (SeedItem.CanSeed(Painting))
                 inventory.Add(new SeedItem(Painting, mutation));
+            TryPollinate(interactor.GetComponent<Sketchbook>());
             Destroy(gameObject); // la pintura se consume
+        }
+
+        /// <summary>Polinización cruzada: con una planta adulta del cultivo compañero cerca, puede enseñar el boceto del híbrido.</summary>
+        void TryPollinate(Sketchbook sketchbook)
+        {
+            foreach (var cross in Painting.Crop.Crosses)
+            {
+                if (sketchbook.Knows(cross.hybrid) || !HasAdultNearby(cross.partner) || Random.value >= PollinationChance) continue;
+                sketchbook.Learn(cross.hybrid);
+                FindFirstObjectByType<PaintFeedbackUI>().Show($"The bees mixed some pollen... You learned to paint the {cross.hybrid.DisplayName}!", success: true);
+                return;
+            }
+        }
+
+        bool HasAdultNearby(CropDefinition partner)
+        {
+            foreach (var other in FindObjectsByType<PaintingPlot>(FindObjectsSortMode.None))
+                if (other != this && other.CanInteract && other.Painting.Crop == partner
+                    && (other.transform.position - transform.position).sqrMagnitude <= PollinationRadius * PollinationRadius)
+                    return true;
+            return false;
         }
     }
 }

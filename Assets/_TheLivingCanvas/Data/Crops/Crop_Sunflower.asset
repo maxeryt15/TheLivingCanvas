@@ -38,3 +38,6 @@ MonoBehaviour:
     pigment: {fileID: 11400000, guid: 25b02c9d887373f4cab1b54b2c5efffe, type: 2}
     rarity: 2
   favoriteSeason: 1
+  crosses:
+  - partner: {fileID: 11400000, guid: 9e3e9bdcff2b9374f8330b0b39962dc0, type: 2}
+    hybrid: {fileID: 11400000, guid: 6ed01665b2d06eb45aec260554fbb27b, type: 2}

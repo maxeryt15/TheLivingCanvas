@@ -42,6 +42,7 @@ namespace TheLivingCanvas.EditorTools
         const string SunflowerPrefabPath = Root + "/Prefabs/Crops/Sunflower.prefab";
         const string TomatoPrefabPath = Root + "/Prefabs/Crops/Tomato.prefab";
         const string GlowbellPrefabPath = Root + "/Prefabs/Crops/Glowbell.prefab";
+        const string SunbellPrefabPath = Root + "/Prefabs/Crops/Sunbell.prefab";
 
         [MenuItem("TheLivingCanvas/Build Studio Scene")]
         public static void Build()
@@ -887,7 +888,21 @@ namespace TheLivingCanvas.EditorTools
         /// <summary>Los primeros cultivos se saben pintar desde el principio; el resto se compra (boceto).</summary>
         const int StartingCrops = 1;
 
-        static CropDefinition[] GetOrCreateCrops() => new[] { GetOrCreateSunflowerCrop(), GetOrCreateTomatoCrop(), GetOrCreateGlowbellCrop() };
+        /// <summary>Híbridos al final de GetOrCreateCrops: se aprenden por polinización cruzada, no se venden.</summary>
+        const int HybridCrops = 1;
+
+        static CropDefinition[] GetOrCreateCrops()
+        {
+            var sunflower = GetOrCreateSunflowerCrop();
+            var tomato = GetOrCreateTomatoCrop();
+            var glowbell = GetOrCreateGlowbellCrop();
+            var sunbell = GetOrCreateSunbellCrop();
+            sunflower.EditorSetCrosses(new[] { new CropCross { partner = glowbell, hybrid = sunbell } });
+            glowbell.EditorSetCrosses(new[] { new CropCross { partner = sunflower, hybrid = sunbell } });
+            EditorUtility.SetDirty(sunflower);
+            EditorUtility.SetDirty(glowbell);
+            return new[] { sunflower, tomato, glowbell, sunbell };
+        }
 
         static CropDefinition GetOrCreateCropAsset(string fileName)
         {
@@ -970,6 +985,131 @@ namespace TheLivingCanvas.EditorTools
             });
             EditorUtility.SetDirty(crop);
             return crop;
+        }
+
+        /// <summary>Plantilla y cultivo del sunbell, el primer híbrido (girasol + glowbell); no se vende, se aprende por polinización.</summary>
+        static CropDefinition GetOrCreateSunbellCrop()
+        {
+            var palette = GetOrCreatePalette();
+            var mask = PaintTemplateGenerator.GenerateSunbellMask($"{Root}/Art/Textures/PaintTemplates/Sunbell_Zones.png");
+
+            var template = GetOrCreateTemplateAsset("Template_Sunbell");
+            template.EditorSetup("Sunbell", mask, new[]
+            {
+                new ZoneRequirement { zoneName = "Petals", channel = ZoneChannel.Red, suggestedPigment = palette[0], minCoverage = 0.5f, weight = 1f, missingPaintHint = "The petals and bells need a bit more paint." },
+                new ZoneRequirement { zoneName = "Glow", channel = ZoneChannel.Blue, suggestedPigment = palette[5], minCoverage = 0.5f, weight = 0.8f, missingPaintHint = "The glowing heart still needs paint." },
+                new ZoneRequirement { zoneName = "Stem & leaves", channel = ZoneChannel.Green, suggestedPigment = palette[2], minCoverage = 0.5f, weight = 0.6f, missingPaintHint = "The stem and leaves need some color." },
+            });
+            EditorUtility.SetDirty(template);
+
+            var crop = GetOrCreateCropAsset("Crop_Sunbell");
+            crop.EditorSetup("sunbell", "Sunbell", template, 35f, BuildSunbellPlantPrefab(),
+                PaintTemplateGenerator.GenerateSunbellIcon($"{Root}/Art/Textures/Icon_Sunbell.png"), 40);
+            crop.EditorSetPigmentYield(palette[0], 10);
+            crop.EditorSetFavoriteSeason(Season.Spring);
+            crop.EditorSetVariants(System.Array.Empty<CropVariant>());
+            EditorUtility.SetDirty(crop);
+            return crop;
+        }
+
+        /// <summary>
+        /// Sunbell procedural (placeholder) de ~1.2 m: girasol con una esfera luminosa en el centro (y una luz puntual
+        /// suave) y dos campanillas colgando bajo los pétalos.
+        /// </summary>
+        static SunbellPlant BuildSunbellPlantPrefab()
+        {
+            var petalMat = GetOrCreateMaterial("M_Plant_Petal", new Color(0.98f, 0.78f, 0.15f));
+            var bellMat = GetOrCreateMaterial("M_Plant_Bell", new Color(0.17f, 0.27f, 0.62f));
+            var glowMat = GetOrCreateMaterial("M_Plant_Glow", new Color(0.98f, 0.98f, 0.96f));
+            var stemMat = GetOrCreateMaterial("M_Plant_Stem", new Color(0.3f, 0.55f, 0.22f));
+
+            var root = new GameObject("Sunbell");
+            var growth = new GameObject("GrowthRoot").transform;
+            growth.SetParent(root.transform, false);
+            var stem = CreatePart(PrimitiveType.Cylinder, "Stem", growth, new Vector3(0f, 0.6f, 0f), new Vector3(0.045f, 0.6f, 0.045f), stemMat, Quaternion.identity);
+            var stemRenderers = new System.Collections.Generic.List<Renderer> { stem.GetComponent<Renderer>() };
+
+            var leafHinges = new Transform[2];
+            float[] leafHeights = { 0.38f, 0.62f };
+            float[] leafYaws = { 90f, -90f };
+            for (int i = 0; i < 2; i++)
+            {
+                var hinge = new GameObject($"LeafHinge_{i}").transform;
+                hinge.SetParent(growth, false);
+                hinge.localPosition = new Vector3(0f, leafHeights[i], 0f);
+                hinge.localRotation = Quaternion.Euler(0f, leafYaws[i], 0f);
+                var leaf = CreatePart(PrimitiveType.Sphere, "Leaf", hinge, new Vector3(0f, 0f, 0.13f), new Vector3(0.09f, 0.015f, 0.26f), stemMat, Quaternion.identity);
+                stemRenderers.Add(leaf.GetComponent<Renderer>());
+                leafHinges[i] = hinge;
+            }
+
+            // Cabeza que mira a -Z (hacia quien coloca la parcela); el centro es una esfera luminosa.
+            var head = new GameObject("Head").transform;
+            head.SetParent(growth, false);
+            head.localPosition = new Vector3(0f, 1.2f, 0f);
+            head.localRotation = Quaternion.Euler(20f, 180f, 0f);
+            var orb = CreatePart(PrimitiveType.Sphere, "Glow", head, new Vector3(0f, 0f, 0.03f), Vector3.one * 0.2f, glowMat, Quaternion.identity);
+            var back = CreatePart(PrimitiveType.Cylinder, "Back", head, new Vector3(0f, 0f, -0.018f), new Vector3(0.24f, 0.015f, 0.24f), stemMat, Quaternion.Euler(90f, 0f, 0f));
+            stemRenderers.Add(back.GetComponent<Renderer>());
+
+            const int petalCount = 16;
+            var petalHinges = new Transform[petalCount];
+            var petalRenderers = new Renderer[petalCount];
+            for (int i = 0; i < petalCount; i++)
+            {
+                var anchor = new GameObject($"PetalAnchor_{i}").transform;
+                anchor.SetParent(head, false);
+                anchor.localRotation = Quaternion.Euler(0f, 0f, i * 360f / petalCount);
+                var hinge = new GameObject("Hinge").transform;
+                hinge.SetParent(anchor, false);
+                hinge.localPosition = new Vector3(0f, 0.1f, 0f);
+                var petal = CreatePart(PrimitiveType.Sphere, "Petal", hinge, new Vector3(0f, 0.09f, 0f), new Vector3(0.06f, 0.18f, 0.012f), petalMat, Quaternion.identity);
+                petalHinges[i] = hinge;
+                petalRenderers[i] = petal.GetComponent<Renderer>();
+            }
+
+            // Dos campanillas pequeñas que cuelgan bajo la flor (hijas de GrowthRoot, no de la cabeza inclinada).
+            float[] bellXs = { -0.15f, 0.15f };
+            var bellPivots = new Transform[bellXs.Length];
+            var bellRenderers = new Renderer[bellXs.Length * 2];
+            for (int i = 0; i < bellXs.Length; i++)
+            {
+                var bell = new GameObject($"Bell_{i}").transform;
+                bell.SetParent(growth, false);
+                bell.localPosition = new Vector3(bellXs[i], 0.97f, -0.12f);
+                var body = CreatePart(PrimitiveType.Sphere, "Body", bell, new Vector3(0f, -0.035f, 0f), new Vector3(0.06f, 0.08f, 0.06f), bellMat, Quaternion.identity);
+                var rim = CreatePart(PrimitiveType.Sphere, "Rim", bell, new Vector3(0f, -0.075f, 0f), new Vector3(0.09f, 0.02f, 0.09f), bellMat, Quaternion.identity);
+                bellRenderers[i * 2] = body.GetComponent<Renderer>();
+                bellRenderers[i * 2 + 1] = rim.GetComponent<Renderer>();
+                bellPivots[i] = bell;
+            }
+
+            var lightGo = new GameObject("GlowLight");
+            lightGo.transform.SetParent(root.transform, false);
+            lightGo.transform.localPosition = new Vector3(0f, 1.2f, -0.3f);
+            var light = lightGo.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.range = 2f;
+            light.intensity = 0f;
+            light.shadows = LightShadows.None;
+
+            var plant = root.AddComponent<SunbellPlant>();
+            var so = new SerializedObject(plant);
+            so.FindProperty("growthRoot").objectReferenceValue = growth;
+            so.FindProperty("head").objectReferenceValue = head;
+            SetArray(so.FindProperty("leafHinges"), leafHinges);
+            SetArray(so.FindProperty("petalHinges"), petalHinges);
+            SetArray(so.FindProperty("petalRenderers"), petalRenderers);
+            SetArray(so.FindProperty("bellPivots"), bellPivots);
+            SetArray(so.FindProperty("bellRenderers"), bellRenderers);
+            SetArray(so.FindProperty("glowRenderers"), new Object[] { orb.GetComponent<Renderer>() });
+            SetArray(so.FindProperty("stemRenderers"), stemRenderers.ToArray());
+            so.FindProperty("glowLight").objectReferenceValue = light;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var prefab = PrefabUtility.SaveAsPrefabAsset(root, SunbellPrefabPath);
+            Object.DestroyImmediate(root);
+            return prefab.GetComponent<SunbellPlant>();
         }
 
         /// <summary>
@@ -1823,7 +1963,7 @@ namespace TheLivingCanvas.EditorTools
 
             offers.Add(GetOrCreateFineCanvasOffer($"{Root}/Data/Shop/Offer_Upgrade_fine_canvas.asset"));
 
-            foreach (var crop in GetOrCreateCrops().Skip(StartingCrops))
+            foreach (var crop in GetOrCreateCrops().Skip(StartingCrops).SkipLast(HybridCrops))
             {
                 var path = $"{Root}/Data/Shop/Offer_Sketch_{crop.Id}.asset";
                 var offer = AssetDatabase.LoadAssetAtPath<SketchOffer>(path);

@@ -8,6 +8,7 @@ namespace TheLivingCanvas.EditorTools
     /// Genera las máscaras de zonas de las plantillas (PNG, un canal por zona) y los iconos de cosecha.
     /// Girasol: B = centro, R = pétalos, G = tallo y hojas. Tomate: R = tomates, G = tallo y hojas, B = tutor.
     /// Glowbell: R = campanillas, B = esferas luminosas, G = tallo, ramas y hojas.
+    /// Sunbell: R = pétalos y campanillas, B = centro luminoso, G = tallo y hojas.
     /// Mismo aspecto que el lienzo (5:4).
     /// </summary>
     public static class PaintTemplateGenerator
@@ -33,6 +34,32 @@ namespace TheLivingCanvas.EditorTools
                     if (Vector2.Distance(p, center) <= centerRadius)
                         c.b = 255;
                     else if (InPetals(p, center, petalCount, petalDistance, petalLength, petalWidth))
+                        c.r = 255;
+                    else if (InStemOrLeaves(p, center))
+                        c.g = 255;
+
+                    pixels[y * Width + x] = c;
+                }
+            }
+            return SaveMask(pixels, assetPath);
+        }
+
+        /// <summary>Sunbell: girasol con el centro luminoso (B) y dos campanillas (R) colgando bajo los pétalos.</summary>
+        public static Texture2D GenerateSunbellMask(string assetPath)
+        {
+            var center = new Vector2(320f, 318f);
+            var pixels = new Color32[Width * Height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    Color32 c = new(0, 0, 0, 255);
+
+                    if (Vector2.Distance(p, center) <= 50f)
+                        c.b = 255;
+                    else if (InBell(p, new Vector2(232f, 205f), 0.7f) || InBell(p, new Vector2(408f, 205f), 0.7f)
+                        || InPetals(p, center, 16, 92f, 44f, 19f))
                         c.r = 255;
                     else if (InStemOrLeaves(p, center))
                         c.g = 255;
@@ -180,6 +207,28 @@ namespace TheLivingCanvas.EditorTools
                     Color32 c = default; // transparente
                     if (Vector2.Distance(p, top - new Vector2(0f, 98f)) <= 16f) c = white;
                     else if (InBell(p, top, 1.2f)) c = blue;
+                    pixels[y * size + x] = c;
+                }
+            }
+            return SaveIcon(pixels, size, assetPath);
+        }
+
+        /// <summary>Icono placeholder del sunbell: girasol con el centro blanco luminoso.</summary>
+        public static Texture2D GenerateSunbellIcon(string assetPath)
+        {
+            const int size = 128;
+            var center = new Vector2(size * 0.5f, size * 0.5f);
+            var yellow = new Color32(250, 200, 40, 255);
+            var white = new Color32(255, 250, 225, 255);
+            var pixels = new Color32[size * size];
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    var p = new Vector2(x + 0.5f, y + 0.5f);
+                    Color32 c = default; // transparente
+                    if (Vector2.Distance(p, center) <= 24f) c = white;
+                    else if (InPetals(p, center, 12, 38f, 22f, 10f)) c = yellow;
                     pixels[y * size + x] = c;
                 }
             }
