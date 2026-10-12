@@ -1,5 +1,6 @@
 using System.Text;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace TheLivingCanvas.Painting
@@ -7,6 +8,7 @@ namespace TheLivingCanvas.Painting
     /// <summary>
     /// Lectura de depuración del lienzo activo: evaluación por zonas si el lienzo tiene cultivo,
     /// si no cobertura por pigmento. Recalcula solo cuando la pintura cambió (máx. unas veces por segundo).
+    /// Oculta por defecto (no es para el jugador): F3 la muestra u oculta.
     /// </summary>
     public class CoverageReadoutUI : MonoBehaviour
     {
@@ -19,12 +21,26 @@ namespace TheLivingCanvas.Painting
         PaintSurface lastSurface;
         int lastRevision = -1;
         float nextUpdateTime;
+        CanvasGroup group;
+        static bool visible;
+
+        void Awake()
+        {
+            group = gameObject.AddComponent<CanvasGroup>();
+            group.blocksRaycasts = false;
+        }
 
         void OnEnable() => lastRevision = -1; // fuerza recalcular al volver a pintar
 
         void Update()
         {
-            if (!paintMode.IsPainting || Time.unscaledTime < nextUpdateTime) return;
+            if (Keyboard.current != null && Keyboard.current.f3Key.wasPressedThisFrame)
+            {
+                visible = !visible;
+                lastRevision = -1;
+            }
+            group.alpha = visible ? 1f : 0f;
+            if (!visible || !paintMode.IsPainting || Time.unscaledTime < nextUpdateTime) return;
             var surface = paintMode.ActiveCanvas.Surface;
             if (surface == lastSurface && surface.Revision == lastRevision) return;
 

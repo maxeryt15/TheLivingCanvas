@@ -150,7 +150,6 @@ namespace TheLivingCanvas.EditorTools
             BuildTutorialObjectives(hud.transform, player, paintMode, placer);
             var calendarUi = BuildCalendarUI(hud.transform, player, rig, seasonClock, paintMode, placer);
             BuildWallCalendar(environment.transform, calendarUi, seasonClock);
-            BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
             BuildShop(hud.transform, environment.transform, player, rig, seasonClock);
             BuildCropPicker(hud.transform, player, rig, seasonClock);
@@ -3730,43 +3729,6 @@ namespace TheLivingCanvas.EditorTools
             volume.blendDistance = 1.5f;
             volume.priority = 1f;
             volume.sharedProfile = profile;
-        }
-
-        /// <summary>Lámpara de prueba sobre la mesa (Fase 1C).</summary>
-        static void BuildTestLamp(Transform parent, Vector3 position)
-        {
-            var lamp = new GameObject("TestLamp");
-            lamp.transform.SetParent(parent);
-            lamp.transform.localPosition = position;
-
-            var stand = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            stand.name = "Stand";
-            stand.transform.SetParent(lamp.transform, false);
-            stand.transform.localPosition = new Vector3(0f, 0.2f, 0f);
-            stand.transform.localScale = new Vector3(0.08f, 0.2f, 0.08f);
-            stand.GetComponent<MeshRenderer>().sharedMaterial = GetOrCreateMaterial("M_Player_Visor", new Color(0.15f, 0.12f, 0.1f));
-
-            var bulb = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            bulb.name = "Bulb";
-            bulb.transform.SetParent(lamp.transform, false);
-            bulb.transform.localPosition = new Vector3(0f, 0.48f, 0f);
-            bulb.transform.localScale = Vector3.one * 0.22f;
-            bulb.GetComponent<MeshRenderer>().sharedMaterial = GetOrCreateMaterial("M_Lamp_Bulb", new Color(0.35f, 0.33f, 0.3f));
-
-            var lightGo = new GameObject("Light");
-            lightGo.transform.SetParent(lamp.transform, false);
-            lightGo.transform.localPosition = new Vector3(0f, 0.48f, 0f);
-            var light = lightGo.AddComponent<Light>();
-            light.type = LightType.Point;
-            light.color = new Color(1f, 0.8f, 0.5f);
-            light.range = 5f;
-            light.intensity = 3f;
-
-            var testLamp = lamp.AddComponent<TestLamp>();
-            var so = new SerializedObject(testLamp);
-            so.FindProperty("lampLight").objectReferenceValue = light;
-            so.FindProperty("bulb").objectReferenceValue = bulb.GetComponent<MeshRenderer>();
-            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Conecta los ejes "Look" de la cámara a nuestra acción Player/Look y apaga el resto (zoom).</summary>
