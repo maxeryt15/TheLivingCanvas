@@ -220,8 +220,6 @@ namespace TheLivingCanvas.EditorTools
             visor.transform.localScale = new Vector3(0.45f, 0.14f, 0.15f);
             visor.GetComponent<MeshRenderer>().sharedMaterial = GetOrCreateMaterial("M_Player_Visor", new Color(0.15f, 0.12f, 0.1f));
 
-            new GameObject("CameraTarget").transform.SetParent(root.transform, false);
-            root.transform.Find("CameraTarget").localPosition = new Vector3(0f, 1.4f, 0f);
             new GameObject("EyePoint").transform.SetParent(root.transform, false);
             root.transform.Find("EyePoint").localPosition = new Vector3(0f, 1.6f, 0.1f);
 
@@ -235,32 +233,12 @@ namespace TheLivingCanvas.EditorTools
             var rig = new GameObject("Cameras");
             rig.AddComponent<CursorLock>();
 
-            // Tercera persona: órbita alrededor del jugador, con colisión contra paredes.
-            var tpGo = new GameObject("CM ThirdPerson");
-            tpGo.transform.SetParent(rig.transform, false);
-            var tp = tpGo.AddComponent<CinemachineCamera>();
-            tp.Follow = player.transform.Find("CameraTarget");
-            tp.Priority = 10; // activa también en el editor; en juego la gestiona CameraModeController
-            tp.Lens.FieldOfView = 55f;
-            var orbit = tpGo.AddComponent<CinemachineOrbitalFollow>();
-            orbit.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.Sphere;
-            orbit.Radius = 4.5f;
-            orbit.VerticalAxis.Value = 15f;
-            tpGo.AddComponent<CinemachineRotationComposer>();
-            var deoccluder = tpGo.AddComponent<CinemachineDeoccluder>();
-            deoccluder.IgnoreTag = "Player";
-            var avoid = deoccluder.AvoidObstacles;
-            avoid.Enabled = true;
-            avoid.CameraRadius = 0.2f;
-            avoid.Strategy = CinemachineDeoccluder.ObstacleAvoidance.ResolutionStrategy.PullCameraForward;
-            deoccluder.AvoidObstacles = avoid;
-            AddLookInput(tpGo);
-
             // Primera persona: fija en los ojos, mirar con ratón/stick.
             var fpGo = new GameObject("CM FirstPerson");
             fpGo.transform.SetParent(rig.transform, false);
             var fp = fpGo.AddComponent<CinemachineCamera>();
             fp.Follow = player.transform.Find("EyePoint");
+            fp.Priority = 10; // activa también en el editor; en juego la gestiona CameraModeController
             fp.Lens.FieldOfView = 65f;
             fp.Lens.NearClipPlane = 0.05f;
             fpGo.AddComponent<CinemachineHardLockToTarget>();
@@ -276,12 +254,10 @@ namespace TheLivingCanvas.EditorTools
 
             var modeController = rig.AddComponent<CameraModeController>();
             var so = new SerializedObject(modeController);
-            so.FindProperty("thirdPersonCamera").objectReferenceValue = tp;
             so.FindProperty("firstPersonCamera").objectReferenceValue = fp;
             so.FindProperty("fixedViewCamera").objectReferenceValue = fixedCam;
             so.FindProperty("playerMovement").objectReferenceValue = player.GetComponent<PlayerMovement>();
             so.FindProperty("playerVisuals").objectReferenceValue = player.transform.Find("Visuals").gameObject;
-            so.FindProperty("debugToggleAction").objectReferenceValue = GetAction("Player/ToggleView");
             so.ApplyModifiedPropertiesWithoutUndo();
             return rig;
         }
@@ -1524,11 +1500,22 @@ namespace TheLivingCanvas.EditorTools
             label.alignment = TextAnchor.MiddleCenter;
             label.color = new Color(1f, 0.95f, 0.85f);
 
+            // Mira de primera persona: un punto redondo en el centro.
+            var reticleGo = new GameObject("Reticle", typeof(RectTransform), typeof(Image));
+            reticleGo.transform.SetParent(hud.transform, false);
+            var reticleRect = (RectTransform)reticleGo.transform;
+            reticleRect.anchorMin = reticleRect.anchorMax = reticleRect.pivot = new Vector2(0.5f, 0.5f);
+            reticleRect.sizeDelta = new Vector2(10f, 10f);
+            var reticle = reticleGo.GetComponent<Image>();
+            reticle.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            reticle.raycastTarget = false;
+
             var promptUi = hud.AddComponent<InteractionPromptUI>();
             var so = new SerializedObject(promptUi);
             so.FindProperty("interactor").objectReferenceValue = interactor;
             so.FindProperty("panel").objectReferenceValue = panel;
             so.FindProperty("label").objectReferenceValue = label;
+            so.FindProperty("reticle").objectReferenceValue = reticle;
             so.ApplyModifiedPropertiesWithoutUndo();
             panel.SetActive(false);
             return hud;

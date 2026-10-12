@@ -1,41 +1,35 @@
+using TheLivingCanvas.Save;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace TheLivingCanvas.Player
 {
     public enum CameraMode
     {
-        ThirdPerson,
         FirstPerson,
         /// <summary>Primera persona fija en un punto (ej. frente al lienzo al pintar).</summary>
         FixedView
     }
 
     /// <summary>
-    /// Cámara contextual: tercera persona por defecto y primera persona para acciones
-    /// puntuales (pintar, inspeccionar pinturas). Cambia la prioridad entre CinemachineCameras
-    /// y deja quieto al jugador mientras no está en tercera persona.
+    /// Cámara en primera persona (el juego no tiene tercera persona). Cambia la prioridad entre
+    /// la cámara de los ojos y una vista fija para acciones puntuales (pintar), gira el cuerpo
+    /// con la mirada y deja quieto al jugador mientras está en la vista fija.
     /// </summary>
-    public class CameraModeController : MonoBehaviour
+    public class CameraModeController : MonoBehaviour, ISaveable
     {
         const int ActivePriority = 10;
         const int InactivePriority = 0;
 
-        [SerializeField] CinemachineCamera thirdPersonCamera;
         [SerializeField] CinemachineCamera firstPersonCamera;
         [Tooltip("Cámara sin movimiento propio; se coloca en el punto de vista pedido.")]
         [SerializeField] CinemachineCamera fixedViewCamera;
         [SerializeField] PlayerMovement playerMovement;
-        [Tooltip("Se oculta en primera persona para que el cuerpo no tape la vista.")]
+        [Tooltip("Cuerpo del jugador; siempre oculto para que no tape la vista.")]
         [SerializeField] GameObject playerVisuals;
-        [Tooltip("Temporal (Fase 1B): alterna la vista para probar. Lo reemplazarán las interacciones.")]
-        [SerializeField] InputActionReference debugToggleAction;
 
-        CinemachineInputAxisController thirdPersonInput;
         CinemachineInputAxisController firstPersonInput;
         CinemachinePanTilt firstPersonPanTilt;
-        CameraMode modeBeforeFixedView;
         bool lookInputEnabled = true;
 
         public CameraMode Mode { get; private set; }
@@ -47,75 +41,65 @@ namespace TheLivingCanvas.Player
             ApplyLookInput();
         }
 
-        void ApplyLookInput()
-        {
-            // Solo la cámara activa lee el ratón/stick.
-            thirdPersonInput.enabled = Mode == CameraMode.ThirdPerson && lookInputEnabled;
+        void ApplyLookInput() =>
             firstPersonInput.enabled = Mode == CameraMode.FirstPerson && lookInputEnabled;
-        }
 
         void Awake()
         {
-            thirdPersonInput = thirdPersonCamera.GetComponent<CinemachineInputAxisController>();
             firstPersonInput = firstPersonCamera.GetComponent<CinemachineInputAxisController>();
             firstPersonPanTilt = firstPersonCamera.GetComponent<CinemachinePanTilt>();
         }
 
-        void OnEnable()
+        void Start()
         {
-            if (debugToggleAction == null) return;
-            debugToggleAction.action.Enable();
-            debugToggleAction.action.performed += OnDebugToggle;
+            LookAlongPlayer();
+            SetMode(CameraMode.FirstPerson);
         }
 
-        void OnDisable()
+        void Update()
         {
-            if (debugToggleAction == null) return;
-            debugToggleAction.action.performed -= OnDebugToggle;
-        }
-
-        void Start() => SetMode(CameraMode.ThirdPerson);
-
-        void OnDebugToggle(InputAction.CallbackContext _)
-        {
-            if (Mode == CameraMode.FixedView) return;
-            SetMode(Mode == CameraMode.ThirdPerson ? CameraMode.FirstPerson : CameraMode.ThirdPerson);
+            // El cuerpo mira hacia donde mira la cámara: así el interactor y el movimiento usan la misma dirección.
+            if (Mode == CameraMode.FirstPerson)
+                playerMovement.transform.rotation = Quaternion.Euler(0f, firstPersonPanTilt.PanAxis.Value, 0f);
         }
 
         /// <summary>Pasa a una vista fija en primera persona situada en <paramref name="viewPoint"/>.</summary>
         public void EnterFixedView(Transform viewPoint)
         {
-            if (Mode != CameraMode.FixedView)
-                modeBeforeFixedView = Mode;
             fixedViewCamera.transform.SetPositionAndRotation(viewPoint.position, viewPoint.rotation);
             SetMode(CameraMode.FixedView);
         }
 
-        /// <summary>Vuelve a la vista que había antes de EnterFixedView.</summary>
-        public void ExitFixedView() => SetMode(modeBeforeFixedView);
+        /// <summary>Vuelve a la vista de los ojos, mirando hacia donde se quedó.</summary>
+        public void ExitFixedView() => SetMode(CameraMode.FirstPerson);
 
         public void SetMode(CameraMode mode)
         {
             Mode = mode;
-            bool thirdPerson = mode == CameraMode.ThirdPerson;
             bool firstPerson = mode == CameraMode.FirstPerson;
-            bool fixedView = mode == CameraMode.FixedView;
 
-            if (firstPerson)
-            {
-                // Empieza mirando hacia donde mira el jugador.
-                firstPersonPanTilt.PanAxis.Value = playerMovement.transform.eulerAngles.y;
-                firstPersonPanTilt.TiltAxis.Value = 0f;
-            }
-
-            thirdPersonCamera.Priority = thirdPerson ? ActivePriority : InactivePriority;
             firstPersonCamera.Priority = firstPerson ? ActivePriority : InactivePriority;
-            fixedViewCamera.Priority = fixedView ? ActivePriority : InactivePriority;
+            fixedViewCamera.Priority = firstPerson ? InactivePriority : ActivePriority;
 
             ApplyLookInput();
 
-            playerMovement.enabled = thirdPerson;
-            playerVisuals.SetActive(thirdPerson);
+            playerMovement.enabled = firstPerson;
+            playerVisuals.SetActive(false);
+        }
+
+        void LookAlongPlayer()
+        {
+            firstPersonPanTilt.PanAxis.Value = playerMovement.transform.eulerAngles.y;
+            firstPersonPanTilt.TiltAxis.Value = 0f;
+        }
+
+        // La orientación la guarda PlayerMovement (playerYaw); aquí solo se alinea la mirada al cargar.
+        public void WriteSave(SaveData data) { }
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            firstPersonPanTilt.PanAxis.Value = data.playerYaw;
+            firstPersonPanTilt.TiltAxis.Value = 0f;
         }
     }
 }

@@ -33,37 +33,6 @@ Transform:
   - {fileID: 1792014152437134676}
   m_Father: {fileID: 6709229438373683638}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3204685432985533046
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 787770482905183323}
-  m_Layer: 0
-  m_Name: CameraTarget
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &787770482905183323
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3204685432985533046}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.4, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6709229438373683638}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3599520665937682217
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,7 +161,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8337704154212057274}
-  - {fileID: 787770482905183323}
   - {fileID: 6558098874137940025}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -238,7 +206,6 @@ MonoBehaviour:
   cameraTransform: {fileID: 0}
   walkSpeed: 3
   sprintSpeed: 5.5
-  turnSpeed: 720
   gravity: -20
 --- !u!114 &1369985129268799377
 MonoBehaviour:
@@ -329,9 +296,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Interaction.PlayerInteractor
   interactAction: {fileID: 8814490207984344550, guid: e220dc9ce11c1814588b2c7b9748e445, type: 3}
-  probeHeight: 1
-  reach: 1.5
-  maxAngle: 75
+  view: {fileID: 0}
+  reach: 2.8
+  aimRadius: 0.12
 --- !u!1 &8080874729878726584
 GameObject:
   m_ObjectHideFlags: 0

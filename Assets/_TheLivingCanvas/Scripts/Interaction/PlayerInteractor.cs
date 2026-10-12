@@ -4,23 +4,33 @@ using UnityEngine.InputSystem;
 namespace TheLivingCanvas.Interaction
 {
     /// <summary>
-    /// Elige el interactuable más cercano delante del jugador y lo activa con la acción Interact.
+    /// Elige el interactuable al que apunta la mirada (centro de la pantalla, en primera persona)
+    /// y lo activa con la acción Interact.
     /// </summary>
     public class PlayerInteractor : MonoBehaviour
     {
-        [SerializeField] InputActionReference interactAction;
-        [Tooltip("Altura desde los pies desde la que se busca (aprox. el pecho).")]
-        [SerializeField] float probeHeight = 1f;
-        [SerializeField] float reach = 1.5f;
-        [Tooltip("Ángulo máximo respecto al frente del jugador.")]
-        [SerializeField] float maxAngle = 75f;
+        const float MaxInsideAngle = 35f;
 
-        readonly Collider[] hits = new Collider[16];
+        [SerializeField] InputActionReference interactAction;
+        [Tooltip("Origen y dirección de la mirada. Si está vacío se usa Camera.main.")]
+        [SerializeField] Transform view;
+        [Tooltip("Distancia máxima desde los ojos.")]
+        [SerializeField] float reach = 2.8f;
+        [Tooltip("Grosor del rayo de la mirada: perdona apuntar un poco al lado de objetos pequeños.")]
+        [SerializeField] float aimRadius = 0.12f;
+
+        readonly RaycastHit[] hits = new RaycastHit[16];
 
         /// <summary>Interactuable seleccionado ahora mismo, o null.</summary>
         public IInteractable Current { get; private set; }
 
         public InputActionReference InteractAction => interactAction;
+
+        void Awake()
+        {
+            if (view == null && Camera.main != null)
+                view = Camera.main.transform;
+        }
 
         void OnEnable()
         {
@@ -34,42 +44,37 @@ namespace TheLivingCanvas.Interaction
             Current = null;
         }
 
-        void Update() => Current = FindBest();
+        void Update() => Current = FindAimed();
 
         void OnInteract(InputAction.CallbackContext _) => Current?.Interact(this);
 
-        IInteractable FindBest()
+        IInteractable FindAimed()
         {
-            Vector3 origin = transform.position + Vector3.up * probeHeight;
-            int count = Physics.OverlapSphereNonAlloc(origin, reach, hits, ~0, QueryTriggerInteraction.Collide);
+            int count = Physics.SphereCastNonAlloc(view.position, aimRadius, view.forward, hits, reach, ~0, QueryTriggerInteraction.Collide);
 
-            IInteractable best = null;
-            float bestScore = float.MaxValue;
+            // Lo primero que toca la mirada (sin contar al propio jugador) decide: una pared delante tapa lo de detrás.
+            RaycastHit? nearest = null;
             for (int i = 0; i < count; i++)
             {
-                var candidate = hits[i].GetComponentInParent<IInteractable>();
-                if (candidate == null || !candidate.CanInteract) continue;
-
-                Vector3 toTarget = hits[i].bounds.center - origin;
-                Vector3 flat = Vector3.ProjectOnPlane(toTarget, Vector3.up);
-                float angle = flat.sqrMagnitude > 0.0001f ? Vector3.Angle(transform.forward, flat) : 0f;
-                if (angle > maxAngle) continue;
-
-                // Prioriza lo cercano y, a igual distancia, lo que está más de frente.
-                float score = toTarget.magnitude + angle / maxAngle;
-                if (score < bestScore)
-                {
-                    bestScore = score;
-                    best = candidate;
-                }
+                if (hits[i].collider.transform.IsChildOf(transform)) continue;
+                // Distancia 0 = los ojos ya están dentro del collider (ej. el volumen de un marco al pegarse a él):
+                // solo cuenta si se mira hacia él.
+                if (hits[i].distance <= 0f && Vector3.Angle(view.forward, hits[i].collider.bounds.center - view.position) > MaxInsideAngle)
+                    continue;
+                if (nearest == null || hits[i].distance < nearest.Value.distance)
+                    nearest = hits[i];
             }
-            return best;
+            if (nearest == null) return null;
+
+            var candidate = nearest.Value.collider.GetComponentInParent<IInteractable>();
+            return candidate != null && candidate.CanInteract ? candidate : null;
         }
 
         void OnDrawGizmosSelected()
         {
+            if (view == null) return;
             Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(transform.position + Vector3.up * probeHeight, reach);
+            Gizmos.DrawLine(view.position, view.position + view.forward * reach);
         }
     }
 }

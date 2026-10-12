@@ -5,8 +5,8 @@ using UnityEngine.InputSystem;
 namespace TheLivingCanvas.Player
 {
     /// <summary>
-    /// Movimiento en tercera persona relativo a la cámara: caminar, correr, girar hacia
-    /// la dirección de movimiento y gravedad.
+    /// Movimiento en primera persona relativo a la cámara: caminar, correr (con paso lateral)
+    /// y gravedad. El giro del cuerpo lo pone CameraModeController según la mirada.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     public class PlayerMovement : MonoBehaviour, ISaveable
@@ -18,8 +18,6 @@ namespace TheLivingCanvas.Player
 
         [SerializeField] float walkSpeed = 3f;
         [SerializeField] float sprintSpeed = 5.5f;
-        [Tooltip("Grados por segundo.")]
-        [SerializeField] float turnSpeed = 720f;
         [SerializeField] float gravity = -20f;
 
         CharacterController controller;
@@ -48,9 +46,6 @@ namespace TheLivingCanvas.Player
                 Vector3 forward = Vector3.ProjectOnPlane(cameraTransform.forward, Vector3.up).normalized;
                 Vector3 right = Vector3.Cross(Vector3.up, forward);
                 move = Vector3.ClampMagnitude(forward * input.y + right * input.x, 1f);
-
-                Quaternion targetRotation = Quaternion.LookRotation(move);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
             }
 
             if (controller.isGrounded && verticalVelocity < 0f)
