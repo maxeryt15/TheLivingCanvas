@@ -19,6 +19,13 @@ namespace TheLivingCanvas.Save
         /// <summary>Empieza un guardado: olvida los PNG que referenciaba el anterior.</summary>
         public static void BeginSave() => referenced.Clear();
 
+        /// <summary>Borra todos los PNG de pinturas (partida nueva).</summary>
+        public static void DeleteAll()
+        {
+            try { if (Directory.Exists(Folder)) Directory.Delete(Folder, true); }
+            catch (Exception e) { Debug.LogWarning($"[Save] Could not delete {Folder}: {e.Message}"); }
+        }
+
         /// <summary>Borra los PNG que ninguna pintura del guardado referencia (llamar tras escribir el JSON).</summary>
         public static void DeleteUnreferenced()
         {

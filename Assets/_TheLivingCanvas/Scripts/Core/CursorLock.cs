@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 namespace TheLivingCanvas.Core
 {
     /// <summary>
-    /// Bloquea el cursor para mirar con el ratón. Escape lo libera; clic izquierdo lo vuelve a bloquear.
+    /// Bloquea el cursor para mirar con el ratón. Si el cursor queda libre (ej. al pulsar Alt+Tab), un clic izquierdo lo vuelve a bloquear.
     /// En PointerMode (ej. pintando) el cursor queda libre y visible.
     /// </summary>
     public class CursorLock : MonoBehaviour
@@ -27,12 +27,10 @@ namespace TheLivingCanvas.Core
 
         void Update()
         {
-            // El Esc que cierra el modo pintura no debe liberar el cursor en ese mismo frame.
+            // El clic que cierra un panel (o sale del modo pintura) no debe bloquear el cursor en ese mismo frame.
             if (pointerMode || Time.frameCount == pointerModeChangedFrame) return;
 
-            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-                SetLocked(false);
-            else if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && Cursor.lockState != CursorLockMode.Locked)
+            if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame && Cursor.lockState != CursorLockMode.Locked)
                 SetLocked(true);
         }
 

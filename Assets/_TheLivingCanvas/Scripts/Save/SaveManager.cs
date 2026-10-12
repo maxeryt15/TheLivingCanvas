@@ -6,6 +6,7 @@ using TheLivingCanvas.Economy;
 using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Progression;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace TheLivingCanvas.Save
 {
@@ -26,6 +27,7 @@ namespace TheLivingCanvas.Save
 
         List<ISaveable> saveables;
         bool loading;
+        bool discarded;
         bool dirty;
         float dirtyTime;
         float nextAutosave;
@@ -116,6 +118,7 @@ namespace TheLivingCanvas.Save
         /// <summary>Escribe la partida (a un archivo temporal que luego sustituye al anterior, para no dejarla a medias).</summary>
         public void Save()
         {
+            if (discarded) return; // partida nueva en marcha: no hay que reescribir la anterior
             dirty = false;
             nextAutosave = Time.unscaledTime + autosaveSeconds;
             saveables ??= FindSaveables();
@@ -138,7 +141,18 @@ namespace TheLivingCanvas.Save
             catch (Exception e) { Debug.LogException(e); }
         }
 
-        /// <summary>Borra la partida guardada (para probar, con el juego parado; el botón de partida nueva llega en la 18D).</summary>
+        /// <summary>Partida nueva: borra el guardado y sus pinturas, deja de guardar y recarga la escena.</summary>
+        public void StartNewGame()
+        {
+            discarded = true;
+            try { if (File.Exists(SavePath)) File.Delete(SavePath); }
+            catch (Exception e) { Debug.LogException(e); }
+            PaintingStore.DeleteAll();
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Studio.unity está en Build Settings
+        }
+
+        /// <summary>Borra la partida guardada (para probar, con el juego parado).</summary>
         [ContextMenu("Delete Save")]
         void DeleteSave()
         {

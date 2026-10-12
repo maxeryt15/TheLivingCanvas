@@ -13,8 +13,8 @@ namespace TheLivingCanvas.Core
     public abstract class ModalPanel : MonoBehaviour
     {
         [SerializeField] protected PlayerInteractor interactor;
-        [SerializeField] CursorLock cursorLock;
-        [SerializeField] CameraModeController cameraMode;
+        [SerializeField] protected CursorLock cursorLock;
+        [SerializeField] protected CameraModeController cameraMode;
         [SerializeField] InputActionReference exitAction;
         [SerializeField] protected GameObject panel;
         [SerializeField] Button closeButton;
@@ -54,7 +54,7 @@ namespace TheLivingCanvas.Core
             return true;
         }
 
-        public void Close()
+        public virtual void Close()
         {
             if (!IsOpen) return;
             panel.SetActive(false);

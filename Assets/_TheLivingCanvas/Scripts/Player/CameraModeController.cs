@@ -1,3 +1,4 @@
+using System.Linq;
 using TheLivingCanvas.Save;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace TheLivingCanvas.Player
         [SerializeField] GameObject playerVisuals;
 
         CinemachineInputAxisController firstPersonInput;
+        float[] baseGains;
         CinemachinePanTilt firstPersonPanTilt;
         bool lookInputEnabled = true;
 
@@ -48,6 +50,14 @@ namespace TheLivingCanvas.Player
         {
             firstPersonInput = firstPersonCamera.GetComponent<CinemachineInputAxisController>();
             firstPersonPanTilt = firstPersonCamera.GetComponent<CinemachinePanTilt>();
+            baseGains = firstPersonInput.Controllers.Select(c => c.Input.Gain).ToArray();
+        }
+
+        /// <summary>Multiplica la sensibilidad de la mirada (1 = la del builder).</summary>
+        public void SetLookSensitivity(float multiplier)
+        {
+            for (int i = 0; i < baseGains.Length; i++)
+                firstPersonInput.Controllers[i].Input.Gain = baseGains[i] * multiplier;
         }
 
         void Start()

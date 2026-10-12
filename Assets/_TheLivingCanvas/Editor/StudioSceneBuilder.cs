@@ -137,7 +137,8 @@ namespace TheLivingCanvas.EditorTools
             BuildArtDealer(hud.transform, town, dialogueUi, player, rig, paintMode.GetComponent<PaintBrushController>(), seasonClock);
             BuildNoticeBoard(town, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>());
             BuildFestival(town, gallery, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>(), seasonClock);
-            BuildSaveManager(player); // al final: ya existen todos los assets de datos
+            var saveManager = BuildSaveManager(player); // al final: ya existen todos los assets de datos
+            BuildPauseMenu(hud.transform, player, rig, paintMode, placer, saveManager);
 
             BuildDayFade(hud.transform, seasonClock); // el último hijo del HUD: cubre todo lo demás
 
@@ -1364,9 +1365,10 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Gestor de guardado: autoguarda y carga la partida; su registro lleva todos los assets de datos para resolver ids.</summary>
-        static void BuildSaveManager(GameObject player)
+        static SaveManager BuildSaveManager(GameObject player)
         {
-            var so = new SerializedObject(new GameObject("SaveManager").AddComponent<SaveManager>());
+            var saveManager = new GameObject("SaveManager").AddComponent<SaveManager>();
+            var so = new SerializedObject(saveManager);
             so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
             so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
             so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
@@ -1377,6 +1379,93 @@ namespace TheLivingCanvas.EditorTools
             SetArray(registry.FindPropertyRelative("styles"), FindDataAssets<StyleDefinition>());
             SetArray(registry.FindPropertyRelative("canvasTypes"), FindDataAssets<CanvasType>());
             SetArray(registry.FindPropertyRelative("sets"), FindDataAssets<CollectionSet>());
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return saveManager;
+        }
+
+        /// <summary>
+        /// Menú de pausa (Esc / Start): panel centrado con sensibilidad, volumen, pantalla completa y los botones
+        /// Resume / New game / Quit; la X de la esquina es el botón Close que pide ModalPanel.
+        /// </summary>
+        static void BuildPauseMenu(Transform hud, GameObject player, GameObject rig, PaintModeController paintMode,
+            PaintingPlacer placer, SaveManager saveManager)
+        {
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var cream = new Color(1f, 0.95f, 0.82f);
+            var uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            var resources = new DefaultControls.Resources
+            {
+                standard = uiSprite,
+                background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd"),
+                knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd")
+            };
+
+            var root = new GameObject("PauseMenu", typeof(RectTransform));
+            root.transform.SetParent(hud, false);
+            var rootRect = (RectTransform)root.transform;
+            rootRect.anchorMin = Vector2.zero;
+            rootRect.anchorMax = Vector2.one;
+            rootRect.offsetMin = rootRect.offsetMax = Vector2.zero;
+
+            var panel = CreatePanel(root.transform, "Panel", uiSprite, new Color(0.30f, 0.20f, 0.13f, 0.95f),
+                new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(480f, 560f));
+            panel.GetComponent<Image>().raycastTarget = true; // los clics no atraviesan el panel
+            var layout = panel.AddComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(24, 24, 24, 24);
+            layout.spacing = 14f;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+
+            AddLabel(panel.transform, "Title", "Paused", 34, 44f, font, cream);
+
+            AddLabel(panel.transform, "SensitivityLabel", "Mouse sensitivity", 24, 30f, font, cream);
+            var sensitivity = DefaultControls.CreateSlider(resources);
+            sensitivity.name = "SensitivitySlider";
+            sensitivity.transform.SetParent(panel.transform, false);
+            sensitivity.AddComponent<LayoutElement>().preferredHeight = 30f;
+
+            AddLabel(panel.transform, "VolumeLabel", "Volume", 24, 30f, font, cream);
+            var volume = DefaultControls.CreateSlider(resources);
+            volume.name = "VolumeSlider";
+            volume.transform.SetParent(panel.transform, false);
+            volume.AddComponent<LayoutElement>().preferredHeight = 30f;
+
+            var fullscreen = DefaultControls.CreateToggle(resources);
+            fullscreen.name = "FullscreenToggle";
+            fullscreen.transform.SetParent(panel.transform, false);
+            fullscreen.AddComponent<LayoutElement>().preferredHeight = 40f;
+            var fullscreenLabel = fullscreen.GetComponentInChildren<Text>();
+            fullscreenLabel.text = "Fullscreen";
+            fullscreenLabel.font = font;
+            fullscreenLabel.fontSize = 24;
+            fullscreenLabel.color = cream;
+
+            var resume = CreateButton(resources, panel.transform, "ResumeButton", "Resume", 24, font);
+            var newGame = CreateButton(resources, panel.transform, "NewGameButton", "New game", 24, font);
+            var quit = CreateButton(resources, panel.transform, "QuitButton", "Quit game", 24, font);
+
+            var close = CreateButton(resources, panel.transform, "Close", "X", 24, font);
+            close.GetComponent<LayoutElement>().ignoreLayout = true;
+            var closeRect = (RectTransform)close.transform;
+            closeRect.anchorMin = closeRect.anchorMax = closeRect.pivot = new Vector2(1f, 1f);
+            closeRect.anchoredPosition = new Vector2(-12f, -12f);
+            closeRect.sizeDelta = new Vector2(44f, 44f);
+
+            var pauseMenu = root.AddComponent<PauseMenu>();
+            var so = new SerializedObject(pauseMenu);
+            SetModalBaseRefs(so, panel, close.GetComponent<Button>(), player, rig);
+            so.FindProperty("paintMode").objectReferenceValue = paintMode;
+            so.FindProperty("placer").objectReferenceValue = placer;
+            so.FindProperty("saveManager").objectReferenceValue = saveManager;
+            so.FindProperty("sensitivitySlider").objectReferenceValue = sensitivity.GetComponent<Slider>();
+            so.FindProperty("volumeSlider").objectReferenceValue = volume.GetComponent<Slider>();
+            so.FindProperty("fullscreenToggle").objectReferenceValue = fullscreen.GetComponent<Toggle>();
+            so.FindProperty("resumeButton").objectReferenceValue = resume.GetComponent<Button>();
+            so.FindProperty("newGameButton").objectReferenceValue = newGame.GetComponent<Button>();
+            so.FindProperty("newGameLabel").objectReferenceValue = newGame.GetComponentInChildren<Text>();
+            so.FindProperty("quitButton").objectReferenceValue = quit.GetComponent<Button>();
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
