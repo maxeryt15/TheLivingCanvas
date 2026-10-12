@@ -36,6 +36,8 @@ namespace TheLivingCanvas.Seasons
             public Color skyTint;
             [Tooltip("Tamaño del disco solar; casi 0 apaga el disco.")]
             public float sunSize;
+            [Tooltip("Grosor de la atmósfera del cielo procedural: más de 1 enrojece el horizonte (amanecer, tarde).")]
+            public float atmosphere;
         }
 
         [SerializeField] SeasonClock clock;
@@ -60,39 +62,39 @@ namespace TheLivingCanvas.Seasons
             new Key { hour = 6f, sunColor = new Color(0.91f, 0.78f, 0.66f), sunIntensityMul = 0.7f, seasonWeight = 1f, elevationMul = 0.2f, moon = 0f,
                       ambientSky = new Color(0.48f, 0.53f, 0.62f), ambientEquator = new Color(0.45f, 0.48f, 0.55f), ambientGround = new Color(0.27f, 0.27f, 0.30f),
                       fogColor = new Color(0.72f, 0.70f, 0.72f), fogDensity = 0.012f,
-                      skyExposure = 1f, skyTint = new Color(0.55f, 0.55f, 0.62f), sunSize = 0.04f },
+                      skyExposure = 1f, skyTint = new Color(0.55f, 0.55f, 0.62f), sunSize = 0.04f, atmosphere = 1.3f },
             // 9:00-15:00 día: sol alto, luz neutra, cielo limpio y niebla mínima.
             new Key { hour = 9f, sunColor = Color.white, sunIntensityMul = 1f, seasonWeight = 1f, elevationMul = 1f, moon = 0f,
                       ambientSky = new Color(0.52f, 0.62f, 0.78f), ambientEquator = new Color(0.50f, 0.54f, 0.56f), ambientGround = new Color(0.32f, 0.30f, 0.26f),
                       fogColor = new Color(0.78f, 0.82f, 0.86f), fogDensity = 0.003f,
-                      skyExposure = 1.3f, skyTint = new Color(0.5f, 0.5f, 0.5f), sunSize = 0.04f },
+                      skyExposure = 1.3f, skyTint = new Color(0.5f, 0.5f, 0.5f), sunSize = 0.04f, atmosphere = 1f },
             new Key { hour = 15f, sunColor = Color.white, sunIntensityMul = 1f, seasonWeight = 1f, elevationMul = 1f, moon = 0f,
                       ambientSky = new Color(0.52f, 0.62f, 0.78f), ambientEquator = new Color(0.50f, 0.54f, 0.56f), ambientGround = new Color(0.32f, 0.30f, 0.26f),
                       fogColor = new Color(0.78f, 0.82f, 0.86f), fogDensity = 0.003f,
-                      skyExposure = 1.3f, skyTint = new Color(0.5f, 0.5f, 0.5f), sunSize = 0.04f },
+                      skyExposure = 1.3f, skyTint = new Color(0.5f, 0.5f, 0.5f), sunSize = 0.04f, atmosphere = 1f },
             // 17:00-18:30 tarde dorada: sol bajo al oeste, amarillo cálido, sombras largas.
-            new Key { hour = 17f, sunColor = new Color(0.95f, 0.78f, 0.45f), sunIntensityMul = 0.9f, seasonWeight = 1f, elevationMul = 0.45f, moon = 0f,
-                      ambientSky = new Color(0.55f, 0.58f, 0.68f), ambientEquator = new Color(0.55f, 0.50f, 0.44f), ambientGround = new Color(0.34f, 0.29f, 0.22f),
-                      fogColor = new Color(0.85f, 0.76f, 0.60f), fogDensity = 0.006f,
-                      skyExposure = 1.2f, skyTint = new Color(0.62f, 0.55f, 0.45f), sunSize = 0.05f },
-            new Key { hour = 18.5f, sunColor = new Color(0.95f, 0.78f, 0.45f), sunIntensityMul = 0.9f, seasonWeight = 1f, elevationMul = 0.3f, moon = 0f,
-                      ambientSky = new Color(0.55f, 0.56f, 0.68f), ambientEquator = new Color(0.55f, 0.48f, 0.42f), ambientGround = new Color(0.33f, 0.27f, 0.21f),
-                      fogColor = new Color(0.85f, 0.72f, 0.56f), fogDensity = 0.007f,
-                      skyExposure = 1.1f, skyTint = new Color(0.65f, 0.52f, 0.42f), sunSize = 0.05f },
+            new Key { hour = 17f, sunColor = new Color(0.95f, 0.78f, 0.45f), sunIntensityMul = 1f, seasonWeight = 1f, elevationMul = 0.45f, moon = 0f,
+                      ambientSky = new Color(0.62f, 0.60f, 0.62f), ambientEquator = new Color(0.62f, 0.52f, 0.40f), ambientGround = new Color(0.34f, 0.29f, 0.22f),
+                      fogColor = new Color(0.88f, 0.74f, 0.50f), fogDensity = 0.008f,
+                      skyExposure = 1.25f, skyTint = new Color(0.80f, 0.60f, 0.36f), sunSize = 0.05f, atmosphere = 1.5f },
+            new Key { hour = 18.5f, sunColor = new Color(0.95f, 0.78f, 0.45f), sunIntensityMul = 0.95f, seasonWeight = 1f, elevationMul = 0.3f, moon = 0f,
+                      ambientSky = new Color(0.62f, 0.56f, 0.60f), ambientEquator = new Color(0.64f, 0.50f, 0.38f), ambientGround = new Color(0.33f, 0.27f, 0.21f),
+                      fogColor = new Color(0.90f, 0.68f, 0.44f), fogDensity = 0.009f,
+                      skyExposure = 1.15f, skyTint = new Color(0.86f, 0.54f, 0.30f), sunSize = 0.05f, atmosphere = 1.8f },
             // 19:30 anochecer: terracota, luz débil, ambiente violeta azulado.
             new Key { hour = 19.5f, sunColor = new Color(0.66f, 0.37f, 0.28f), sunIntensityMul = 0.35f, seasonWeight = 0.8f, elevationMul = 0.1f, moon = 0f,
                       ambientSky = new Color(0.34f, 0.32f, 0.50f), ambientEquator = new Color(0.34f, 0.30f, 0.40f), ambientGround = new Color(0.20f, 0.18f, 0.24f),
                       fogColor = new Color(0.50f, 0.36f, 0.40f), fogDensity = 0.010f,
-                      skyExposure = 0.7f, skyTint = new Color(0.55f, 0.38f, 0.38f), sunSize = 0.02f },
+                      skyExposure = 0.7f, skyTint = new Color(0.55f, 0.38f, 0.38f), sunSize = 0.02f, atmosphere = 1.6f },
             // 21:00-26:30 noche: la luz es la luna (cerúleo tenue, desde arriba); ambiente oscuro pero legible.
             new Key { hour = 21f, sunColor = new Color(0.32f, 0.42f, 0.51f), sunIntensityMul = 0.4f, seasonWeight = 0f, elevationMul = 0.1f, moon = 1f,
                       ambientSky = new Color(0.16f, 0.20f, 0.32f), ambientEquator = new Color(0.14f, 0.17f, 0.27f), ambientGround = new Color(0.09f, 0.10f, 0.15f),
                       fogColor = new Color(0.10f, 0.13f, 0.22f), fogDensity = 0.012f,
-                      skyExposure = 0.25f, skyTint = new Color(0.20f, 0.28f, 0.45f), sunSize = 0f },
+                      skyExposure = 0.25f, skyTint = new Color(0.20f, 0.28f, 0.45f), sunSize = 0f, atmosphere = 1f },
             new Key { hour = 26.5f, sunColor = new Color(0.32f, 0.42f, 0.51f), sunIntensityMul = 0.4f, seasonWeight = 0f, elevationMul = 0.1f, moon = 1f,
                       ambientSky = new Color(0.16f, 0.20f, 0.32f), ambientEquator = new Color(0.14f, 0.17f, 0.27f), ambientGround = new Color(0.09f, 0.10f, 0.15f),
                       fogColor = new Color(0.10f, 0.13f, 0.22f), fogDensity = 0.012f,
-                      skyExposure = 0.25f, skyTint = new Color(0.20f, 0.28f, 0.45f), sunSize = 0f },
+                      skyExposure = 0.25f, skyTint = new Color(0.20f, 0.28f, 0.45f), sunSize = 0f, atmosphere = 1f },
         };
 
         Material sky;
@@ -155,6 +157,7 @@ namespace TheLivingCanvas.Seasons
             skyExposure = Mathf.Lerp(a.skyExposure, b.skyExposure, k),
             skyTint = Color.Lerp(a.skyTint, b.skyTint, k),
             sunSize = Mathf.Lerp(a.sunSize, b.sunSize, k),
+            atmosphere = Mathf.Lerp(a.atmosphere, b.atmosphere, k),
         };
 
         void Apply(Key key, float hour)
@@ -179,6 +182,7 @@ namespace TheLivingCanvas.Seasons
             sky.SetFloat("_Exposure", key.skyExposure);
             sky.SetColor("_SkyTint", key.skyTint);
             sky.SetFloat("_SunSize", key.sunSize);
+            sky.SetFloat("_AtmosphereThickness", key.atmosphere);
             // El disco se apaga por keyword (cambiar solo la propiedad no basta en runtime).
             bool diskOn = key.sunSize > 0.005f;
             if (diskOn == sunDiskOn) return;

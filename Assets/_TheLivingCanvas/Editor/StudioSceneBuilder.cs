@@ -153,6 +153,7 @@ namespace TheLivingCanvas.EditorTools
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
             BuildGarden(player.GetComponent<ArtistLevel>());
             BuildLantern(environment.transform, "Lantern_StudioFront", new Vector3(1.9f, 0f, -6.6f));
+            BuildLantern(environment.transform, "Lantern_StudioInside", new Vector3(3.4f, 0f, 3.4f)); // luz cálida junto al caballete de noche
             var dialogueUi = BuildDialogueUI(hud.transform, player, rig);
             var commissionUi = BuildCommissionUI(hud.transform, player, rig);
             var gallery = BuildGallery(hud.transform, dialogueUi, commissionUi, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>(), seasonClock);
@@ -2034,7 +2035,7 @@ namespace TheLivingCanvas.EditorTools
             var woodMat = GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f));
             var bushMat = GetOrCreateMaterial("M_Garden_Bush", new Color(0.24f, 0.45f, 0.22f));
             var lampMat = GetOrCreateMaterial("M_Town_Lamp", new Color(0.16f, 0.15f, 0.15f));
-            var lanternMat = GetOrCreateMaterial("M_Town_Lantern", new Color(0.95f, 0.80f, 0.50f));
+            var lanternMat = GetOrCreateMaterial("M_Town_Lantern", new Color(0.32f, 0.29f, 0.24f));
 
             var town = new GameObject("Town").transform;
 
@@ -3437,7 +3438,7 @@ namespace TheLivingCanvas.EditorTools
         static void BuildLantern(Transform parent, string name, Vector3 position)
         {
             var lampMat = GetOrCreateMaterial("M_Town_Lamp", new Color(0.16f, 0.15f, 0.15f));
-            var lanternMat = GetOrCreateMaterial("M_Town_Lantern", new Color(0.95f, 0.80f, 0.50f));
+            var lanternMat = GetOrCreateMaterial("M_Town_Lantern", new Color(0.32f, 0.29f, 0.24f));
             var root = new GameObject(name).transform;
             root.SetParent(parent, false);
             root.localPosition = position;

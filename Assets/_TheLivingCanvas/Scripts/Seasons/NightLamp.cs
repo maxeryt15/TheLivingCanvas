@@ -14,7 +14,7 @@ namespace TheLivingCanvas.Seasons
         [SerializeField] float dayIntensity;
         [SerializeField] float nightIntensity = 2f;
         [SerializeField] Renderer bulb;
-        [SerializeField] Color bulbDayColor = new Color(0.45f, 0.40f, 0.30f);
+        [SerializeField] Color bulbDayColor = new Color(0.32f, 0.29f, 0.24f); // cristal apagado: = M_Town_Lantern
         [SerializeField, ColorUsage(false, true)] Color bulbNightColor = new Color(2.4f, 1.7f, 0.9f);
 
         MaterialPropertyBlock block;
