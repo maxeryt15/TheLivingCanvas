@@ -121,6 +121,7 @@ namespace TheLivingCanvas.Save
             saveables ??= FindSaveables();
 
             var data = new SaveData();
+            PaintingStore.BeginSave();
             foreach (var saveable in saveables)
                 if (saveable != null) saveable.WriteSave(data);
 
@@ -132,6 +133,7 @@ namespace TheLivingCanvas.Save
                 File.WriteAllText(temp, JsonUtility.ToJson(data, true));
                 if (File.Exists(path)) File.Replace(temp, path, null);
                 else File.Move(temp, path);
+                PaintingStore.DeleteUnreferenced();
             }
             catch (Exception e) { Debug.LogException(e); }
         }

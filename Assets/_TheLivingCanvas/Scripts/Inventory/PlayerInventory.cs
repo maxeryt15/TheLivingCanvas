@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using TheLivingCanvas.Data;
+using TheLivingCanvas.Save;
 using UnityEngine;
 
 namespace TheLivingCanvas.Inventory
 {
-    /// <summary>Inventario placeholder del jugador: una lista sin límite ni guardado (Fase 18).</summary>
-    public class PlayerInventory : MonoBehaviour
+    /// <summary>Inventario placeholder del jugador: una lista sin límite.</summary>
+    public class PlayerInventory : MonoBehaviour, ISaveable
     {
         [Tooltip("Tipo de los lienzos en blanco con los que empieza el jugador.")]
         [SerializeField] CanvasType startingCanvasType;
@@ -58,6 +59,59 @@ namespace TheLivingCanvas.Inventory
             if (!items.Remove(item)) return false;
             Changed?.Invoke();
             return true;
+        }
+
+        public void WriteSave(SaveData data)
+        {
+            foreach (var item in items)
+            {
+                switch (item)
+                {
+                    case BlankCanvasItem canvas:
+                        data.inventory.Add(new ItemSave { kind = "canvas", id = canvas.Type.Id, quantity = canvas.Quantity });
+                        break;
+                    case CropItem crop:
+                        data.inventory.Add(new ItemSave { kind = "crop", id = crop.Crop.Id, variant = crop.Variant?.id ?? string.Empty, quantity = crop.Quantity });
+                        break;
+                    case PaintingItem painting:
+                        data.inventory.Add(new ItemSave { kind = "painting", quantity = 1, painting = PaintingStore.ToSave(painting) });
+                        break;
+                }
+            }
+        }
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            items.Clear(); // fuera los lienzos iniciales de Awake
+            foreach (var entry in data.inventory)
+            {
+                var item = ItemFromSave(entry, registry);
+                if (item != null) items.Add(item);
+            }
+            Changed?.Invoke(); // sin ItemAdded: no son recibos nuevos
+        }
+
+        static InventoryItem ItemFromSave(ItemSave entry, SaveRegistry registry)
+        {
+            switch (entry.kind)
+            {
+                case "canvas":
+                    var canvasType = registry.FindCanvasType(entry.id);
+                    return canvasType != null ? new BlankCanvasItem(canvasType, entry.quantity) : null;
+                case "crop":
+                    var crop = registry.FindCrop(entry.id);
+                    if (crop == null) return null;
+                    CropVariant variant = null; // variante desconocida = cultivo normal
+                    if (!string.IsNullOrEmpty(entry.variant))
+                        foreach (var candidate in crop.Variants)
+                            if (candidate.id == entry.variant) variant = candidate;
+                    return new CropItem(crop, variant, entry.quantity);
+                case "painting":
+                    return PaintingStore.FromSave(entry.painting, registry);
+                default:
+                    Debug.LogWarning($"[Save] Unknown inventory item kind '{entry.kind}'; skipped.");
+                    return null;
+            }
         }
     }
 }

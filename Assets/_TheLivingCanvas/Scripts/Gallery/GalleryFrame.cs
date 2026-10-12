@@ -1,6 +1,7 @@
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
+using TheLivingCanvas.Save;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +11,7 @@ namespace TheLivingCanvas.Gallery
     /// Marco de la galería. Vacío: interactuar abre la lista de pinturas para colgar una (sale del inventario).
     /// Ocupado: interactuar la descuelga y la devuelve al inventario. Una placa muestra los datos de la pintura.
     /// </summary>
-    public class GalleryFrame : MonoBehaviour, IInteractable
+    public class GalleryFrame : MonoBehaviour, IInteractable, ISaveable
     {
         static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
@@ -42,6 +43,11 @@ namespace TheLivingCanvas.Gallery
         public void Hang(PaintingItem painting)
         {
             if (Painting != null || !inventory.Remove(painting)) return;
+            Show(painting);
+        }
+
+        void Show(PaintingItem painting)
+        {
             Painting = painting;
 
             var image = painting.Image;
@@ -55,6 +61,21 @@ namespace TheLivingCanvas.Gallery
                 + (painting.Style != null ? $" · {painting.Style.DisplayName}" : string.Empty)
                 + (painting.Mutation != Mutation.None ? $" · {painting.Mutation.Name()}" : string.Empty);
             plaque.SetActive(true);
+        }
+
+        public void WriteSave(SaveData data)
+        {
+            if (Painting != null) data.frames.Add(new FrameSave { id = name, painting = PaintingStore.ToSave(Painting) });
+        }
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            foreach (var frame in data.frames)
+            {
+                if (frame.id != name) continue;
+                var painting = PaintingStore.FromSave(frame.painting, registry);
+                if (painting != null) Show(painting);
+            }
         }
 
         void TakeDown()

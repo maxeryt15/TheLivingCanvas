@@ -11,6 +11,15 @@ namespace TheLivingCanvas.Inventory
         public PaintingItem(CropDefinition crop, CanvasType canvasType, PaintingResult result, Texture2D image)
             : this(crop, crop.FindVariant(result), canvasType, result, image) { }
 
+        /// <summary>Reconstruye una pintura tal como se guardó (sin volver a decidir la variante).</summary>
+        public PaintingItem(CropDefinition crop, CropVariant variant, CanvasType canvasType, PaintingResult result, Texture2D image,
+            int generation, Mutation mutation)
+            : this(crop, variant, canvasType, result, image)
+        {
+            Generation = generation;
+            Mutation = mutation;
+        }
+
         protected PaintingItem(CropDefinition crop, CropVariant variant, CanvasType canvasType, PaintingResult result, Texture2D image)
         {
             Crop = crop;
@@ -27,6 +36,8 @@ namespace TheLivingCanvas.Inventory
         public CanvasType CanvasType { get; }
         public PaintingResult Result { get; }
         public Texture2D Image { get; }
+        /// <summary>Nombre del PNG guardado (null hasta el primer guardado); lo asigna <see cref="Save.PaintingStore"/>.</summary>
+        public string ImageFile { get; internal set; }
         /// <summary>0 = la pintura original; cada semilla replantada suma 1.</summary>
         public int Generation { get; protected set; }
         /// <summary>None en una pintura recién hecha; la semilla de una planta mutada la hereda.</summary>
@@ -62,6 +73,11 @@ namespace TheLivingCanvas.Inventory
             Generation = parent.Generation + 1;
             Mutation = mutation;
         }
+
+        /// <summary>Reconstruye una semilla tal como se guardó (sin desvanecer otra vez).</summary>
+        public SeedItem(CropDefinition crop, CropVariant variant, CanvasType canvasType, PaintingResult result, Texture2D image,
+            int generation, Mutation mutation)
+            : base(crop, variant, canvasType, result, image, generation, mutation) { }
 
         /// <summary>false si la pintura ya está en lo más bajo (Normal) y no deja semilla.</summary>
         public static bool CanSeed(PaintingItem painting) => painting.Result.Quality > PaintingQuality.Normal;
