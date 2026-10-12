@@ -34,7 +34,10 @@ namespace TheLivingCanvas.Inventory
         public string CropName => Variant?.displayName ?? Crop.DisplayName;
 
         public override string DisplayName => $"{CropName} painting";
-        public override string Detail => $"{Result.Quality} · {CanvasType.DisplayName}";
+        /// <summary>null = Classic.</summary>
+        public StyleDefinition Style => Result.Style;
+
+        public override string Detail => $"{Result.Quality} · {CanvasType.DisplayName}" + (Style != null ? $" · {Style.DisplayName}" : string.Empty);
         public override Texture Icon => Image;
         public override string ToastText => $"+1 {DisplayName} ({Detail})";
     }

@@ -27,7 +27,7 @@ namespace TheLivingCanvas.Progression
     public class ArtistLevel : MonoBehaviour
     {
         [Tooltip("XP acumulada necesaria para cada nivel (el primero es el nivel 1).")]
-        [SerializeField] int[] levelThresholds = { 0, 60, 150, 300 };
+        [SerializeField] int[] levelThresholds = { 0, 60, 150, 300, 500, 750 };
         [Tooltip("XP por pintura terminada, en el orden de PaintingQuality.")]
         [SerializeField] int[] xpPerQuality = { 10, 20, 35, 50 };
         [SerializeField] int discoveryBonus = 25;

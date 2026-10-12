@@ -41,6 +41,8 @@ namespace TheLivingCanvas.Painting
         [SerializeField] float maxBrushRadius = 40f;
         [Tooltip("Opacidad de cada trazo del pincel Glaze (veladura).")]
         [SerializeField, Range(0.1f, 0.9f)] float glazeOpacity = 0.5f;
+        [Tooltip("Opacidad de cada trazo de Round y Glaze con el estilo Wash.")]
+        [SerializeField, Range(0.1f, 0.9f)] float washOpacity = 0.65f;
         [Tooltip("Factor por paso de rueda / tecla.")]
         [SerializeField] float sizeStepFactor = 1.15f;
 
@@ -116,6 +118,14 @@ namespace TheLivingCanvas.Painting
             brushSizeAction.action.performed -= OnBrushSizeInput;
             undoAction.action.performed -= OnUndoInput;
             redoAction.action.performed -= OnRedoInput;
+        }
+
+        /// <summary>Termina el trazo en curso (si lo hay): la acuarela sangra al soltar.</summary>
+        void EndStroke()
+        {
+            if (strokeSurface == null) return;
+            strokeSurface.EndStroke();
+            strokeSurface = null;
         }
 
         public void Undo()
@@ -260,7 +270,7 @@ namespace TheLivingCanvas.Painting
             var surface = paintMode.IsPainting ? paintMode.ActiveCanvas.Surface : null;
             if (surface == null || Camera.main == null)
             {
-                strokeSurface = null;
+                EndStroke();
                 cursorRing.gameObject.SetActive(false);
                 return;
             }
@@ -292,7 +302,10 @@ namespace TheLivingCanvas.Painting
                     else
                     {
                         bool glaze = SelectedBrush != null && SelectedBrush.Kind == BrushKind.Glaze;
-                        surface.BeginStroke(uv, brushRadius, color, glaze ? glazeOpacity : 1f, SymmetryActive);
+                        // Wash: Round y Glaze pintan translúcido y sangran al soltar; Swirl los pinta con vetas. El borrador, con ninguno.
+                        bool wash = !EraserActive && paintMode.ActiveCanvas.Style != null && paintMode.ActiveCanvas.Style.Kind == StyleKind.Wash;
+                        bool swirl = !EraserActive && paintMode.ActiveCanvas.Style != null && paintMode.ActiveCanvas.Style.Kind == StyleKind.Swirl;
+                        surface.BeginStroke(uv, brushRadius, color, wash ? washOpacity : glaze ? glazeOpacity : 1f, SymmetryActive, wash, swirl);
                     }
                     strokeSurface = surface;
                 }
@@ -304,7 +317,7 @@ namespace TheLivingCanvas.Painting
             else
             {
                 // Salir del lienzo corta el trazo; al volver empieza uno nuevo.
-                strokeSurface = null;
+                EndStroke();
             }
         }
 

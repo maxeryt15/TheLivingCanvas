@@ -279,7 +279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce973fbe1f42698409e51ec369ac69e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Progression.ArtistLevel
-  levelThresholds: 000000003c000000960000002c010000
+  levelThresholds: 000000003c000000960000002c010000f4010000ee020000
   xpPerQuality: 0a000000140000002300000032000000
   discoveryBonus: 25
 --- !u!114 &5124207475027352058
@@ -315,6 +315,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Painting.Sketchbook
   knownCrops:
   - {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
+  knownStyles: []
 --- !u!114 &8540552794212616525
 MonoBehaviour:
   m_ObjectHideFlags: 0

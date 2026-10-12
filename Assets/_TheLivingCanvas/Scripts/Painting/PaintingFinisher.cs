@@ -24,16 +24,17 @@ namespace TheLivingCanvas.Painting
             var canvas = paintMode.ActiveCanvas;
             if (canvas == null || canvas.Crop == null) return;
 
-            var result = PaintEvaluator.Evaluate(canvas.Surface, canvas.Crop.Template, canvas.Crop.Variants);
+            var result = PaintEvaluator.Evaluate(canvas.Surface, canvas.Crop.Template, canvas.Crop.Variants, canvas.Style);
             if (!result.CanComeToLife)
             {
                 feedback.Show(MissingPaintMessage(result), success: false);
                 return;
             }
 
-            // El tipo de lienzo escala el gasto antes de comprobar si alcanza (se redondea hacia arriba).
+            // El tipo de lienzo y el estilo escalan el gasto antes de comprobar si alcanza (se redondea hacia arriba).
+            float pigmentMultiplier = canvas.CanvasType.PigmentMultiplier * (canvas.Style != null ? canvas.Style.PigmentMultiplier : 1f);
             var usage = PaintUsage.Measure(canvas.Surface, brush.Palette)
-                .ToDictionary(u => u.Key, u => Mathf.CeilToInt(u.Value * canvas.CanvasType.PigmentMultiplier));
+                .ToDictionary(u => u.Key, u => Mathf.CeilToInt(u.Value * pigmentMultiplier));
             var shortage = stock.FindShortage(usage);
             if (shortage != null)
             {

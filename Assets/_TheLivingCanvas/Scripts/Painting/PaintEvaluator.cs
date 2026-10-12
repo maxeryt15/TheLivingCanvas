@@ -39,6 +39,8 @@ namespace TheLivingCanvas.Painting
         public float FillShare;
         /// <summary>Habría sido Masterpiece, pero se hizo sobre todo con Fill.</summary>
         public bool CappedByFill;
+        /// <summary>Estilo con que se pintó (null = Classic); las semillas lo heredan.</summary>
+        public StyleDefinition Style;
 
         /// <summary>
         /// Copia "desvanecida" (para las semillas): un nivel de calidad menos y los colores de cada zona
@@ -51,7 +53,8 @@ namespace TheLivingCanvas.Painting
                 Spill = Spill,
                 Score = Score,
                 Quality = Quality == PaintingQuality.Normal ? PaintingQuality.Normal : Quality - 1,
-                CanComeToLife = CanComeToLife
+                CanComeToLife = CanComeToLife,
+                Style = Style
             };
             foreach (var zone in Zones)
                 copy.Zones.Add(new ZoneResult
@@ -85,13 +88,16 @@ namespace TheLivingCanvas.Painting
         const float ColorFitRange = 220f;            // distancia RGB a la que el parecido llega a 0
         const float FullCoverage = 0.9f;             // a partir de aquí la cobertura cuenta como completa
         const float MaxSpillPenalty = 0.15f;
+        const float SwirlLongStrokeBonus = 0.1f;
         const float MasterpieceMinColorFit = 0.6f;   // Masterpiece exige buen color en todas las zonas
         const float MaxFillShareForMasterpiece = 0.5f; // una pintura hecha sobre todo con Fill llega como mucho a Excellent
 
         static readonly Dictionary<(PaintTemplate, int, int), int[]> zoneMapCache = new();
 
         /// <param name="variants">Variantes del cultivo: sus pigmentos cuentan como color correcto en su zona.</param>
-        public static PaintingResult Evaluate(PaintSurface surface, PaintTemplate template, IReadOnlyList<CropVariant> variants = null)
+        /// <param name="style">Estilo de la pintura (null = Classic): el de acuarela perdona parte del derrame.</param>
+        public static PaintingResult Evaluate(PaintSurface surface, PaintTemplate template, IReadOnlyList<CropVariant> variants = null,
+            StyleDefinition style = null)
         {
             int w = surface.Width, h = surface.Height;
             int[] zoneMap = ZoneMap(template, w, h);
@@ -153,7 +159,7 @@ namespace TheLivingCanvas.Painting
                 fitSum[z] += 1f - Mathf.Clamp01(Mathf.Sqrt(DistanceSq(pixels[i], target[z])) / ColorFitRange);
             }
 
-            var result = new PaintingResult { CanComeToLife = true };
+            var result = new PaintingResult { CanComeToLife = true, Style = style };
             float weighted = 0f, totalWeight = 0f;
             for (int z = 0; z < n; z++)
             {
@@ -181,8 +187,10 @@ namespace TheLivingCanvas.Painting
             }
 
             result.Spill = outsidePixels > 0 ? (float)outsidePainted / outsidePixels : 0f;
-            float spillPenalty = Mathf.Min(result.Spill * 0.5f, MaxSpillPenalty);
-            result.Score = Mathf.Clamp01((totalWeight > 0f ? weighted / totalWeight : 0f) - spillPenalty);
+            float spillPenalty = Mathf.Min(result.Spill * 0.5f, MaxSpillPenalty) * (style != null ? style.SpillMultiplier : 1f);
+            // Remolino premia los trazos largos y continuos (hasta +0.1).
+            float swirlBonus = style != null && style.Kind == StyleKind.Swirl ? SwirlLongStrokeBonus * surface.LongStrokeShare : 0f;
+            result.Score = Mathf.Clamp01((totalWeight > 0f ? weighted / totalWeight : 0f) - spillPenalty + swirlBonus);
             result.Quality = result.Score switch
             {
                 < 0.55f => PaintingQuality.Normal,

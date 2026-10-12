@@ -51,13 +51,14 @@ namespace TheLivingCanvas.Growth
             _ => 1.25f
         };
 
-        /// <summary>Color dominante pintado en la zona con ese nombre (o el sugerido si no existe).</summary>
+        /// <summary>Color dominante pintado en la zona con ese nombre (o el sugerido si no existe); aclarado si el estilo es pastel.</summary>
         protected static Color ZoneColor(PaintingResult painting, string zoneName, Color fallback)
         {
+            Color color = fallback;
             foreach (var zone in painting.Zones)
                 if (zone.Requirement.zoneName == zoneName)
-                    return zone.DominantColor;
-            return fallback;
+                    color = zone.DominantColor;
+            return painting.Style != null ? Color.Lerp(color, Color.white, painting.Style.Pastel) : color;
         }
 
         protected static void Tint(Renderer[] renderers, Color color, float glow = 0f)

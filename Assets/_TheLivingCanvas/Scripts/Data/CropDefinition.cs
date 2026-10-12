@@ -55,6 +55,8 @@ namespace TheLivingCanvas.Data
         {
             CropVariant best = null;
             float bestDistance = float.MaxValue;
+            // Remolino ensancha el umbral: las variantes raras salen con más facilidad.
+            float maxDistance = painting.Style != null && painting.Style.Kind == StyleKind.Swirl ? MaxVariantDistance * SwirlVariantWiden : MaxVariantDistance;
             foreach (var zone in painting.Zones)
             {
                 float suggested = zone.Requirement.suggestedPigment != null
@@ -64,7 +66,7 @@ namespace TheLivingCanvas.Data
                 {
                     if (variant.zoneName != zone.Requirement.zoneName || variant.pigment == null) continue;
                     float distance = ColorDistance(zone.DominantColor, variant.pigment.Color);
-                    if (distance <= MaxVariantDistance && distance < suggested && distance < bestDistance)
+                    if (distance <= maxDistance && distance < suggested && distance < bestDistance)
                     {
                         best = variant;
                         bestDistance = distance;
@@ -76,6 +78,7 @@ namespace TheLivingCanvas.Data
 
         /// <summary>Distancia RGB² máxima entre lo pintado y el pigmento de la variante (~0.25 por canal).</summary>
         const float MaxVariantDistance = 0.06f;
+        const float SwirlVariantWiden = 1.5f;
 
         static float ColorDistance(Color a, Color b) =>
             new Vector3(a.r - b.r, a.g - b.g, a.b - b.b).sqrMagnitude;

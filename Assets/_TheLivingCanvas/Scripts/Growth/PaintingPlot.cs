@@ -1,3 +1,4 @@
+using System.Collections;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
@@ -52,7 +53,27 @@ namespace TheLivingCanvas.Growth
             plant = Instantiate(crop.PlantPrefab, transform);
             plant.transform.localPosition = new Vector3(0f, 0.035f, 0f);
             plant.transform.localRotation = Quaternion.identity;
-            plant.Grow(Painting.Result, crop.GrowthDuration);
+            plant.Grow(Painting.Result, crop.GrowthDuration * (Painting.Style != null ? Painting.Style.GrowthMultiplier : 1f));
+            if (Painting.Style != null && Painting.Style.Kind == StyleKind.Swirl)
+                StartCoroutine(Swirl(plant));
+        }
+
+        /// <summary>Remolino: ya crecida, la planta gira despacio sobre Y y su inclinación precesa en una espiral suave.</summary>
+        IEnumerator Swirl(CropPlant swirling)
+        {
+            const float yawDegreesPerSecond = 10f;
+            const float tiltDegrees = 3f;
+            const float tiltRadiansPerSecond = 0.8f;
+            while (swirling != null && !swirling.IsGrown) yield return null;
+            float time = 0f;
+            while (swirling != null)
+            {
+                time += Time.deltaTime;
+                float phase = time * tiltRadiansPerSecond;
+                swirling.transform.localRotation = Quaternion.Euler(tiltDegrees * Mathf.Sin(phase), 0f, tiltDegrees * Mathf.Cos(phase))
+                    * Quaternion.Euler(0f, time * yawDegreesPerSecond, 0f);
+                yield return null;
+            }
         }
 
         public void Interact(PlayerInteractor interactor)

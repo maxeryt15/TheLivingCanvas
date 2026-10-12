@@ -841,6 +841,36 @@ namespace TheLivingCanvas.EditorTools
             return brush;
         }
 
+        /// <summary>Los estilos de pintura (assets en Data/Styles); ninguno se tiene al empezar, se compran en la tienda.</summary>
+        static StyleDefinition[] GetOrCreateStyles()
+        {
+            if (!AssetDatabase.IsValidFolder($"{Root}/Data/Styles"))
+                AssetDatabase.CreateFolder($"{Root}/Data", "Styles");
+
+            var path = $"{Root}/Data/Styles/Style_wash.asset";
+            var wash = AssetDatabase.LoadAssetAtPath<StyleDefinition>(path);
+            if (wash == null)
+            {
+                wash = ScriptableObject.CreateInstance<StyleDefinition>();
+                AssetDatabase.CreateAsset(wash, path);
+            }
+            wash.EditorSetup("wash", "Wash", "Soft see-through strokes. Half the pigment, forgiving spills, fast pastel crops.",
+                StyleKind.Wash, newPigment: 0.5f, newSpill: 0.5f, newGrowth: 0.6f, newPastel: 0.25f, newSell: 1.25f);
+            EditorUtility.SetDirty(wash);
+
+            path = $"{Root}/Data/Styles/Style_swirl.asset";
+            var swirl = AssetDatabase.LoadAssetAtPath<StyleDefinition>(path);
+            if (swirl == null)
+            {
+                swirl = ScriptableObject.CreateInstance<StyleDefinition>();
+                AssetDatabase.CreateAsset(swirl, path);
+            }
+            swirl.EditorSetup("swirl", "Swirl", "Swirling strokes reward long, flowing lines. Rare variants come easier.",
+                StyleKind.Swirl, newPigment: 1f, newSpill: 1f, newGrowth: 1f, newPastel: 0f, newSell: 1.25f);
+            EditorUtility.SetDirty(swirl);
+            return new[] { wash, swirl };
+        }
+
         /// <summary>Los primeros pigmentos de la paleta se tienen desde el principio.</summary>
         const int StartingPigments = 3;
 
@@ -1803,6 +1833,20 @@ namespace TheLivingCanvas.EditorTools
                 EditorUtility.SetDirty(offer);
                 offers.Add(offer);
             }
+            foreach (var style in GetOrCreateStyles())
+            {
+                var path = $"{Root}/Data/Shop/Offer_Style_{style.Id}.asset";
+                var offer = AssetDatabase.LoadAssetAtPath<StyleOffer>(path);
+                if (offer == null)
+                {
+                    offer = ScriptableObject.CreateInstance<StyleOffer>();
+                    AssetDatabase.CreateAsset(offer, path);
+                }
+                offer.EditorSetupOffer($"{style.DisplayName} style", style.Description, style.Kind == StyleKind.Swirl ? 70 : 50, null);
+                offer.EditorSetStyle(style);
+                EditorUtility.SetDirty(offer);
+                offers.Add(offer);
+            }
             foreach (var offer in offers)
             {
                 offer.EditorSetRequiredLevel(RequiredLevel(offer.name));
@@ -1859,6 +1903,8 @@ namespace TheLivingCanvas.EditorTools
             "Offer_Pigment_ultramarine" or "Offer_Pigment_titanium_white" or "Offer_Canvas_large" or "Offer_Brush_glaze"
                 or "Offer_Tool_eyedropper" => 3,
             "Offer_Sketch_glowbell" or "Offer_Upgrade_fine_canvas" => 4,
+            "Offer_Style_wash" => 5,
+            "Offer_Style_swirl" => 6,
             _ => 1
         };
 

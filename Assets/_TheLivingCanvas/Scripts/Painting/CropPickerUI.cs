@@ -8,8 +8,8 @@ using UnityEngine.UI;
 namespace TheLivingCanvas.Painting
 {
     /// <summary>
-    /// Al poner un lienzo en el caballete: elegir el tipo de lienzo (si el jugador tiene varios)
-    /// y qué cultivo pintar entre los que sabe. Las dos elecciones comparten el mismo panel de filas.
+    /// Al poner un lienzo en el caballete: elegir el tipo de lienzo (si el jugador tiene varios), el estilo
+    /// (si tiene alguno) y qué cultivo pintar entre los que sabe. Las elecciones comparten el mismo panel de filas.
     /// </summary>
     public class CropPickerUI : ModalPanel
     {
@@ -36,13 +36,23 @@ namespace TheLivingCanvas.Painting
                 AddRow(Texture2D.whiteTexture, canvasType.DisplayName, "Use", () => PickCanvas(easel, canvasType));
         }
 
-        /// <summary>Elegir el cultivo que se pinta en un lienzo de <paramref name="canvasType"/>.</summary>
-        public void Open(CanvasInteractable easel, CanvasType canvasType, IReadOnlyList<CropDefinition> crops)
+        /// <summary>Elegir el estilo del cuadro: Classic (sin estilo) o uno comprado.</summary>
+        public void Open(CanvasInteractable easel, CanvasType canvasType, IReadOnlyList<StyleDefinition> styles)
+        {
+            if (!TryOpen()) return;
+            Clear("Which style?");
+            AddRow(Texture2D.whiteTexture, "Classic · plain brushwork", "Use", () => PickStyle(easel, canvasType, null));
+            foreach (var style in styles)
+                AddRow(Texture2D.whiteTexture, $"{style.DisplayName} · {style.Description}", "Use", () => PickStyle(easel, canvasType, style));
+        }
+
+        /// <summary>Elegir el cultivo que se pinta en un lienzo de <paramref name="canvasType"/> con ese estilo.</summary>
+        public void Open(CanvasInteractable easel, CanvasType canvasType, StyleDefinition style, IReadOnlyList<CropDefinition> crops)
         {
             if (!TryOpen()) return;
             Clear("What will you paint?");
             foreach (var crop in crops)
-                AddRow(crop.Icon, CropLabel(crop), "Paint", () => PickCrop(easel, canvasType, crop));
+                AddRow(crop.Icon, CropLabel(crop), "Paint", () => PickCrop(easel, canvasType, style, crop));
         }
 
         string CropLabel(CropDefinition crop) => crop.IsInSeason(seasons.Current)
@@ -72,13 +82,19 @@ namespace TheLivingCanvas.Painting
         void PickCanvas(CanvasInteractable easel, CanvasType canvasType)
         {
             Close();
-            easel.ChooseCrop(interactor, canvasType);
+            easel.ChooseStyle(interactor, canvasType);
         }
 
-        void PickCrop(CanvasInteractable easel, CanvasType canvasType, CropDefinition crop)
+        void PickStyle(CanvasInteractable easel, CanvasType canvasType, StyleDefinition style)
         {
             Close();
-            easel.StartPainting(interactor, canvasType, crop);
+            easel.ChooseCrop(interactor, canvasType, style);
+        }
+
+        void PickCrop(CanvasInteractable easel, CanvasType canvasType, StyleDefinition style, CropDefinition crop)
+        {
+            Close();
+            easel.StartPainting(interactor, canvasType, style, crop);
         }
     }
 }

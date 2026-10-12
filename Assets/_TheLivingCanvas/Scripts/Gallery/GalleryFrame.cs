@@ -50,7 +50,8 @@ namespace TheLivingCanvas.Gallery
             picture.material.SetColor(BaseColor, Color.white); // sin el tinte crema del lienzo vacío
             picture.gameObject.SetActive(true);
 
-            plaqueText.text = $"{painting.CropName}\n{painting.Result.Quality} · {painting.CanvasType.DisplayName}";
+            plaqueText.text = $"{painting.CropName}\n{painting.Result.Quality} · {painting.CanvasType.DisplayName}"
+                + (painting.Style != null ? $" · {painting.Style.DisplayName}" : string.Empty);
             plaque.SetActive(true);
         }
 

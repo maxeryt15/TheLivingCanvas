@@ -8,8 +8,8 @@ using UnityEngine;
 namespace TheLivingCanvas.Painting
 {
     /// <summary>
-    /// Un caballete. Vacío: interactuar elige el tipo de lienzo (si hay más de uno) y qué cultivo pintar
-    /// (si se sabe más de uno), pone un lienzo en blanco del inventario y entra en el modo pintura.
+    /// Un caballete. Vacío: interactuar elige el tipo de lienzo (si hay más de uno), el estilo (si se tiene alguno)
+    /// y qué cultivo pintar (si se sabe más de uno), pone un lienzo en blanco del inventario y entra en el modo pintura.
     /// En blanco o a medias: interactuar sigue pintando.
     /// Terminado: interactuar recoge la pintura al inventario y el caballete queda vacío.
     /// </summary>
@@ -34,6 +34,8 @@ namespace TheLivingCanvas.Painting
         public CropDefinition Crop { get; private set; }
         /// <summary>Tipo del lienzo puesto (null con el caballete vacío).</summary>
         public CanvasType CanvasType { get; private set; }
+        /// <summary>Estilo de la pintura en curso (null = Classic, o el caballete vacío).</summary>
+        public StyleDefinition Style { get; private set; }
         /// <summary>Resolución de los lienzos que se pongan a partir de ahora (la mejora de tienda la sube; el lienzo ya puesto no cambia).</summary>
         public Vector2Int CanvasResolution { get; set; } = new(PaintSurface.ReferenceWidth, PaintSurface.ReferenceHeight);
         public bool IsFinished => finishedResult != null;
@@ -60,26 +62,35 @@ namespace TheLivingCanvas.Painting
             else if (hasCanvas) paintMode.Enter(this);
             else
             {
-                // Primero el tipo de lienzo y luego el cultivo; cada paso se salta si solo hay una opción.
+                // Primero el tipo de lienzo, luego el estilo y por último el cultivo; cada paso se salta si solo hay una opción.
                 var owned = OwnedCanvasTypes(interactor.GetComponent<PlayerInventory>());
-                if (owned.Count == 1) ChooseCrop(interactor, owned[0]);
+                if (owned.Count == 1) ChooseStyle(interactor, owned[0]);
                 else if (owned.Count > 1) picker.Open(this, owned);
             }
         }
 
-        /// <summary>Con el tipo de lienzo ya elegido: elige el cultivo (si se sabe más de uno) y empieza a pintar.</summary>
-        public void ChooseCrop(PlayerInteractor interactor, CanvasType canvasType)
+        /// <summary>Con el tipo de lienzo ya elegido: elige el estilo (solo si se tiene alguno comprado; si no, Classic).</summary>
+        public void ChooseStyle(PlayerInteractor interactor, CanvasType canvasType)
+        {
+            var styles = interactor.GetComponent<Sketchbook>().KnownStyles;
+            if (styles.Count == 0) ChooseCrop(interactor, canvasType, null);
+            else picker.Open(this, canvasType, styles);
+        }
+
+        /// <summary>Con el lienzo y el estilo (null = Classic) ya elegidos: elige el cultivo (si se sabe más de uno) y empieza a pintar.</summary>
+        public void ChooseCrop(PlayerInteractor interactor, CanvasType canvasType, StyleDefinition style)
         {
             var known = interactor.GetComponent<Sketchbook>().KnownCrops;
-            if (known.Count == 1) StartPainting(interactor, canvasType, known[0]);
-            else if (known.Count > 1) picker.Open(this, canvasType, known);
+            if (known.Count == 1) StartPainting(interactor, canvasType, style, known[0]);
+            else if (known.Count > 1) picker.Open(this, canvasType, style, known);
         }
 
         /// <summary>Pone un lienzo en blanco de <paramref name="canvasType"/> para <paramref name="crop"/> y entra en el modo pintura.</summary>
-        public void StartPainting(PlayerInteractor interactor, CanvasType canvasType, CropDefinition crop)
+        public void StartPainting(PlayerInteractor interactor, CanvasType canvasType, StyleDefinition style, CropDefinition crop)
         {
             if (hasCanvas || !interactor.GetComponent<PlayerInventory>().TryConsume(BlankCanvasItem.KeyFor(canvasType))) return;
             CanvasType = canvasType;
+            Style = style;
             Crop = crop;
             surface.SetResolution(CanvasResolution.x, CanvasResolution.y); // antes que la guía, que se construye al tamaño de la superficie
             guide.SetTemplate(crop.Template);
@@ -106,6 +117,7 @@ namespace TheLivingCanvas.Painting
             finishedResult = null;
             Crop = null;
             CanvasType = null;
+            Style = null;
             SetHasCanvas(false);
         }
 
