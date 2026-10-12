@@ -86,6 +86,9 @@ namespace TheLivingCanvas.Painting
         internal Color32[] Pixels => pixels;
         /// <summary>Parte de la longitud pintada con el estilo Remolino que viene de trazos largos (0–1). Deshacer no la descuenta.</summary>
         public float LongStrokeShare => swirlTotalLength > 0f ? swirlLongLength / swirlTotalLength : 0f;
+        /// <summary>Longitud total y de trazos largos pintada con Remolino (en anchos de lienzo); se guardan para que <see cref="LongStrokeShare"/> sobreviva.</summary>
+        public float SwirlTotalLength => swirlTotalLength;
+        public float SwirlLongLength => swirlLongLength;
         public bool CanUndo => history.CanUndo;
         public bool CanRedo => history.CanRedo;
 
@@ -195,6 +198,17 @@ namespace TheLivingCanvas.Painting
             ResetStrokeLength();
             history.Clear();
             FillBase();
+        }
+
+        /// <summary>Pone una pintura guardada (del tamaño actual de la superficie): sin historial ni trazo en curso.</summary>
+        public void LoadPixels(Color32[] source, float swirlTotal, float swirlLong)
+        {
+            strokeBleeds = false;
+            history.Clear();
+            System.Array.Copy(source, pixels, pixels.Length);
+            swirlTotalLength = swirlTotal;
+            swirlLongLength = swirlLong;
+            dirty = true;
         }
 
         /// <summary>Copia de la pintura actual (sin la guía) como textura independiente.</summary>

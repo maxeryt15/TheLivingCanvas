@@ -30,6 +30,7 @@ namespace TheLivingCanvas.Save
         // Mundo
         public List<EaselSave> easels = new();
         public List<FrameSave> frames = new();
+        public List<PlotSave> plots = new();
         public int season;
         public int day;
         public int year;
@@ -58,6 +59,26 @@ namespace TheLivingCanvas.Save
         public string id;
         public int width;
         public int height;
+        // Lienzo puesto (crop vacío = caballete vacío). La imagen va en un PNG aparte, con nombre fijo por caballete.
+        public string crop;
+        public string canvasType;
+        public string style;
+        public string image;
+        public float swirlTotalLength;
+        public float swirlLongLength;
+        public bool finished;
+        public PaintingSave result; // solo si finished: el resultado de la pintura terminada sin recoger
+    }
+
+    /// <summary>Parcela plantada: su pintura, dónde está y cómo va la planta.</summary>
+    [Serializable]
+    public class PlotSave
+    {
+        public PaintingSave painting;
+        public Vector3 position;
+        public Quaternion rotation;
+        public int mutation; // la tirada de la parcela, no la de la pintura
+        public float progress; // crecimiento 0–1
     }
 
     /// <summary>Estado de un personaje, por el nombre de su NpcDefinition.</summary>

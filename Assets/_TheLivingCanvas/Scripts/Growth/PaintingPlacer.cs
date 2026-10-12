@@ -1,5 +1,7 @@
+using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
+using TheLivingCanvas.Save;
 using TheLivingCanvas.Seasons;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,7 +13,7 @@ namespace TheLivingCanvas.Growth
     /// Colocar una pintura del inventario en el suelo: una vista previa sigue al jugador,
     /// Interact (E / A) la pone y Exit (Esc / B) cancela. No se puede poner encima de otros objetos.
     /// </summary>
-    public class PaintingPlacer : MonoBehaviour
+    public class PaintingPlacer : MonoBehaviour, ISaveable
     {
         [SerializeField] PlayerInventory inventory;
         [SerializeField] PlayerInteractor interactor;
@@ -124,6 +126,36 @@ namespace TheLivingCanvas.Growth
             if (!IsPlacing) return;
             Destroy(preview.gameObject);
             End();
+        }
+
+        public void WriteSave(SaveData data)
+        {
+            foreach (var plot in FindObjectsByType<PaintingPlot>(FindObjectsSortMode.None))
+            {
+                if (plot == preview) continue; // la vista previa aún no está plantada
+                data.plots.Add(new PlotSave
+                {
+                    painting = PaintingStore.ToSave(plot.Painting),
+                    position = plot.transform.position,
+                    rotation = plot.transform.rotation,
+                    mutation = (int)plot.RolledMutation,
+                    progress = plot.GrowthProgress
+                });
+            }
+        }
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            foreach (var saved in data.plots)
+            {
+                var painting = PaintingStore.FromSave(saved.painting, registry);
+                if (painting == null) continue;
+                var plot = Instantiate(plotPrefab, saved.position, saved.rotation);
+                plot.name = "PaintingPlot";
+                plot.Show(painting, seasons);
+                plot.SetPreview(false);
+                plot.StartGrowing((Mutation)saved.mutation, saved.progress);
+            }
         }
 
         void End()

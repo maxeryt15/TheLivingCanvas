@@ -52,14 +52,26 @@ namespace TheLivingCanvas.Growth
         /// <summary>La pintura ya está en el suelo: de ella crece la planta 3D de su cultivo.</summary>
         public void StartGrowing()
         {
+            // Una pintura que ya trae mutación (semilla) la conserva; si no, se tira el dado.
+            StartGrowing(Painting.Mutation != Mutation.None ? Painting.Mutation : Mutations.Roll(Painting.Result.Quality), 0f);
+        }
+
+        /// <summary>Crece con la mutación dada (sin tirar el dado) desde <paramref name="progress"/> (0–1): para parcelas guardadas.</summary>
+        public void StartGrowing(Mutation rolled, float progress)
+        {
             var crop = Painting.Crop;
             if (crop.PlantPrefab == null) return;
-            // Una pintura que ya trae mutación (semilla) la conserva; si no, se tira el dado.
-            mutation = Painting.Mutation != Mutation.None ? Painting.Mutation : Mutations.Roll(Painting.Result.Quality);
+            mutation = rolled;
             // Twin: dos plantas, a los lados; si no, una en el centro.
-            plant = SpawnPlant(mutation == Mutation.Twin ? -TwinOffset : 0f);
-            if (mutation == Mutation.Twin) SpawnPlant(TwinOffset);
+            plant = SpawnPlant(mutation == Mutation.Twin ? -TwinOffset : 0f, progress);
+            if (mutation == Mutation.Twin) SpawnPlant(TwinOffset, progress);
         }
+
+        /// <summary>Mutación que le tocó a la parcela al plantarla.</summary>
+        public Mutation RolledMutation => mutation;
+
+        /// <summary>Crecimiento de la planta (0–1; 0 si no tiene).</summary>
+        public float GrowthProgress => plant != null ? plant.Progress : 0f;
 
         const float TwinOffset = 0.18f;
         const float GiantScale = 1.4f;
@@ -67,12 +79,13 @@ namespace TheLivingCanvas.Growth
         const float PollinationRadius = 2.5f;
 
         /// <summary>Encima de la pintura, desplazada en X local; la flor mira hacia quien la colocó (-Z de la parcela).</summary>
-        CropPlant SpawnPlant(float offsetX)
+        CropPlant SpawnPlant(float offsetX, float startProgress)
         {
             var spawned = Instantiate(Painting.Crop.PlantPrefab, transform);
             spawned.transform.localPosition = new Vector3(offsetX, 0.035f, 0f);
             spawned.transform.localRotation = Quaternion.identity;
             if (mutation == Mutation.Giant) spawned.transform.localScale = Vector3.one * GiantScale;
+            spawned.StartProgress = startProgress;
             spawned.Grow(Painting.Result, Painting.Crop.GrowthDuration * (Painting.Style != null ? Painting.Style.GrowthMultiplier : 1f));
             if (Painting.Style != null && Painting.Style.Kind == StyleKind.Swirl)
                 StartCoroutine(Swirl(spawned));

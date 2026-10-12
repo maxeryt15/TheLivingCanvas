@@ -18,17 +18,25 @@ namespace TheLivingCanvas.Growth
         /// <summary>Alcanzó su tamaño final: se puede cosechar.</summary>
         public bool IsGrown { get; protected set; }
 
+        /// <summary>Progreso del crecimiento (0–1).</summary>
+        public float Progress { get; private set; }
+
+        /// <summary>Progreso del que parte el crecimiento (para partidas guardadas); fijarlo antes de <see cref="Grow"/>.</summary>
+        public float StartProgress { get; set; }
+
         /// <summary>Pose de la planta en el progreso <paramref name="t"/> (0 = brote, 1 = adulta).</summary>
         protected abstract void Apply(float t);
 
-        /// <summary>Recorre la pose de 0 a 1 en <paramref name="duration"/> segundos y queda cosechable.</summary>
+        /// <summary>Recorre la pose de <see cref="StartProgress"/> a 1 en lo que quede de <paramref name="duration"/> segundos y queda cosechable.</summary>
         protected IEnumerator Animate(float duration)
         {
-            for (float time = 0f; time < duration; time += Time.deltaTime)
+            for (float time = StartProgress * duration; time < duration; time += Time.deltaTime)
             {
-                Apply(time / duration);
+                Progress = time / duration;
+                Apply(Progress);
                 yield return null;
             }
+            Progress = 1f;
             Apply(1f);
             IsGrown = true;
         }

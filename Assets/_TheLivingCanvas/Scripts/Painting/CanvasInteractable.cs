@@ -53,9 +53,8 @@ namespace TheLivingCanvas.Painting
             picker = FindAnyObjectByType<CropPickerUI>();
             inventory = FindAnyObjectByType<PlayerInventory>();
             canvasRenderer = surface.GetComponent<MeshRenderer>();
+            SetHasCanvas(false); // en Awake: ReadSave (SaveManager.Start) puede restaurar un lienzo antes que nuestro Start
         }
-
-        void Start() => SetHasCanvas(false);
 
         public void Interact(PlayerInteractor interactor)
         {
@@ -132,13 +131,52 @@ namespace TheLivingCanvas.Painting
             canvasRenderer.enabled = value;
         }
 
-        public void WriteSave(SaveData data) =>
-            data.easels.Add(new EaselSave { id = name, width = CanvasResolution.x, height = CanvasResolution.y });
+        public void WriteSave(SaveData data)
+        {
+            var saved = new EaselSave { id = name, width = CanvasResolution.x, height = CanvasResolution.y };
+            if (hasCanvas)
+            {
+                saved.crop = Crop.Id;
+                saved.canvasType = CanvasType.Id;
+                saved.style = Style != null ? Style.Id : string.Empty;
+                saved.swirlTotalLength = surface.SwirlTotalLength;
+                saved.swirlLongLength = surface.SwirlLongLength;
+                saved.finished = IsFinished;
+                if (IsFinished) saved.result = PaintingStore.ToSave(finishedResult, Crop);
+                var snapshot = surface.CreateSnapshot();
+                saved.image = PaintingStore.WriteEaselImage(name, snapshot);
+                Destroy(snapshot);
+            }
+            data.easels.Add(saved);
+        }
 
         public void ReadSave(SaveData data, SaveRegistry registry)
         {
             var saved = data.easels.Find(e => e.id == name);
-            if (saved != null) CanvasResolution = new Vector2Int(saved.width, saved.height);
+            if (saved == null) return;
+            CanvasResolution = new Vector2Int(saved.width, saved.height);
+            if (string.IsNullOrEmpty(saved.crop)) return;
+
+            var crop = registry.FindCrop(saved.crop);
+            var canvasType = registry.FindCanvasType(saved.canvasType);
+            if (crop == null || canvasType == null)
+            {
+                Debug.LogWarning($"[Save] Easel '{name}': unknown crop or canvas type; canvas skipped.");
+                return;
+            }
+            var image = PaintingStore.ReadImage(saved.image);
+            if (image == null) return;
+
+            Crop = crop;
+            CanvasType = canvasType;
+            Style = string.IsNullOrEmpty(saved.style) ? null : registry.FindStyle(saved.style);
+            surface.SetResolution(image.width, image.height); // antes que la guía, como en StartPainting
+            guide.SetTemplate(crop.Template);
+            surface.LoadPixels(image.GetPixels32(), saved.swirlTotalLength, saved.swirlLongLength);
+            Destroy(image);
+            SetHasCanvas(true);
+            if (saved.finished) MarkFinished(PaintingStore.ToResult(saved.result, crop, registry));
+            else ShowSketch();
         }
 
         void ShowSketch() => guide.Show(showOutline: true, showHints: false);

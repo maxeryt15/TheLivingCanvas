@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Painting;
@@ -32,17 +33,23 @@ namespace TheLivingCanvas.Save
 
         public static PaintingSave ToSave(PaintingItem item)
         {
-            var result = item.Result;
+            var save = ToSave(item.Result, item.Crop);
+            save.crop = item.Crop.Id;
+            save.variant = item.Variant?.id ?? string.Empty;
+            save.canvasType = item.CanvasType.Id;
+            save.seed = item is SeedItem;
+            save.generation = item.Generation;
+            save.mutation = (int)item.Mutation;
+            save.image = WriteImage(item);
+            return save;
+        }
+
+        /// <summary>Solo los campos del resultado (estilo, nota y zonas de la plantilla de <paramref name="crop"/>); el resto lo rellena quien llama.</summary>
+        public static PaintingSave ToSave(PaintingResult result, CropDefinition crop)
+        {
             var save = new PaintingSave
             {
-                crop = item.Crop.Id,
-                variant = item.Variant?.id ?? string.Empty,
-                canvasType = item.CanvasType.Id,
                 style = result.Style != null ? result.Style.Id : string.Empty,
-                seed = item is SeedItem,
-                generation = item.Generation,
-                mutation = (int)item.Mutation,
-                image = WriteImage(item),
                 score = result.Score,
                 spill = result.Spill,
                 fillShare = result.FillShare,
@@ -52,28 +59,16 @@ namespace TheLivingCanvas.Save
             };
             foreach (var zone in result.Zones)
             {
-                int index = Array.IndexOf(item.Crop.Template.Zones, zone.Requirement);
+                int index = Array.IndexOf(crop.Template.Zones, zone.Requirement);
                 if (index < 0) continue;
                 save.zones.Add(new ZoneSave { index = index, coverage = zone.Coverage, colorFit = zone.ColorFit, dominantColor = zone.DominantColor });
             }
             return save;
         }
 
-        /// <summary>null (con aviso) si el cultivo o el lienzo ya no existen o falta la imagen.</summary>
-        public static PaintingItem FromSave(PaintingSave save, SaveRegistry registry)
+        /// <summary>Reconstruye el resultado guardado con <see cref="ToSave(PaintingResult, CropDefinition)"/>.</summary>
+        public static PaintingResult ToResult(PaintingSave save, CropDefinition crop, SaveRegistry registry)
         {
-            var crop = registry.FindCrop(save.crop);
-            var canvasType = registry.FindCanvasType(save.canvasType);
-            if (crop == null || canvasType == null) return null;
-
-            var image = ReadImage(save.image);
-            if (image == null) return null;
-
-            CropVariant variant = null; // variante desconocida = cultivo normal
-            if (!string.IsNullOrEmpty(save.variant))
-                foreach (var candidate in crop.Variants)
-                    if (candidate.id == save.variant) variant = candidate;
-
             var result = new PaintingResult
             {
                 Style = string.IsNullOrEmpty(save.style) ? null : registry.FindStyle(save.style),
@@ -96,6 +91,25 @@ namespace TheLivingCanvas.Save
                     DominantColor = zone.dominantColor
                 });
             }
+            return result;
+        }
+
+        /// <summary>null (con aviso) si el cultivo o el lienzo ya no existen o falta la imagen.</summary>
+        public static PaintingItem FromSave(PaintingSave save, SaveRegistry registry)
+        {
+            var crop = registry.FindCrop(save.crop);
+            var canvasType = registry.FindCanvasType(save.canvasType);
+            if (crop == null || canvasType == null) return null;
+
+            var image = ReadImage(save.image);
+            if (image == null) return null;
+
+            CropVariant variant = null; // variante desconocida = cultivo normal
+            if (!string.IsNullOrEmpty(save.variant))
+                foreach (var candidate in crop.Variants)
+                    if (candidate.id == save.variant) variant = candidate;
+
+            var result = ToResult(save, crop, registry);
 
             var mutation = (Mutation)save.mutation;
             PaintingItem item = save.seed
@@ -124,7 +138,25 @@ namespace TheLivingCanvas.Save
             return item.ImageFile;
         }
 
-        static Texture2D ReadImage(string fileName)
+        /// <summary>
+        /// Guarda la imagen de un caballete con un nombre fijo por caballete (se reescribe en cada guardado, porque la pintura
+        /// cambia) y devuelve el nombre del archivo.
+        /// </summary>
+        public static string WriteEaselImage(string easelName, Texture2D image)
+        {
+            string fileName = "easel_" + string.Concat(easelName.Select(c => Array.IndexOf(Path.GetInvalidFileNameChars(), c) >= 0 ? '_' : c)) + ".png";
+            referenced.Add(fileName);
+            try
+            {
+                Directory.CreateDirectory(Folder);
+                File.WriteAllBytes(Path.Combine(Folder, fileName), image.EncodeToPNG());
+            }
+            catch (Exception e) { Debug.LogException(e); }
+            return fileName;
+        }
+
+        /// <summary>La textura leída (quien llama la destruye), o null con aviso si el nombre no vale o el PNG falta o está roto.</summary>
+        public static Texture2D ReadImage(string fileName)
         {
             // Solo un nombre de archivo suelto: un save.json editado no puede apuntar fuera de la carpeta.
             bool valid = !string.IsNullOrEmpty(fileName) && Path.GetFileName(fileName) == fileName && fileName.EndsWith(".png");
