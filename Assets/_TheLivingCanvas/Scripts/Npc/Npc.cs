@@ -16,6 +16,8 @@ namespace TheLivingCanvas.Npcs
         [SerializeField] NpcDefinition definition;
         [SerializeField] DialogueUI dialogueUI;
         [SerializeField] CommissionUI commissionUI;
+        [Tooltip("Opcional: si está, el personaje sin encargos ofrece comprar pinturas (marchante).")]
+        [SerializeField] ArtDealerUI dealerUI;
         [SerializeField] Wallet wallet;
         [SerializeField] ArtistLevel artistLevel;
         [SerializeField] PigmentStock stock;
@@ -41,7 +43,10 @@ namespace TheLivingCanvas.Npcs
             var commission = Current;
             if (commission == null)
             {
-                dialogueUI.Open(definition.DisplayName, definition.GreetingLines);
+                if (dealerUI != null)
+                    dialogueUI.Open(definition.DisplayName, definition.GreetingLines, "Sell paintings", dealerUI.Open);
+                else
+                    dialogueUI.Open(definition.DisplayName, definition.GreetingLines);
                 return;
             }
 

@@ -111,8 +111,10 @@ namespace TheLivingCanvas.EditorTools
             BuildCropPicker(hud.transform, player, rig);
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
             BuildGarden(player.GetComponent<ArtistLevel>());
-            BuildGallery(hud.transform, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>());
-            BuildTown();
+            var dialogueUi = BuildDialogueUI(hud.transform, player, rig);
+            BuildGallery(hud.transform, dialogueUi, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>());
+            var town = BuildTown();
+            BuildArtDealer(hud.transform, town, dialogueUi, player, rig, paintMode.GetComponent<PaintBrushController>());
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
             var easel = (GameObject)PrefabUtility.InstantiatePrefab(BuildEaselPrefab());
@@ -1385,7 +1387,7 @@ namespace TheLivingCanvas.EditorTools
         /// el hueco del estudio, plaza con fuente, casas de fachada, árboles, bancos y farolas sin luz.
         /// Solo para caminar; lo sólido tiene collider y el resto son detalles sin collider.
         /// </summary>
-        static void BuildTown()
+        static Transform BuildTown()
         {
             var grassMat = GetOrCreateMaterial("M_Town_Grass", new Color(0.40f, 0.47f, 0.35f));
             var pathMat = GetOrCreateMaterial("M_Town_Path", new Color(0.80f, 0.72f, 0.58f));
@@ -1448,6 +1450,7 @@ namespace TheLivingCanvas.EditorTools
             CreateBoundary("Boundary_Town_East", town, new Vector3(18f, 1.5f, -16f), new Vector3(0.2f, 3f, 20f));
             CreateBoundary("Boundary_Town_South", town, new Vector3(3f, 1.5f, -26f), new Vector3(30f, 3f, 0.2f));
             CreateBoundary("Boundary_Town_North_West", town, new Vector3(-9f, 1.5f, -6f), new Vector3(6f, 3f, 0.2f));
+            return town;
         }
 
         /// <summary>Primitiva decorativa del pueblo: sin collider y marcada como estática.</summary>
@@ -1940,7 +1943,7 @@ namespace TheLivingCanvas.EditorTools
         /// Galería detrás del estudio (x de -6 a 6, z de 6 a 14), sin techo: suelo, paredes y 6 marcos vacíos
         /// (2 por pared lateral y 2 al fondo) + el panel para colgar pinturas.
         /// </summary>
-        static void BuildGallery(Transform hud, GameObject player, GameObject rig, Material wallMat, PaintBrushController brush)
+        static void BuildGallery(Transform hud, DialogueUI dialogueUi, GameObject player, GameObject rig, Material wallMat, PaintBrushController brush)
         {
             var floorMat = GetOrCreateMaterial("M_Gallery_Floor", new Color(0.74f, 0.68f, 0.60f));
             var woodMat = GetOrCreateMaterial("M_Gallery_Frame", new Color(0.25f, 0.17f, 0.11f));
@@ -1981,11 +1984,11 @@ namespace TheLivingCanvas.EditorTools
             BuildGalleryFrame(gallery, "Frame_B1", new Vector3(-3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildGalleryFrame(gallery, "Frame_B2", new Vector3(3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildCollectionBoard(hud, gallery, player, rig, woodMat);
-            BuildNpc(hud, gallery, player, rig, brush);
+            BuildNpc(hud, gallery, dialogueUi, player, rig, brush);
         }
 
-        /// <summary>Ottilie Vane, coleccionista excéntrica (figura de primitivas) + el panel de diálogo al pie de la pantalla.</summary>
-        static void BuildNpc(Transform hud, Transform gallery, GameObject player, GameObject rig, PaintBrushController brush)
+        /// <summary>Panel de diálogo compartido por todos los personajes.</summary>
+        static DialogueUI BuildDialogueUI(Transform hud, GameObject player, GameObject rig)
         {
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             var cream = new Color(1f, 0.95f, 0.82f);
@@ -2041,6 +2044,12 @@ namespace TheLivingCanvas.EditorTools
             uiSo.FindProperty("nextLabel").objectReferenceValue = next.GetComponentInChildren<Text>();
             uiSo.ApplyModifiedPropertiesWithoutUndo();
 
+            return dialogueUi;
+        }
+
+        /// <summary>Ottilie Vane, coleccionista excéntrica (figura de primitivas) en la galería.</summary>
+        static void BuildNpc(Transform hud, Transform gallery, DialogueUI dialogueUi, GameObject player, GameObject rig, PaintBrushController brush)
+        {
             // Datos del personaje.
             if (!AssetDatabase.IsValidFolder($"{Root}/Data/Npcs"))
                 AssetDatabase.CreateFolder($"{Root}/Data", "Npcs");
@@ -2127,6 +2136,100 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("definition").objectReferenceValue = definition;
             so.FindProperty("dialogueUI").objectReferenceValue = dialogueUi;
             so.FindProperty("commissionUI").objectReferenceValue = commissionUi;
+            so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
+            so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
+            so.FindProperty("brush").objectReferenceValue = brush;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>
+        /// Bastien Marlowe, marchante de arte, con su puesto en la plaza del pueblo (hueco reservado en BuildTown).
+        /// El mostrador mira a la fuente; el personaje está a un lado para que el jugador llegue a hablarle.
+        /// </summary>
+        static void BuildArtDealer(Transform hud, Transform town, DialogueUI dialogueUi, GameObject player, GameObject rig, PaintBrushController brush)
+        {
+            // Panel de venta.
+            var list = BuildListPanel(hud, "ArtDealerUI", "Sell paintings", new Vector2(760f, 640f));
+            var dealerUi = list.Root.AddComponent<ArtDealerUI>();
+            var dealerSo = new SerializedObject(dealerUi);
+            SetModalPanelRefs(dealerSo, list, player, rig);
+            dealerSo.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+            dealerSo.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            dealerSo.FindProperty("messageLabel").objectReferenceValue = list.Message;
+            dealerSo.ApplyModifiedPropertiesWithoutUndo();
+
+            // Datos del personaje (sin encargos).
+            if (!AssetDatabase.IsValidFolder($"{Root}/Data/Npcs"))
+                AssetDatabase.CreateFolder($"{Root}/Data", "Npcs");
+            var definitionPath = $"{Root}/Data/Npcs/Npc_ArtDealer.asset";
+            var definition = AssetDatabase.LoadAssetAtPath<NpcDefinition>(definitionPath);
+            if (definition == null)
+            {
+                definition = ScriptableObject.CreateInstance<NpcDefinition>();
+                AssetDatabase.CreateAsset(definition, definitionPath);
+            }
+            definition.EditorSetup("Bastien Marlowe", new[]
+            {
+                "Hm. Let me guess: you paint, you grow, and now you would like to be paid. Bastien Marlowe. I appraise things.",
+                "I buy originals only. Seeds and copies are of no interest to me. I pay by crop, quality, rarity and canvas, and I can tell all four at a glance.",
+                "Show me something worth my time."
+            }, new CommissionDefinition[0]);
+            EditorUtility.SetDirty(definition);
+
+            // Puesto: mostrador con dos postes y toldo, mirando a la fuente (0, 0, -16). Frente = +Z local, postes atrás.
+            var counterMat = GetOrCreateMaterial("M_Easel_Wood", new Color(0.42f, 0.28f, 0.18f));
+            var awningMat = GetOrCreateMaterial("M_Town_Awning", new Color(0.32f, 0.42f, 0.51f));
+            var frameMat = GetOrCreateMaterial("M_Gallery_Frame", new Color(0.25f, 0.17f, 0.11f));
+            var canvasMat = GetOrCreateMaterial("M_Gallery_Canvas", new Color(0.95f, 0.93f, 0.88f));
+            var stallPos = new Vector3(-3f, 0f, -13f);
+            var yaw = Quaternion.Euler(0f, 135f, 0f);
+            var stall = new GameObject("ArtDealerStall");
+            stall.transform.SetParent(town, false);
+            stall.transform.SetPositionAndRotation(stallPos, yaw);
+            var box = stall.AddComponent<BoxCollider>();
+            box.center = new Vector3(0f, 0.45f, 0f);
+            box.size = new Vector3(1.8f, 0.9f, 0.6f);
+
+            CreatePart(PrimitiveType.Cube, "Counter", stall.transform, new Vector3(0f, 0.45f, 0f), new Vector3(1.8f, 0.9f, 0.6f), counterMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Post_Left", stall.transform, new Vector3(-0.85f, 1.25f, -0.25f), new Vector3(0.08f, 2.5f, 0.08f), counterMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Post_Right", stall.transform, new Vector3(0.85f, 1.25f, -0.25f), new Vector3(0.08f, 2.5f, 0.08f), counterMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Awning", stall.transform, new Vector3(0f, 2.45f, 0.05f), new Vector3(2f, 0.08f, 0.9f), awningMat, Quaternion.Euler(12f, 0f, 0f));
+
+            // Marquitos decorativos apoyados en el mostrador (sin collider).
+            for (int i = 0; i < 3; i++)
+            {
+                float x = -0.55f + i * 0.55f;
+                float h = 0.30f + (i == 1 ? 0.08f : 0f);
+                var frame = CreatePart(PrimitiveType.Cube, $"Frame_{i + 1}", stall.transform, new Vector3(x, 0.9f + h * 0.5f, -0.08f), new Vector3(0.4f, h, 0.03f), frameMat, Quaternion.Euler(-12f, 0f, 0f));
+                CreatePart(PrimitiveType.Cube, "Canvas", frame.transform, new Vector3(0f, 0f, 0.6f), new Vector3(0.82f, 0.78f, 0.5f), canvasMat, Quaternion.identity);
+            }
+
+            // Figura de ~1,75 m a un lado del puesto, mirando a la plaza.
+            var coatMat = GetOrCreateMaterial("M_Dealer_Coat", new Color(0.16f, 0.20f, 0.24f));
+            var skinMat = GetOrCreateMaterial("M_Dealer_Skin", new Color(0.86f, 0.68f, 0.55f));
+            var capMat = GetOrCreateMaterial("M_Dealer_Cap", new Color(0.30f, 0.22f, 0.16f));
+            var cravatMat = GetOrCreateMaterial("M_Dealer_Cravat", new Color(0.72f, 0.62f, 0.30f));
+
+            var npc = new GameObject("Npc_ArtDealer");
+            npc.transform.SetParent(town, false);
+            npc.transform.SetPositionAndRotation(stallPos + yaw * new Vector3(-1.5f, 0f, 0.1f), yaw);
+            var capsule = npc.AddComponent<CapsuleCollider>();
+            capsule.center = new Vector3(0f, 0.875f, 0f);
+            capsule.radius = 0.3f;
+            capsule.height = 1.75f;
+
+            CreatePart(PrimitiveType.Capsule, "Coat", npc.transform, new Vector3(0f, 0.6f, 0f), new Vector3(0.5f, 0.6f, 0.5f), coatMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Cravat", npc.transform, new Vector3(0f, 1.2f, 0.14f), new Vector3(0.1f, 0.18f, 0.04f), cravatMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Sphere, "Head", npc.transform, new Vector3(0f, 1.43f, 0f), Vector3.one * 0.26f, skinMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Sphere, "Cap", npc.transform, new Vector3(0f, 1.53f, 0f), new Vector3(0.29f, 0.14f, 0.29f), capMat, Quaternion.identity);
+            CreatePart(PrimitiveType.Cube, "Cap_Visor", npc.transform, new Vector3(0f, 1.5f, 0.15f), new Vector3(0.2f, 0.015f, 0.14f), capMat, Quaternion.identity);
+
+            var component = npc.AddComponent<Npc>();
+            var so = new SerializedObject(component);
+            so.FindProperty("definition").objectReferenceValue = definition;
+            so.FindProperty("dialogueUI").objectReferenceValue = dialogueUi;
+            so.FindProperty("dealerUI").objectReferenceValue = dealerUi;
             so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
             so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
             so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
