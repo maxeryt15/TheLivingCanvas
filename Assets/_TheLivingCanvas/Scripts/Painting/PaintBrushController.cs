@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TheLivingCanvas.Data;
+using TheLivingCanvas.Save;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -20,7 +22,7 @@ namespace TheLivingCanvas.Painting
     /// del pincel y pinta con el botón izquierdo / punta del lápiz. Guarda el estado de las
     /// herramientas (pigmento, tamaño, borrador).
     /// </summary>
-    public class PaintBrushController : MonoBehaviour
+    public class PaintBrushController : MonoBehaviour, ISaveable
     {
         [SerializeField] PaintModeController paintMode;
         [SerializeField] InputActionReference pointAction;
@@ -180,6 +182,27 @@ namespace TheLivingCanvas.Painting
             if (!tools.Add(tool)) return false;
             ToolAdded?.Invoke(tool);
             return true;
+        }
+
+        public void WriteSave(SaveData data)
+        {
+            data.palette = palette.Select(p => p.Id).ToList();
+            data.brushes = brushes.Select(b => b.Id).ToList();
+            data.tools = tools.Select(t => t.ToString()).ToList();
+        }
+
+        /// <summary>Añade lo que falta (los iniciales se quedan); los eventos Added actualizan la UI de la paleta.</summary>
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            foreach (var id in data.palette)
+                AddPigment(registry.FindPigment(id));
+            foreach (var id in data.brushes)
+                AddBrush(registry.FindBrush(id));
+            foreach (var name in data.tools)
+            {
+                if (Enum.TryParse(name, out PaintTool tool)) AddTool(tool);
+                else Debug.LogWarning($"[Save] Unknown tool '{name}' in save; skipped.");
+            }
         }
 
         /// <summary>Cambia de pincel; el borrador sigue como estaba (con Fill, borra la zona entera).</summary>

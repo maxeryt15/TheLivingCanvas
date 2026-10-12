@@ -10,6 +10,7 @@ using TheLivingCanvas.Npcs;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Player;
 using TheLivingCanvas.Progression;
+using TheLivingCanvas.Save;
 using TheLivingCanvas.Seasons;
 using Unity.Cinemachine;
 using UnityEditor;
@@ -136,6 +137,7 @@ namespace TheLivingCanvas.EditorTools
             BuildArtDealer(hud.transform, town, dialogueUi, player, rig, paintMode.GetComponent<PaintBrushController>(), seasonClock);
             BuildNoticeBoard(town, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>());
             BuildFestival(town, gallery, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>(), seasonClock);
+            BuildSaveManager(player); // al final: ya existen todos los assets de datos
 
             BuildDayFade(hud.transform, seasonClock); // el último hijo del HUD: cubre todo lo demás
 
@@ -1384,6 +1386,29 @@ namespace TheLivingCanvas.EditorTools
             Object.DestroyImmediate(root);
             return prefab.GetComponent<SunflowerPlant>();
         }
+
+        /// <summary>Gestor de guardado: autoguarda y carga la partida; su registro lleva todos los assets de datos para resolver ids.</summary>
+        static void BuildSaveManager(GameObject player)
+        {
+            var so = new SerializedObject(new GameObject("SaveManager").AddComponent<SaveManager>());
+            so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
+            so.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+            var registry = so.FindProperty("registry");
+            SetArray(registry.FindPropertyRelative("crops"), FindDataAssets<CropDefinition>());
+            SetArray(registry.FindPropertyRelative("pigments"), FindDataAssets<PigmentDefinition>());
+            SetArray(registry.FindPropertyRelative("brushes"), FindDataAssets<BrushDefinition>());
+            SetArray(registry.FindPropertyRelative("styles"), FindDataAssets<StyleDefinition>());
+            SetArray(registry.FindPropertyRelative("canvasTypes"), FindDataAssets<CanvasType>());
+            SetArray(registry.FindPropertyRelative("sets"), FindDataAssets<CollectionSet>());
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Todos los assets de un tipo bajo Data/ (incluye los que no salen de las listas GetOrCreate*: violeta, de temporada, oro, híbrido).</summary>
+        static T[] FindDataAssets<T>() where T : Object =>
+            AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { Root + "/Data" })
+                .Select(guid => AssetDatabase.GUIDToAssetPath(guid)).OrderBy(path => path)
+                .Select(path => AssetDatabase.LoadAssetAtPath<T>(path)).ToArray();
 
         static void SetArray(SerializedProperty property, Object[] values)
         {

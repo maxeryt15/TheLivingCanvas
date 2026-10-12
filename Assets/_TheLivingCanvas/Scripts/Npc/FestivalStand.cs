@@ -5,6 +5,7 @@ using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Progression;
+using TheLivingCanvas.Save;
 using TheLivingCanvas.Seasons;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace TheLivingCanvas.Npcs
     /// Puesto del juez del festival en la plaza: el concurso de la estación se gana una vez y deja un trofeo en la galería.
     /// El objeto raíz siempre está activo; el puesto y los banderines solo se ven mientras dura el festival.
     /// </summary>
-    public class FestivalStand : MonoBehaviour, IInteractable
+    public class FestivalStand : MonoBehaviour, IInteractable, ISaveable
     {
         [SerializeField] SeasonClock clock;
         [Tooltip("Un concurso por estación, en el orden del enum Season.")]
@@ -32,7 +33,7 @@ namespace TheLivingCanvas.Npcs
 
         const string Speaker = "Festival judge";
 
-        // Sin guardado todavía (fase 18): estaciones cuyo concurso ya se ganó.
+        // Estaciones cuyo concurso ya se ganó.
         readonly bool[] won = new bool[4];
 
         public string Prompt => "Talk to the festival judge";
@@ -65,6 +66,17 @@ namespace TheLivingCanvas.Npcs
             }
             var contest = contests[season];
             dialogueUI.Open(Speaker, contest.RequestLines, "Enter painting", () => commissionUI.Open(contest, Deliver));
+        }
+
+        public void WriteSave(SaveData data) => data.festivalWon = won.ToList();
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            for (int i = 0; i < won.Length; i++)
+            {
+                won[i] = i < data.festivalWon.Count && data.festivalWon[i];
+                trophies[i].SetActive(won[i]);
+            }
         }
 
         /// <summary>Pintura inscrita: paga el premio, marca la estación como ganada y enseña su trofeo.</summary>

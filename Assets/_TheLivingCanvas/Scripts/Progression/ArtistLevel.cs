@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Painting;
+using TheLivingCanvas.Save;
 using UnityEngine;
 
 namespace TheLivingCanvas.Progression
@@ -23,8 +25,8 @@ namespace TheLivingCanvas.Progression
         }
     }
 
-    /// <summary>Nivel de artista del jugador: se gana XP al terminar pinturas. Sin guardado todavía (Fase 18).</summary>
-    public class ArtistLevel : MonoBehaviour
+    /// <summary>Nivel de artista del jugador: se gana XP al terminar pinturas.</summary>
+    public class ArtistLevel : MonoBehaviour, ISaveable
     {
         [Tooltip("XP acumulada necesaria para cada nivel (el primero es el nivel 1).")]
         [SerializeField] int[] levelThresholds = { 0, 60, 150, 300, 500, 750 };
@@ -123,6 +125,25 @@ namespace TheLivingCanvas.Progression
             bool leveledUp = Level > levelBefore;
             if (leveledUp) LeveledUp?.Invoke(Level);
             return leveledUp;
+        }
+
+        public void WriteSave(SaveData data)
+        {
+            data.xp = xp;
+            data.discovered = discovered.ToList();
+            data.claimedSets = claimedSets.ToList();
+        }
+
+        /// <summary>Restaura sin disparar LeveledUp: la puerta del jardín y la tienda leen el nivel al empezar.</summary>
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            xp = Mathf.Max(0, data.xp);
+            discovered.Clear();
+            discovered.UnionWith(data.discovered);
+            claimedSets.Clear();
+            foreach (var id in data.claimedSets)
+                if (registry.FindSet(id) != null) claimedSets.Add(id);
+            Changed?.Invoke();
         }
     }
 }

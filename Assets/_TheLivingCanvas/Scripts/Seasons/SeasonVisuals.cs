@@ -60,6 +60,7 @@ namespace TheLivingCanvas.Seasons
             Collect(foliageMaterials, true);
             Collect(groundMaterials, false);
             to = looks[(int)clock.Current];
+            t = 1f; // una carga de partida pudo disparar SeasonChanged antes: se queda en la estación actual, sin transición
             Apply(to);
         }
 

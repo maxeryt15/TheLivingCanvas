@@ -3,6 +3,7 @@ using System.Linq;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
+using TheLivingCanvas.Save;
 using UnityEngine;
 
 namespace TheLivingCanvas.Painting
@@ -13,7 +14,7 @@ namespace TheLivingCanvas.Painting
     /// En blanco o a medias: interactuar sigue pintando.
     /// Terminado: interactuar recoge la pintura al inventario y el caballete queda vacío.
     /// </summary>
-    public class CanvasInteractable : MonoBehaviour, IInteractable
+    public class CanvasInteractable : MonoBehaviour, IInteractable, ISaveable
     {
         [Tooltip("Punto desde el que la cámara mira el lienzo de frente al pintar.")]
         [SerializeField] Transform viewPoint;
@@ -129,6 +130,15 @@ namespace TheLivingCanvas.Painting
         {
             hasCanvas = value;
             canvasRenderer.enabled = value;
+        }
+
+        public void WriteSave(SaveData data) =>
+            data.easels.Add(new EaselSave { id = name, width = CanvasResolution.x, height = CanvasResolution.y });
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            var saved = data.easels.Find(e => e.id == name);
+            if (saved != null) CanvasResolution = new Vector2Int(saved.width, saved.height);
         }
 
         void ShowSketch() => guide.Show(showOutline: true, showHints: false);

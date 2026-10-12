@@ -5,12 +5,13 @@ using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Progression;
+using TheLivingCanvas.Save;
 using UnityEngine;
 
 namespace TheLivingCanvas.Npcs
 {
     /// <summary>Tablón de encargos del pueblo: ofrece los encargos de los vecinos uno a uno, en orden.</summary>
-    public class CommissionBoard : MonoBehaviour, IInteractable
+    public class CommissionBoard : MonoBehaviour, IInteractable, ISaveable
     {
         [SerializeField] CommissionDefinition[] commissions;
         [SerializeField] DialogueUI dialogueUI;
@@ -24,7 +25,7 @@ namespace TheLivingCanvas.Npcs
 
         const string Speaker = "Notice board";
 
-        // Sin guardado todavía (fase 18): índice del encargo actual.
+        // Índice del encargo actual.
         int commissionIndex;
 
         CommissionDefinition Current => commissionIndex < commissions.Length ? commissions[commissionIndex] : null;
@@ -53,6 +54,14 @@ namespace TheLivingCanvas.Npcs
             commissionIndex++;
             RefreshNotes();
             dialogueUI.Open(Speaker, thanks);
+        }
+
+        public void WriteSave(SaveData data) => data.boardCommissionIndex = commissionIndex;
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            commissionIndex = Mathf.Clamp(data.boardCommissionIndex, 0, commissions.Length);
+            RefreshNotes();
         }
 
         /// <summary>Deja tantas notas como encargos quedan (máximo las que hay).</summary>

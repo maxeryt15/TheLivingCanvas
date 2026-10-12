@@ -1,4 +1,5 @@
 using System;
+using TheLivingCanvas.Save;
 using UnityEngine;
 
 namespace TheLivingCanvas.Seasons
@@ -8,7 +9,7 @@ namespace TheLivingCanvas.Seasons
     /// secondsPerDay); 28 días por estación (Spring → Summer → Autumn → Winter → Spring...). Al llegar a las 2:30 se
     /// pasa al día siguiente sin castigo.
     /// </summary>
-    public class SeasonClock : MonoBehaviour
+    public class SeasonClock : MonoBehaviour, ISaveable
     {
         /// <summary>Minutos de juego de un día: de las 6:00 a las 2:30 (20,5 h).</summary>
         public const float MinutesPerDay = 1230f;
@@ -111,6 +112,25 @@ namespace TheLivingCanvas.Seasons
         /// <summary>Salta a las 2:00 am para probar el final del día.</summary>
         [ContextMenu("Skip To Night")]
         void SkipToNight() => MinutesOfDay = 1200f;
+
+        public void WriteSave(SaveData data)
+        {
+            data.season = (int)Current;
+            data.day = Day;
+            data.year = Year;
+            data.minutesOfDay = MinutesOfDay;
+        }
+
+        /// <summary>Restaura la fecha y la hora; SeasonChanged y el festival refrescan lo que dependa de ellos (sin DayChanged: no es un día nuevo).</summary>
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            Current = (Season)Mathf.Clamp(data.season, 0, 3);
+            Day = Mathf.Clamp(data.day, 1, daysPerSeason);
+            Year = Mathf.Max(1, data.year);
+            MinutesOfDay = Mathf.Clamp(data.minutesOfDay, 0f, MinutesPerDay - 1f);
+            SeasonChanged?.Invoke(Current);
+            RefreshFestival();
+        }
 
         void AdvanceSeason()
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TheLivingCanvas.Data;
+using TheLivingCanvas.Save;
 using UnityEngine;
 
 namespace TheLivingCanvas.Painting
@@ -10,7 +11,7 @@ namespace TheLivingCanvas.Painting
     /// pintada (ver <see cref="PaintUsage"/>). Sin límite de almacenamiento por ahora.
     /// </summary>
     [DefaultExecutionOrder(-100)] // las cantidades iniciales están antes de que la paleta las lea
-    public class PigmentStock : MonoBehaviour
+    public class PigmentStock : MonoBehaviour, ISaveable
     {
         [Serializable]
         struct StartingAmount
@@ -59,6 +60,23 @@ namespace TheLivingCanvas.Painting
                 amounts[pair.Key] = Get(pair.Key) - pair.Value;
             Changed?.Invoke();
             return true;
+        }
+
+        public void WriteSave(SaveData data)
+        {
+            data.pigments.Clear();
+            foreach (var pair in amounts)
+                data.pigments.Add(new AmountEntry { id = pair.Key.Id, amount = pair.Value });
+        }
+
+        /// <summary>Las cantidades guardadas sustituyen a las iniciales.</summary>
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            amounts.Clear();
+            foreach (var entry in data.pigments)
+                if (registry.FindPigment(entry.id) is { } pigment)
+                    amounts[pigment] = Mathf.Max(0, entry.amount);
+            Changed?.Invoke();
         }
 
 #if UNITY_EDITOR

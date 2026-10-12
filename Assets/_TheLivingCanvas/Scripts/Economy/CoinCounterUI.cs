@@ -33,6 +33,7 @@ namespace TheLivingCanvas.Economy
         void OnChanged(int total, int delta)
         {
             label.text = Format(total);
+            if (delta == 0) return; // carga de partida: sin "+0"
             deltaLabel.text = delta > 0 ? $"+{delta}" : delta.ToString();
             deltaLabel.color = delta > 0 ? gainColor : spendColor;
             deltaLabel.gameObject.SetActive(true);

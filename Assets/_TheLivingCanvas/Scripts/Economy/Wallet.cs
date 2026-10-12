@@ -1,10 +1,11 @@
 using System;
+using TheLivingCanvas.Save;
 using UnityEngine;
 
 namespace TheLivingCanvas.Economy
 {
-    /// <summary>Monedas del jugador. Sin guardado todavía (Fase 18).</summary>
-    public class Wallet : MonoBehaviour
+    /// <summary>Monedas del jugador.</summary>
+    public class Wallet : MonoBehaviour, ISaveable
     {
         [SerializeField] int coins;
 
@@ -28,6 +29,14 @@ namespace TheLivingCanvas.Economy
             coins -= amount;
             Changed?.Invoke(coins, -amount);
             return true;
+        }
+
+        public void WriteSave(SaveData data) => data.coins = coins;
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            coins = Mathf.Max(0, data.coins);
+            Changed?.Invoke(coins, 0); // diferencia 0: refresca el contador sin popup
         }
     }
 }

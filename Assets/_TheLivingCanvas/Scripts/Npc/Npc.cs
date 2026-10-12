@@ -5,13 +5,14 @@ using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Progression;
+using TheLivingCanvas.Save;
 using TheLivingCanvas.Seasons;
 using UnityEngine;
 
 namespace TheLivingCanvas.Npcs
 {
     /// <summary>Personaje con el que se puede hablar: se gira hacia el jugador y abre el diálogo con su saludo y gestiona su encargo actual.</summary>
-    public class Npc : MonoBehaviour, IInteractable
+    public class Npc : MonoBehaviour, IInteractable, ISaveable
     {
         [SerializeField] NpcDefinition definition;
         [SerializeField] DialogueUI dialogueUI;
@@ -24,7 +25,7 @@ namespace TheLivingCanvas.Npcs
         [SerializeField] PaintBrushController brush;
         [SerializeField] SeasonClock seasons;
 
-        // Sin guardado todavía (fase 18): índice del encargo actual y si ya lo ha pedido.
+        // Índice del encargo actual y si ya lo ha pedido.
         int commissionIndex;
         bool requested;
 
@@ -65,6 +66,18 @@ namespace TheLivingCanvas.Npcs
             int index = (int)seasons.Current;
             if (seasonLines == null || index >= seasonLines.Length || string.IsNullOrEmpty(seasonLines[index])) return lines;
             return lines.Prepend(seasonLines[index]).ToArray();
+        }
+
+        // Se guarda por el nombre del asset del personaje (hay varios).
+        public void WriteSave(SaveData data) =>
+            data.npcs.Add(new NpcSave { id = definition.name, commissionIndex = commissionIndex, requested = requested });
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            var saved = data.npcs.Find(n => n.id == definition.name);
+            if (saved == null) return;
+            commissionIndex = Mathf.Clamp(saved.commissionIndex, 0, definition.Commissions.Length);
+            requested = saved.requested;
         }
 
         /// <summary>Pintura entregada: paga la recompensa, pasa al siguiente encargo y da las gracias.</summary>

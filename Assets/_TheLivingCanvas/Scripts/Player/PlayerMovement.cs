@@ -1,3 +1,4 @@
+using TheLivingCanvas.Save;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,7 +9,7 @@ namespace TheLivingCanvas.Player
     /// la dirección de movimiento y gravedad.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovement : MonoBehaviour, ISaveable
     {
         [SerializeField] InputActionReference moveAction;
         [SerializeField] InputActionReference sprintAction;
@@ -58,6 +59,20 @@ namespace TheLivingCanvas.Player
 
             float speed = sprintAction.action.IsPressed() ? sprintSpeed : walkSpeed;
             controller.Move((move * speed + Vector3.up * verticalVelocity) * Time.deltaTime);
+        }
+
+        public void WriteSave(SaveData data)
+        {
+            data.playerPosition = transform.position;
+            data.playerYaw = transform.eulerAngles.y;
+        }
+
+        public void ReadSave(SaveData data, SaveRegistry registry)
+        {
+            controller.enabled = false; // si no, el CharacterController revierte el teletransporte
+            transform.SetPositionAndRotation(data.playerPosition, Quaternion.Euler(0f, data.playerYaw, 0f));
+            controller.enabled = true;
+            verticalVelocity = 0f;
         }
     }
 }
