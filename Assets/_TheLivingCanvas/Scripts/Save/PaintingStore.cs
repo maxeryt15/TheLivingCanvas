@@ -126,7 +126,9 @@ namespace TheLivingCanvas.Save
 
         static Texture2D ReadImage(string fileName)
         {
-            string path = string.IsNullOrEmpty(fileName) ? null : Path.Combine(Folder, fileName);
+            // Solo un nombre de archivo suelto: un save.json editado no puede apuntar fuera de la carpeta.
+            bool valid = !string.IsNullOrEmpty(fileName) && Path.GetFileName(fileName) == fileName && fileName.EndsWith(".png");
+            string path = valid ? Path.Combine(Folder, fileName) : null;
             try
             {
                 if (path != null && File.Exists(path))
