@@ -38,6 +38,10 @@ namespace TheLivingCanvas.EditorTools
         const string ScenePath = Root + "/Scenes/Studio.unity";
         const string MaterialsFolder = Root + "/Art/Materials";
         const string ProfilePath = Root + "/Settings/StudioVolumeProfile.asset";
+        const string StudioZoneProfilePath = Root + "/Settings/StudioZoneVolumeProfile.asset";
+        const string GalleryZoneProfilePath = Root + "/Settings/GalleryZoneVolumeProfile.asset";
+        const float GlobalTemperature = 12f;
+        const float GlobalSaturation = 10f;
         const string ControlsPath = Root + "/Settings/PlayerControls.inputactions";
         const string PlayerPrefabPath = Root + "/Prefabs/Player/Player.prefab";
         const string EaselPrefabPath = Root + "/Prefabs/Canvas/Easel.prefab";
@@ -92,7 +96,6 @@ namespace TheLivingCanvas.EditorTools
             var seasonVisuals = seasons.AddComponent<SeasonVisuals>();
             var visualsSo = new SerializedObject(seasonVisuals);
             visualsSo.FindProperty("clock").objectReferenceValue = seasonClock;
-            visualsSo.FindProperty("sun").objectReferenceValue = sun;
             SetMaterials(visualsSo.FindProperty("foliageMaterials"),
                 GetOrCreateMaterial("M_Garden_Bush", new Color(0.24f, 0.45f, 0.22f)));
             SetMaterials(visualsSo.FindProperty("groundMaterials"),
@@ -100,9 +103,26 @@ namespace TheLivingCanvas.EditorTools
                 GetOrCreateMaterial("M_Town_Grass", new Color(0.40f, 0.47f, 0.35f)));
             visualsSo.ApplyModifiedPropertiesWithoutUndo();
 
+            // DayLighting lee SeasonVisuals y escribe el sol; va justo detrás, antes de cualquier farol que lo lea.
+            var dayLighting = seasons.AddComponent<DayLighting>();
+            var dayLightingSo = new SerializedObject(dayLighting);
+            dayLightingSo.FindProperty("clock").objectReferenceValue = seasonClock;
+            dayLightingSo.FindProperty("seasonVisuals").objectReferenceValue = seasonVisuals;
+            dayLightingSo.FindProperty("sun").objectReferenceValue = sun;
+            dayLightingSo.ApplyModifiedPropertiesWithoutUndo();
+
             RenderSettings.sun = sun;
             RenderSettings.skybox = AssetDatabase.GetBuiltinExtraResource<Material>("Default-Skybox.mat");
-            RenderSettings.ambientMode = AmbientMode.Skybox;
+            // Ambiente y niebla de pleno día para la escena en edición; en juego los lleva DayLighting.
+            var midday = dayLighting.Evaluate(12f);
+            RenderSettings.ambientMode = AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = midday.ambientSky;
+            RenderSettings.ambientEquatorColor = midday.ambientEquator;
+            RenderSettings.ambientGroundColor = midday.ambientGround;
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.Exponential;
+            RenderSettings.fogColor = midday.fogColor;
+            RenderSettings.fogDensity = midday.fogDensity;
 
             // Cámara real: la mueve el CinemachineBrain según la CinemachineCamera activa.
             var camGo = new GameObject("Main Camera") { tag = "MainCamera" };
@@ -132,6 +152,7 @@ namespace TheLivingCanvas.EditorTools
             BuildCropPicker(hud.transform, player, rig, seasonClock);
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
             BuildGarden(player.GetComponent<ArtistLevel>());
+            BuildLantern(environment.transform, "Lantern_StudioFront", new Vector3(1.9f, 0f, -6.6f));
             var dialogueUi = BuildDialogueUI(hud.transform, player, rig);
             var commissionUi = BuildCommissionUI(hud.transform, player, rig);
             var gallery = BuildGallery(hud.transform, dialogueUi, commissionUi, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>(), seasonClock);
@@ -154,6 +175,10 @@ namespace TheLivingCanvas.EditorTools
             var volume = volumeGo.AddComponent<Volume>();
             volume.isGlobal = true;
             volume.sharedProfile = CreateVolumeProfile();
+
+            // Volúmenes locales por zona, sutiles y por encima del global.
+            BuildZoneVolume("Volume_Studio", new Vector3(0f, 1.6f, 0f), new Vector3(12f, 3.2f, 12f), StudioZoneProfilePath, 6f, 4f);
+            BuildZoneVolume("Volume_Gallery", new Vector3(0f, 1.6f, 10f), new Vector3(12f, 3.2f, 8f), GalleryZoneProfilePath, -4f, -6f);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
@@ -2050,11 +2075,15 @@ namespace TheLivingCanvas.EditorTools
             BuildBench(town, "Bench_South", new Vector3(0f, 0f, -19.3f), 0f, woodMat);
             BuildBench(town, "Bench_NorthEast", new Vector3(3.2f, 0f, -12.2f), 200f, woodMat);
 
-            // Farolas decorativas, sin luz real (rendimiento).
+            // Farolas: solo las de la plaza llevan luz real (rendimiento); todas encienden la bombilla al anochecer.
             foreach (var p in new[] { new Vector3(-2.3f, 0f, -8f), new Vector3(2.3f, 0f, -8f), new Vector3(4.6f, 0f, -20.6f), new Vector3(-4.6f, 0f, -20.6f) })
             {
                 TownPart(PrimitiveType.Cylinder, "Lamp_Post", town, p + new Vector3(0f, 1.4f, 0f), new Vector3(0.1f, 1.4f, 0.1f), lampMat, Quaternion.identity);
-                TownPart(PrimitiveType.Cube, "Lamp_Lantern", town, p + new Vector3(0f, 3.0f, 0f), new Vector3(0.3f, 0.4f, 0.3f), lanternMat, Quaternion.identity);
+                var lantern = TownPart(PrimitiveType.Cube, "Lamp_Lantern", town, p + new Vector3(0f, 3.0f, 0f), new Vector3(0.3f, 0.4f, 0.3f), lanternMat, Quaternion.identity);
+                Light lanternLight = null;
+                if (p.z < -15f)
+                    lanternLight = CreateLanternLight(town, p + new Vector3(0f, 2.8f, 0f), 7f);
+                AddNightLamp(lantern, lanternLight, 0f, 2.5f, lantern.GetComponent<Renderer>(), lanternMat.GetColor("_BaseColor"));
             }
 
             // Límites invisibles: oeste, este, sur y el tramo norte al oeste del estudio.
@@ -2171,6 +2200,8 @@ namespace TheLivingCanvas.EditorTools
             CreatePart(PrimitiveType.Sphere, "Stone_B", garden, new Vector3(8.6f, 0.08f, -4.7f), new Vector3(0.4f, 0.25f, 0.35f), stoneMat, Quaternion.Euler(0f, 70f, 0f));
 
             BuildGardenGate(garden, artistLevel, woodMat);
+            BuildLantern(garden, "Lantern_Garden_A", new Vector3(7.4f, 0f, -5.2f));
+            BuildLantern(garden, "Lantern_Garden_B", new Vector3(16.6f, 0f, 0.5f));
         }
 
         /// <summary>Valla baja entre dos puntos: postes cada ~2 m y dos travesaños, todo sin collider.</summary>
@@ -2646,6 +2677,7 @@ namespace TheLivingCanvas.EditorTools
                 light.color = new Color(1f, 0.9f, 0.75f);
                 light.range = 8f;
                 light.intensity = 2f;
+                AddNightLamp(lightGo, light, 0.8f, 2f, null, default); // de día, al 40 %
             }
 
             // Cada marco mira hacia dentro de la sala: su +Z local apunta a la pared.
@@ -3401,6 +3433,71 @@ namespace TheLivingCanvas.EditorTools
             stallSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        /// <summary>Farol de obra gris (poste y cabeza) con luz cálida que se enciende al anochecer.</summary>
+        static void BuildLantern(Transform parent, string name, Vector3 position)
+        {
+            var lampMat = GetOrCreateMaterial("M_Town_Lamp", new Color(0.16f, 0.15f, 0.15f));
+            var lanternMat = GetOrCreateMaterial("M_Town_Lantern", new Color(0.95f, 0.80f, 0.50f));
+            var root = new GameObject(name).transform;
+            root.SetParent(parent, false);
+            root.localPosition = position;
+            CreatePart(PrimitiveType.Cylinder, "Post", root, new Vector3(0f, 1.1f, 0f), new Vector3(0.1f, 1.1f, 0.1f), lampMat, Quaternion.identity);
+            var head = CreatePart(PrimitiveType.Cube, "Head", root, new Vector3(0f, 2.4f, 0f), new Vector3(0.3f, 0.4f, 0.3f), lanternMat, Quaternion.identity);
+            var light = CreateLanternLight(root, new Vector3(0f, 2.3f, 0f), 6f);
+            AddNightLamp(head, light, 0f, 2.5f, head.GetComponent<Renderer>(), lanternMat.GetColor("_BaseColor"));
+        }
+
+        /// <summary>Luz puntual cálida de farol, sin sombras; NightLamp la apaga de día.</summary>
+        static Light CreateLanternLight(Transform parent, Vector3 localPosition, float range)
+        {
+            var go = new GameObject("Light");
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = localPosition;
+            var light = go.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = new Color(1f, 0.76f, 0.48f); // #FFC27A
+            light.range = range;
+            light.intensity = 0f;
+            light.shadows = LightShadows.None;
+            return light;
+        }
+
+        /// <summary>Conecta una luz (opcional) y una bombilla (opcional) al ciclo día/noche de DayLighting.</summary>
+        static void AddNightLamp(GameObject host, Light light, float dayIntensity, float nightIntensity, Renderer bulb, Color bulbDayColor)
+        {
+            var lamp = host.AddComponent<NightLamp>();
+            var so = new SerializedObject(lamp);
+            so.FindProperty("dayLighting").objectReferenceValue = Object.FindFirstObjectByType<DayLighting>();
+            so.FindProperty("lampLight").objectReferenceValue = light;
+            so.FindProperty("dayIntensity").floatValue = dayIntensity;
+            so.FindProperty("nightIntensity").floatValue = nightIntensity;
+            so.FindProperty("bulb").objectReferenceValue = bulb;
+            if (bulb != null) so.FindProperty("bulbDayColor").colorValue = bulbDayColor;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Volumen local de zona: caja trigger con un perfil propio que corrige temperatura y saturación sobre el global.</summary>
+        static void BuildZoneVolume(string name, Vector3 center, Vector3 size, string profilePath, float temperatureDelta, float saturationDelta)
+        {
+            AssetDatabase.DeleteAsset(profilePath);
+            var profile = ScriptableObject.CreateInstance<VolumeProfile>();
+            AssetDatabase.CreateAsset(profile, profilePath);
+            AddOverride<WhiteBalance>(profile).temperature.Override(GlobalTemperature + temperatureDelta);
+            AddOverride<ColorAdjustments>(profile).saturation.Override(GlobalSaturation + saturationDelta);
+            EditorUtility.SetDirty(profile);
+
+            var go = new GameObject(name);
+            go.transform.position = center;
+            var box = go.AddComponent<BoxCollider>();
+            box.isTrigger = true;
+            box.size = size;
+            var volume = go.AddComponent<Volume>();
+            volume.isGlobal = false;
+            volume.blendDistance = 1.5f;
+            volume.priority = 1f;
+            volume.sharedProfile = profile;
+        }
+
         /// <summary>Lámpara de prueba sobre la mesa (Fase 1C).</summary>
         static void BuildTestLamp(Transform parent, Vector3 position)
         {
@@ -3511,10 +3608,10 @@ namespace TheLivingCanvas.EditorTools
             tonemapping.mode.Override(TonemappingMode.Neutral);
 
             var whiteBalance = AddOverride<WhiteBalance>(profile);
-            whiteBalance.temperature.Override(12f);
+            whiteBalance.temperature.Override(GlobalTemperature);
 
             var colorAdjustments = AddOverride<ColorAdjustments>(profile);
-            colorAdjustments.saturation.Override(10f);
+            colorAdjustments.saturation.Override(GlobalSaturation);
             colorAdjustments.contrast.Override(5f);
 
             var vignette = AddOverride<Vignette>(profile);

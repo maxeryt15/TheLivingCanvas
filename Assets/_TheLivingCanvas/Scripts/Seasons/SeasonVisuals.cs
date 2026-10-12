@@ -5,8 +5,8 @@ using UnityEngine;
 namespace TheLivingCanvas.Seasons
 {
     /// <summary>
-    /// Cambia el paisaje con la estación: sol (color, intensidad, ángulo) y tono del follaje y del suelo.
-    /// Cada material se acerca al color de la estación según su mezcla (0 = su color original), por
+    /// Cambia el paisaje con la estación: tono del follaje y del suelo, y el sol de la estación (color, intensidad y
+    /// elevación a mediodía, ya mezclados en las transiciones), que luego combina DayLighting con la hora. Cada material se acerca al color de la estación según su mezcla (0 = su color original), por
     /// MaterialPropertyBlock en _BaseColor; nunca se tocan los .mat.
     /// </summary>
     public class SeasonVisuals : MonoBehaviour
@@ -16,7 +16,7 @@ namespace TheLivingCanvas.Seasons
         {
             public Color sunColor;
             public float sunIntensity;
-            public Vector3 sunEuler;
+            [Range(5f, 80f)] public float sunMiddayElevation;
             public Color foliageColor;
             [Range(0f, 1f)] public float foliageBlend;
             public Color groundColor;
@@ -24,20 +24,19 @@ namespace TheLivingCanvas.Seasons
         }
 
         [SerializeField] SeasonClock clock;
-        [SerializeField] Light sun;
         [SerializeField] Material[] foliageMaterials;
         [SerializeField] Material[] groundMaterials;
         [SerializeField] float transitionSeconds = 4f;
         // Orden del enum Season: Spring, Summer, Autumn, Winter.
         [SerializeField] Look[] looks =
         {
-            new Look { sunColor = new Color(1f, 0.92f, 0.80f), sunIntensity = 1.5f, sunEuler = new Vector3(45f, -35f, 0f),
+            new Look { sunColor = new Color(1f, 0.92f, 0.80f), sunIntensity = 1.5f, sunMiddayElevation = 45f,
                        foliageColor = Color.white, foliageBlend = 0f, groundColor = Color.white, groundBlend = 0f },
-            new Look { sunColor = new Color(1f, 0.88f, 0.72f), sunIntensity = 1.7f, sunEuler = new Vector3(58f, -35f, 0f),
+            new Look { sunColor = new Color(1f, 0.88f, 0.72f), sunIntensity = 1.7f, sunMiddayElevation = 58f,
                        foliageColor = new Color(0.30f, 0.45f, 0.15f), foliageBlend = 0.3f, groundColor = new Color(0.55f, 0.58f, 0.30f), groundBlend = 0.3f },
-            new Look { sunColor = new Color(1f, 0.76f, 0.52f), sunIntensity = 1.4f, sunEuler = new Vector3(30f, -35f, 0f),
+            new Look { sunColor = new Color(1f, 0.76f, 0.52f), sunIntensity = 1.4f, sunMiddayElevation = 30f,
                        foliageColor = new Color(0.58f, 0.33f, 0.12f), foliageBlend = 0.75f, groundColor = new Color(0.56f, 0.48f, 0.28f), groundBlend = 0.5f },
-            new Look { sunColor = new Color(0.82f, 0.88f, 1f), sunIntensity = 1.15f, sunEuler = new Vector3(22f, -35f, 0f),
+            new Look { sunColor = new Color(0.82f, 0.88f, 1f), sunIntensity = 1.15f, sunMiddayElevation = 22f,
                        foliageColor = new Color(0.30f, 0.38f, 0.36f), foliageBlend = 0.7f, groundColor = new Color(0.80f, 0.83f, 0.82f), groundBlend = 0.7f },
         };
 
@@ -53,6 +52,13 @@ namespace TheLivingCanvas.Seasons
         MaterialPropertyBlock block;
         Look from, to;
         float t = 1f;
+
+        /// <summary>Color del sol de la estación actual (mezclado durante la transición).</summary>
+        public Color SunColor => Current().sunColor;
+        /// <summary>Intensidad del sol de la estación actual.</summary>
+        public float SunIntensity => Current().sunIntensity;
+        /// <summary>Elevación del sol a mediodía, en grados.</summary>
+        public float SunMiddayElevation => Current().sunMiddayElevation;
 
         void Start()
         {
@@ -100,7 +106,7 @@ namespace TheLivingCanvas.Seasons
         {
             sunColor = Color.Lerp(a.sunColor, b.sunColor, k),
             sunIntensity = Mathf.Lerp(a.sunIntensity, b.sunIntensity, k),
-            sunEuler = Quaternion.Slerp(Quaternion.Euler(a.sunEuler), Quaternion.Euler(b.sunEuler), k).eulerAngles,
+            sunMiddayElevation = Mathf.Lerp(a.sunMiddayElevation, b.sunMiddayElevation, k),
             foliageColor = Color.Lerp(a.foliageColor, b.foliageColor, k),
             foliageBlend = Mathf.Lerp(a.foliageBlend, b.foliageBlend, k),
             groundColor = Color.Lerp(a.groundColor, b.groundColor, k),
@@ -109,9 +115,6 @@ namespace TheLivingCanvas.Seasons
 
         void Apply(Look look)
         {
-            sun.color = look.sunColor;
-            sun.intensity = look.sunIntensity;
-            sun.transform.rotation = Quaternion.Euler(look.sunEuler);
             foreach (var target in targets)
             {
                 if (target.renderer == null) continue;
