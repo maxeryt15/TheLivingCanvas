@@ -17,4 +17,6 @@ MonoBehaviour:
   price: 40
   icon: {fileID: 0}
   requiredLevel: 2
+  seasonal: 0
+  season: 0
   brush: {fileID: 11400000, guid: 79e3e6f2335ac9b4ab8119b52cc7337f, type: 2}

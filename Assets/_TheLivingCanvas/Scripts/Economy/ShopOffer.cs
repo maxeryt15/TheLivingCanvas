@@ -1,3 +1,4 @@
+using TheLivingCanvas.Seasons;
 using UnityEngine;
 
 namespace TheLivingCanvas.Economy
@@ -11,12 +12,18 @@ namespace TheLivingCanvas.Economy
         [SerializeField] Texture2D icon;
         [Tooltip("Nivel de artista mínimo para comprarla.")]
         [SerializeField] int requiredLevel = 1;
+        [Tooltip("Si está marcado, solo se vende durante la estación indicada.")]
+        [SerializeField] bool seasonal;
+        [SerializeField] Season season;
 
         public string DisplayName => displayName;
         public string Description => description;
         public int Price => price;
         public int RequiredLevel => requiredLevel;
         public virtual Texture Icon => icon;
+
+        /// <summary>false si la oferta es de una estación y no es la actual.</summary>
+        public bool IsSoldIn(Season current) => !seasonal || current == season;
 
         /// <summary>false si ya no se puede comprar (ej. una mejora que ya se tiene).</summary>
         public virtual bool IsAvailable(GameObject buyer) => true;
@@ -34,6 +41,13 @@ namespace TheLivingCanvas.Economy
         }
 
         public void EditorSetRequiredLevel(int level) => requiredLevel = level;
+
+        /// <summary>null = se vende todo el año.</summary>
+        public void EditorSetSeason(Season? onlyIn)
+        {
+            seasonal = onlyIn.HasValue;
+            if (onlyIn.HasValue) season = onlyIn.Value;
+        }
 #endif
     }
 }

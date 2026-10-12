@@ -17,5 +17,7 @@ MonoBehaviour:
   price: 5
   icon: {fileID: 0}
   requiredLevel: 1
+  seasonal: 0
+  season: 0
   canvasType: {fileID: 11400000, guid: 2c1e25d7ef579bb4eb6b6f074f097877, type: 2}
   quantity: 1

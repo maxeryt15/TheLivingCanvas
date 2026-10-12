@@ -122,15 +122,15 @@ namespace TheLivingCanvas.EditorTools
             BuildSeasonCounter(hud.transform, seasonClock);
             BuildTestLamp(environment.transform, new Vector3(-4.5f, 0.8f, 4.2f));
             BuildSellCrate(environment.transform, new Vector3(-4.6f, 0f, 1.5f));
-            BuildShop(hud.transform, environment.transform, player, rig);
+            BuildShop(hud.transform, environment.transform, player, rig, seasonClock);
             BuildCropPicker(hud.transform, player, rig, seasonClock);
             BuildMortar(hud.transform, environment.transform, player, rig, paintMode.GetComponent<PaintBrushController>());
             BuildGarden(player.GetComponent<ArtistLevel>());
             var dialogueUi = BuildDialogueUI(hud.transform, player, rig);
             var commissionUi = BuildCommissionUI(hud.transform, player, rig);
-            BuildGallery(hud.transform, dialogueUi, commissionUi, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>());
+            BuildGallery(hud.transform, dialogueUi, commissionUi, player, rig, wallMat, paintMode.GetComponent<PaintBrushController>(), seasonClock);
             var town = BuildTown();
-            BuildArtDealer(hud.transform, town, dialogueUi, player, rig, paintMode.GetComponent<PaintBrushController>());
+            BuildArtDealer(hud.transform, town, dialogueUi, player, rig, paintMode.GetComponent<PaintBrushController>(), seasonClock);
             BuildNoticeBoard(town, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>());
 
             // Caballete delante del punto de inicio, mirando hacia el jugador.
@@ -1806,7 +1806,48 @@ namespace TheLivingCanvas.EditorTools
             foreach (var offer in offers)
             {
                 offer.EditorSetRequiredLevel(RequiredLevel(offer.name));
+                offer.EditorSetSeason(null);
                 EditorUtility.SetDirty(offer);
+            }
+
+            // Pigmentos de temporada: como Violet, fuera de GetOrCreatePalette() (esa lista también genera ofertas de todo el año).
+            // El color y su recarga solo se venden en su estación.
+            foreach (var (season, id, name, color) in new[]
+            {
+                (Season.Spring, "blossom_pink", "Blossom Pink", new Color(0.93f, 0.62f, 0.70f)),
+                (Season.Summer, "sky_blue", "Sky Blue", new Color(0.55f, 0.75f, 0.92f)),
+                (Season.Autumn, "burnt_orange", "Burnt Orange", new Color(0.80f, 0.42f, 0.15f)),
+                (Season.Winter, "frost_lilac", "Frost Lilac", new Color(0.76f, 0.72f, 0.88f))
+            })
+            {
+                var pigment = GetOrCreatePigment(id, name, color);
+                var path = $"{Root}/Data/Shop/Offer_Pigment_{id}.asset";
+                var offer = AssetDatabase.LoadAssetAtPath<PigmentOffer>(path);
+                if (offer == null)
+                {
+                    offer = ScriptableObject.CreateInstance<PigmentOffer>();
+                    AssetDatabase.CreateAsset(offer, path);
+                }
+                offer.EditorSetupOffer(name, $"{season} only: a new color for your palette (+30).", 20, null);
+                offer.EditorSetPigment(pigment);
+                offer.EditorSetRequiredLevel(1);
+                offer.EditorSetSeason(season);
+                EditorUtility.SetDirty(offer);
+                offers.Add(offer);
+
+                var refillPath = $"{Root}/Data/Shop/Offer_Refill_{id}.asset";
+                var refill = AssetDatabase.LoadAssetAtPath<RefillOffer>(refillPath);
+                if (refill == null)
+                {
+                    refill = ScriptableObject.CreateInstance<RefillOffer>();
+                    AssetDatabase.CreateAsset(refill, refillPath);
+                }
+                refill.EditorSetupOffer($"{name} jar", $"{season} only: +30 {name.ToLowerInvariant()} pigment.", 10, null);
+                refill.EditorSetPigment(pigment);
+                refill.EditorSetRequiredLevel(1);
+                refill.EditorSetSeason(season);
+                EditorUtility.SetDirty(refill);
+                offers.Add(refill);
             }
             return offers.ToArray();
         }
@@ -1988,7 +2029,7 @@ namespace TheLivingCanvas.EditorTools
         /// Galería detrás del estudio (x de -6 a 6, z de 6 a 14), sin techo: suelo, paredes y 6 marcos vacíos
         /// (2 por pared lateral y 2 al fondo) + el panel para colgar pinturas.
         /// </summary>
-        static void BuildGallery(Transform hud, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, GameObject rig, Material wallMat, PaintBrushController brush)
+        static void BuildGallery(Transform hud, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, GameObject rig, Material wallMat, PaintBrushController brush, SeasonClock seasonClock)
         {
             var floorMat = GetOrCreateMaterial("M_Gallery_Floor", new Color(0.74f, 0.68f, 0.60f));
             var woodMat = GetOrCreateMaterial("M_Gallery_Frame", new Color(0.25f, 0.17f, 0.11f));
@@ -2029,7 +2070,7 @@ namespace TheLivingCanvas.EditorTools
             BuildGalleryFrame(gallery, "Frame_B1", new Vector3(-3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildGalleryFrame(gallery, "Frame_B2", new Vector3(3.5f, 1.6f, 13.9f), Quaternion.identity, woodMat, hangUi, inventory);
             BuildCollectionBoard(hud, gallery, player, rig, woodMat);
-            BuildNpc(gallery, dialogueUi, commissionUi, player, brush);
+            BuildNpc(gallery, dialogueUi, commissionUi, player, brush, seasonClock);
         }
 
         /// <summary>Panel de diálogo compartido por todos los personajes.</summary>
@@ -2106,7 +2147,7 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>Ottilie Vane, coleccionista excéntrica (figura de primitivas) en la galería.</summary>
-        static void BuildNpc(Transform gallery, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, PaintBrushController brush)
+        static void BuildNpc(Transform gallery, DialogueUI dialogueUi, CommissionUI commissionUi, GameObject player, PaintBrushController brush, SeasonClock seasonClock)
         {
             // Datos del personaje.
             if (!AssetDatabase.IsValidFolder($"{Root}/Data/Npcs"))
@@ -2159,6 +2200,13 @@ namespace TheLivingCanvas.EditorTools
                 "Keep your brushes wet and your garden wilder than is sensible. The best colours always sprout where nobody planned them.",
                 "I may have a request or two for you, once you have settled in. Do come and chat again soon!"
             }, new[] { sunflowerCommission, tomatoCommission, blueCommission });
+            definition.EditorSetSeasonLines(new[]
+            {
+                "Spring, darling! Everything is blushing pink and showing off. I approve.",
+                "This summer light makes every colour shout. I adore a shouting colour.",
+                "Autumn light suits the gallery, doesn't it? All those warm, tired golds.",
+                "Winter, and the world has gone pale. All the more reason to paint something bright, darling."
+            });
             EditorUtility.SetDirty(definition);
 
             // Figura de ~1,75 m: un único CapsuleCollider en la raíz (CreatePart quita los de las primitivas).
@@ -2190,6 +2238,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
             so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
             so.FindProperty("brush").objectReferenceValue = brush;
+            so.FindProperty("seasons").objectReferenceValue = seasonClock;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -2197,7 +2246,7 @@ namespace TheLivingCanvas.EditorTools
         /// Bastien Marlowe, marchante de arte, con su puesto en la plaza del pueblo (hueco reservado en BuildTown).
         /// El mostrador mira a la fuente; el personaje está a un lado para que el jugador llegue a hablarle.
         /// </summary>
-        static void BuildArtDealer(Transform hud, Transform town, DialogueUI dialogueUi, GameObject player, GameObject rig, PaintBrushController brush)
+        static void BuildArtDealer(Transform hud, Transform town, DialogueUI dialogueUi, GameObject player, GameObject rig, PaintBrushController brush, SeasonClock seasonClock)
         {
             // Panel de venta.
             var list = BuildListPanel(hud, "ArtDealerUI", "Sell paintings", new Vector2(760f, 640f));
@@ -2225,6 +2274,13 @@ namespace TheLivingCanvas.EditorTools
                 "I buy originals only. Seeds and copies are of no interest to me. I pay by crop, quality, rarity and canvas, and I can tell all four at a glance.",
                 "Show me something worth my time."
             }, new CommissionDefinition[0]);
+            definition.EditorSetSeasonLines(new[]
+            {
+                "Spring. Everyone paints blossoms. Few paint them well.",
+                "Summer. Bright colours sell. Muddy ones don't.",
+                "Autumn. Collectors grow sentimental this time of year. Good for business.",
+                "Winter. Fewer buyers, sharper eyes. Bring me your best."
+            });
             EditorUtility.SetDirty(definition);
 
             // Puesto: mostrador con dos postes y toldo, mirando a la fuente (0, 0, -16). Frente = +Z local, postes atrás.
@@ -2284,6 +2340,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
             so.FindProperty("stock").objectReferenceValue = player.GetComponent<PigmentStock>();
             so.FindProperty("brush").objectReferenceValue = brush;
+            so.FindProperty("seasons").objectReferenceValue = seasonClock;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -2545,7 +2602,7 @@ namespace TheLivingCanvas.EditorTools
         };
 
         /// <summary>Puesto de la tienda junto a la pared del fondo + panel de compra.</summary>
-        static void BuildShop(Transform hud, Transform environment, GameObject player, GameObject rig)
+        static void BuildShop(Transform hud, Transform environment, GameObject player, GameObject rig, SeasonClock seasonClock)
         {
             // Filas de 80 px: caben 6 ofertas.
             var ui = BuildListPanel(hud, "ShopUI", "Shop", new Vector2(760f, 740f));
@@ -2555,6 +2612,7 @@ namespace TheLivingCanvas.EditorTools
             SetArray(so.FindProperty("offers"), GetOrCreateShopOffers());
             so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
             so.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
+            so.FindProperty("seasons").objectReferenceValue = seasonClock;
             so.FindProperty("messageLabel").objectReferenceValue = ui.Message;
             so.ApplyModifiedPropertiesWithoutUndo();
 

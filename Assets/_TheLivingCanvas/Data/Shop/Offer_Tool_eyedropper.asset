@@ -18,4 +18,6 @@ MonoBehaviour:
   price: 30
   icon: {fileID: 0}
   requiredLevel: 3
+  seasonal: 0
+  season: 0
   tool: 0

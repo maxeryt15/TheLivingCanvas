@@ -22,6 +22,12 @@ MonoBehaviour:
     always sprout where nobody planned them.
   - I may have a request or two for you, once you have settled in. Do come and chat
     again soon!
+  seasonLines:
+  - Spring, darling! Everything is blushing pink and showing off. I approve.
+  - This summer light makes every colour shout. I adore a shouting colour.
+  - Autumn light suits the gallery, doesn't it? All those warm, tired golds.
+  - Winter, and the world has gone pale. All the more reason to paint something bright,
+    darling.
   commissions:
   - {fileID: 11400000, guid: e0c01c690bbde444bb7195528bdd7eaa, type: 2}
   - {fileID: 11400000, guid: d835e88298e695647a57349c424caad6, type: 2}

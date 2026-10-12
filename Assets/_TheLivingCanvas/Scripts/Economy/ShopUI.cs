@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using TheLivingCanvas.Core;
 using TheLivingCanvas.Progression;
+using TheLivingCanvas.Seasons;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace TheLivingCanvas.Economy
 {
     /// <summary>
-    /// Panel placeholder de la tienda: una fila por oferta que se puede comprar ahora (lo ya comprado y las
-    /// recargas de colores que aún no se tienen no salen), con su precio y un botón Buy.
+    /// Panel placeholder de la tienda: una fila por oferta que se puede comprar ahora (lo ya comprado, las
+    /// recargas de colores que aún no se tienen y las ofertas de otra estación no salen), con su precio y un botón Buy.
     /// Las ofertas de un nivel de artista superior se listan, pero bloqueadas.
     /// </summary>
     public class ShopUI : ModalPanel
@@ -16,6 +17,7 @@ namespace TheLivingCanvas.Economy
         [SerializeField] ShopOffer[] offers;
         [SerializeField] Wallet wallet;
         [SerializeField] ArtistLevel artistLevel;
+        [SerializeField] SeasonClock seasons;
         [SerializeField] RectTransform rowContainer;
         [Tooltip("Fila desactivada que se clona por oferta (RawImage 'Icon', Text 'Name', Button 'Buy' con Text).")]
         [SerializeField] GameObject rowTemplate;
@@ -35,6 +37,7 @@ namespace TheLivingCanvas.Economy
             base.OnEnable();
             wallet.Changed += OnWalletChanged;
             artistLevel.LeveledUp += OnLeveledUp;
+            seasons.SeasonChanged += OnSeasonChanged;
         }
 
         protected override void OnDisable()
@@ -42,6 +45,7 @@ namespace TheLivingCanvas.Economy
             base.OnDisable();
             wallet.Changed -= OnWalletChanged;
             artistLevel.LeveledUp -= OnLeveledUp;
+            seasons.SeasonChanged -= OnSeasonChanged;
         }
 
         public void Open(GameObject player)
@@ -62,9 +66,14 @@ namespace TheLivingCanvas.Economy
             if (IsOpen) RefreshButtons();
         }
 
+        void OnSeasonChanged(Season season)
+        {
+            if (IsOpen) Rebuild(); // las ofertas de temporada entran y salen
+        }
+
         public void Buy(ShopOffer offer)
         {
-            if (!offer.IsAvailable(buyer) || offer.RequiredLevel > artistLevel.Level) return;
+            if (!offer.IsSoldIn(seasons.Current) || !offer.IsAvailable(buyer) || offer.RequiredLevel > artistLevel.Level) return;
             if (!wallet.TrySpend(offer.Price))
             {
                 messageLabel.text = $"Not enough coins for {offer.DisplayName.ToLowerInvariant()}.";
@@ -83,7 +92,7 @@ namespace TheLivingCanvas.Economy
 
             foreach (var offer in offers)
             {
-                if (!offer.IsAvailable(buyer)) continue;
+                if (!offer.IsSoldIn(seasons.Current) || !offer.IsAvailable(buyer)) continue;
                 var row = Instantiate(rowTemplate, rowContainer);
                 row.SetActive(true);
                 row.transform.Find("Icon").GetComponent<RawImage>().texture = offer.Icon;

@@ -19,4 +19,9 @@ MonoBehaviour:
   - I buy originals only. Seeds and copies are of no interest to me. I pay by crop,
     quality, rarity and canvas, and I can tell all four at a glance.
   - Show me something worth my time.
+  seasonLines:
+  - Spring. Everyone paints blossoms. Few paint them well.
+  - Summer. Bright colours sell. Muddy ones don't.
+  - Autumn. Collectors grow sentimental this time of year. Good for business.
+  - Winter. Fewer buyers, sharper eyes. Bring me your best.
   commissions: []

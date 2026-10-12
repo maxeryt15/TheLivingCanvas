@@ -17,4 +17,6 @@ MonoBehaviour:
   price: 60
   icon: {fileID: 0}
   requiredLevel: 4
+  seasonal: 0
+  season: 0
   resolution: {x: 960, y: 768}

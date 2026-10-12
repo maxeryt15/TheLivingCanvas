@@ -17,5 +17,7 @@ MonoBehaviour:
   price: 15
   icon: {fileID: 0}
   requiredLevel: 3
+  seasonal: 0
+  season: 0
   pigment: {fileID: 11400000, guid: 25b02c9d887373f4cab1b54b2c5efffe, type: 2}
   units: 30

@@ -17,4 +17,6 @@ MonoBehaviour:
   price: 30
   icon: {fileID: 0}
   requiredLevel: 2
+  seasonal: 0
+  season: 0
   crop: {fileID: 11400000, guid: b19e841a2369a924a8b03d5fe795ec93, type: 2}

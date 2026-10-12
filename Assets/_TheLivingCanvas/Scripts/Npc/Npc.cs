@@ -5,6 +5,7 @@ using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Painting;
 using TheLivingCanvas.Progression;
+using TheLivingCanvas.Seasons;
 using UnityEngine;
 
 namespace TheLivingCanvas.Npcs
@@ -21,6 +22,7 @@ namespace TheLivingCanvas.Npcs
         [SerializeField] ArtistLevel artistLevel;
         [SerializeField] PigmentStock stock;
         [SerializeField] PaintBrushController brush;
+        [SerializeField] SeasonClock seasons;
 
         // Sin guardado todavía (fase 18): índice del encargo actual y si ya lo ha pedido.
         int commissionIndex;
@@ -42,17 +44,27 @@ namespace TheLivingCanvas.Npcs
             var commission = Current;
             if (commission == null)
             {
+                var greeting = WithSeasonLine(definition.GreetingLines);
                 if (dealerUI != null)
-                    dialogueUI.Open(definition.DisplayName, definition.GreetingLines, "Sell paintings", dealerUI.Open);
+                    dialogueUI.Open(definition.DisplayName, greeting, "Sell paintings", dealerUI.Open);
                 else
-                    dialogueUI.Open(definition.DisplayName, definition.GreetingLines);
+                    dialogueUI.Open(definition.DisplayName, greeting);
                 return;
             }
 
             // La primera vez saluda y pide el encargo en un solo diálogo.
             var lines = requested ? commission.RequestLines : definition.GreetingLines.Concat(commission.RequestLines).ToArray();
             requested = true;
-            dialogueUI.Open(definition.DisplayName, lines, "Give painting", () => commissionUI.Open(commission, Deliver));
+            dialogueUI.Open(definition.DisplayName, WithSeasonLine(lines), "Give painting", () => commissionUI.Open(commission, Deliver));
+        }
+
+        /// <summary>Antepone la frase de la estación actual (si el personaje tiene una).</summary>
+        string[] WithSeasonLine(string[] lines)
+        {
+            var seasonLines = definition.SeasonLines;
+            int index = (int)seasons.Current;
+            if (seasonLines == null || index >= seasonLines.Length || string.IsNullOrEmpty(seasonLines[index])) return lines;
+            return lines.Prepend(seasonLines[index]).ToArray();
         }
 
         /// <summary>Pintura entregada: paga la recompensa, pasa al siguiente encargo y da las gracias.</summary>

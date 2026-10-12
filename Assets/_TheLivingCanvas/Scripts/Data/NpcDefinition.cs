@@ -8,10 +8,13 @@ namespace TheLivingCanvas.Data
     {
         [SerializeField] string displayName;
         [SerializeField] string[] greetingLines;
+        [Tooltip("Una frase por estación, en el orden del enum Season.")]
+        [SerializeField] string[] seasonLines;
         [SerializeField] CommissionDefinition[] commissions;
 
         public string DisplayName => displayName;
         public string[] GreetingLines => greetingLines;
+        public string[] SeasonLines => seasonLines;
         /// <summary>Sus encargos, en orden.</summary>
         public CommissionDefinition[] Commissions => commissions;
 
@@ -23,6 +26,8 @@ namespace TheLivingCanvas.Data
             greetingLines = newGreetingLines;
             commissions = newCommissions;
         }
+
+        public void EditorSetSeasonLines(string[] newSeasonLines) => seasonLines = newSeasonLines;
 #endif
     }
 }

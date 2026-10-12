@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a8207dfb303bc5418ebae44525bece0, type: 3}
+  m_Name: Offer_Pigment_burnt_orange
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Economy.PigmentOffer
+  displayName: Burnt Orange
+  description: 'Autumn only: a new color for your palette (+30).'
+  price: 20
+  icon: {fileID: 0}
+  requiredLevel: 1
+  seasonal: 1
+  season: 2
+  pigment: {fileID: 11400000, guid: e6b77f1498834394bb9d49ebbe92c3e7, type: 2}
+  units: 30
