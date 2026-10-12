@@ -29,6 +29,8 @@ namespace TheLivingCanvas.Inventory
         public Texture2D Image { get; }
         /// <summary>0 = la pintura original; cada semilla replantada suma 1.</summary>
         public int Generation { get; protected set; }
+        /// <summary>None en una pintura recién hecha; la semilla de una planta mutada la hereda.</summary>
+        public Mutation Mutation { get; protected set; }
 
         /// <summary>Nombre del cultivo o de su variante (ej. "Blue Sunflower").</summary>
         public string CropName => Variant?.displayName ?? Crop.DisplayName;
@@ -37,7 +39,8 @@ namespace TheLivingCanvas.Inventory
         /// <summary>null = Classic.</summary>
         public StyleDefinition Style => Result.Style;
 
-        public override string Detail => $"{Result.Quality} · {CanvasType.DisplayName}" + (Style != null ? $" · {Style.DisplayName}" : string.Empty);
+        public override string Detail => $"{Result.Quality} · {CanvasType.DisplayName}" + (Style != null ? $" · {Style.DisplayName}" : string.Empty)
+            + (Mutation != Mutation.None ? $" · {Mutation.Name()}" : string.Empty);
         public override Texture Icon => Image;
         public override string ToastText => $"+1 {DisplayName} ({Detail})";
     }
@@ -52,10 +55,12 @@ namespace TheLivingCanvas.Inventory
         /// <summary>Cuánto palidece la pintura (y el cultivo) por generación (0–1).</summary>
         const float FadePerGeneration = 0.3f;
 
-        public SeedItem(PaintingItem parent)
+        /// <summary>La semilla hereda la mutación de la planta que la dio (<paramref name="mutation"/>).</summary>
+        public SeedItem(PaintingItem parent, Mutation mutation)
             : base(parent.Crop, parent.Variant, parent.CanvasType, parent.Result.Faded(FadePerGeneration), FadeImage(parent.Image))
         {
             Generation = parent.Generation + 1;
+            Mutation = mutation;
         }
 
         /// <summary>false si la pintura ya está en lo más bajo (Normal) y no deja semilla.</summary>

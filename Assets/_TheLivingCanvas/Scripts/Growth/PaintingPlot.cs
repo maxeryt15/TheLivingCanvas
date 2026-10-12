@@ -1,7 +1,9 @@
 using System.Collections;
 using TheLivingCanvas.Data;
+using TheLivingCanvas.Economy;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
+using TheLivingCanvas.Progression;
 using TheLivingCanvas.Seasons;
 using UnityEngine;
 
@@ -9,7 +11,7 @@ namespace TheLivingCanvas.Growth
 {
     /// <summary>
     /// Una pintura terminada puesta plana en el suelo: la parcela de la que crece el cultivo.
-    /// Con la planta adulta se cosecha (Interact): da la cosecha según la calidad y, salvo en calidad
+    /// Con la planta adulta se cosecha (Interact): da la cosecha según la calidad (y la mutación, si la hay) y, salvo en calidad
     /// Normal, una semilla con la pintura desvanecida. La parcela se consume.
     /// </summary>
     public class PaintingPlot : MonoBehaviour, IInteractable
@@ -22,11 +24,13 @@ namespace TheLivingCanvas.Growth
 
         CropPlant plant;
         SeasonClock seasons;
+        Mutation mutation;
 
         public PaintingItem Painting { get; private set; }
+        string HarvestName => (mutation != Mutation.None ? $"{mutation.Name().ToLowerInvariant()} " : string.Empty) + Painting.CropName.ToLowerInvariant();
         public string Prompt => InSeason
-            ? $"Harvest {Painting.CropName.ToLowerInvariant()} (in season +{CropDefinition.InSeasonBonus})"
-            : $"Harvest {Painting.CropName.ToLowerInvariant()}";
+            ? $"Harvest {HarvestName} (in season +{CropDefinition.InSeasonBonus})"
+            : $"Harvest {HarvestName}";
         bool InSeason => Painting.Crop.IsInSeason(seasons.Current);
         public bool CanInteract => plant != null && plant.IsGrown;
 
@@ -49,13 +53,55 @@ namespace TheLivingCanvas.Growth
         {
             var crop = Painting.Crop;
             if (crop.PlantPrefab == null) return;
-            // Encima de la pintura; la flor mira hacia quien la colocó (-Z de la parcela).
-            plant = Instantiate(crop.PlantPrefab, transform);
-            plant.transform.localPosition = new Vector3(0f, 0.035f, 0f);
-            plant.transform.localRotation = Quaternion.identity;
-            plant.Grow(Painting.Result, crop.GrowthDuration * (Painting.Style != null ? Painting.Style.GrowthMultiplier : 1f));
+            // Una pintura que ya trae mutación (semilla) la conserva; si no, se tira el dado.
+            mutation = Painting.Mutation != Mutation.None ? Painting.Mutation : Mutations.Roll(Painting.Result.Quality);
+            // Twin: dos plantas, a los lados; si no, una en el centro.
+            plant = SpawnPlant(mutation == Mutation.Twin ? -TwinOffset : 0f);
+            if (mutation == Mutation.Twin) SpawnPlant(TwinOffset);
+        }
+
+        const float TwinOffset = 0.18f;
+        const float GiantScale = 1.4f;
+
+        /// <summary>Encima de la pintura, desplazada en X local; la flor mira hacia quien la colocó (-Z de la parcela).</summary>
+        CropPlant SpawnPlant(float offsetX)
+        {
+            var spawned = Instantiate(Painting.Crop.PlantPrefab, transform);
+            spawned.transform.localPosition = new Vector3(offsetX, 0.035f, 0f);
+            spawned.transform.localRotation = Quaternion.identity;
+            if (mutation == Mutation.Giant) spawned.transform.localScale = Vector3.one * GiantScale;
+            spawned.Grow(Painting.Result, Painting.Crop.GrowthDuration * (Painting.Style != null ? Painting.Style.GrowthMultiplier : 1f));
             if (Painting.Style != null && Painting.Style.Kind == StyleKind.Swirl)
-                StartCoroutine(Swirl(plant));
+                StartCoroutine(Swirl(spawned));
+            if (mutation == Mutation.Luminous)
+                StartCoroutine(Glow(spawned));
+            return spawned;
+        }
+
+        /// <summary>Luminosa: ya crecida (Tint y Apply ya no tocan el color) brilla con su propio color y suma una luz suave.</summary>
+        IEnumerator Glow(CropPlant glowing)
+        {
+            const float emission = 0.6f;
+            while (glowing != null && !glowing.IsGrown) yield return null;
+            if (glowing == null) yield break;
+            var sum = Color.black;
+            var renderers = glowing.GetComponentsInChildren<MeshRenderer>();
+            foreach (var r in renderers)
+            {
+                var material = r.material;
+                if (material.IsKeywordEnabled("_EMISSION")) continue; // ya brilla por su cuenta (campanillas del glowbell)
+                material.EnableKeyword("_EMISSION");
+                material.SetColor("_EmissionColor", material.color * emission);
+                sum += material.color;
+            }
+            var lightObject = new GameObject("MutationLight");
+            lightObject.transform.SetParent(glowing.transform, false);
+            lightObject.transform.localPosition = Vector3.up * 0.3f;
+            var light = lightObject.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = Color.Lerp(sum / Mathf.Max(1, renderers.Length), Color.white, 0.5f);
+            light.intensity = 0.8f;
+            light.range = 1.5f;
         }
 
         /// <summary>Remolino: ya crecida, la planta gira despacio sobre Y y su inclinación precesa en una espiral suave.</summary>
@@ -82,9 +128,16 @@ namespace TheLivingCanvas.Growth
             var inventory = interactor.GetComponent<PlayerInventory>();
             int amount = CropPlant.HarvestAmount(Painting.Result.Quality) * Painting.CanvasType.HarvestMultiplier;
             if (InSeason) amount += CropDefinition.InSeasonBonus;
-            inventory.Add(new CropItem(Painting.Crop, Painting.Variant, amount));
+            if (mutation == Mutation.Giant) amount += 1;
+            else if (mutation == Mutation.Twin) amount *= 2;
+            var harvest = new CropItem(Painting.Crop, Painting.Variant, amount);
+            inventory.Add(harvest);
+            if (mutation == Mutation.Luminous)
+                interactor.GetComponent<Wallet>().Add(harvest.UnitPrice * amount); // la cosecha vale el doble
+            if (mutation != Mutation.None)
+                interactor.GetComponent<ArtistLevel>().DiscoverMutation(mutation);
             if (SeedItem.CanSeed(Painting))
-                inventory.Add(new SeedItem(Painting));
+                inventory.Add(new SeedItem(Painting, mutation));
             Destroy(gameObject); // la pintura se consume
         }
     }

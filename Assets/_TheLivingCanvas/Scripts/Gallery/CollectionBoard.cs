@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace TheLivingCanvas.Gallery
 {
-    /// <summary>Tablón de la galería: muestra cuántos cultivos y variantes se han descubierto; interactuar abre la colección.</summary>
+    /// <summary>Tablón de la galería: muestra cuántos cultivos, variantes y mutaciones se han descubierto; interactuar abre la colección.</summary>
     public class CollectionBoard : MonoBehaviour, IInteractable
     {
         [SerializeField] CollectionUI collectionUI;
@@ -27,7 +27,7 @@ namespace TheLivingCanvas.Gallery
 
         public void Interact(PlayerInteractor interactor) => collectionUI.Open(artistLevel, crops);
 
-        /// <summary>Descubiertos y total (cada cultivo cuenta uno, más una por cada una de sus variantes).</summary>
+        /// <summary>Descubiertos y total (cada cultivo cuenta uno, más una por cada una de sus variantes y por cada mutación).</summary>
         public static (int found, int total) Count(ArtistLevel artistLevel, CropDefinition[] crops)
         {
             int found = 0, total = 0;
@@ -40,6 +40,11 @@ namespace TheLivingCanvas.Gallery
                     total++;
                     if (artistLevel.IsDiscovered(crop, variant)) found++;
                 }
+            }
+            foreach (var mutation in Mutations.All)
+            {
+                total++;
+                if (artistLevel.IsDiscovered(mutation)) found++;
             }
             return (found, total);
         }

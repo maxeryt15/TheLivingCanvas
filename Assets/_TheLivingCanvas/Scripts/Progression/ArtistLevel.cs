@@ -77,6 +77,19 @@ namespace TheLivingCanvas.Progression
 
         static string Key(CropDefinition crop, CropVariant variant) => $"{crop.Id}:{variant.id}";
 
+        /// <summary>Si ya se cosechó una planta con esa mutación.</summary>
+        public bool IsDiscovered(Mutation mutation) => discovered.Contains(Key(mutation));
+
+        static string Key(Mutation mutation) => $"mutation:{mutation.ToString().ToLowerInvariant()}";
+
+        /// <summary>Registra la mutación al cosecharla; true si era la primera vez.</summary>
+        public bool DiscoverMutation(Mutation mutation)
+        {
+            if (!discovered.Add(Key(mutation))) return false;
+            Changed?.Invoke();
+            return true;
+        }
+
         /// <summary>Da la XP de una pintura terminada; la variante puede ser null si no salió ninguna.</summary>
         public XpGain AwardPainting(PaintingQuality quality, CropDefinition crop, CropVariant variant)
         {

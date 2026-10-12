@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace TheLivingCanvas.Gallery
 {
-    /// <summary>Panel de la colección: una fila por cultivo y, detrás de cada uno, una por variante. Lo no descubierto sale en silueta.</summary>
+    /// <summary>Panel de la colección: una fila por cultivo y, detrás de cada uno, una por variante, y al final una por mutación. Lo no descubierto sale en silueta.</summary>
     public class CollectionUI : ModalPanel
     {
         [SerializeField] RectTransform rowContainer;
@@ -48,6 +48,14 @@ namespace TheLivingCanvas.Gallery
                         AddRow(crop.Icon, Color.black,
                             $"    ???\n    <size=18>{variant.rarity} variant of {(cropFound ? crop.DisplayName : "???")} — not painted yet</size>");
                 }
+            }
+
+            foreach (var mutation in Mutations.All)
+            {
+                if (artistLevel.IsDiscovered(mutation))
+                    AddRow(Texture2D.whiteTexture, Color.white, $"{mutation.Name()}\n<size=18>{mutation.Effect()}</size>");
+                else
+                    AddRow(Texture2D.whiteTexture, Color.black, "???\n<size=18>Mutation — not grown yet</size>");
             }
         }
 

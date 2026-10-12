@@ -1,3 +1,4 @@
+using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
 using UnityEngine;
@@ -51,7 +52,8 @@ namespace TheLivingCanvas.Gallery
             picture.gameObject.SetActive(true);
 
             plaqueText.text = $"{painting.CropName}\n{painting.Result.Quality} · {painting.CanvasType.DisplayName}"
-                + (painting.Style != null ? $" · {painting.Style.DisplayName}" : string.Empty);
+                + (painting.Style != null ? $" · {painting.Style.DisplayName}" : string.Empty)
+                + (painting.Mutation != Mutation.None ? $" · {painting.Mutation.Name()}" : string.Empty);
             plaque.SetActive(true);
         }
 
