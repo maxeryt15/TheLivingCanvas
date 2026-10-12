@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TheLivingCanvas.Audio;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Save;
 using UnityEngine;
@@ -125,6 +126,7 @@ namespace TheLivingCanvas.Painting
         /// <summary>Termina el trazo en curso (si lo hay): la acuarela sangra al soltar.</summary>
         void EndStroke()
         {
+            SfxPlayer.SetBrushing(false);
             if (strokeSurface == null) return;
             strokeSurface.EndStroke();
             strokeSurface = null;
@@ -329,6 +331,7 @@ namespace TheLivingCanvas.Painting
                         bool wash = !EraserActive && paintMode.ActiveCanvas.Style != null && paintMode.ActiveCanvas.Style.Kind == StyleKind.Wash;
                         bool swirl = !EraserActive && paintMode.ActiveCanvas.Style != null && paintMode.ActiveCanvas.Style.Kind == StyleKind.Swirl;
                         surface.BeginStroke(uv, brushRadius, color, wash ? washOpacity : glaze ? glazeOpacity : 1f, SymmetryActive, wash, swirl);
+                        SfxPlayer.SetBrushing(true);
                     }
                     strokeSurface = surface;
                 }

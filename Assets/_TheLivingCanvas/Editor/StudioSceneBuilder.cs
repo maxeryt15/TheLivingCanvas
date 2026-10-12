@@ -1,4 +1,5 @@
 using System.Linq;
+using TheLivingCanvas.Audio;
 using TheLivingCanvas.Core;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Economy;
@@ -139,6 +140,7 @@ namespace TheLivingCanvas.EditorTools
             BuildFestival(town, gallery, dialogueUi, commissionUi, player, paintMode.GetComponent<PaintBrushController>(), seasonClock);
             var saveManager = BuildSaveManager(player); // al final: ya existen todos los assets de datos
             BuildPauseMenu(hud.transform, player, rig, paintMode, placer, saveManager);
+            BuildAudio(player, seasonClock);
 
             BuildDayFade(hud.transform, seasonClock); // el último hijo del HUD: cubre todo lo demás
 
@@ -1381,6 +1383,55 @@ namespace TheLivingCanvas.EditorTools
             SetArray(registry.FindPropertyRelative("sets"), FindDataAssets<CollectionSet>());
             so.ApplyModifiedPropertiesWithoutUndo();
             return saveManager;
+        }
+
+        /// <summary>Música y efectos de sonido; antes ajusta cómo se importan los audios (música en streaming, efectos descomprimidos).</summary>
+        static void BuildAudio(GameObject player, SeasonClock seasonClock)
+        {
+            const string musicDir = "Assets/_TheLivingCanvas/Audio/Music/";
+            const string sfxDir = "Assets/_TheLivingCanvas/Audio/Sfx/";
+            foreach (var guid in AssetDatabase.FindAssets("t:AudioClip", new[] { musicDir }))
+                SetAudioImport(AssetDatabase.GUIDToAssetPath(guid), AudioClipLoadType.Streaming);
+            foreach (var guid in AssetDatabase.FindAssets("t:AudioClip", new[] { sfxDir }))
+                SetAudioImport(AssetDatabase.GUIDToAssetPath(guid), AudioClipLoadType.DecompressOnLoad);
+
+            var audio = new GameObject("Audio");
+            // Se desactiva mientras se cablea: los Awake/OnEnable necesitan las referencias ya puestas.
+            audio.SetActive(false);
+            var sfx = audio.AddComponent<SfxPlayer>();
+            var sfxSo = new SerializedObject(sfx);
+            sfxSo.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
+            sfxSo.FindProperty("artistLevel").objectReferenceValue = player.GetComponent<ArtistLevel>();
+            sfxSo.FindProperty("inventory").objectReferenceValue = player.GetComponent<PlayerInventory>();
+            sfxSo.FindProperty("brushLoop").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(sfxDir + "brush_loop.wav");
+            sfxSo.FindProperty("paintFinish").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(sfxDir + "paint_finish.wav");
+            sfxSo.FindProperty("harvest").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(sfxDir + "harvest.wav");
+            sfxSo.FindProperty("coin").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(sfxDir + "coin.wav");
+            sfxSo.FindProperty("uiOpen").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(sfxDir + "ui_open.wav");
+            sfxSo.FindProperty("uiClose").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(sfxDir + "ui_close.wav");
+            sfxSo.FindProperty("place").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(sfxDir + "place.wav");
+            sfxSo.FindProperty("levelUp").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(sfxDir + "level_up.wav");
+            sfxSo.ApplyModifiedPropertiesWithoutUndo();
+
+            var music = audio.AddComponent<MusicPlayer>();
+            var musicSo = new SerializedObject(music);
+            musicSo.FindProperty("seasons").objectReferenceValue = seasonClock;
+            musicSo.FindProperty("dayTrack").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(musicDir + "the_garden_remembers.ogg");
+            musicSo.FindProperty("eveningTrack").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(musicDir + "embers_and_lamplight.ogg");
+            musicSo.ApplyModifiedPropertiesWithoutUndo();
+            audio.SetActive(true);
+        }
+
+        /// <summary>Aplica tipo de carga y Vorbis al audio solo si difiere, para no reimportar sin necesidad.</summary>
+        static void SetAudioImport(string path, AudioClipLoadType loadType)
+        {
+            if (AssetImporter.GetAtPath(path) is not AudioImporter importer) return;
+            var settings = importer.defaultSampleSettings;
+            if (settings.loadType == loadType && settings.compressionFormat == AudioCompressionFormat.Vorbis) return;
+            settings.loadType = loadType;
+            settings.compressionFormat = AudioCompressionFormat.Vorbis;
+            importer.defaultSampleSettings = settings;
+            importer.SaveAndReimport();
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using TheLivingCanvas.Audio;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Player;
 using UnityEngine;
@@ -51,6 +52,7 @@ namespace TheLivingCanvas.Core
             cursorLock.PointerMode = true;
             cameraMode.SetLookInputEnabled(false);
             exitAction.action.Enable();
+            SfxPlayer.Play(Sfx.UiOpen);
             return true;
         }
 
@@ -62,6 +64,7 @@ namespace TheLivingCanvas.Core
             interactor.enabled = true;
             cursorLock.PointerMode = false;
             cameraMode.SetLookInputEnabled(true);
+            SfxPlayer.Play(Sfx.UiClose);
         }
 
         void OnCloseRequested(InputAction.CallbackContext _)

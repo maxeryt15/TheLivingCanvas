@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TheLivingCanvas.Audio;
 using TheLivingCanvas.Progression;
 using UnityEngine;
 
@@ -45,6 +46,7 @@ namespace TheLivingCanvas.Painting
             stock.TrySpend(usage);
 
             canvas.MarkFinished(result);
+            SfxPlayer.Play(Sfx.PaintFinish);
             paintMode.Exit();
             var variant = canvas.Crop.FindVariant(result);
             string name = (variant?.displayName ?? canvas.Crop.DisplayName).ToLowerInvariant();

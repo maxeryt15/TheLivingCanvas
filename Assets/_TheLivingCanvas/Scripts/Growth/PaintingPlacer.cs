@@ -1,3 +1,4 @@
+using TheLivingCanvas.Audio;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
@@ -118,6 +119,7 @@ namespace TheLivingCanvas.Growth
             preview.SetPreview(false);
             preview.StartGrowing();
             inventory.Remove(item);
+            SfxPlayer.Play(Sfx.Place);
             End();
         }
 
