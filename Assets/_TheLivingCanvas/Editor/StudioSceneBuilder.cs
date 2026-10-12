@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TheLivingCanvas.Audio;
 using TheLivingCanvas.Core;
@@ -1185,6 +1187,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("glowLight").objectReferenceValue = light;
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            UseLowPolySpheres(root);
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, SunbellPrefabPath);
             Object.DestroyImmediate(root);
             return prefab.GetComponent<SunbellPlant>();
@@ -1273,6 +1276,7 @@ namespace TheLivingCanvas.EditorTools
             so.FindProperty("glowLight").objectReferenceValue = light;
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            UseLowPolySpheres(root);
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, GlowbellPrefabPath);
             Object.DestroyImmediate(root);
             return prefab.GetComponent<GlowbellPlant>();
@@ -1340,6 +1344,7 @@ namespace TheLivingCanvas.EditorTools
             SetArray(so.FindProperty("stakeRenderers"), new Object[] { stake.GetComponent<Renderer>() });
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            UseLowPolySpheres(root);
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, TomatoPrefabPath);
             Object.DestroyImmediate(root);
             return prefab.GetComponent<TomatoPlant>();
@@ -1453,6 +1458,7 @@ namespace TheLivingCanvas.EditorTools
             SetArray(so.FindProperty("stemRenderers"), stemRenderers.ToArray());
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            UseLowPolySpheres(root);
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, SunflowerPrefabPath);
             Object.DestroyImmediate(root);
             return prefab.GetComponent<SunflowerPlant>();
@@ -1799,6 +1805,63 @@ namespace TheLivingCanvas.EditorTools
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, EaselPrefabPath);
             Object.DestroyImmediate(root);
             return prefab;
+        }
+
+        const string LowSpherePath = Root + "/Art/Models/LowSphere.asset";
+
+        /// <summary>
+        /// Las plantas usan muchas esferas pequeñas (pétalos, frutos, campanillas): la esfera de Unity tiene 768 triángulos,
+        /// demasiados para un jardín lleno. Las cambia por una esfera de baja resolución (~100 triángulos).
+        /// </summary>
+        static void UseLowPolySpheres(GameObject root)
+        {
+            var low = GetOrCreateLowSphere();
+            foreach (var filter in root.GetComponentsInChildren<MeshFilter>(true))
+                if (filter.sharedMesh != null && filter.sharedMesh.name == "Sphere")
+                    filter.sharedMesh = low;
+        }
+
+        /// <summary>Esfera UV de radio 0.5 (como la de Unity) con 10 segmentos y 6 anillos, guardada como asset.</summary>
+        static Mesh GetOrCreateLowSphere()
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<Mesh>(LowSpherePath);
+            if (existing != null) return existing;
+
+            const int segments = 10, rings = 6;
+            var vertices = new List<Vector3>();
+            var normals = new List<Vector3>();
+            var uvs = new List<Vector2>();
+            for (int r = 0; r <= rings; r++)
+            {
+                float v = (float)r / rings;
+                float phi = v * Mathf.PI;
+                for (int s = 0; s <= segments; s++)
+                {
+                    float u = (float)s / segments;
+                    float theta = u * 2f * Mathf.PI;
+                    var n = new Vector3(Mathf.Sin(phi) * Mathf.Cos(theta), Mathf.Cos(phi), Mathf.Sin(phi) * Mathf.Sin(theta));
+                    vertices.Add(n * 0.5f);
+                    normals.Add(n);
+                    uvs.Add(new Vector2(u, 1f - v));
+                }
+            }
+            var triangles = new List<int>();
+            for (int r = 0; r < rings; r++)
+                for (int s = 0; s < segments; s++)
+                {
+                    int a = r * (segments + 1) + s, c = a + segments + 1;
+                    if (r > 0) triangles.AddRange(new[] { a, a + 1, c });
+                    if (r < rings - 1) triangles.AddRange(new[] { a + 1, c + 1, c });
+                }
+            var mesh = new Mesh { name = "LowSphere" };
+            mesh.SetVertices(vertices);
+            mesh.SetNormals(normals);
+            mesh.SetUVs(0, uvs);
+            mesh.SetTriangles(triangles, 0);
+            mesh.RecalculateBounds();
+            Directory.CreateDirectory(Path.GetDirectoryName(LowSpherePath));
+            AssetDatabase.CreateAsset(mesh, LowSpherePath);
+            return mesh;
         }
 
         static GameObject CreatePart(PrimitiveType type, string name, Transform parent, Vector3 position, Vector3 scale, Material material, Quaternion rotation)
