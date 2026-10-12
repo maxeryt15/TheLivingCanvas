@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a799e70e5eb3f49b51d6067ff8efea, type: 3}
+  m_Name: Commission_OttilieSwirlSunflower
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
+  crop: {fileID: 11400000, guid: 0ecc6f8237d80d34b96096d748dbfbb3, type: 2}
+  variantId: 
+  minQuality: 1
+  requestLines:
+  - 'Darling, I have a new obsession: swirls! Great, rolling, dizzy brushstrokes
+    that make the whole canvas feel alive.'
+  - Paint me a sunflower in the Swirl style, Good quality or better. I want to feel
+    the wind in those petals.
+  - No Swirl style yet? The shop sells it, darling. Go and treat yourself, then come
+    straight back to me!
+  thanksLines:
+  - Look at it move! Every stroke is a little whirlwind. I could stare at it for
+    hours.
+  - You have a wild hand, darling, and I mean that as the highest of compliments.
+  rewardCoins: 100
+  rewardXp: 60
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0
+  style: {fileID: 11400000, guid: d013254f6dfba914ebb63431479fea31, type: 2}

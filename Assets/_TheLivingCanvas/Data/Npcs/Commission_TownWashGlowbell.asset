@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a799e70e5eb3f49b51d6067ff8efea, type: 3}
+  m_Name: Commission_TownWashGlowbell
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Data.CommissionDefinition
+  crop: {fileID: 11400000, guid: 9e3e9bdcff2b9374f8330b0b39962dc0, type: 2}
+  variantId: 
+  minQuality: 1
+  requestLines:
+  - 'Wanted: a glowbell painting in a soft watercolour Wash style, Good quality or
+    better. The children would love it in our classroom. The shop sells the Wash
+    style.'
+  - '- Rosalind, the schoolteacher'
+  thanksLines:
+  - 'A note is pinned in reply: "The whole class gasped when we hung it. So gentle
+    and so glowy. Thank you!"'
+  - '- Rosalind, the schoolteacher'
+  rewardCoins: 90
+  rewardXp: 60
+  rewardPigment: {fileID: 0}
+  rewardPigmentAmount: 0
+  style: {fileID: 11400000, guid: eea2b76178789a242839dfb2484fe9c4, type: 2}

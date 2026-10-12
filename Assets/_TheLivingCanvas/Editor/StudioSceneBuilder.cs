@@ -2239,13 +2239,25 @@ namespace TheLivingCanvas.EditorTools
                 "Here, a colour you won't find in any shop. Treat it kindly, and paint something wonderful with it!"
             }, 80, 50, violet, 30);
 
+            var swirlStyle = System.Array.Find(GetOrCreateStyles(), s => s.Kind == StyleKind.Swirl);
+            var swirlCommission = GetOrCreateCommission("Commission_OttilieSwirlSunflower", sunflower, null, PaintingQuality.Good, new[]
+            {
+                "Darling, I have a new obsession: swirls! Great, rolling, dizzy brushstrokes that make the whole canvas feel alive.",
+                "Paint me a sunflower in the Swirl style, Good quality or better. I want to feel the wind in those petals.",
+                "No Swirl style yet? The shop sells it, darling. Go and treat yourself, then come straight back to me!"
+            }, new[]
+            {
+                "Look at it move! Every stroke is a little whirlwind. I could stare at it for hours.",
+                "You have a wild hand, darling, and I mean that as the highest of compliments."
+            }, 100, 60, null, 0, swirlStyle);
+
             definition.EditorSetup("Ottilie Vane", new[]
             {
                 "Oh! A new face among my favourite walls. I'm Ottilie Vane, and I collect colours the way other people collect teaspoons.",
                 "Rare pigments make my heart flutter. And paintings that grow? Darling, I would cross three counties for one.",
                 "Keep your brushes wet and your garden wilder than is sensible. The best colours always sprout where nobody planned them.",
                 "I may have a request or two for you, once you have settled in. Do come and chat again soon!"
-            }, new[] { sunflowerCommission, tomatoCommission, blueCommission });
+            }, new[] { sunflowerCommission, tomatoCommission, blueCommission, swirlCommission });
             definition.EditorSetSeasonLines(new[]
             {
                 "Spring, darling! Everything is blushing pink and showing off. I approve.",
@@ -2432,6 +2444,17 @@ namespace TheLivingCanvas.EditorTools
                 "- Pip, age 7"
             }, 60, 40);
 
+            var washStyle = System.Array.Find(GetOrCreateStyles(), s => s.Kind == StyleKind.Wash);
+            var washGlowbell = GetOrCreateCommission("Commission_TownWashGlowbell", GetOrCreateGlowbellCrop(), null, PaintingQuality.Good, new[]
+            {
+                "Wanted: a glowbell painting in a soft watercolour Wash style, Good quality or better. The children would love it in our classroom. The shop sells the Wash style.",
+                "- Rosalind, the schoolteacher"
+            }, new[]
+            {
+                "A note is pinned in reply: \"The whole class gasped when we hung it. So gentle and so glowy. Thank you!\"",
+                "- Rosalind, the schoolteacher"
+            }, 90, 60, null, 0, washStyle);
+
             // Raíz a (-4.6, 0, -17.5), libre de banco, farola (-4.6, 0, -20.6) y puesto (-3, 0, -13).
             var root = new GameObject("CommissionBoard");
             root.transform.SetParent(town, false);
@@ -2450,7 +2473,8 @@ namespace TheLivingCanvas.EditorTools
             {
                 (new Vector3(-0.5f, 1.55f, 0.06f), 5f),
                 (new Vector3(0.1f, 1.3f, 0.06f), -4f),
-                (new Vector3(0.55f, 1.6f, 0.06f), 7f)
+                (new Vector3(0.55f, 1.6f, 0.06f), 7f),
+                (new Vector3(-0.1f, 1.68f, 0.065f), -6f)
             };
             var notes = new GameObject[noteSpots.Length];
             for (int i = 0; i < noteSpots.Length; i++)
@@ -2461,7 +2485,7 @@ namespace TheLivingCanvas.EditorTools
 
             var component = root.AddComponent<CommissionBoard>();
             var so = new SerializedObject(component);
-            SetArray(so.FindProperty("commissions"), new[] { tomato, glowbell, redSunflower });
+            SetArray(so.FindProperty("commissions"), new[] { tomato, glowbell, redSunflower, washGlowbell });
             so.FindProperty("dialogueUI").objectReferenceValue = dialogueUi;
             so.FindProperty("commissionUI").objectReferenceValue = commissionUi;
             so.FindProperty("wallet").objectReferenceValue = player.GetComponent<Wallet>();
@@ -2473,7 +2497,8 @@ namespace TheLivingCanvas.EditorTools
         }
 
         static CommissionDefinition GetOrCreateCommission(string fileName, CropDefinition crop, string variantId, PaintingQuality minQuality,
-            string[] requestLines, string[] thanksLines, int rewardCoins, int rewardXp, PigmentDefinition rewardPigment = null, int rewardPigmentAmount = 0)
+            string[] requestLines, string[] thanksLines, int rewardCoins, int rewardXp, PigmentDefinition rewardPigment = null, int rewardPigmentAmount = 0,
+            StyleDefinition style = null)
         {
             var path = $"{Root}/Data/Npcs/{fileName}.asset";
             var commission = AssetDatabase.LoadAssetAtPath<CommissionDefinition>(path);
@@ -2482,7 +2507,7 @@ namespace TheLivingCanvas.EditorTools
                 commission = ScriptableObject.CreateInstance<CommissionDefinition>();
                 AssetDatabase.CreateAsset(commission, path);
             }
-            commission.EditorSetup(crop, variantId, minQuality, requestLines, thanksLines, rewardCoins, rewardXp, rewardPigment, rewardPigmentAmount);
+            commission.EditorSetup(crop, variantId, minQuality, requestLines, thanksLines, rewardCoins, rewardXp, rewardPigment, rewardPigmentAmount, style);
             EditorUtility.SetDirty(commission);
             return commission;
         }

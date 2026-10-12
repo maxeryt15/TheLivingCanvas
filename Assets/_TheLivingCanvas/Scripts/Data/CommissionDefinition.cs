@@ -19,7 +19,10 @@ namespace TheLivingCanvas.Data
         [Tooltip("Pigmento de recompensa (opcional).")]
         [SerializeField] PigmentDefinition rewardPigment;
         [SerializeField] int rewardPigmentAmount;
+        [Tooltip("Estilo pedido (opcional); vacío = cualquier estilo, incluido Classic.")]
+        [SerializeField] StyleDefinition style;
 
+        public StyleDefinition Style => style;
         public CropDefinition Crop => crop;
         public PaintingQuality MinQuality => minQuality;
         public string[] RequestLines => requestLines;
@@ -35,20 +38,24 @@ namespace TheLivingCanvas.Data
             get
             {
                 var variant = string.IsNullOrEmpty(variantId) ? null : System.Array.Find(crop.Variants, v => v.id == variantId);
-                return $"{variant?.displayName ?? crop.DisplayName} painting · {minQuality} or better";
+                var styleText = style != null ? $" in {style.DisplayName} style" : "";
+                return $"{variant?.displayName ?? crop.DisplayName} painting{styleText} · {minQuality} or better";
             }
         }
 
         /// <summary>Vale la variante pedida (o cualquiera si no se pide ninguna) con calidad suficiente; las semillas no son pinturas.</summary>
         public bool Accepts(PaintingItem painting) =>
             painting is not SeedItem && painting.Crop == crop && painting.Result.Quality >= minQuality
-            && (string.IsNullOrEmpty(variantId) || painting.Variant?.id == variantId);
+            && (string.IsNullOrEmpty(variantId) || painting.Variant?.id == variantId)
+            && (style == null || painting.Style == style);
 
 #if UNITY_EDITOR
         /// <summary>Solo para generar los assets desde herramientas de editor.</summary>
         public void EditorSetup(CropDefinition newCrop, string newVariantId, PaintingQuality newMinQuality, string[] newRequestLines, string[] newThanksLines,
-            int newRewardCoins, int newRewardXp, PigmentDefinition newRewardPigment = null, int newRewardPigmentAmount = 0)
+            int newRewardCoins, int newRewardXp, PigmentDefinition newRewardPigment = null, int newRewardPigmentAmount = 0,
+            StyleDefinition newStyle = null)
         {
+            style = newStyle;
             crop = newCrop;
             variantId = newVariantId;
             minQuality = newMinQuality;
