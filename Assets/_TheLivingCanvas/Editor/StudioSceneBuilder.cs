@@ -1695,11 +1695,13 @@ namespace TheLivingCanvas.EditorTools
             {
                 GetOrCreateCanvasType("standard", "Standard canvas", "A plain canvas for the easel.", 1, 1f, 1f),
                 GetOrCreateCanvasType("large", "Large canvas", "A big canvas: twice the harvest, twice the paint.", 2, 2f, 1.4f),
+                GetOrCreateCanvasType("linen", "Linen canvas", "A forgiving linen weave: a little easier to reach a better quality.", 1, 1f, 1f, 0.05f),
+                GetOrCreateCanvasType("gilded", "Gilded canvas", "Gold leaf edges: the art dealer pays double, but it takes more paint.", 1, 1.5f, 1f, 0f, 2f),
             };
         }
 
         static CanvasType GetOrCreateCanvasType(string id, string displayName, string description,
-            int harvestMultiplier, float pigmentMultiplier, float plotScale)
+            int harvestMultiplier, float pigmentMultiplier, float plotScale, float scoreBonus = 0f, float sellMultiplier = 1f)
         {
             var path = $"{Root}/Data/Canvases/Canvas_{id}.asset";
             var canvasType = AssetDatabase.LoadAssetAtPath<CanvasType>(path);
@@ -1708,7 +1710,7 @@ namespace TheLivingCanvas.EditorTools
                 canvasType = ScriptableObject.CreateInstance<CanvasType>();
                 AssetDatabase.CreateAsset(canvasType, path);
             }
-            canvasType.EditorSetup(id, displayName, description, harvestMultiplier, pigmentMultiplier, plotScale);
+            canvasType.EditorSetup(id, displayName, description, harvestMultiplier, pigmentMultiplier, plotScale, scoreBonus, sellMultiplier);
             EditorUtility.SetDirty(canvasType);
             return canvasType;
         }
@@ -1753,6 +1755,8 @@ namespace TheLivingCanvas.EditorTools
                 // La del lienzo estándar conserva el nombre de archivo original.
                 GetOrCreateCanvasOffer($"{Root}/Data/Shop/Offer_Canvas.asset", canvasTypes[0], 5),
                 GetOrCreateCanvasOffer($"{Root}/Data/Shop/Offer_Canvas_large.asset", canvasTypes[1], 15),
+                GetOrCreateCanvasOffer($"{Root}/Data/Shop/Offer_Canvas_linen.asset", canvasTypes[2], 10),
+                GetOrCreateCanvasOffer($"{Root}/Data/Shop/Offer_Canvas_gilded.asset", canvasTypes[3], 25),
             };
             foreach (var pigment in GetOrCreatePalette().Skip(StartingPigments))
             {
@@ -1903,8 +1907,8 @@ namespace TheLivingCanvas.EditorTools
             "Offer_Pigment_ultramarine" or "Offer_Pigment_titanium_white" or "Offer_Canvas_large" or "Offer_Brush_glaze"
                 or "Offer_Tool_eyedropper" => 3,
             "Offer_Sketch_glowbell" or "Offer_Upgrade_fine_canvas" => 4,
-            "Offer_Style_wash" => 5,
-            "Offer_Style_swirl" => 6,
+            "Offer_Style_wash" or "Offer_Canvas_linen" => 5,
+            "Offer_Style_swirl" or "Offer_Canvas_gilded" => 6,
             _ => 1
         };
 

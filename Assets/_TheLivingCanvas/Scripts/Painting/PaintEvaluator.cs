@@ -96,8 +96,9 @@ namespace TheLivingCanvas.Painting
 
         /// <param name="variants">Variantes del cultivo: sus pigmentos cuentan como color correcto en su zona.</param>
         /// <param name="style">Estilo de la pintura (null = Classic): el de acuarela perdona parte del derrame.</param>
+        /// <param name="canvasType">Tipo de lienzo (null = ninguno): puede sumar un bonus a la nota.</param>
         public static PaintingResult Evaluate(PaintSurface surface, PaintTemplate template, IReadOnlyList<CropVariant> variants = null,
-            StyleDefinition style = null)
+            StyleDefinition style = null, CanvasType canvasType = null)
         {
             int w = surface.Width, h = surface.Height;
             int[] zoneMap = ZoneMap(template, w, h);
@@ -190,7 +191,7 @@ namespace TheLivingCanvas.Painting
             float spillPenalty = Mathf.Min(result.Spill * 0.5f, MaxSpillPenalty) * (style != null ? style.SpillMultiplier : 1f);
             // Remolino premia los trazos largos y continuos (hasta +0.1).
             float swirlBonus = style != null && style.Kind == StyleKind.Swirl ? SwirlLongStrokeBonus * surface.LongStrokeShare : 0f;
-            result.Score = Mathf.Clamp01((totalWeight > 0f ? weighted / totalWeight : 0f) - spillPenalty + swirlBonus);
+            result.Score = Mathf.Clamp01((totalWeight > 0f ? weighted / totalWeight : 0f) - spillPenalty + swirlBonus + (canvasType != null ? canvasType.ScoreBonus : 0f));
             result.Quality = result.Score switch
             {
                 < 0.55f => PaintingQuality.Normal,

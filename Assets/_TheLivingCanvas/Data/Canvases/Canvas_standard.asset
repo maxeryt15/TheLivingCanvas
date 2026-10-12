@@ -18,3 +18,5 @@ MonoBehaviour:
   harvestMultiplier: 1
   pigmentMultiplier: 1
   plotScale: 1
+  scoreBonus: 0
+  sellMultiplier: 1

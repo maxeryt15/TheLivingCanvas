@@ -33,7 +33,7 @@ namespace TheLivingCanvas.Painting
             if (!TryOpen()) return;
             Clear("Which canvas?");
             foreach (var canvasType in canvasTypes)
-                AddRow(Texture2D.whiteTexture, canvasType.DisplayName, "Use", () => PickCanvas(easel, canvasType));
+                AddRow(Texture2D.whiteTexture, $"{canvasType.DisplayName} · {canvasType.Description}", "Use", () => PickCanvas(easel, canvasType));
         }
 
         /// <summary>Elegir el estilo del cuadro: Classic (sin estilo) o uno comprado.</summary>

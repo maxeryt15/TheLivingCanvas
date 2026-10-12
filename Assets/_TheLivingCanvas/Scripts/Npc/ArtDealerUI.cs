@@ -25,12 +25,12 @@ namespace TheLivingCanvas.Npcs
 
         readonly List<GameObject> rows = new();
 
-        /// <summary>Monedas que paga el marchante: cultivo × rareza × cosecha por calidad × lienzo × estilo × bonus.</summary>
+        /// <summary>Monedas que paga el marchante: cultivo × rareza × cosecha por calidad × lienzo (cosecha y pago) × estilo × bonus.</summary>
         public static int PriceOf(PaintingItem p)
         {
             var rarity = p.Variant?.rarity ?? Rarity.Common;
             return Mathf.RoundToInt(p.Crop.SellPrice * rarity.PriceMultiplier()
-                * CropPlant.HarvestAmount(p.Result.Quality) * p.CanvasType.HarvestMultiplier * (p.Style != null ? p.Style.SellMultiplier : 1f) * SellBonus);
+                * CropPlant.HarvestAmount(p.Result.Quality) * p.CanvasType.HarvestMultiplier * p.CanvasType.SellMultiplier * (p.Style != null ? p.Style.SellMultiplier : 1f) * SellBonus);
         }
 
         protected override void Awake()

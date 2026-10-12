@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f8c234f0dc69294c970cded98937352, type: 3}
+  m_Name: Offer_Canvas_linen
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Economy.CanvasOffer
+  displayName: Linen canvas
+  description: 'A forgiving linen weave: a little easier to reach a better quality.'
+  price: 10
+  icon: {fileID: 0}
+  requiredLevel: 5
+  seasonal: 0
+  season: 0
+  canvasType: {fileID: 11400000, guid: 816f40bdb36a0c4408d68cf01b35372e, type: 2}
+  quantity: 1

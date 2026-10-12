@@ -24,7 +24,7 @@ namespace TheLivingCanvas.Painting
             var canvas = paintMode.ActiveCanvas;
             if (canvas == null || canvas.Crop == null) return;
 
-            var result = PaintEvaluator.Evaluate(canvas.Surface, canvas.Crop.Template, canvas.Crop.Variants, canvas.Style);
+            var result = PaintEvaluator.Evaluate(canvas.Surface, canvas.Crop.Template, canvas.Crop.Variants, canvas.Style, canvas.CanvasType);
             if (!result.CanComeToLife)
             {
                 feedback.Show(MissingPaintMessage(result), success: false);

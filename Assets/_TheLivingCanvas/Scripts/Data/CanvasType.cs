@@ -15,6 +15,10 @@ namespace TheLivingCanvas.Data
         [SerializeField] float pigmentMultiplier = 1f;
         [Tooltip("Escala de la parcela en el suelo (y de la planta que crece en ella).")]
         [SerializeField] float plotScale = 1f;
+        [Tooltip("Se suma a la nota (score) de la evaluación antes de calcular la calidad.")]
+        [SerializeField] float scoreBonus;
+        [Tooltip("Multiplica lo que paga el marchante por la pintura.")]
+        [SerializeField] float sellMultiplier = 1f;
 
         public string Id => id;
         public string DisplayName => displayName;
@@ -22,10 +26,12 @@ namespace TheLivingCanvas.Data
         public int HarvestMultiplier => harvestMultiplier;
         public float PigmentMultiplier => pigmentMultiplier;
         public float PlotScale => plotScale;
+        public float ScoreBonus => scoreBonus;
+        public float SellMultiplier => sellMultiplier;
 
 #if UNITY_EDITOR
         public void EditorSetup(string newId, string newDisplayName, string newDescription,
-            int newHarvestMultiplier, float newPigmentMultiplier, float newPlotScale)
+            int newHarvestMultiplier, float newPigmentMultiplier, float newPlotScale, float newScoreBonus = 0f, float newSellMultiplier = 1f)
         {
             id = newId;
             displayName = newDisplayName;
@@ -33,6 +39,8 @@ namespace TheLivingCanvas.Data
             harvestMultiplier = newHarvestMultiplier;
             pigmentMultiplier = newPigmentMultiplier;
             plotScale = newPlotScale;
+            scoreBonus = newScoreBonus;
+            sellMultiplier = newSellMultiplier;
         }
 #endif
     }
