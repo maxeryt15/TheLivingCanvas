@@ -3,6 +3,7 @@ using TheLivingCanvas.Audio;
 using TheLivingCanvas.Core;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Economy;
+using TheLivingCanvas.Feedback;
 using TheLivingCanvas.Gallery;
 using TheLivingCanvas.Growth;
 using TheLivingCanvas.Interaction;
@@ -141,6 +142,7 @@ namespace TheLivingCanvas.EditorTools
             var saveManager = BuildSaveManager(player); // al final: ya existen todos los assets de datos
             BuildPauseMenu(hud.transform, player, rig, paintMode, placer, saveManager);
             BuildAudio(player, seasonClock);
+            BuildFeedback();
 
             BuildDayFade(hud.transform, seasonClock); // el último hijo del HUD: cubre todo lo demás
 
@@ -1420,6 +1422,50 @@ namespace TheLivingCanvas.EditorTools
             musicSo.FindProperty("eveningTrack").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(musicDir + "embers_and_lamplight.ogg");
             musicSo.ApplyModifiedPropertiesWithoutUndo();
             audio.SetActive(true);
+        }
+
+        /// <summary>Objeto "Feedback": las pinceladas de partículas (material M_PaintDabs, con el atlas T_PaintDabs).</summary>
+        static void BuildFeedback()
+        {
+            const string vfxDir = Root + "/Art/VFX/";
+            var texturePath = vfxDir + "T_PaintDabs.png";
+            // Las pinceladas son blancas con alfa: sin "alpha is transparency" el borde sangraría un halo blanco.
+            if (AssetImporter.GetAtPath(texturePath) is TextureImporter importer && (!importer.alphaIsTransparency || !importer.sRGBTexture))
+            {
+                importer.alphaIsTransparency = true;
+                importer.sRGBTexture = true;
+                importer.SaveAndReimport();
+            }
+
+            var materialPath = vfxDir + "M_PaintDabs.mat";
+            var material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+            if (material == null)
+            {
+                material = new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit"));
+                AssetDatabase.CreateAsset(material, materialPath);
+            }
+            // Transparente con mezcla alfa, sin escribir en Z (lo que hacen las claves de URP al elegir Surface Type: Transparent).
+            material.SetFloat("_Surface", 1f);
+            material.SetFloat("_Blend", 0f);
+            material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_ZWrite", 0f);
+            material.SetOverrideTag("RenderType", "Transparent");
+            material.SetShaderPassEnabled("ShadowCaster", false);
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+            material.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath));
+            material.SetColor("_BaseColor", Color.white);
+            EditorUtility.SetDirty(material);
+
+            var feedback = new GameObject("Feedback");
+            feedback.SetActive(false);
+            var burst = feedback.AddComponent<PaintBurst>();
+            var burstSo = new SerializedObject(burst);
+            burstSo.FindProperty("dabMaterial").objectReferenceValue = material;
+            burstSo.ApplyModifiedPropertiesWithoutUndo();
+            feedback.SetActive(true);
         }
 
         /// <summary>Aplica tipo de carga y Vorbis al audio solo si difiere, para no reimportar sin necesidad.</summary>

@@ -13,7 +13,11 @@ namespace TheLivingCanvas.Economy
         [SerializeField] Color gainColor = new(0.55f, 0.85f, 0.4f);
         [SerializeField] Color spendColor = new(0.95f, 0.55f, 0.45f);
 
+        const float PunchSeconds = 0.25f;
+        const float PunchScale = 1.25f;
+
         float deltaHideTime;
+        float punchStartTime = float.NegativeInfinity;
 
         void OnEnable()
         {
@@ -28,6 +32,9 @@ namespace TheLivingCanvas.Economy
         {
             if (deltaLabel.gameObject.activeSelf && Time.unscaledTime >= deltaHideTime)
                 deltaLabel.gameObject.SetActive(false);
+            float punch = (Time.unscaledTime - punchStartTime) / PunchSeconds;
+            // Sube a 1.25 en la primera mitad y vuelve a 1 en la segunda.
+            label.rectTransform.localScale = Vector3.one * (punch < 1f ? Mathf.Lerp(1f, PunchScale, 1f - Mathf.Abs(2f * punch - 1f)) : 1f);
         }
 
         void OnChanged(int total, int delta)
@@ -38,6 +45,7 @@ namespace TheLivingCanvas.Economy
             deltaLabel.color = delta > 0 ? gainColor : spendColor;
             deltaLabel.gameObject.SetActive(true);
             deltaHideTime = Time.unscaledTime + deltaSeconds;
+            if (delta > 0) punchStartTime = Time.unscaledTime;
         }
 
         static string Format(int coins) => $"{coins} coins";

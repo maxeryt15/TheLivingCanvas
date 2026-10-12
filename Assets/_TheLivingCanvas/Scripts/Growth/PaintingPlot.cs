@@ -1,6 +1,8 @@
 using System.Collections;
+using System.Linq;
 using TheLivingCanvas.Data;
 using TheLivingCanvas.Economy;
+using TheLivingCanvas.Feedback;
 using TheLivingCanvas.Interaction;
 using TheLivingCanvas.Inventory;
 using TheLivingCanvas.Painting;
@@ -91,8 +93,39 @@ namespace TheLivingCanvas.Growth
                 StartCoroutine(Swirl(spawned));
             if (mutation == Mutation.Luminous)
                 StartCoroutine(Glow(spawned));
+            if (startProgress < 1f)
+                StartCoroutine(Ripen(spawned));
             return spawned;
         }
+
+        /// <summary>Al madurar en directo: floritura de pinceladas sobre la copa y un pequeño bote de la planta (relativo a su escala).</summary>
+        IEnumerator Ripen(CropPlant ripening)
+        {
+            const float bounceSeconds = 0.35f;
+            const float bounceScale = 1.12f;
+            while (ripening != null && !ripening.IsGrown) yield return null;
+            if (ripening == null) yield break;
+            PaintBurst.RipenBloom(TopOf(ripening), ZoneColors());
+            var baseScale = ripening.transform.localScale;
+            for (float time = 0f; time < bounceSeconds && ripening != null; time += Time.deltaTime)
+            {
+                ripening.transform.localScale = baseScale * Mathf.Lerp(1f, bounceScale, Mathf.Sin(time / bounceSeconds * Mathf.PI));
+                yield return null;
+            }
+            if (ripening != null) ripening.transform.localScale = baseScale;
+        }
+
+        /// <summary>Punto más alto de la planta (sobre el centro de sus mallas).</summary>
+        static Vector3 TopOf(CropPlant target)
+        {
+            var bounds = new Bounds(target.transform.position, Vector3.zero);
+            foreach (var r in target.GetComponentsInChildren<Renderer>())
+                bounds.Encapsulate(r.bounds);
+            return new Vector3(bounds.center.x, bounds.max.y, bounds.center.z);
+        }
+
+        /// <summary>Colores pintados en cada zona de la pintura.</summary>
+        Color[] ZoneColors() => Painting.Result.Zones.Select(z => z.DominantColor).ToArray();
 
         /// <summary>Luminosa: ya crecida (Tint y Apply ya no tocan el color) brilla con su propio color y suma una luz suave.</summary>
         IEnumerator Glow(CropPlant glowing)
@@ -155,6 +188,8 @@ namespace TheLivingCanvas.Growth
             if (SeedItem.CanSeed(Painting))
                 inventory.Add(new SeedItem(Painting, mutation));
             TryPollinate(interactor.GetComponent<Sketchbook>());
+            if (plant != null && Camera.main != null)
+                PaintBurst.HarvestFlurry(TopOf(plant), Camera.main.transform.position - plant.transform.position, ZoneColors());
             Destroy(gameObject); // la pintura se consume
         }
 

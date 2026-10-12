@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TheLivingCanvas.Audio;
+using TheLivingCanvas.Feedback;
 using TheLivingCanvas.Progression;
 using UnityEngine;
 
@@ -47,6 +48,9 @@ namespace TheLivingCanvas.Painting
 
             canvas.MarkFinished(result);
             SfxPlayer.Play(Sfx.PaintFinish);
+            // La salpicadura sale del centro del lienzo hacia el lado desde el que se pinta.
+            var center = canvas.Surface.transform.position;
+            PaintBurst.FinishSplash(center, canvas.ViewPoint.position - center, result.Zones.Select(z => z.DominantColor).ToArray());
             paintMode.Exit();
             var variant = canvas.Crop.FindVariant(result);
             string name = (variant?.displayName ?? canvas.Crop.DisplayName).ToLowerInvariant();
