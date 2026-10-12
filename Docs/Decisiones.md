@@ -44,3 +44,4 @@
 | 2026-10-11 | Primer encargo: una pintura concreta (cultivo + calidad mínima) que se entrega desde el inventario y se consume | La pintura sigue siendo el centro del juego. |
 | 2026-10-11 | Recompensa de encargos: monedas (más que vendiendo) + XP, y en algunos algo único que no está en la tienda (ej. un pigmento nuevo) | Motiva sin romper la economía. |
 | 2026-10-11 | Plan: 13A NPC + diálogo (SO con líneas, panel que avanza); 13B encargo y entrega; 13C recompensa y cadena de 2–3 encargos | Pasos pequeños y revisables. |
+| 2026-10-11 | Arte: shader painterly en HLSL (`TLC/Painterly`) en vez de Shader Graph; Descoloración = global `_TLC_Descolor` + Volume de atmósfera; prototipo en escena aparte | HLSL es verificable y legible en texto; el global permite comparar normal/descolor y proteger el amarillo por material. Ver `ART_DIRECTION.md`. |
