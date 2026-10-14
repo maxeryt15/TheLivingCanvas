@@ -6,7 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_TheLivingCanvas/Scenes/Studio.unity
+    path: Assets/_TheLivingCanvas/Scenes/Museum.unity
+    guid: bfef433f2209d604cb582132fe385552
+  - enabled: 0
+    path: Assets/_TheLivingCanvas/Scenes/_Archive/Studio.unity
     guid: dc084dd4e7904184fb88d2483bbd0f80
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

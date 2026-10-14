@@ -1,0 +1,61 @@
+file,asset,category,size_m,unity_location,materials,notes
+TLC_Characters.blend,Player,Personaje,0.7x1.8x0.72,Prefabs/Player/Player.prefab,"M_Player_Body, M_Player_Visor","Capsula de 1,8 m. En Unity el collider/controlador es independiente de la malla; no cambies la altura sin avisar."
+TLC_Characters.blend,Npc_OttilieVane,Personaje,0.55x1.75x0.55,StudioSceneBuilder (galeria),"M_Npc_Coat, M_Npc_Hat, M_Npc_Scarf, M_Npc_Skin",Coleccionista excentrica.
+TLC_Characters.blend,Npc_ArtDealer,Personaje,0.55x1.6x0.59,StudioSceneBuilder (pueblo),"M_Dealer_Cap, M_Dealer_Coat, M_Dealer_Cravat, M_Dealer_Skin",Marchante de arte.
+TLC_Props.blend,Easel,Prop,2.5x1.75x1.98,Prefabs/Canvas/Easel.prefab,"M_Canvas_Blank, M_Easel_Wood","El lienzo (Canvas) recibe la pintura del jugador en runtime: mantener un quad 0,98 x 0,79 con UV 0-1 completo."
+TLC_Props.blend,Table,Prop,2.0x0.8x1.0,StudioSceneBuilder (estudio),M_Accent_Terracotta,Mesa de pruebas (volumen macizo).
+TLC_Props.blend,TestLamp,Prop,0.22x0.59x0.22,StudioSceneBuilder (estudio),"M_Lamp_Bulb, M_Player_Visor",Lampara de sobremesa; el foco es una Light aparte.
+TLC_Props.blend,SellCrate,Prop,0.9x0.55x0.7,StudioSceneBuilder (estudio),M_SellCrate_Wood,Caja donde se vende la cosecha.
+TLC_Props.blend,ShopStall,Prop,2.0x3.45x2.0,StudioSceneBuilder (estudio),"M_Accent_Terracotta, M_Easel_Wood, M_Shop_Counter",Tienda de pigmentos y mejoras.
+TLC_Props.blend,Mortar,Prop,0.6x0.94x0.6,StudioSceneBuilder (estudio),"M_Easel_Wood, M_Mortar_Stone",Mortero donde se muele la cosecha para obtener pigmento.
+TLC_Props.blend,PaintingPlot,Prop,1.06x0.03x0.86,Prefabs/Crops/PaintingPlot.prefab,"M_Easel_Wood, M_PaintingPlot","Parcela: la pintura tumbada. 'Painting' recibe la pintura del jugador (UV 0-1 completo, 1,0 x 0,8 m)."
+TLC_Props.blend,ArtDealerStall,Prop,1.45x3.33x1.45,StudioSceneBuilder (pueblo),"M_Easel_Wood, M_Gallery_Canvas, M_Gallery_Frame, M_Town_Awning",Puesto del marchante.
+TLC_Props.blend,CommissionBoard,Prop,2.2x3.4x2.2,StudioSceneBuilder (pueblo),"M_Easel_Wood, M_Gallery_Board, M_Town_Note, M_Town_Roof",Tablon de encargos.
+TLC_Props.blend,Bench,Prop,1.6x1.05x0.5,"StudioSceneBuilder (pueblo, x3)",M_Easel_Wood,Banco del pueblo.
+TLC_Props.blend,Lamp_Post,Prop,0.3x3.2x0.3,"StudioSceneBuilder (pueblo, x4)","M_Town_Lamp, M_Town_Lantern",Farola.
+TLC_Props.blend,Fence_Section,Prop,2.12x0.8x0.12,StudioSceneBuilder (jardin),M_Easel_Wood,Tramo de valla de 2 m (el jardin usa 18 tramos).
+TLC_Props.blend,GardenGate,Prop,2.0x2.0x2.18,StudioSceneBuilder (jardin),M_Easel_Wood,Puerta del jardin (abre con el nivel). La hoja gira sobre Post_L: mantener el pivote.
+TLC_Props.blend,Bush,Prop,1.3x0.9x1.3,"StudioSceneBuilder (jardin, x2)",M_Garden_Bush,Arbusto.
+TLC_Props.blend,Stone,Prop,0.6x0.3x0.6,"StudioSceneBuilder (jardin, x2)",M_Mortar_Stone,Piedra decorativa.
+TLC_Props.blend,Tree,Prop,2.5x4.3x2.4,"StudioSceneBuilder (pueblo, x6, con escala 0,9-1,2)","M_Easel_Wood, M_Garden_Bush",Arbol del pueblo.
+TLC_Crops.blend,Sunflower,Cultivo,0.58x1.54x0.54,Prefabs/Crops/Sunflower.prefab,"M_Plant_Center, M_Plant_Petal, M_Plant_Stem","Mostrado ya crecido. En Unity el script SunflowerPlant crece/anima cada parte por separado (Stem, Leaf, Head, Petal): conserva las partes separadas y sus pivotes. Los colores de pintura (zonas) se aplican por material."
+TLC_Crops.blend,Tomato,Cultivo,0.31x1.1x0.42,Prefabs/Crops/Tomato.prefab,"M_Plant_Stake, M_Plant_Stem, M_Plant_Tomato","Partes animadas por TomatoPlant: Stem, Leaf, Fruit, Calyx, Stake. Conserva partes y pivotes."
+TLC_Crops.blend,Glowbell,Cultivo,0.45x0.99x0.46,Prefabs/Crops/Glowbell.prefab,"M_Plant_Bell, M_Plant_Glow, M_Plant_Stem","Partes animadas por GlowbellPlant: Stem, Leaf, Branch, Bell (Body/Rim/Glow). La luz es un GameObject aparte."
+TLC_Architecture.blend,Studio_Shell,Arquitectura,12.1x3.2x12.1,StudioSceneBuilder (estudio),"M_Floor_Wood, M_Wall_Cream","Estudio de 12x12 m: abierto por el frente y el lado derecho (puerta al jardin en x=6, z=0). Vano de 2 m hacia la galeria en el muro del fondo."
+TLC_Architecture.blend,Gallery_Shell,Arquitectura,12.2x3.2x8.1,StudioSceneBuilder (galeria),"M_Gallery_Floor, M_Wall_Cream",Sala de 12x8 m detras del estudio.
+TLC_Architecture.blend,Gallery_Frame,Arquitectura,1.7x1.78x0.08,"StudioSceneBuilder (galeria, x6)","M_Gallery_Canvas, M_Gallery_Frame, M_Gallery_Plaque","Marco para colgar una pintura. 'Picture' (1,4 x 1,1 m, UV 0-1 completo) recibe la pintura del jugador. Origen en la pared, el marco sale hacia +Z."
+TLC_Architecture.blend,CollectionBoard,Arquitectura,2.2x1.5x0.08,StudioSceneBuilder (galeria),"M_Gallery_Board, M_Gallery_Card_1, M_Gallery_Card_2, M_Gallery_Card_3, M_Gallery_Card_4, M_Gallery_Frame",Tablero de coleccion. Las tarjetas se tiñen por codigo segun lo descubierto.
+TLC_Architecture.blend,Garden_Lawn,Arquitectura,12.0x0.2x12.0,StudioSceneBuilder (jardin),M_Grass,Jardin de 12x12 m junto al estudio.
+TLC_Architecture.blend,Town_Ground,Arquitectura,30.0x0.22x20.0,StudioSceneBuilder (pueblo),"M_Town_Grass, M_Town_Path, M_Town_Plaza","Suelo del pueblo, camino de entrada (+Z) y plaza."
+TLC_Architecture.blend,Fountain,Arquitectura,2.6x1.83x2.6,StudioSceneBuilder (pueblo),"M_Mortar_Stone, M_Town_Water",Fuente de la plaza.
+TLC_Architecture.blend,House_A,Arquitectura,4.6x4.1x5.5,"StudioSceneBuilder (pueblo, 'House_West_A')","M_Town_Door, M_Town_Roof, M_Town_Wall, M_Town_Window",Casa oeste A.
+TLC_Architecture.blend,House_B,Arquitectura,4.2x4.65x5.0,"StudioSceneBuilder (pueblo, 'House_West_B')","M_Town_Door, M_Town_Roof, M_Town_Wall, M_Town_Window",Casa oeste B.
+TLC_Architecture.blend,House_South,Arquitectura,4.6x4.3x6.0,StudioSceneBuilder (pueblo),"M_Town_Door, M_Town_Roof, M_Town_Wall, M_Town_Window",Casa sur (en Unity esta girada 90 grados).
+TLC_Architecture.blend,House_East,Arquitectura,4.8x4.95x5.5,StudioSceneBuilder (pueblo),"M_Town_Door, M_Town_Roof, M_Town_Wall, M_Town_Window",Casa este.
+krita/textures,T_Wood_Floor,Textura,1024x1024,materiales,M_Floor_Wood,Suelo del estudio (tablones).
+krita/textures,T_Floor_Gallery,Textura,1024x1024,materiales,M_Gallery_Floor,"Suelo de la galeria (hoy gris calido; puede ser parquet, piedra o baldosa)."
+krita/textures,T_Plaster_Wall,Textura,1024x1024,materiales,"M_Wall_Cream, M_Town_Wall","Paredes del estudio, la galeria y las casas del pueblo."
+krita/textures,T_Wood_Dark,Textura,1024x1024,materiales,"M_Easel_Wood, M_Gallery_Frame, M_Plant_Stake","Caballete, marcos, vallas, bancos, troncos, tutor del tomate."
+krita/textures,T_Wood_Crate,Textura,512x512,materiales,M_SellCrate_Wood,Caja de venta.
+krita/textures,T_Wood_Painted,Textura,512x512,materiales,"M_Shop_Counter, M_Town_Door, M_Accent_Terracotta","Madera pintada de color: mostrador, puertas, mesa."
+krita/textures,T_Fabric_Awning,Textura,512x512,materiales,M_Town_Awning,Toldos de los puestos.
+krita/textures,T_Cork_Board,Textura,512x512,materiales,M_Gallery_Board,Corcho del tablero de coleccion y del tablon de encargos.
+krita/textures,T_Brass_Plaque,Textura,256x256,materiales,M_Gallery_Plaque,Placas de los cuadros.
+krita/textures,T_Canvas_Paper,Textura,512x512,materiales,"M_Canvas_Blank, M_Gallery_Canvas, M_Town_Note, M_Gallery_Card_1, M_Gallery_Card_2, M_Gallery_Card_3, M_Gallery_Card_4","Lienzo en blanco, notas y tarjetas (el tinte de las tarjetas lo pone el material)."
+krita/textures,T_Grass,Textura,1024x1024,materiales,"M_Grass, M_Town_Grass",Cesped del jardin y del pueblo.
+krita/textures,T_Foliage,Textura,512x512,materiales,M_Garden_Bush,Arbustos y copas de arboles.
+krita/textures,T_Stone,Textura,512x512,materiales,M_Mortar_Stone,"Piedras, mortero, fuente."
+krita/textures,T_Path_Stone,Textura,1024x1024,materiales,"M_Town_Path, M_Town_Plaza",Camino y plaza del pueblo.
+krita/textures,T_Roof_Tiles,Textura,512x512,materiales,M_Town_Roof,Tejados.
+krita/textures,T_Water,Textura,512x512,materiales,M_Town_Water,Agua de la fuente.
+krita/textures,T_Glass,Textura,256x256,materiales,M_Town_Window,Ventanas de las casas.
+krita/textures,T_Metal_Dark,Textura,256x256,materiales,"M_Town_Lamp, M_Player_Visor, M_Lamp_Bulb","Farolas, visor del jugador."
+krita/textures,T_Glow,Textura,256x256,materiales,"M_Town_Lantern, M_Plant_Glow",Linternas y brillo de la glowbell (emisivos).
+krita/textures,T_Fabric_Clothes,Textura,512x512,materiales,"M_Npc_Coat, M_Dealer_Coat, M_Player_Body, M_Npc_Scarf, M_Dealer_Cravat",Ropa del jugador y de los NPC.
+krita/textures,T_Skin,Textura,256x256,materiales,"M_Npc_Skin, M_Dealer_Skin",Piel de los NPC.
+krita/textures,T_Hat_Felt,Textura,256x256,materiales,"M_Npc_Hat, M_Dealer_Cap",Sombreros y gorras.
+krita/textures,T_Plant_Green,Textura,512x512,materiales,M_Plant_Stem,Tallos y hojas de todos los cultivos.
+krita/textures,T_Plant_Petal,Textura,512x512,materiales,M_Plant_Petal,Petalos del girasol.
+krita/textures,T_Plant_Center,Textura,256x256,materiales,M_Plant_Center,Centro del girasol.
+krita/textures,T_Plant_Fruit,Textura,256x256,materiales,M_Plant_Tomato,Tomates.
+krita/textures,T_Plant_Bell,Textura,256x256,materiales,M_Plant_Bell,Campanas de la glowbell.

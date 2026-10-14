@@ -1,0 +1,926 @@
+{
+  ".claude/settings.local.json": {
+    "mtime": 1791959634.7927768,
+    "seen": 1791959681.4731164,
+    "ast_hash": "89e2d5097c0f2ff12811c55c2922dfbb",
+    "semantic_hash": "89e2d5097c0f2ff12811c55c2922dfbb"
+  },
+  "ArtSource/Pack/TheLivingCanvas_ArtTemplates/blender/scripts/build_blend.py": {
+    "mtime": 1791779108.69974,
+    "seen": 1791959681.4731245,
+    "ast_hash": "c21d77c8b9dc432f4687b0c0fd230e46",
+    "semantic_hash": "c21d77c8b9dc432f4687b0c0fd230e46"
+  },
+  "ArtSource/Pack/TheLivingCanvas_ArtTemplates/blender/scripts/export_fbx.py": {
+    "mtime": 1791779108.6968522,
+    "seen": 1791959681.4731286,
+    "ast_hash": "0b1966afed821f2bdf6dee56d99730c7",
+    "semantic_hash": "0b1966afed821f2bdf6dee56d99730c7"
+  },
+  "ArtSource/Pack/TheLivingCanvas_ArtTemplates/blender/scripts/spec.py": {
+    "mtime": 1791779108.6987457,
+    "seen": 1791959681.4731312,
+    "ast_hash": "3dfac86086fc03e98644deda45261897",
+    "semantic_hash": "3dfac86086fc03e98644deda45261897"
+  },
+  "Assets/_TheLivingCanvas/Art/Models/Museum/Museum_Ext_Lights.json": {
+    "mtime": 1791928977.7386105,
+    "seen": 1791959681.4731338,
+    "ast_hash": "8bf442fe08169ecd1023459df99bf56d",
+    "semantic_hash": "8bf442fe08169ecd1023459df99bf56d"
+  },
+  "Assets/_TheLivingCanvas/Art/Models/Museum/Museum_Int_Lights.json": {
+    "mtime": 1791949781.10463,
+    "seen": 1791959681.4731362,
+    "ast_hash": "56d262040b63604b415d40936fa9c32f",
+    "semantic_hash": "56d262040b63604b415d40936fa9c32f"
+  },
+  "Assets/_TheLivingCanvas/Editor/MuseumSceneBuilder.cs": {
+    "mtime": 1791930434.5166595,
+    "seen": 1791959681.4731383,
+    "ast_hash": "a2d06c44a377abf7353b7a352580c6de",
+    "semantic_hash": "a2d06c44a377abf7353b7a352580c6de"
+  },
+  "Assets/_TheLivingCanvas/Editor/PaintTemplateGenerator.cs": {
+    "mtime": 1791779244.5576067,
+    "seen": 1791959681.4731402,
+    "ast_hash": "66f5961ba9f90d9655d975167096ba56",
+    "semantic_hash": "66f5961ba9f90d9655d975167096ba56"
+  },
+  "Assets/_TheLivingCanvas/Editor/PrototypeMeshes.cs": {
+    "mtime": 1791761154.3604743,
+    "seen": 1791959681.473142,
+    "ast_hash": "2c72947295d18cab02e4cbfb4b0eff35",
+    "semantic_hash": "2c72947295d18cab02e4cbfb4b0eff35"
+  },
+  "Assets/_TheLivingCanvas/Editor/PrototypeMuseumBuilder.cs": {
+    "mtime": 1791761966.6564999,
+    "seen": 1791959681.4731438,
+    "ast_hash": "b98e3f270b1fb8d6d49d0a589987e7ef",
+    "semantic_hash": "b98e3f270b1fb8d6d49d0a589987e7ef"
+  },
+  "Assets/_TheLivingCanvas/Editor/StudioSceneBuilder.cs": {
+    "mtime": 1791930010.8943543,
+    "seen": 1791959681.4731455,
+    "ast_hash": "57937de66382110fb146e5d629bc26bc",
+    "semantic_hash": "57937de66382110fb146e5d629bc26bc"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Art/PainterlyDescolor.cs": {
+    "mtime": 1791760567.9064603,
+    "seen": 1791959681.4731479,
+    "ast_hash": "6d7c1c9ef716ad5375762ed18a0d06b4",
+    "semantic_hash": "6d7c1c9ef716ad5375762ed18a0d06b4"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Art/PrototypeViewer.cs": {
+    "mtime": 1791760525.539434,
+    "seen": 1791959681.47315,
+    "ast_hash": "d8ea5eba8e63db4321fa5ca23429b9fe",
+    "semantic_hash": "d8ea5eba8e63db4321fa5ca23429b9fe"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Audio/MusicPlayer.cs": {
+    "mtime": 1791821307.863994,
+    "seen": 1791959681.4731517,
+    "ast_hash": "75cfe5513ac8c754f208512e5350aa43",
+    "semantic_hash": "75cfe5513ac8c754f208512e5350aa43"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Audio/SfxPlayer.cs": {
+    "mtime": 1791821248.0871902,
+    "seen": 1791959681.4731536,
+    "ast_hash": "9fae1d453cb65236fbc2735e0e2bbd67",
+    "semantic_hash": "9fae1d453cb65236fbc2735e0e2bbd67"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Core/CursorLock.cs": {
+    "mtime": 1791820651.1083806,
+    "seen": 1791959681.4731553,
+    "ast_hash": "745827e8f7cdf25c6d296b411ac4c26f",
+    "semantic_hash": "745827e8f7cdf25c6d296b411ac4c26f"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Core/FitToScreenHeight.cs": {
+    "mtime": 1791824201.2652051,
+    "seen": 1791959681.4731572,
+    "ast_hash": "0a64a9f83b4de7cac008eb97b5168c72",
+    "semantic_hash": "0a64a9f83b4de7cac008eb97b5168c72"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Core/GameSettings.cs": {
+    "mtime": 1791823874.7001247,
+    "seen": 1791959681.4731588,
+    "ast_hash": "bf6638062a255c263b297086b1fad332",
+    "semantic_hash": "bf6638062a255c263b297086b1fad332"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Core/ModalPanel.cs": {
+    "mtime": 1791824532.7200086,
+    "seen": 1791959681.4731607,
+    "ast_hash": "7396fe0744e2c89ed3b0ffdcf217ea29",
+    "semantic_hash": "7396fe0744e2c89ed3b0ffdcf217ea29"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Core/PauseMenu.cs": {
+    "mtime": 1791823874.7012222,
+    "seen": 1791959681.4731624,
+    "ast_hash": "0e80cd9edf3bf30205adf46e1c9713f4",
+    "semantic_hash": "0e80cd9edf3bf30205adf46e1c9713f4"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Core/UiScaleApplier.cs": {
+    "mtime": 1791823951.4331312,
+    "seen": 1791959681.4731643,
+    "ast_hash": "fb5fca1f561f1a38a820e2564c5c1c12",
+    "semantic_hash": "fb5fca1f561f1a38a820e2564c5c1c12"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/BrushDefinition.cs": {
+    "mtime": 1791589613.4964871,
+    "seen": 1791959681.473166,
+    "ast_hash": "312154d9da0d420781c356b84e2532e5",
+    "semantic_hash": "312154d9da0d420781c356b84e2532e5"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/CanvasType.cs": {
+    "mtime": 1791778247.520321,
+    "seen": 1791959681.4731684,
+    "ast_hash": "573833ca6c142095f2ca7915488f6d90",
+    "semantic_hash": "573833ca6c142095f2ca7915488f6d90"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/CollectionSet.cs": {
+    "mtime": 1791780387.8723898,
+    "seen": 1791959681.4731698,
+    "ast_hash": "4dcc46998dcfeeb2de6112f2b618a26b",
+    "semantic_hash": "4dcc46998dcfeeb2de6112f2b618a26b"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/CommissionDefinition.cs": {
+    "mtime": 1791779759.9645288,
+    "seen": 1791959681.4731717,
+    "ast_hash": "d2e7f6ba9ff6a8c8a84e8ff21515d0ba",
+    "semantic_hash": "d2e7f6ba9ff6a8c8a84e8ff21515d0ba"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/CropCross.cs": {
+    "mtime": 1791779244.5545697,
+    "seen": 1791959681.4731736,
+    "ast_hash": "17ce201701c779cac444a3159ae9a8ef",
+    "semantic_hash": "17ce201701c779cac444a3159ae9a8ef"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/CropDefinition.cs": {
+    "mtime": 1791779760.2247336,
+    "seen": 1791959681.4731753,
+    "ast_hash": "6f326ce6f9d2a9d5cf6c7aaf96ce29cd",
+    "semantic_hash": "6f326ce6f9d2a9d5cf6c7aaf96ce29cd"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/CropVariant.cs": {
+    "mtime": 1791581116.5239131,
+    "seen": 1791959681.4731772,
+    "ast_hash": "ac6221f264d50ea42792d5a961d75bc0",
+    "semantic_hash": "ac6221f264d50ea42792d5a961d75bc0"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/Mutation.cs": {
+    "mtime": 1791778752.6134508,
+    "seen": 1791959681.4731789,
+    "ast_hash": "2341952b188c354329006b386eb5c7e2",
+    "semantic_hash": "2341952b188c354329006b386eb5c7e2"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/NpcDefinition.cs": {
+    "mtime": 1791767601.1305175,
+    "seen": 1791959681.4731808,
+    "ast_hash": "fd6b3371ac536b8237ae51213e3ca810",
+    "semantic_hash": "fd6b3371ac536b8237ae51213e3ca810"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/PaintTemplate.cs": {
+    "mtime": 1791482080.20691,
+    "seen": 1791959681.4731824,
+    "ast_hash": "d3db2ef784a3710909e80b6d411b486d",
+    "semantic_hash": "d3db2ef784a3710909e80b6d411b486d"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/PigmentDefinition.cs": {
+    "mtime": 1791477885.2869596,
+    "seen": 1791959681.4731843,
+    "ast_hash": "e4d1337c21667400fa06bc639dddfded",
+    "semantic_hash": "e4d1337c21667400fa06bc639dddfded"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Data/StyleDefinition.cs": {
+    "mtime": 1791770591.4374397,
+    "seen": 1791959681.4731863,
+    "ast_hash": "8f8232be86190f96d5e2876766eebf82",
+    "semantic_hash": "8f8232be86190f96d5e2876766eebf82"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/BrushOffer.cs": {
+    "mtime": 1791589133.9443817,
+    "seen": 1791959681.4731882,
+    "ast_hash": "b2941f1336fa8c6196600f88df37fd39",
+    "semantic_hash": "b2941f1336fa8c6196600f88df37fd39"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/CanvasOffer.cs": {
+    "mtime": 1791741774.6490016,
+    "seen": 1791959681.4731898,
+    "ast_hash": "8f51c0b233b0285fceae0f21dd4217d6",
+    "semantic_hash": "8f51c0b233b0285fceae0f21dd4217d6"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/CanvasUpgradeOffer.cs": {
+    "mtime": 1791744314.9048076,
+    "seen": 1791959681.4731917,
+    "ast_hash": "f37fa794a00fe9a3387cca22f5381fdc",
+    "semantic_hash": "f37fa794a00fe9a3387cca22f5381fdc"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/CoinCounterUI.cs": {
+    "mtime": 1791821985.315198,
+    "seen": 1791959681.4731936,
+    "ast_hash": "55344265c0d1ac31189d1c1960386f07",
+    "semantic_hash": "55344265c0d1ac31189d1c1960386f07"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/MortarStation.cs": {
+    "mtime": 1791588766.6252449,
+    "seen": 1791959681.4731956,
+    "ast_hash": "f9a491ad66e09fa678b9bde96a64bc0d",
+    "semantic_hash": "f9a491ad66e09fa678b9bde96a64bc0d"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/MortarUI.cs": {
+    "mtime": 1791588764.026464,
+    "seen": 1791959681.4731972,
+    "ast_hash": "a9e841ded96d1b94ac758d921eb69d55",
+    "semantic_hash": "a9e841ded96d1b94ac758d921eb69d55"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/PigmentOffer.cs": {
+    "mtime": 1791781081.2336524,
+    "seen": 1791959681.4731991,
+    "ast_hash": "5b63b9784da93571ee40daef30d350c8",
+    "semantic_hash": "5b63b9784da93571ee40daef30d350c8"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/RefillOffer.cs": {
+    "mtime": 1791781382.5703828,
+    "seen": 1791959681.4732008,
+    "ast_hash": "47449af3fff6bf0b5a9ce77ffdc70aa3",
+    "semantic_hash": "47449af3fff6bf0b5a9ce77ffdc70aa3"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/SellCrate.cs": {
+    "mtime": 1791581171.1681983,
+    "seen": 1791959681.4732027,
+    "ast_hash": "e344f7b7de61fe3e6e5002745d7ec20d",
+    "semantic_hash": "e344f7b7de61fe3e6e5002745d7ec20d"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/ShopOffer.cs": {
+    "mtime": 1791781055.0593762,
+    "seen": 1791959681.4732044,
+    "ast_hash": "18157611422d69fd33b434708b8b2e42",
+    "semantic_hash": "18157611422d69fd33b434708b8b2e42"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/ShopStall.cs": {
+    "mtime": 1791546108.2097707,
+    "seen": 1791959681.473207,
+    "ast_hash": "c170a14da35363973cf504de065450cb",
+    "semantic_hash": "c170a14da35363973cf504de065450cb"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/ShopUI.cs": {
+    "mtime": 1791781088.490639,
+    "seen": 1791959681.473209,
+    "ast_hash": "5ff45d64bb7206f974b94681e5a2e50a",
+    "semantic_hash": "5ff45d64bb7206f974b94681e5a2e50a"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/SketchOffer.cs": {
+    "mtime": 1791547504.3525932,
+    "seen": 1791959681.4732106,
+    "ast_hash": "09a3d37aaff0d80f54ddfdec7fea7273",
+    "semantic_hash": "09a3d37aaff0d80f54ddfdec7fea7273"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/StyleOffer.cs": {
+    "mtime": 1791770591.4754336,
+    "seen": 1791959681.4732125,
+    "ast_hash": "d6ee804cb11bc66aaff0b4b1235b3588",
+    "semantic_hash": "d6ee804cb11bc66aaff0b4b1235b3588"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/ToolOffer.cs": {
+    "mtime": 1791745310.6375592,
+    "seen": 1791959681.4732141,
+    "ast_hash": "62bfb9fdb1edcc2a7070f9e02c1969ef",
+    "semantic_hash": "62bfb9fdb1edcc2a7070f9e02c1969ef"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Economy/Wallet.cs": {
+    "mtime": 1791781039.3965912,
+    "seen": 1791959681.4732158,
+    "ast_hash": "a8dc4f8db562b4a05e67b529e463ce49",
+    "semantic_hash": "a8dc4f8db562b4a05e67b529e463ce49"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Feedback/PaintBurst.cs": {
+    "mtime": 1791822155.351221,
+    "seen": 1791959681.4732175,
+    "ast_hash": "3ad228abaef206b8a9e3f6aaaa22c3e1",
+    "semantic_hash": "3ad228abaef206b8a9e3f6aaaa22c3e1"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Gallery/CollectionBoard.cs": {
+    "mtime": 1791780374.594687,
+    "seen": 1791959681.4732192,
+    "ast_hash": "de0f1d750e8bdae2401e69bf19b819e3",
+    "semantic_hash": "de0f1d750e8bdae2401e69bf19b819e3"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Gallery/CollectionUI.cs": {
+    "mtime": 1791780387.8723898,
+    "seen": 1791959681.473221,
+    "ast_hash": "855be57a46d26d110f383bd73a6bf1c7",
+    "semantic_hash": "855be57a46d26d110f383bd73a6bf1c7"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Gallery/GalleryFrame.cs": {
+    "mtime": 1791782114.6104062,
+    "seen": 1791959681.473223,
+    "ast_hash": "9322186e255635a280b9291183d4ed02",
+    "semantic_hash": "9322186e255635a280b9291183d4ed02"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Gallery/GalleryHangUI.cs": {
+    "mtime": 1791751178.8873613,
+    "seen": 1791959681.4732244,
+    "ast_hash": "ddc992f2e8085f26e8b65308fd7af9f7",
+    "semantic_hash": "ddc992f2e8085f26e8b65308fd7af9f7"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Growth/CropPlant.cs": {
+    "mtime": 1791782938.2406895,
+    "seen": 1791959681.4732265,
+    "ast_hash": "06e2a1935a06441376b1df48e66bf947",
+    "semantic_hash": "06e2a1935a06441376b1df48e66bf947"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Growth/GlowbellPlant.cs": {
+    "mtime": 1791564602.1096983,
+    "seen": 1791959681.473228,
+    "ast_hash": "21ee2a66078f93d0e5f2dc7e40578b1b",
+    "semantic_hash": "21ee2a66078f93d0e5f2dc7e40578b1b"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Growth/PaintingPlacer.cs": {
+    "mtime": 1791824688.4879067,
+    "seen": 1791959681.4732301,
+    "ast_hash": "c1d03c0dc5a97f7fca4f02a82bdaf1dd",
+    "semantic_hash": "c1d03c0dc5a97f7fca4f02a82bdaf1dd"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Growth/PaintingPlot.cs": {
+    "mtime": 1791824688.4879067,
+    "seen": 1791959681.4732318,
+    "ast_hash": "e9c9b79bb10a48960b604053fd207822",
+    "semantic_hash": "e9c9b79bb10a48960b604053fd207822"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Growth/SunbellPlant.cs": {
+    "mtime": 1791779244.5545697,
+    "seen": 1791959681.4732337,
+    "ast_hash": "ccfc6fcdfc3a7dae5d1f6eb0885f5649",
+    "semantic_hash": "ccfc6fcdfc3a7dae5d1f6eb0885f5649"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Growth/SunflowerPlant.cs": {
+    "mtime": 1791555318.2387433,
+    "seen": 1791959681.4732354,
+    "ast_hash": "ebf56684a16fb72d8e673c6ca3dafdbf",
+    "semantic_hash": "ebf56684a16fb72d8e673c6ca3dafdbf"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Growth/TomatoPlant.cs": {
+    "mtime": 1791555319.5808718,
+    "seen": 1791959681.473237,
+    "ast_hash": "9e01854a270c985bb4b0ac5ba98ea265",
+    "semantic_hash": "9e01854a270c985bb4b0ac5ba98ea265"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Interaction/AreaDoor.cs": {
+    "mtime": 1791929973.4253755,
+    "seen": 1791959681.4732387,
+    "ast_hash": "b7d3e92959abaafe8d879a759a50ecf0",
+    "semantic_hash": "b7d3e92959abaafe8d879a759a50ecf0"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Interaction/AreaTransition.cs": {
+    "mtime": 1791929973.3745568,
+    "seen": 1791959681.4732406,
+    "ast_hash": "065b6cddd268d070937858099a5f2eed",
+    "semantic_hash": "065b6cddd268d070937858099a5f2eed"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Interaction/IInteractable.cs": {
+    "mtime": 1791482411.80023,
+    "seen": 1791959681.4732423,
+    "ast_hash": "945704b9e0dff329265dc0d763f83316",
+    "semantic_hash": "945704b9e0dff329265dc0d763f83316"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Interaction/InteractionPromptUI.cs": {
+    "mtime": 1791782127.754692,
+    "seen": 1791959681.4732442,
+    "ast_hash": "10c7b2b1a78f713497b4fa8c126df5a0",
+    "semantic_hash": "10c7b2b1a78f713497b4fa8c126df5a0"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Interaction/PlayerInteractor.cs": {
+    "mtime": 1791782090.0775537,
+    "seen": 1791959681.4732459,
+    "ast_hash": "7f33f54c9327b70abe3d87c94941b2a3",
+    "semantic_hash": "7f33f54c9327b70abe3d87c94941b2a3"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Inventory/BlankCanvasItem.cs": {
+    "mtime": 1791741762.5166388,
+    "seen": 1791959681.4732475,
+    "ast_hash": "177bc3240c655b819fdcfe450e692071",
+    "semantic_hash": "177bc3240c655b819fdcfe450e692071"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Inventory/CropItem.cs": {
+    "mtime": 1791588750.612276,
+    "seen": 1791959681.4732492,
+    "ast_hash": "33e92294f253a05acdb9d871e0cbcec7",
+    "semantic_hash": "33e92294f253a05acdb9d871e0cbcec7"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Inventory/InventoryItem.cs": {
+    "mtime": 1791484003.8452172,
+    "seen": 1791959681.473251,
+    "ast_hash": "9ef36764625e187954f2e6f28c39135e",
+    "semantic_hash": "9ef36764625e187954f2e6f28c39135e"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Inventory/InventoryUI.cs": {
+    "mtime": 1791588956.2152815,
+    "seen": 1791959681.4732525,
+    "ast_hash": "2e5f8e2188e0e3dc04275a4134a44044",
+    "semantic_hash": "2e5f8e2188e0e3dc04275a4134a44044"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Inventory/PaintingItem.cs": {
+    "mtime": 1791782114.6093976,
+    "seen": 1791959681.4732544,
+    "ast_hash": "294af7d008e99741243a12076272b4c4",
+    "semantic_hash": "294af7d008e99741243a12076272b4c4"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Inventory/PlayerInventory.cs": {
+    "mtime": 1791782166.8315728,
+    "seen": 1791959681.473256,
+    "ast_hash": "ed2624470ca4096e6548e9edfb926528",
+    "semantic_hash": "ed2624470ca4096e6548e9edfb926528"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Npc/ArtDealerUI.cs": {
+    "mtime": 1791778247.532611,
+    "seen": 1791959681.473258,
+    "ast_hash": "99e825a428907cfe7ade85bf49baa7e8",
+    "semantic_hash": "99e825a428907cfe7ade85bf49baa7e8"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Npc/CommissionBoard.cs": {
+    "mtime": 1791781121.433483,
+    "seen": 1791959681.4732594,
+    "ast_hash": "c1dd7f5417cf68991533edb9e24c8972",
+    "semantic_hash": "c1dd7f5417cf68991533edb9e24c8972"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Npc/CommissionRewards.cs": {
+    "mtime": 1791780374.5753608,
+    "seen": 1791959681.4732614,
+    "ast_hash": "a836a98f13ef2b22ded68d3ca49920da",
+    "semantic_hash": "a836a98f13ef2b22ded68d3ca49920da"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Npc/CommissionUI.cs": {
+    "mtime": 1791754283.3724816,
+    "seen": 1791959681.473263,
+    "ast_hash": "875afa3dfe26b186f0bb531c28f03ba0",
+    "semantic_hash": "875afa3dfe26b186f0bb531c28f03ba0"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Npc/DialogueUI.cs": {
+    "mtime": 1791753076.96867,
+    "seen": 1791959681.4732652,
+    "ast_hash": "da4ee36f8dfa99c31f975acb4893b0e8",
+    "semantic_hash": "da4ee36f8dfa99c31f975acb4893b0e8"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Npc/FestivalStand.cs": {
+    "mtime": 1791781121.4344814,
+    "seen": 1791959681.4732668,
+    "ast_hash": "1d98816c88b0cc9e425f45cfbe4f8e60",
+    "semantic_hash": "1d98816c88b0cc9e425f45cfbe4f8e60"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Npc/Npc.cs": {
+    "mtime": 1791824587.5699165,
+    "seen": 1791959681.4732687,
+    "ast_hash": "961b29058c0ed659cf045a5c2004774c",
+    "semantic_hash": "961b29058c0ed659cf045a5c2004774c"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/CanvasGuide.cs": {
+    "mtime": 1791744269.0125222,
+    "seen": 1791959681.473271,
+    "ast_hash": "168f4d7f0ab2dfef14db361674109863",
+    "semantic_hash": "168f4d7f0ab2dfef14db361674109863"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/CanvasInteractable.cs": {
+    "mtime": 1791782938.30042,
+    "seen": 1791959681.4732726,
+    "ast_hash": "22728d05dbcdfeedcba7a99c3401f8ba",
+    "semantic_hash": "22728d05dbcdfeedcba7a99c3401f8ba"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/CoverageReadoutUI.cs": {
+    "mtime": 1791825522.277244,
+    "seen": 1791959681.4732745,
+    "ast_hash": "532ca4af894bafc9c4751b02e575f9fc",
+    "semantic_hash": "532ca4af894bafc9c4751b02e575f9fc"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/CropPickerUI.cs": {
+    "mtime": 1791778247.5334957,
+    "seen": 1791959681.4732761,
+    "ast_hash": "fdadfad838888eacffb9d562a7976121",
+    "semantic_hash": "fdadfad838888eacffb9d562a7976121"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/HeldBrush.cs": {
+    "mtime": 1791824633.275939,
+    "seen": 1791959681.473278,
+    "ast_hash": "12633026682377e4dd7c770150653871",
+    "semantic_hash": "12633026682377e4dd7c770150653871"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintBrushController.cs": {
+    "mtime": 1791824633.4079454,
+    "seen": 1791959681.4732797,
+    "ast_hash": "72219988af51aacdd5284ee7f00421fb",
+    "semantic_hash": "72219988af51aacdd5284ee7f00421fb"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintCoverage.cs": {
+    "mtime": 1791480818.2079294,
+    "seen": 1791959681.4732819,
+    "ast_hash": "4cea4823f47b5e71fcbb28d16f23cd31",
+    "semantic_hash": "4cea4823f47b5e71fcbb28d16f23cd31"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintEvaluator.cs": {
+    "mtime": 1791778247.5213268,
+    "seen": 1791959681.4732852,
+    "ast_hash": "928340926a155b51fda66b58807dd874",
+    "semantic_hash": "928340926a155b51fda66b58807dd874"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintFeedbackUI.cs": {
+    "mtime": 1791482084.5600264,
+    "seen": 1791959681.4732869,
+    "ast_hash": "036754619e082bfc9f03e986c3ffd61b",
+    "semantic_hash": "036754619e082bfc9f03e986c3ffd61b"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintHistory.cs": {
+    "mtime": 1791482758.2478125,
+    "seen": 1791959681.4732888,
+    "ast_hash": "b5657592b9f1e900729961eb2c10d983",
+    "semantic_hash": "b5657592b9f1e900729961eb2c10d983"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintModeController.cs": {
+    "mtime": 1791476432.8020782,
+    "seen": 1791959681.4732904,
+    "ast_hash": "a618d8598745257a5a49ff9ae391b639",
+    "semantic_hash": "a618d8598745257a5a49ff9ae391b639"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintSurface.cs": {
+    "mtime": 1791782938.288574,
+    "seen": 1791959681.473292,
+    "ast_hash": "2bf870d0798b5342d99bd4bcc9839977",
+    "semantic_hash": "2bf870d0798b5342d99bd4bcc9839977"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintToolsUI.cs": {
+    "mtime": 1791823874.702973,
+    "seen": 1791959681.4732938,
+    "ast_hash": "f012d2144914b796f8766a0a9058dc8c",
+    "semantic_hash": "f012d2144914b796f8766a0a9058dc8c"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintUsage.cs": {
+    "mtime": 1791744272.2566385,
+    "seen": 1791959681.4732957,
+    "ast_hash": "f7aa79887966c69831a55afdd0719ac5",
+    "semantic_hash": "f7aa79887966c69831a55afdd0719ac5"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PaintingFinisher.cs": {
+    "mtime": 1791823409.4849358,
+    "seen": 1791959681.473297,
+    "ast_hash": "8b215945a04eea320b9e8e7d0e0648d5",
+    "semantic_hash": "8b215945a04eea320b9e8e7d0e0648d5"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/PigmentStock.cs": {
+    "mtime": 1791781121.4304807,
+    "seen": 1791959681.473299,
+    "ast_hash": "8cb2dd5d7bf8f31f738ad2e8ac5d8d99",
+    "semantic_hash": "8cb2dd5d7bf8f31f738ad2e8ac5d8d99"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Painting/Sketchbook.cs": {
+    "mtime": 1791781039.4185872,
+    "seen": 1791959681.4733007,
+    "ast_hash": "e85e701818be17e937811ab1476c64b0",
+    "semantic_hash": "e85e701818be17e937811ab1476c64b0"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Player/CameraModeController.cs": {
+    "mtime": 1791820651.1361408,
+    "seen": 1791959681.4733026,
+    "ast_hash": "bc035bd22c8fc4ef34ed47dedbf96b64",
+    "semantic_hash": "bc035bd22c8fc4ef34ed47dedbf96b64"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Player/PlayerMovement.cs": {
+    "mtime": 1791781843.3216753,
+    "seen": 1791959681.4733043,
+    "ast_hash": "bc3efbdc86596508c076ef44e6560aa7",
+    "semantic_hash": "bc3efbdc86596508c076ef44e6560aa7"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Progression/ArtistLevel.cs": {
+    "mtime": 1791781039.3975976,
+    "seen": 1791959681.4733064,
+    "ast_hash": "6646437b61515f80456b814974abdbe4",
+    "semantic_hash": "6646437b61515f80456b814974abdbe4"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Progression/GardenGate.cs": {
+    "mtime": 1791745636.741749,
+    "seen": 1791959681.473308,
+    "ast_hash": "5d3d9bf592c0ad5ea390b9f58bd271a1",
+    "semantic_hash": "5d3d9bf592c0ad5ea390b9f58bd271a1"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Progression/LevelCounterUI.cs": {
+    "mtime": 1791744881.718584,
+    "seen": 1791959681.47331,
+    "ast_hash": "5a8180b0118c4fcd1bad03133016abcc",
+    "semantic_hash": "5a8180b0118c4fcd1bad03133016abcc"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Save/ISaveable.cs": {
+    "mtime": 1791781019.6355717,
+    "seen": 1791959681.4733117,
+    "ast_hash": "5a07a5186830a64fc7255d9e249acecf",
+    "semantic_hash": "5a07a5186830a64fc7255d9e249acecf"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Save/PaintingStore.cs": {
+    "mtime": 1791820651.1372652,
+    "seen": 1791959681.473314,
+    "ast_hash": "a7d0c9795b386cb367c9e7cf0295b0d3",
+    "semantic_hash": "a7d0c9795b386cb367c9e7cf0295b0d3"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Save/SaveData.cs": {
+    "mtime": 1791823409.4866133,
+    "seen": 1791959681.473316,
+    "ast_hash": "cfb00aabb0ce4fc94fffa690255109ae",
+    "semantic_hash": "cfb00aabb0ce4fc94fffa690255109ae"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Save/SaveManager.cs": {
+    "mtime": 1791820651.1789334,
+    "seen": 1791959681.4733176,
+    "ast_hash": "f6b045421d66c3cba4476693a6b6ea80",
+    "semantic_hash": "f6b045421d66c3cba4476693a6b6ea80"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Save/SaveRegistry.cs": {
+    "mtime": 1791781021.1585288,
+    "seen": 1791959681.4733198,
+    "ast_hash": "658d2d4a1bd610575a90b0a981c9ef35",
+    "semantic_hash": "658d2d4a1bd610575a90b0a981c9ef35"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/CalendarEvents.cs": {
+    "mtime": 1791780923.6287887,
+    "seen": 1791959681.4733212,
+    "ast_hash": "5b8a67301c9e9ab96abb0883ac8c1821",
+    "semantic_hash": "5b8a67301c9e9ab96abb0883ac8c1821"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/CalendarUI.cs": {
+    "mtime": 1791781400.1924438,
+    "seen": 1791959681.473323,
+    "ast_hash": "8a085c0ca9efca569b3edae4b5e8521c",
+    "semantic_hash": "8a085c0ca9efca569b3edae4b5e8521c"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/DayFadeUI.cs": {
+    "mtime": 1791780923.6655867,
+    "seen": 1791959681.4733248,
+    "ast_hash": "c0d727b890060f66063f4bdf81e39a0b",
+    "semantic_hash": "c0d727b890060f66063f4bdf81e39a0b"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/DayLighting.cs": {
+    "mtime": 1791823127.1080222,
+    "seen": 1791959681.4733267,
+    "ast_hash": "a572928a4fd5df6f58d71dc7ef03a47c",
+    "semantic_hash": "a572928a4fd5df6f58d71dc7ef03a47c"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/NightLamp.cs": {
+    "mtime": 1791823009.5985742,
+    "seen": 1791959681.4733284,
+    "ast_hash": "0a6337ed80a2ad612070bbe6059041a3",
+    "semantic_hash": "0a6337ed80a2ad612070bbe6059041a3"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/Season.cs": {
+    "mtime": 1791765869.8827026,
+    "seen": 1791959681.47333,
+    "ast_hash": "14a3028969745962ce4e0b95b6ca031e",
+    "semantic_hash": "14a3028969745962ce4e0b95b6ca031e"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/SeasonClock.cs": {
+    "mtime": 1791781148.9674907,
+    "seen": 1791959681.4733317,
+    "ast_hash": "6567f253bbc1e988392e2155c30cac98",
+    "semantic_hash": "6567f253bbc1e988392e2155c30cac98"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/SeasonCounterUI.cs": {
+    "mtime": 1791780923.588386,
+    "seen": 1791959681.4733334,
+    "ast_hash": "abf7514a9da2b0ad5bd31f43b9f86d47",
+    "semantic_hash": "abf7514a9da2b0ad5bd31f43b9f86d47"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/SeasonVisuals.cs": {
+    "mtime": 1791822575.2381046,
+    "seen": 1791959681.4733353,
+    "ast_hash": "63e4423e8868a8316177998e64e82f60",
+    "semantic_hash": "63e4423e8868a8316177998e64e82f60"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Seasons/WallCalendar.cs": {
+    "mtime": 1791781127.4584446,
+    "seen": 1791959681.473337,
+    "ast_hash": "e816c212c3762fe421f4afc0581c1f74",
+    "semantic_hash": "e816c212c3762fe421f4afc0581c1f74"
+  },
+  "Assets/_TheLivingCanvas/Scripts/Tutorial/TutorialObjectives.cs": {
+    "mtime": 1791824099.2122138,
+    "seen": 1791959681.4733386,
+    "ast_hash": "c951443ac86c5eac196a01f8b6fe1005",
+    "semantic_hash": "c951443ac86c5eac196a01f8b6fe1005"
+  },
+  "Packages/manifest.json": {
+    "mtime": 1791466891.8007429,
+    "seen": 1791959681.4733405,
+    "ast_hash": "dac699515b98c7cac280824c8c15b190",
+    "semantic_hash": "dac699515b98c7cac280824c8c15b190"
+  },
+  "Packages/packages-lock.json": {
+    "mtime": 1791466939.1351502,
+    "seen": 1791959681.4733422,
+    "ast_hash": "73ff88ee29dba34579fc204015304a43",
+    "semantic_hash": "73ff88ee29dba34579fc204015304a43"
+  },
+  "ProjectSettings/Packages/com.unity.probuilder/Settings.json": {
+    "mtime": 1791478008.9492452,
+    "seen": 1791959681.4733438,
+    "ast_hash": "447d5a845b898afe3a770dd5ba694ec4",
+    "semantic_hash": "447d5a845b898afe3a770dd5ba694ec4"
+  },
+  "ProjectSettings/SceneTemplateSettings.json": {
+    "mtime": 1791464212.3145049,
+    "seen": 1791959681.4733455,
+    "ast_hash": "eeb26e313b89cd9334b828428a4847ef",
+    "semantic_hash": "eeb26e313b89cd9334b828428a4847ef"
+  },
+  "Tools/blender_mcp/addon.py": {
+    "mtime": 1791850204.7751634,
+    "seen": 1791959681.4733477,
+    "ast_hash": "83fecf7521a7cb23eb014d36810de4cc",
+    "semantic_hash": "83fecf7521a7cb23eb014d36810de4cc"
+  },
+  "Tools/make_prototype_textures.py": {
+    "mtime": 1791761154.3614724,
+    "seen": 1791959681.4733493,
+    "ast_hash": "55d295aa0355645732aa8dac81684fa7",
+    "semantic_hash": "55d295aa0355645732aa8dac81684fa7"
+  },
+  "Tools/museum_models/export_unity.py": {
+    "mtime": 1791928965.483676,
+    "seen": 1791959681.4733512,
+    "ast_hash": "666f605cc29763671f57616c1d008102",
+    "semantic_hash": "666f605cc29763671f57616c1d008102"
+  },
+  "Tools/museum_models/make_presentation.py": {
+    "mtime": 1791951107.9793513,
+    "seen": 1791959681.473353,
+    "ast_hash": "6e991d3896fab4779b798a0816904138",
+    "semantic_hash": "6e991d3896fab4779b798a0816904138"
+  },
+  "Tools/museum_models/make_texture_templates.py": {
+    "mtime": 1791931072.162175,
+    "seen": 1791959681.4733548,
+    "ast_hash": "b75e1632c7a24a2f0c50c7aef399bdef",
+    "semantic_hash": "b75e1632c7a24a2f0c50c7aef399bdef"
+  },
+  "Tools/museum_models/museum_dims.py": {
+    "mtime": 1791867293.385809,
+    "seen": 1791959681.4733565,
+    "ast_hash": "e85fa48673b97ad61ae4b74c82f28162",
+    "semantic_hash": "e85fa48673b97ad61ae4b74c82f28162"
+  },
+  "Tools/museum_models/museum_ext.py": {
+    "mtime": 1791868449.557418,
+    "seen": 1791959681.4733584,
+    "ast_hash": "6ee5a402493fd0d220d2944910b36b79",
+    "semantic_hash": "6ee5a402493fd0d220d2944910b36b79"
+  },
+  "Tools/museum_models/museum_garden.py": {
+    "mtime": 1791866681.9252584,
+    "seen": 1791959681.47336,
+    "ast_hash": "b08f688bcd397540d331d9fa404814bd",
+    "semantic_hash": "b08f688bcd397540d331d9fa404814bd"
+  },
+  "Tools/museum_models/museum_int.py": {
+    "mtime": 1791959200.3584185,
+    "seen": 1791959681.473362,
+    "ast_hash": "aaa3b8c24ae32a811171b2dd0d96d52f",
+    "semantic_hash": "aaa3b8c24ae32a811171b2dd0d96d52f"
+  },
+  "Tools/museum_models/museum_lib.py": {
+    "mtime": 1791956040.6579354,
+    "seen": 1791959681.4733634,
+    "ast_hash": "4eafa987e2126181257b64c3f28f6cba",
+    "semantic_hash": "4eafa987e2126181257b64c3f28f6cba"
+  },
+  "Tools/museum_models/render_check.py": {
+    "mtime": 1791931999.5494514,
+    "seen": 1791959681.4733653,
+    "ast_hash": "9acb95afe1994cb805d72c0338af8152",
+    "semantic_hash": "9acb95afe1994cb805d72c0338af8152"
+  },
+  "Tools/sfx/generate_sfx.py": {
+    "mtime": 1791821152.9221208,
+    "seen": 1791959681.4733667,
+    "ast_hash": "500392610ebd379dcc213cdd564bb6ed",
+    "semantic_hash": "500392610ebd379dcc213cdd564bb6ed"
+  },
+  "Tools/template_pack/build_blend.py": {
+    "mtime": 1791779036.4119172,
+    "seen": 1791959681.4733686,
+    "ast_hash": "c21d77c8b9dc432f4687b0c0fd230e46",
+    "semantic_hash": "c21d77c8b9dc432f4687b0c0fd230e46"
+  },
+  "Tools/template_pack/export_fbx.py": {
+    "mtime": 1791779036.4099178,
+    "seen": 1791959681.4733703,
+    "ast_hash": "0b1966afed821f2bdf6dee56d99730c7",
+    "semantic_hash": "0b1966afed821f2bdf6dee56d99730c7"
+  },
+  "Tools/template_pack/make_pack.py": {
+    "mtime": 1791779100.9746428,
+    "seen": 1791959681.473372,
+    "ast_hash": "909d43a983ed5b70912ea3ed55b12d78",
+    "semantic_hash": "909d43a983ed5b70912ea3ed55b12d78"
+  },
+  "Tools/template_pack/spec.py": {
+    "mtime": 1791778631.9484913,
+    "seen": 1791959681.4733737,
+    "ast_hash": "3dfac86086fc03e98644deda45261897",
+    "semantic_hash": "3dfac86086fc03e98644deda45261897"
+  },
+  "Tools/vfx/generate_dabs.py": {
+    "mtime": 1791821876.4122977,
+    "seen": 1791959681.4733756,
+    "ast_hash": "366b861cc07471518adbc3f7dc34b1c6",
+    "semantic_hash": "366b861cc07471518adbc3f7dc34b1c6"
+  },
+  "soundtrack/generate_embers.py": {
+    "mtime": 1791767121.2370849,
+    "seen": 1791959681.4733772,
+    "ast_hash": "03aeb3a60ac115f862058887cbb3269c",
+    "semantic_hash": "03aeb3a60ac115f862058887cbb3269c"
+  },
+  "soundtrack/generate_soundtrack.py": {
+    "mtime": 1791760700.8354108,
+    "seen": 1791959681.473379,
+    "ast_hash": "3ed719960d53f8b36e1c63d28eded665",
+    "semantic_hash": "3ed719960d53f8b36e1c63d28eded665"
+  },
+  "soundtrack/validate_embers.py": {
+    "mtime": 1791767063.697745,
+    "seen": 1791959681.4733806,
+    "ast_hash": "c41fb9c21b6c0a983512fd50455cafca",
+    "semantic_hash": "c41fb9c21b6c0a983512fd50455cafca"
+  },
+  "soundtrack/validate_soundtrack.py": {
+    "mtime": 1791760703.9615362,
+    "seen": 1791959681.4733825,
+    "ast_hash": "b69535c08d292ed2c677bad6bbb18d7a",
+    "semantic_hash": "b69535c08d292ed2c677bad6bbb18d7a"
+  },
+  "Assets/_TheLivingCanvas/Audio/Music/embers_and_lamplight.ogg": {
+    "mtime": 1791821100.503978,
+    "seen": 1791959681.4733841,
+    "ast_hash": "b15f52d7d52abb2205b5f2f2e2031d29",
+    "semantic_hash": "b15f52d7d52abb2205b5f2f2e2031d29"
+  },
+  "Assets/_TheLivingCanvas/Audio/Music/the_garden_remembers.ogg": {
+    "mtime": 1791821096.985776,
+    "seen": 1791959681.473386,
+    "ast_hash": "88e394f029bdc1a9f7b8f282897f675a",
+    "semantic_hash": "88e394f029bdc1a9f7b8f282897f675a"
+  },
+  "Assets/_TheLivingCanvas/Audio/Sfx/brush_loop.wav": {
+    "mtime": 1791821155.6389313,
+    "seen": 1791959681.4733877,
+    "ast_hash": "f59090895c0628dffcc9ae115ee12fe9",
+    "semantic_hash": "f59090895c0628dffcc9ae115ee12fe9"
+  },
+  "Assets/_TheLivingCanvas/Audio/Sfx/coin.wav": {
+    "mtime": 1791821155.6982841,
+    "seen": 1791959681.4733896,
+    "ast_hash": "05e1161723e4bd6bbfe37eb0499b3110",
+    "semantic_hash": "05e1161723e4bd6bbfe37eb0499b3110"
+  },
+  "Assets/_TheLivingCanvas/Audio/Sfx/harvest.wav": {
+    "mtime": 1791821155.6929379,
+    "seen": 1791959681.4733913,
+    "ast_hash": "3098b4aed06ff293f513d2075a20e996",
+    "semantic_hash": "3098b4aed06ff293f513d2075a20e996"
+  },
+  "Assets/_TheLivingCanvas/Audio/Sfx/level_up.wav": {
+    "mtime": 1791821155.778964,
+    "seen": 1791959681.473393,
+    "ast_hash": "c94e4515f06b39e165c05146d84850b5",
+    "semantic_hash": "c94e4515f06b39e165c05146d84850b5"
+  },
+  "Assets/_TheLivingCanvas/Audio/Sfx/paint_finish.wav": {
+    "mtime": 1791821155.6770494,
+    "seen": 1791959681.4733946,
+    "ast_hash": "6766a134417408461521a900611f5ac6",
+    "semantic_hash": "6766a134417408461521a900611f5ac6"
+  },
+  "Assets/_TheLivingCanvas/Audio/Sfx/place.wav": {
+    "mtime": 1791821155.71436,
+    "seen": 1791959681.4733965,
+    "ast_hash": "d38a243e6a6983b836cd1f04f48cb31d",
+    "semantic_hash": "d38a243e6a6983b836cd1f04f48cb31d"
+  },
+  "Assets/_TheLivingCanvas/Audio/Sfx/ui_close.wav": {
+    "mtime": 1791821155.7034078,
+    "seen": 1791959681.4733982,
+    "ast_hash": "c80fa3763a4e39cfac3e76f40fd7bc74",
+    "semantic_hash": "c80fa3763a4e39cfac3e76f40fd7bc74"
+  },
+  "Assets/_TheLivingCanvas/Audio/Sfx/ui_open.wav": {
+    "mtime": 1791821155.700096,
+    "seen": 1791959681.4734,
+    "ast_hash": "addd43a24b929d9c9eda23b5b62e1f87",
+    "semantic_hash": "addd43a24b929d9c9eda23b5b62e1f87"
+  },
+  "soundtrack/embers_and_lamplight.wav": {
+    "mtime": 1791767143.2925143,
+    "seen": 1791959681.4734015,
+    "ast_hash": "32ee3302ed06cb44dd8420b833f4466a",
+    "semantic_hash": "32ee3302ed06cb44dd8420b833f4466a"
+  },
+  "soundtrack/the_garden_remembers.wav": {
+    "mtime": 1791760980.8927703,
+    "seen": 1791959681.4734035,
+    "ast_hash": "f7b5beab62c69e1e6210342353953ab9",
+    "semantic_hash": "f7b5beab62c69e1e6210342353953ab9"
+  }
+}

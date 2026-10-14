@@ -1,0 +1,74 @@
+MI PC - COMPONENTES
+Leído del sistema: 2026-10-09
+
+==================================================
+PROCESADOR (CPU)
+==================================================
+  Modelo:        AMD Ryzen 5 2400G with Radeon Vega Graphics
+  Núcleos:       4 físicos / 8 hilos
+  Velocidad:     3.6 GHz (máx. reportado)
+
+==================================================
+PLACA MADRE
+==================================================
+  Fabricante:    BIOSTAR
+  Modelo:        B550M-SILVER
+  BIOS:          American Megatrends, versión 5.17
+
+==================================================
+MEMORIA RAM
+==================================================
+  Total:         16 GB (17.1 GB reportados por el sistema)
+  Módulos:       1 x 16 GB (DDR4, DIMM 1)
+  Velocidad:     2400 MHz
+  Fabricante:    Desconocido
+  Part number:   HKED4161CAB2F2HB1
+  Nota:          un solo módulo, así que no hay doble canal activo
+
+==================================================
+GRÁFICA (GPU)
+==================================================
+  Principal:     AMD Radeon RX 570 Series (ID 0x67DF)
+  VRAM:          4 GB (valor reportado; Windows lo muestra truncado en 32 bits)
+  Driver:        31.0.21925.1001
+  Secundaria:    Parsec Virtual Display Adapter (pantalla virtual)
+
+  Nota: el Ryzen 5 2400G tiene su propia gráfica integrada (Vega), pero en
+  el sistema activo se usa la RX 570 como adaptador principal.
+
+==================================================
+ALMACENAMIENTO
+==================================================
+  1) TEAM T253X1240G   240 GB   (SSD, reportado como "Fixed hard disk")
+  2) WDC WD10EZEX-08WN4A0   1 TB (disco mecánico HDD)
+
+==================================================
+RED
+==================================================
+  Realtek PCIe 2.5GbE Family Controller (Ethernet 2.5 Gb)
+
+==================================================
+AUDIO
+==================================================
+  Dispositivo de High Definition Audio (Realtek)
+  AMD High Definition Audio Device (HDMI/DisplayPort de la RX 570)
+  AMD Streaming Audio Device
+
+==================================================
+MONITOR
+==================================================
+  Monitor PnP genérico (el modelo exacto no aparece en Windows)
+
+==================================================
+SISTEMA OPERATIVO
+==================================================
+  Windows 10 Home 64 bits, versión 10.0.19045
+
+==================================================
+NOTAS
+==================================================
+  - Fuente de alimentación, gabinete, refrigeración y modelo exacto de
+    monitor no se pueden leer desde Windows. Si los querés incluir, decime
+    los datos y los agrego.
+  - Los datos vienen de WMI (Win32_*); algunos valores (VRAM, tipo de disco)
+    pueden no ser exactos.

@@ -8,3 +8,6 @@ Decisiones de diseño en `Docs/Decisiones.md`; plan de fases en `Docs/PromptMaes
 Antes de trabajar en **arte, materiales, shaders, iluminación, postprocesado o escenas**, lee `ART_DIRECTION.md` (raíz del repo) y úsalo como criterio.
 Reglas clave: texturas pintadas a mano por el usuario, shaders que las complementan (no las sustituyen), Descoloración ≠ filtro de grises,
 fases pequeñas con aprobación del usuario entre fases importantes, sin framework grande antes de validar en una escena pequeña.
+
+## Referencia narrativa (OBLIGATORIO)
+Antes de trabajar en **historia, personajes, diálogos, niveles, dirección artística o música**, lee `LORE_BIBLIA_DEL_JUEGO.md` (raíz del repo) y úsalo como criterio para mantener la continuidad narrativa. Distingue siempre entre hechos establecidos, propuestas narrativas y detalles todavía abiertos. No conviertas ideas sugeridas en canon sin aprobación del usuario.

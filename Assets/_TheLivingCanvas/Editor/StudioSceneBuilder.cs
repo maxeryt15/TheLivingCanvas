@@ -38,7 +38,8 @@ namespace TheLivingCanvas.EditorTools
     public static class StudioSceneBuilder
     {
         const string Root = "Assets/_TheLivingCanvas";
-        const string ScenePath = Root + "/Scenes/Studio.unity";
+        // ARCHIVADA (2026-10-13): la escena principal es Museum.unity; Studio queda como referencia para ir trayendo mecanicas.
+        const string ScenePath = Root + "/Scenes/_Archive/Studio.unity";
         const string MaterialsFolder = Root + "/Art/Materials";
         const string ProfilePath = Root + "/Settings/StudioVolumeProfile.asset";
         const string StudioZoneProfilePath = Root + "/Settings/StudioZoneVolumeProfile.asset";
@@ -54,7 +55,7 @@ namespace TheLivingCanvas.EditorTools
         const string GlowbellPrefabPath = Root + "/Prefabs/Crops/Glowbell.prefab";
         const string SunbellPrefabPath = Root + "/Prefabs/Crops/Sunbell.prefab";
 
-        [MenuItem("TheLivingCanvas/Build Studio Scene")]
+        [MenuItem("TheLivingCanvas/Archive/Build Studio Scene (old)")]
         public static void Build()
         {
             // Studio.unity se sobrescribe entero, así que solo se pregunta por cambios en otras escenas.
@@ -185,7 +186,7 @@ namespace TheLivingCanvas.EditorTools
             BuildZoneVolume("Volume_Gallery", new Vector3(0f, 1.6f, 10f), new Vector3(12f, 3.2f, 8f), GalleryZoneProfilePath, -4f, -6f);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
-            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+            // Archivada: no toca Build Settings (la escena principal es Museum.unity, indice 0).
             AssetDatabase.SaveAssets();
 
             // DefaultControls registra cada paso (crear, emparentar) en el Undo del editor. En Play mode,
@@ -262,7 +263,7 @@ namespace TheLivingCanvas.EditorTools
             return prefab;
         }
 
-        static GameObject BuildCameraRig(GameObject player)
+        internal static GameObject BuildCameraRig(GameObject player)   // tambien la usa MuseumSceneBuilder
         {
             var rig = new GameObject("Cameras");
             rig.AddComponent<CursorLock>();
@@ -1878,7 +1879,7 @@ namespace TheLivingCanvas.EditorTools
         }
 
         /// <summary>HUD provisional: aviso de interacción abajo al centro.</summary>
-        static GameObject BuildHud(PlayerInteractor interactor)
+        internal static GameObject BuildHud(PlayerInteractor interactor)
         {
             var hud = new GameObject("HUD");
             hud.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
