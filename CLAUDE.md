@@ -11,3 +11,6 @@ fases pequeñas con aprobación del usuario entre fases importantes, sin framewo
 
 ## Referencia narrativa (OBLIGATORIO)
 Antes de trabajar en **historia, personajes, diálogos, niveles, dirección artística o música**, lee `LORE_BIBLIA_DEL_JUEGO.md` (raíz del repo) y úsalo como criterio para mantener la continuidad narrativa. Distingue siempre entre hechos establecidos, propuestas narrativas y detalles todavía abiertos. No conviertas ideas sugeridas en canon sin aprobación del usuario.
+
+## Blender (OBLIGATORIO)
+Before performing any Blender modeling task, read `Blender/blender_modeling_guidelines.md`. When the task involves NPCs, also read `Blender/npc_modeling_guidelines.md`. When it involves props, read `Blender/props_guidelines.md`. When it involves environment/scene dressing, read `Blender/environment_guidelines.md`. The existing museum interior and exterior are already modeled and must be treated as the source of truth. Do not rebuild or redesign them unless explicitly instructed.
