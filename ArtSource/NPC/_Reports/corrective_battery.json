@@ -1,0 +1,282 @@
+{
+ "Rose": {
+  "Idle": {
+   "A": {},
+   "B": {}
+  },
+  "ArmsUp_L": {
+   "A": {},
+   "B": {
+    "lowerarm_l": [
+     16.7,
+     6
+    ],
+    "spine_03": [
+     6.9,
+     4
+    ],
+    "neck_01": [
+     6.8,
+     4
+    ]
+   }
+  },
+  "ArmsForward_L": {
+   "A": {},
+   "B": {
+    "spine_03": [
+     14.4,
+     4
+    ],
+    "clavicle_l": [
+     4.8,
+     3
+    ],
+    "neck_01": [
+     4.7,
+     3
+    ],
+    "lowerarm_r": [
+     1.9,
+     1
+    ]
+   }
+  },
+  "ArmsBack_L": {
+   "A": {},
+   "B": {}
+  },
+  "ElbowBend_L": {
+   "A": {},
+   "B": {
+    "lowerarm_l": [
+     19.3,
+     4
+    ],
+    "clavicle_l": [
+     6.3,
+     9
+    ],
+    "neck_01": [
+     5.7,
+     1
+    ],
+    "upperarm_l": [
+     5.3,
+     1
+    ],
+    "spine_03": [
+     2.9,
+     2
+    ],
+    "lowerarm_r": [
+     1.9,
+     1
+    ]
+   }
+  },
+  "ShoulderCross_L": {
+   "A": {},
+   "B": {
+    "spine_03": [
+     2.0,
+     1
+    ]
+   }
+  },
+  "ShoulderUpElbow_L": {
+   "A": {},
+   "B": {
+    "lowerarm_l": [
+     21.0,
+     12
+    ],
+    "spine_03": [
+     6.9,
+     4
+    ],
+    "neck_01": [
+     6.8,
+     4
+    ],
+    "lowerarm_r": [
+     1.9,
+     1
+    ]
+   }
+  },
+  "LegKick_L": {
+   "A": {},
+   "B": {}
+  },
+  "LegAbduct_L": {
+   "A": {},
+   "B": {}
+  },
+  "KneeBend_L": {
+   "A": {},
+   "B": {}
+  },
+  "ArmsUp_R": {
+   "A": {},
+   "B": {
+    "lowerarm_r": [
+     16.7,
+     6
+    ],
+    "spine_03": [
+     11.7,
+     5
+    ],
+    "neck_01": [
+     6.9,
+     4
+    ],
+    "clavicle_r": [
+     2.4,
+     1
+    ]
+   }
+  },
+  "ArmsForward_R": {
+   "A": {},
+   "B": {
+    "spine_03": [
+     17.9,
+     3
+    ],
+    "clavicle_r": [
+     6.6,
+     4
+    ],
+    "neck_01": [
+     4.7,
+     3
+    ]
+   }
+  },
+  "ArmsBack_R": {
+   "A": {},
+   "B": {
+    "lowerarm_r": [
+     1.9,
+     1
+    ]
+   }
+  },
+  "ElbowBend_R": {
+   "A": {},
+   "B": {
+    "lowerarm_r": [
+     19.3,
+     6
+    ],
+    "clavicle_r": [
+     6.2,
+     10
+    ],
+    "neck_01": [
+     5.7,
+     3
+    ],
+    "upperarm_r": [
+     5.3,
+     1
+    ],
+    "clavicle_l": [
+     1.5,
+     1
+    ]
+   }
+  },
+  "ShoulderCross_R": {
+   "A": {},
+   "B": {
+    "spine_03": [
+     2.0,
+     1
+    ],
+    "lowerarm_r": [
+     1.9,
+     1
+    ],
+    "clavicle_l": [
+     1.5,
+     1
+    ]
+   }
+  },
+  "ShoulderUpElbow_R": {
+   "A": {},
+   "B": {
+    "lowerarm_r": [
+     21.0,
+     15
+    ],
+    "spine_03": [
+     11.7,
+     5
+    ],
+    "neck_01": [
+     6.9,
+     4
+    ],
+    "clavicle_r": [
+     2.4,
+     1
+    ]
+   }
+  },
+  "LegKick_R": {
+   "A": {},
+   "B": {}
+  },
+  "LegAbduct_R": {
+   "A": {},
+   "B": {}
+  },
+  "KneeBend_R": {
+   "A": {},
+   "B": {}
+  },
+  "Crouch": {
+   "A": {},
+   "B": {
+    "lowerarm_r": [
+     1.9,
+     1
+    ]
+   }
+  },
+  "Sit": {
+   "A": {},
+   "B": {}
+  },
+  "BendForward": {
+   "A": {},
+   "B": {
+    "clavicle_l": [
+     1.5,
+     1
+    ]
+   }
+  },
+  "Twist_A": {
+   "A": {},
+   "B": {}
+  },
+  "Twist_B": {
+   "A": {},
+   "B": {}
+  },
+  "HeadDown": {
+   "A": {},
+   "B": {
+    "lowerarm_r": [
+     1.9,
+     1
+    ]
+   }
+  }
+ }
+}

@@ -5,6 +5,7 @@
         "Unity.InputSystem",
         "Unity.Cinemachine",
         "Unity.RenderPipelines.Core.Runtime",
+        "Unity.AI.Navigation",
         "UnityEngine.UI"
     ],
     "includePlatforms": [],

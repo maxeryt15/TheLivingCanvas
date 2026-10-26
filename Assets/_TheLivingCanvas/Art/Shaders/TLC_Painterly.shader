@@ -43,6 +43,9 @@ Shader "TLC/Painterly"
         _PreserveRange ("Preserved hue range", Range(0, 1)) = 0.25
         _PreserveAmount ("Preserve amount (0 = off)", Range(0, 1)) = 0
 
+        [Header(Vertex colour)]
+        [Toggle] _UseVertexColor ("Multiply by mesh vertex colour (NPC skin, hair)", Float) = 0
+
         [Header(Surface)]
         [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 2
     }
@@ -79,6 +82,7 @@ Shader "TLC/Painterly"
             half4 _PreserveColor;
             half _PreserveRange;
             half _PreserveAmount;
+            half _UseVertexColor;
             half _Cull;
         CBUFFER_END
         ENDHLSL
@@ -108,6 +112,7 @@ Shader "TLC/Painterly"
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
                 float2 uv : TEXCOORD0;
+                half4 color : COLOR;
             };
 
             struct Varyings
@@ -117,6 +122,7 @@ Shader "TLC/Painterly"
                 float3 positionWS : TEXCOORD1;
                 float3 normalWS : TEXCOORD2;
                 half fogFactor : TEXCOORD3;
+                half4 color : TEXCOORD4;
             };
 
             Varyings Vert(Attributes input)
@@ -128,6 +134,7 @@ Shader "TLC/Painterly"
                 o.normalWS = TransformObjectToWorldNormal(input.normalOS);
                 o.uv = TRANSFORM_TEX(input.uv, _BaseMap);
                 o.fogFactor = ComputeFogFactor(vp.positionCS.z);
+                o.color = input.color;
                 return o;
             }
 
@@ -174,6 +181,7 @@ Shader "TLC/Painterly"
                 nWS = IS_FRONT_VFACE(facing, nWS, -nWS); // geometria de doble cara (hojas, petalos)
 
                 half3 albedo = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv).rgb * _BaseColor.rgb;
+                albedo *= lerp(half3(1, 1, 1), input.color.rgb, _UseVertexColor); // opcional: color por vertice (piel, pelo del NPC)
 
                 // Pincelada: UV de malla o proyeccion de mundo, con escala y rotacion.
                 float2 buv = (_BrushSpace > 0.5h) ? WorldPlanarUV(input.positionWS, nWS) : input.uv;

@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_Stu_PhonesBody
+  m_Shader: {fileID: 4800000, guid: daa60e7b0ec070b489597e8748572797, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BaseMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BrushMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AmbientStrength: 1
+    - _BrushBreakup: 0.35
+    - _BrushRotation: 0
+    - _BrushScale: 1
+    - _BrushSpace: 0
+    - _BrushStrength: 0.1
+    - _ColdShift: 0.5
+    - _Cull: 2
+    - _DescolorContrast: 0.1
+    - _DescolorResponse: 1
+    - _LightThreshold: 0.5
+    - _PreserveAmount: 0
+    - _PreserveRange: 0.25
+    - _RampSoftness: 0.18
+    - _ShadowStrength: 0.6
+    - _UseVertexColor: 0
+    m_Colors:
+    - _BaseColor: {r: 0.34919015, g: 0.34919015, b: 0.3810918, a: 1}
+    - _PreserveColor: {r: 0.83, g: 0.65, b: 0.16999996, a: 1}
+    - _ShadowColor: {r: 0.54999995, g: 0.6, b: 0.75, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

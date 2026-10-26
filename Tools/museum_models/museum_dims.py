@@ -22,8 +22,9 @@ FRONT = [  # muro y=-6, corre en X
     win(-5.55, 1.8, 0), win(-2.35, 1.2, 0), win(2.35, 1.2, 0), win(5.55, 1.8, 0),
     win(-5.55, 1.8, 1), win(-2.35, 1.2, 1), win(0.0, 1.6, 1, 0.5, 2.7), win(2.35, 1.2, 1), win(5.55, 1.8, 1),
 ]
+BACK_DX = 0.6             # puerta trasera desplazada +x para no chocar con el rellano de la escalera (2026-10-19)
 BACK = [   # muro y=+6
-    (0.0, 1.4, FL0, FL0 + 2.6),                       # puerta trasera (sala de escaleras -> jardin)
+    (BACK_DX, 1.4, FL0, FL0 + 2.6),                       # puerta trasera (sala de escaleras -> jardin)
     win(-5.55, 1.8, 0), win(-1.8, 1.4, 0), win(1.8, 1.4, 0), win(5.55, 1.8, 0),      # fachada trasera simetrica
     win(-5.55, 1.8, 1), win(-1.8, 1.4, 1), win(1.8, 1.4, 1), win(5.55, 1.8, 1),
 ]

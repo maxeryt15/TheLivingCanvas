@@ -37,6 +37,8 @@ MATS = {
     "M_Interior_Wainscot":  ("#65785A", 0.90, 0, 1),
     "M_Interior_FloorWood": ("#9A6E4A", 0.80, 0, 1),
     "M_Interior_FloorTile": ("#8FA3A8", 0.55, 0, 1),
+    "M_Floor_WearTile":     ("#83969B", 0.50, 0, 1),   # huella de paso sobre el baldosin (algo mas oscura y apagada)
+    "M_Floor_WearWood":     ("#A27350", 0.66, 0, 1),   # huella de paso sobre la tarima (algo mas clara y pulida)
     "M_Interior_Ceiling":   ("#EFE3CB", 0.95, 0, 1),
     "M_Interior_Concrete":  ("#7B7D82", 1.00, 0, 1),
     "M_Rug_Terracotta":     ("#A85F47", 1.00, 0, 1),
@@ -44,6 +46,12 @@ MATS = {
     "M_Rug_Navy":           ("#3A4A62", 1.00, 0, 1),   # campo de la alfombra del hall (lana azul marino apagada)
     "M_Rug_Cream":          ("#D8C9A8", 1.00, 0, 1),   # motivos y flecos de alfombra
     "M_Rug_Gold":           ("#B3924C", 1.00, 0, 1),   # filetes dorados apagados de alfombra
+    # alfombra del hall: colores lisos SIN pincelada (NO_STROKES), mismos tonos que M_Rug_* / M_Fabric_Blue
+    "M_RugSolid_Navy":      ("#3A4A62", 1.00, 0, 1),
+    "M_RugSolid_Cream":     ("#D8C9A8", 1.00, 0, 1),
+    "M_RugSolid_Gold":      ("#B3924C", 1.00, 0, 1),
+    "M_RugSolid_Terracotta": ("#A85F47", 1.00, 0, 1),
+    "M_RugSolid_Blue":      ("#526A83", 1.00, 0, 1),
     "M_Fabric_Olive":       ("#65785A", 1.00, 0, 1),
     "M_Fabric_Mustard":     ("#D4A72C", 1.00, 0, 1),
     "M_Canvas_Slot":        ("#E8DCC0", 0.95, 0, 1),   # lienzo vacio: aqui van las pinturas del usuario
@@ -119,7 +127,8 @@ MATS = {
 }
 
 _mats = {}
-NO_STROKES = {"M_Museum_Glass", "M_Mirror", "M_Glass_Mirror", "M_Lamp_Glow", "M_Sign_Letters"}
+NO_STROKES = {"M_Museum_Glass", "M_Mirror", "M_Glass_Mirror", "M_Lamp_Glow", "M_Sign_Letters",
+              "M_RugSolid_Navy", "M_RugSolid_Cream", "M_RugSolid_Gold", "M_RugSolid_Terracotta", "M_RugSolid_Blue", "M_Mop_Cotton"}   # lisos: alfombra y fregona
 
 
 def _lin(h):
@@ -186,6 +195,7 @@ STROKES = {   # (escala, alargamiento, remolino, relieve, variacion de tono, ang
     "M_Floor_StoneB":     (7.0, 2.4, 0.6, 0.55, 0.12, 0),
     "M_Flower_Yellow":    (10.0, 3.0, 1.2, 0.60, 0.14, 0),
     "M_Interior_FloorWood": (8.0, 6.0, 0.1, 0.45, 0.14, 0),
+    "M_Floor_WearWood":   (8.0, 6.0, 0.1, 0.45, 0.14, 0),
 }
 
 
@@ -434,7 +444,7 @@ class B:
         mi = s._mi(mat)
         for f in bm.faces:
             f.material_index = mi
-            f.smooth = True
+            f.smooth = not getattr(s, '_flat', False)
         bm.to_mesh(s._tmp)
         bm.free()
         s.bm.from_mesh(s._tmp)
@@ -463,7 +473,7 @@ class B:
             v.co.x *= squash[0]; v.co.y *= squash[1]; v.co.z *= squash[2]
         s._finish(bm, c, rot, mat, 0, (r * 0.18 if amp is None else amp), r * 2, freq=1.3)
 
-    def prism(s, pts, ext, mat, bev=0.0, amp=0.012):
+    def prism(s, pts, ext, mat, bev=0.0, amp=0.012, flat=False):
         """Poligono (puntos 3D coplanares) extruido en el vector ext."""
         bm = bmesh.new()
         vs = [bm.verts.new(Vector(p)) for p in pts]
@@ -471,7 +481,11 @@ class B:
         r = bmesh.ops.extrude_face_region(bm, geom=[f])
         nv = [g for g in r["geom"] if isinstance(g, bmesh.types.BMVert)]
         bmesh.ops.translate(bm, vec=Vector(ext), verts=nv)
-        s._finish(bm, (0, 0, 0), (0, 0, 0), mat, bev, amp, 0.5)
+        s._flat = flat
+        try:
+            s._finish(bm, (0, 0, 0), (0, 0, 0), mat, bev, amp, 0.5)
+        finally:
+            s._flat = False
 
     def seg(s, p0, p1, r, mat, seg=5):
         """Cilindro fino entre dos puntos (tallos, cables)."""

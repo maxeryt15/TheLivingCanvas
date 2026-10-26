@@ -1,7 +1,7 @@
 """Museo INTERIOR (Blender 5.x). Mismo edificio que museum_ext: huecos, muros y deformacion compartidos.
 
 Planta baja (FL0=0.5, techo 4.1):
-  Hall (recepcion) | Gallery I (oeste) | Gallery II (este) | Gallery III (oeste, fondo) | Stair Hall (escalera en U)
+  Hall (recepcion) | Gallery I (oeste) | Reception (suite del personal, este: mostrador en el arco + sala de descanso) | Gallery III (oeste, fondo) | Stair Hall (escalera en U)
   Servicio: vestibulo de aseos (lavabos) + Restroom 1/2 + Maintenance (escotilla al sotano), separados por tabiques.
 Planta alta (FL1=4.5, techo 8.1):
   Gallery IV (sala de luz, sobre el hall) | Gallery V (gris, cuadro destacado) | Gallery VI (esculturas) | Landing (mirador).
@@ -9,7 +9,7 @@ Los cuadros son HUECOS (ArtSlot_*: marco + lienzo vacio) para colocar las obras 
 Puertas de servicio = objetos sueltos con el pivote en la bisagra (Door_*), abiertas.
 """
 import bpy, bmesh, math, random, sys
-from mathutils import Vector, Matrix, Quaternion
+from mathutils import Vector, Matrix, Quaternion, Euler
 
 P = r"D:\TheLivingCanvas\Tools\museum_models"
 if P not in sys.path:
@@ -87,11 +87,11 @@ IX0, IX1, IY0, IY1 = D.IX0, D.IX1, D.IY0, D.IY1
 FIN = 0.08  # grosor del acabado de suelo
 HATCH_SEAT = (D.HATCH[0] - 0.085, D.HATCH[1] + 0.085, D.HATCH[2] - 0.085, D.HATCH[3] + 0.085)  # el marco de la escotilla encaja en el suelo
 WING_STEP = 4   # fases del ala trasera: 2 = caja vacia; 3 = + volumenes y focos; 4 = + obras, pedestales y rotulo
-STAIR_HOLE = (-3.0, -0.61, 1.3, IY1)   # hueco de escalera en el forjado (x0, x1, y0, y1); propio del interior (no usa museum_dims)
+STAIR_HOLE = (-3.0, -0.28, 1.3, IY1)   # hueco de escalera en el forjado (x0, x1, y0, y1); propio del interior (no usa museum_dims)
 
 # Anexo del cuarto de mantenimiento: SOLO interior (el interior es una zona aparte, puede ser mayor que el exterior).
 # Se abre el muro trasero en planta baja (ventana x 5.55 -> paso ancho con dintel) y se prolonga la sala hacia y 6.0..8.55.
-ANNEX = (3.2, IX1, 6.0, 8.55)          # cara interior del anexo (x0, x1, y0, y1)
+ANNEX = (2.2, IX1, 6.0, 8.55)          # cara interior del anexo (x0, x1, y0, y1)
 PASS_X0, PASS_X1 = 3.35, 7.45          # paso entre mantenimiento y anexo
 PASS_Z0, PASS_Z1 = FL0 - FIN, 3.7      # el suelo del paso arranca bajo el acabado; dintel visto de 3.7 a 4.1
 BACK_I = [((PASS_X0 + PASS_X1) / 2, PASS_X1 - PASS_X0, PASS_Z0, PASS_Z1) if (abs(o[0] - 5.55) < 0.01 and o[2] < C0) else o for o in D.BACK]
@@ -100,31 +100,33 @@ FRONT_I = [(o[0], o[1], FL0 - 0.03, o[3]) if (abs(o[0]) < 0.01 and o[2] < C0) el
 BACK_I = [(o[0], o[1], FL0 - 0.03, o[3]) if (abs(o[0]) < 0.01 and o[2] < C0) else o for o in BACK_I]
 PASSAGES = [('x', D.Y1 - D.TH / 2, (PASS_X0 + PASS_X1) / 2, PASS_X1 - PASS_X0, PASS_Z0, PASS_Z1, "Maintenance_Passage", 'open')]
 
+# tabique entre el vestibulo de aseos y los dos aseos (vestibulo ancho: sus lavabos van en los testeros norte y sur, fuera del paso)
+RP = 5.375
 # tabiques: (nombre, eje, fijo, grosor, a0, a1, planta)
 PARTS = [
     ("GF_P1_West", 'y', -3.1, 0.2, IY0, IY1, 0), ("GF_P2_East", 'y', 3.1, 0.2, IY0, IY1, 0),
     ("GF_P3", 'x', 0.3, 0.2, IX0, -3.2, 0), ("GF_P4", 'x', 0.3, 0.2, -3.0, 3.0, 0), ("GF_P5", 'x', 0.3, 0.2, 3.2, IX1, 0),
-    ("GF_P6", 'y', 4.675, 0.15, 0.4, 3.425, 0), ("GF_P7", 'x', 1.85, 0.15, 4.75, IX1, 0), ("GF_P8", 'x', 3.5, 0.15, 3.2, IX1, 0),
+    ("GF_P6", 'y', RP, 0.15, 0.4, 3.425, 0), ("GF_P7", 'x', 1.85, 0.15, RP + 0.075, IX1, 0), ("GF_P8", 'x', 3.5, 0.15, 3.2, IX1, 0),
     ("UF_Q1", 'y', -3.1, 0.2, IY0, IY1, 1), ("UF_Q2", 'y', 3.1, 0.2, IY0, IY1, 1), ("UF_Q3", 'x', 0.3, 0.2, -3.0, 3.0, 1),
 ]
 # puertas en tabiques: (eje, fijo, centro, ancho, z_inf, z_sup, nombre, tipo)
 DOORS = [
     ('y', -3.1, -2.9, 1.6, FL0, FL0 + 2.7, "Hall_GalleryI", 'open'),
-    ('y', 3.1, -2.9, 1.6, FL0, FL0 + 2.7, "Hall_GalleryII", 'open'),
+    ('y', 3.1, -3.25, 3.3, FL0, FL0 + 2.7, "Hall_Reception", 'arch'),     # arco ancho: el mostrador queda a caballo del muro (publico = Hall, personal = suite)
     ('x', 0.3, -5.4, 1.4, FL0, FL0 + 2.7, "GalleryI_GalleryIII", 'open'),
     ('x', 0.3, 0.0, 3.0, FL0, FL0 + 3.2, "Hall_StairHall", 'arch'),
     ('y', 3.1, 1.85, 1.0, FL0, FL0 + 2.2, "StairHall_Restrooms", 'leaf'),
-    ('y', 4.675, 1.1, 0.8, FL0, FL0 + 2.1, "Restroom_1", 'leaf'),
-    ('y', 4.675, 2.65, 0.8, FL0, FL0 + 2.1, "Restroom_2", 'leaf'),
+    ('y', RP, 1.1, 0.8, FL0, FL0 + 2.1, "Restroom_1", 'leaf'),
+    ('y', RP, 2.65, 0.8, FL0, FL0 + 2.1, "Restroom_2", 'leaf'),
     ('y', 3.1, 4.2, 1.0, FL0, FL0 + 2.2, "StairHall_Maintenance", 'leaf'),
     ('y', -3.1, -2.5, 1.4, FL1, FL1 + 2.7, "GalleryIV_GalleryV", 'open'),
     ('y', 3.1, -2.5, 1.4, FL1, FL1 + 2.7, "GalleryIV_GalleryVI", 'open'),
     ('y', 3.1, 3.0, 1.2, FL1, FL1 + 2.6, "Landing_GalleryVI", 'open'),
-    ('x', 0.3, -2.0, 1.4, FL1, FL1 + 2.7, "Stair_GalleryIV", 'arch'),
+    ('x', 0.3, -2.0, 1.6, FL1, FL1 + 2.7, "Stair_GalleryIV", 'arch'),
     ('x', 0.3, 1.5, 1.4, FL1, FL1 + 2.7, "GalleryIV_Landing", 'open'),
 ]
 # Ventanas que el INTERIOR oculta (el exterior las sigue mostrando; zonas aparte): (clave, centro, planta). Pasan a ser muro liso.
-HIDDEN_WIN = {('W', 1.9, 0),                                              # Gallery III: queda la trasera y la oeste y=3.8
+HIDDEN_WIN = {('B', -1.8, 0), ('B', 1.8, 0), ('W', 1.9, 0),                                              # Gallery III: queda la trasera y la oeste y=3.8
               ('F', -5.55, 1), ('B', -5.55, 1), ('W', -3.3, 1), ('W', 3.8, 1),   # Gallery V: solo queda la oeste y=0.6
               ('F', 5.55, 1), ('B', 5.55, 1), ('E', -3.0, 1), ('E', 3.8, 1)}     # Gallery VI: solo queda la este y=1.2
 
@@ -138,18 +140,18 @@ WEST_I, EAST_I = _vis('W', D.WEST), _vis('E', D.EAST)
 PERIM = [('x', D.Y0 + D.TH / 2, FRONT_I, 'F'), ('x', D.Y1 - D.TH / 2, BACK_I, 'B'),
          ('y', D.X0 + D.TH / 2, WEST_I, 'W'), ('y', D.X1 - D.TH / 2, EAST_I, 'E')]
 # un radiador por sala, bajo esta ventana: sala -> (clave, centro)
-RAD_AT = {"Gallery_I": ('F', -5.55), "Gallery_II": ('F', 5.55), "Gallery_III": ('B', -5.55), "Gallery_IV": ('F', -2.35),
+RAD_AT = {"Gallery_I": ('F', -5.55), "Reception": ('F', 5.55), "Gallery_III": ('B', -5.55), "Gallery_IV": ('F', -2.35),
           "Gallery_V": ('W', 0.6), "Gallery_VI": ('E', 1.2), "Hall": ('F', -2.35), "Landing": ('B', 1.8)}
 # salas: (x0, x1, y0, y1, planta, suelo, pintura, friso, alto_friso, moldura_de_cuadros)
 ROOMS = {
     "Hall":             (-3.0, 3.0, IY0, 0.2, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Interior_Wainscot", 1.0, False),
     "Gallery_I":        (IX0, -3.2, IY0, 0.2, 0, "M_Interior_FloorWood", "M_Wall_Ochre", None, 0, True),
-    "Gallery_II":       (3.2, IX1, IY0, 0.2, 0, "M_Interior_FloorWood", "M_Wall_Cerulean", None, 0, True),
+    "Reception":        (3.2, IX1, IY0, 0.2, 0, "M_Interior_FloorWood", "M_Interior_Wallpaper", "M_Interior_Wainscot", 1.0, False),
     "Gallery_III":      (IX0, -3.2, 0.4, IY1, 0, "M_Interior_FloorWood", "M_Wall_Terracotta", None, 0, True),
     "Stair_Hall":       (-3.0, 3.0, 0.4, IY1, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Interior_Wainscot", 1.0, False),
-    "Restroom_Lobby":   (3.2, 4.6, 0.4, 3.425, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
-    "Restroom_1":       (4.75, IX1, 0.4, 1.775, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
-    "Restroom_2":       (4.75, IX1, 1.925, 3.425, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
+    "Restroom_Lobby":   (3.2, RP - 0.075, 0.4, 3.425, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
+    "Restroom_1":       (RP + 0.075, IX1, 0.4, 1.775, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
+    "Restroom_2":       (RP + 0.075, IX1, 1.925, 3.425, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
     "Maintenance":      (3.2, IX1, 3.575, IY1, 0, "M_Interior_Concrete", "M_Wall_Grey", None, 0, False),
     "Maintenance_Annex": (ANNEX[0], ANNEX[1], ANNEX[2], ANNEX[3], 0, "M_Interior_Concrete", "M_Wall_Grey", None, 0, False),
     "Gallery_IV":       (-3.0, 3.0, IY0, 0.2, 1, "M_Interior_FloorWood", "M_Wall_Olive", None, 0, True),
@@ -228,7 +230,7 @@ def room_at(key, c, zs):
     return None
 
 
-RAD_ROOMS = ("Gallery_I", "Gallery_II", "Gallery_III", "Gallery_IV", "Gallery_V", "Gallery_VI", "Hall", "Landing")
+RAD_ROOMS = ("Gallery_I", "Reception", "Gallery_III", "Gallery_IV", "Gallery_V", "Gallery_VI", "Hall", "Landing")
 
 
 def radiator(rd, F, c, w, floor):
@@ -331,6 +333,9 @@ def structure(cS):
             if (zs < C0) != (lvl == 0):
                 continue
             th = next(p[3] for p in PARTS if p[1] == ax and p[2] == fx)
+            if nm2 == "Hall_Reception":   # arco ancho con mostrador: tira de madera a ras del suelo (sin resalto de 5 mm) bajo el grosor del tabique
+                slab(b, fx - th / 2, fx + th / 2, c - w / 2, c + w / 2, FL0 - FIN, FL0, "M_Museum_WoodDark", amp=0.0)
+                continue
             if ax == 'x':
                 saddle(b, c, fx, w + 0.02, th + 0.06, zs, "M_Museum_WoodDark")
             else:
@@ -690,8 +695,8 @@ def windows_int(cO):
             h_s = zsp - zs   # cuadricula solo bajo el arranque del arco
             zm, h = (zs + zsp) / 2, h_s
             iw, ih = w - 0.2, h - 0.2
-            for (uu, zz, su, sz) in ((c - iw / 2, zm, 0.06, ih), (c + iw / 2, zm, 0.06, ih), (c, zm - ih / 2, iw, 0.06), (c, zm + ih / 2, iw, 0.06)):
-                F.box(uu, -0.245, zz, su, 0.05, sz, "M_Museum_Wood", bev=0.008, amp=0.003, cuts=0)
+            frame_ring(fr, iw / 2 - 0.03, ih / 2 - 0.03, [(0.0, -0.22), (0.06, -0.22), (0.06, -0.264), (0.054, -0.27), (0.006, -0.27), (0.0, -0.264)],
+                       "M_Museum_Wood", cx=c, cz=zm, P=F.P)                                                          # bastidor: UN aro a inglete
             cols = 3 if w > 1.5 else (2 if w >= 1.0 else 1)
             rows = 3 if h > 1.3 else (2 if h > 0.6 else 1)
             for i in range(1, cols):
@@ -756,12 +761,12 @@ ST_S = ST_R / ST_TY               # pendiente
 ST_YB = 1.3                       # arranque del tramo 1 / llegada del tramo 2
 ST_YL = ST_YB + 10 * ST_TY        # 4.0: inicio del rellano
 ST_ZL = FL0 + 11 * ST_R           # cota del rellano
-ST_X2 = (-3.0, -1.85)             # tramo 2 (alto)
-ST_X1 = (-1.75, -0.63)            # tramo 1 (bajo); faldon de cierre en x -0.63..-0.61
+ST_X2 = (-3.0, -1.7)              # tramo 2 (alto), 1.30 de ancho (+15 %)
+ST_X1 = (-1.6, -0.3)              # tramo 1 (bajo), 1.30 de ancho (+15 %); faldon de cierre en x -0.3..-0.28
 ST_NOSE = 0.03                    # vuelo del bocel de cada huella
 ST_TK = 0.04                      # grosor de la tabla de la huella
 ST_H = 0.9                        # alto del pasamanos sobre la linea de las narices
-ST_XR1, ST_XR2 = -0.705, -1.905   # eje de balaustres del tramo 1 (lado abierto) y del tramo 2 (lado del medianero)
+ST_XR1, ST_XR2 = -0.375, -1.755   # eje de balaustres del tramo 1 (lado abierto) y del tramo 2 (lado del medianero)
 ST_XW = -2.885                    # eje del pasamanos de pared del tramo 2
 
 
@@ -792,25 +797,25 @@ def stairs(cS):
     # rellano: cuerpo en L (se retranquea junto al hueco de la puerta trasera: libre 0.1 hasta su jamba) + tablero de madera
     ya, yb = ST_YL, 5.6
     b.box(((-3.0 - 0.8) / 2, (ya + yb) / 2, (FL0 + ST_ZL - ST_TK) / 2), (2.2, yb - ya, ST_ZL - ST_TK - FL0), wp, bev=0, amp=0.0, cuts=0)
-    b.box((-0.715, (ya + 5.3) / 2, (FL0 + ST_ZL - ST_TK) / 2), (0.17, 5.3 - ya, ST_ZL - ST_TK - FL0), wp, bev=0, amp=0.0, cuts=0)
+    b.box(((-0.8 + x1b) / 2, (ya + 5.3) / 2, (FL0 + ST_ZL - ST_TK) / 2), (x1b + 0.8, 5.3 - ya, ST_ZL - ST_TK - FL0), wp, bev=0, amp=0.0, cuts=0)
     b.box((-1.9, (ST_YL - ST_NOSE + yb) / 2, ST_ZL - ST_TK / 2), (2.2, yb - ST_YL + ST_NOSE, ST_TK), wd, bev=0.008, amp=0.0, cuts=2)
-    b.box((-0.715, (ST_YL - ST_NOSE + 5.3) / 2, ST_ZL - ST_TK / 2), (0.17, 5.3 - ST_YL + ST_NOSE, ST_TK), wd, bev=0.008, amp=0.0, cuts=1)
+    b.box(((-0.8 + x1b) / 2, (ST_YL - ST_NOSE + 5.3) / 2, ST_ZL - ST_TK / 2), (x1b + 0.8, 5.3 - ST_YL + ST_NOSE, ST_TK), wd, bev=0.008, amp=0.0, cuts=1)
     # nariz de la llegada a la planta alta (sobre el borde del hueco)
     b.box(((x2a + x2b) / 2, ST_YB + 0.015, FL1 - 0.02), (x2b - x2a, 0.03, 0.04), wd, bev=0.008, amp=0.0, cuts=1)
     # faldon liso del lado abierto del tramo 1 y del rellano (papel pintado) con zanca de madera oscura encima
-    xs = -0.63
+    xs = x1b
     zt0 = zn1(ST_YB) + 0.05
     b.prism([(xs, ST_YB, FL0), (xs, 5.3, FL0), (xs, 5.3, ST_ZL + 0.05), (xs, ST_YL - ST_NOSE, ST_ZL + 0.05), (xs, ST_YB, zt0)], (0.02, 0, 0), wp, amp=0.0)
     ln1 = math.hypot(ST_YL - ST_NOSE - ST_YB, ST_ZL + 0.05 - zt0)
-    b.box((-0.62, (ST_YL - ST_NOSE + ST_YB) / 2, (ST_ZL + 0.05 + zt0) / 2), (0.07, ln1 + 0.01, 0.04), "M_Museum_WoodDark", rot=(math.degrees(math.atan(ST_S)), 0, 0), bev=0.008, amp=0.0, cuts=2)
-    b.box((-0.62, (ST_YL - ST_NOSE + 5.3) / 2, ST_ZL + 0.05), (0.07, 5.3 - ST_YL + ST_NOSE, 0.04), "M_Museum_WoodDark", bev=0.008, amp=0.0, cuts=1)
+    b.box((x1b + 0.01, (ST_YL - ST_NOSE + ST_YB) / 2, (ST_ZL + 0.05 + zt0) / 2), (0.07, ln1 + 0.01, 0.04), "M_Museum_WoodDark", rot=(math.degrees(math.atan(ST_S)), 0, 0), bev=0.008, amp=0.0, cuts=2)
+    b.box((x1b + 0.01, (ST_YL - ST_NOSE + 5.3) / 2, ST_ZL + 0.05), (0.07, 5.3 - ST_YL + ST_NOSE, 0.04), "M_Museum_WoodDark", bev=0.008, amp=0.0, cuts=1)
     # medianero entre los dos tramos (x -1.85..-1.75): perfil de la linea de narices del tramo 2; recortado al nivel de la planta alta
     xm = ST_X2[1]
     ztop = lambda y: zn2(y) + 0.05
     yc = ST_YB + (ztop(ST_YB) - FL1) / ST_S
     b.prism([(xm, ST_YB, FL0), (xm, ST_YL, FL0), (xm, ST_YL, ztop(ST_YL)), (xm, yc, FL1), (xm, ST_YB, FL1)], (0.1, 0, 0), wp, amp=0.0)
     ln2 = math.hypot(ST_YL - yc, FL1 - ztop(ST_YL))
-    b.box((-1.8, (ST_YL + yc) / 2, (ztop(ST_YL) + FL1) / 2), (0.11, ln2, 0.04), "M_Museum_WoodDark", rot=(-math.degrees(math.atan(ST_S)), 0, 0), bev=0.008, amp=0.0, cuts=2)
+    b.box((xm + 0.05, (ST_YL + yc) / 2, (ztop(ST_YL) + FL1) / 2), (0.11, ln2, 0.04), "M_Museum_WoodDark", rot=(-math.degrees(math.atan(ST_S)), 0, 0), bev=0.008, amp=0.0, cuts=2)
     b.finish(cS)
 
     # ---------------------------------------------------------------- barandillas (todo apoyado en suelo / huellas / rellano)
@@ -858,7 +863,7 @@ def stairs(cS):
             y = ST_YL - j * ST_TY - off
             baluster(ST_XR2, y, ST_ZL + (j + 1) * ST_R, zr2(y))
     zg = zr2(yt)                        # el guardacuerpos arranca a la altura del poste superior
-    xc, yn = -0.56, 5.45
+    xc, yn = x1b + 0.07, 5.45
     newel(xc, yt, FL1, zg)
     newel(xc, yn, FL1, zg)
     handrail((ST_XR2, yt, zg), (xc, yt, zg))
@@ -887,9 +892,8 @@ def hatch(cU):
     hx0, hx1, hy0, hy1 = D.HATCH
     cx, cy = (hx0 + hx1) / 2, (hy0 + hy1) / 2
     b = B("Hatch_Frame", 0.5)
-    for (x, y, sx, sy) in ((cx, hy0 - 0.04, hx1 - hx0 + 0.16, 0.08), (cx, hy1 + 0.04, hx1 - hx0 + 0.16, 0.08),
-                           (hx0 - 0.04, cy, 0.08, hy1 - hy0), (hx1 + 0.04, cy, 0.08, hy1 - hy0)):
-        b.box((x, y, FL0 - 0.03), (sx, sy, 0.1), "M_Hatch_Metal", bev=0.012, amp=0.002, cuts=1)
+    frame_ring(b, (hx1 - hx0) / 2, (hy1 - hy0) / 2, [(0.0, FL0 - 0.08), (0.08, FL0 - 0.08), (0.08, FL0 + 0.008), (0.068, FL0 + 0.02), (0.012, FL0 + 0.02), (0.0, FL0 + 0.008)],
+               "M_Hatch_Metal", cx=cx, cz=cy, P=lambda x_, d_, y_: (x_, y_, d_))                                   # marco de la escotilla: UN aro a inglete en el suelo
     for (bx_, by_) in ((hx0 - 0.04, hy0 - 0.04), (hx1 + 0.04, hy0 - 0.04), (hx0 - 0.04, hy1 + 0.04), (hx1 + 0.04, hy1 + 0.04)):
         b.cyl((bx_, by_, FL0 + 0.0215), 0.011, 0.007, "M_Museum_Brass", seg=10, bev=0, amp=0.0)        # tornillos de esquina del marco
     for (x, y, sx, sy) in ((cx, hy0 + 0.02, hx1 - hx0, 0.04), (cx, hy1 - 0.02, hx1 - hx0, 0.04),
@@ -1731,65 +1735,111 @@ def wall_sign(name, text, axis, face, s, u, z, size=0.11, w=1.2, coll=None, h=0.
     return to_col(ob, coll)
 
 
-# ---------------------------------------------------------------- recepcion (antecamara con mostrador en L) y directorio
-RX, RY = 2.2, -4.45     # origen del mostrador (coordenadas del mundo; el prop va sin girar: local = mundo - origen)
+# ---------------------------------------------------------------- recepcion (mostrador a caballo del arco) y sala de descanso del personal
+def warped_prop(name, pivot, fn, uvscale=1.0):
+    """Prop construido en COORDENADAS DEL MUNDO con la misma deformacion (warp) que los muros: asi sus extremos siguen a las jambas del arco
+    (el warp es una funcion del punto: dos piezas a 1 cm una de otra siguen a 1 cm tras deformar). El pivote del objeto queda en `pivot`."""
+    b = HB(name, uvscale, warp=True)
+    fn(b)
+    ob = b.finish()
+    ob.data.transform(Matrix.Translation(-Vector(pivot)))
+    ob.location = pivot
+    return ob
 
 
-def reception_desk(b):
-    """Mostrador de hotel en L junto a la puerta de la Gallery II: tramo largo a lo largo de Y (frente hacia -x, con cuarterones),
-    retorno corto contra la fachada, encimera en L con labio, riel de pies de laton y encima: libro de visitas, campanilla,
-    expositor de folletos y lampara de despacho."""
-    wd, wo, br = "M_Museum_WoodDark", "M_Museum_Wood", "M_Museum_Brass"
+# mostrador: cuerpo publico (x: lado Hall -> lado personal, y: a lo largo del arco), repisa de escritura del personal y media puerta batiente
+DX0, DX1, DY0, DY1 = 2.82, 3.40, -4.85, -2.72
+SH_X1, SH_Y1 = 3.98, -3.25
+GATE = (3.11, -1.685)
 
-    def bx(x0, x1, y0, y1, z0, z1, mat, bev=0.006):
-        b.box(((x0 + x1) / 2 - RX, (y0 + y1) / 2 - RY, (z0 + z1) / 2), (x1 - x0, y1 - y0, z1 - z0), mat, bev=bev, amp=0.0, cuts=0)
 
-    def lshape(g, z0, z1, mat, bev):   # encimera en L (g = vuelo extra respecto al cuerpo)
-        pts = [(1.5 - g, -4.99 - g), (2.86 + g, -4.99 - g), (2.86 + g, -4.46 + g), (2.2 + g, -4.46 + g), (2.2 + g, -3.91 + g), (1.5 - g, -3.91 + g)]
-        b.prism([(x - RX, y - RY, z0) for (x, y) in pts], (0, 0, z1 - z0), mat, bev=bev, amp=0.0)
-    # cuerpo: zocalo retranqueado + caja
-    bx(1.62, 2.13, -4.92, -3.98, 0.0, 0.1, wd)
-    bx(2.13, 2.82, -4.92, -4.53, 0.0, 0.1, wd)
-    bx(1.58, 2.17, -4.95, -3.95, 0.1, 1.0, wo, 0.004)
-    bx(2.17, 2.84, -4.95, -4.5, 0.1, 1.0, wo, 0.004)
-    # frente del tramo largo (cara -x): montantes y travesanos + cuarterones hundidos con junquillo
-    ys = [-4.92 + k * 0.94 / 3 for k in range(4)]       # ejes de los montantes
-    for y in ys:
-        bx(1.558, 1.58, y - 0.03, y + 0.03, 0.1, 1.0, wo)
-    for z0, z1 in ((0.1, 0.16), (0.92, 1.0)):
-        bx(1.558, 1.58, -4.95, -3.95, z0, z1, wo)
-    for y0, y1 in zip(ys, ys[1:]):
-        bx(1.568, 1.58, y0 + 0.03, y1 - 0.03, 0.16, 0.92, wd, 0.003)                                  # cuarteron
-        for (c0, c1) in ((0.16, 0.18), (0.9, 0.92)):
-            bx(1.562, 1.574, y0 + 0.03, y1 - 0.03, c0, c1, wo, 0.002)                                # junquillos horizontales
-        for yy in (y0 + 0.03, y1 - 0.05):
-            bx(1.562, 1.574, yy, yy + 0.02, 0.18, 0.9, wo, 0.002)                                    # junquillos verticales
-    # frente del retorno (cara -y): dos cuarterones
-    xs = [2.22 + k * 0.29 for k in range(3)]
-    for x in xs:
-        bx(x - 0.03, x + 0.03, -4.973, -4.95, 0.1, 1.0, wo)
-    for z0, z1 in ((0.1, 0.16), (0.92, 1.0)):
-        bx(2.19, 2.83, -4.973, -4.95, z0, z1, wo)
-    for x0, x1 in zip(xs, xs[1:]):
-        bx(x0 + 0.03, x1 - 0.03, -4.962, -4.95, 0.16, 0.92, wd, 0.003)
-    # riel de pies de laton con soportes (delante del tramo largo)
-    for yy in ys:
-        b.seg((1.564 - RX, yy - RY, 0.21), (1.527 - RX, yy - RY, 0.21), 0.007, br, seg=8)
-    tube(b, [(1.527 - RX, -4.94 - RY, 0.21), (1.527 - RX, -3.96 - RY, 0.21)], 0.018, br, seg=12)
-    # encimera en L: labio inferior + tablero
-    lshape(0.035, 0.995, 1.022, wo, 0.006)
-    lshape(0.0, 1.022, 1.06, wd, 0.008)
-    TZ = 1.06 - 0.0006   # cota de la encimera (los objetos se hunden 0.6 mm: nada flota)
-    # --- libro de visitas abierto (lomo a lo largo de X: las dos paginas quedan a izquierda y derecha de quien lo lee)
-    S = Sh(b, (1.82 - RX, -4.18 - RY, TZ), 0.0)
+def banker_lamp(b, pos, rz=0.0):
+    """Lampara de banquero: base torneada de laton, columna con anillos, pantalla semicilindrica de cristal esmeralda con testeros de laton,
+    bombilla tubular dentro y cadenita de encendido con perla. Apoya en pos."""
+    br = "M_Museum_Brass"
+    lp = Sx(b, pos, rz)
+    loft(lp, [(z, r, r, 0.0) for (z, r) in ((0.0, 0.075), (0.006, 0.076), (0.014, 0.068), (0.022, 0.05), (0.03, 0.036), (0.04, 0.025), (0.052, 0.0165), (0.07, 0.0115), (0.09, 0.009))], br, seg=28)
+    lp.seg((0, 0, 0.088), (0, 0, 0.372), 0.0075, br, seg=10)
+    for zz in (0.14, 0.22, 0.3):
+        lp.cyl((0, 0, zz), 0.0125, 0.008, br, seg=12, bev=0, amp=0.0)
+    arc_band(lp, (0, 0, 0.3), 'y', 0.072, 0.005, 0, 180, 0.30, "M_Glass_Emerald", n=16)
+    for sg in (-1, 1):
+        lp.prism([(0.072 * math.cos(math.radians(a_)), sg * 0.151, 0.3 + 0.072 * math.sin(math.radians(a_))) for a_ in range(0, 181, 15)], (0, sg * 0.004, 0), br, amp=0.0)
+    lp.cyl((0, 0, 0.374), 0.0145, 0.012, br, seg=12, bev=0, amp=0.0)
+    lp.cyl((0, 0.0, 0.287), 0.014, 0.17, "M_Bulb_Warm", rot=(90, 0, 0), seg=10, bev=0, amp=0.0)
+    lp.cyl((0, -0.1, 0.287), 0.012, 0.02, br, rot=(90, 0, 0), seg=8, bev=0, amp=0.0)
+    lp.seg((0.0, 0.1, 0.287), (0.0, 0.1, 0.19), 0.0016, br, seg=4)
+    lp.cyl((0.0, 0.1, 0.184), 0.0055, 0.012, br, seg=8, bev=0, amp=0.0)
+
+
+def telephone(b, pos, rz=0.0):
+    """Telefono de sobremesa de baquelita negra: cuerpo ovalado torneado, disco de marcar marfil con diez agujeros, auricular sobre dos horquillas
+    y cable. Frente = -y local; apoya en pos."""
+    T = Sx(b, pos, rz)
+    bk, iv = "M_Plastic_Black", "M_Plastic_White"
+    loft(T, [(0.0, 0.115, 0.095, 0.0), (0.012, 0.118, 0.097, 0.0), (0.05, 0.108, 0.09, 0.0), (0.068, 0.1, 0.085, 0.0), (0.072, 0.095, 0.08, 0.0)], bk, seg=22)
+    T.cyl((0.0, -0.012, 0.0775), 0.05, 0.011, iv, seg=24, bev=0, amp=0.0)                      # disco de marcar
+    for k in range(10):
+        a = math.radians(40 + k * 28)
+        T.cyl((0.036 * math.cos(a), -0.012 + 0.036 * math.sin(a), 0.0835), 0.0065, 0.004, bk, seg=6, bev=0, amp=0.0)
+    T.cyl((0.0, -0.012, 0.0845), 0.016, 0.006, bk, seg=10, bev=0, amp=0.0)                      # centro del disco
+    for sx in (-1, 1):
+        T.cyl((sx * 0.075, 0.045, 0.078), 0.009, 0.012, "M_Museum_Brass", seg=8, bev=0, amp=0.0)      # horquillas
+        T.cyl((sx * 0.075, 0.045, 0.102), 0.03, 0.04, bk, seg=14, bev=0, amp=0.0)                      # copa del auricular
+    tube(T, [(-0.075, 0.045, 0.11), (-0.062, 0.045, 0.138), (-0.03, 0.045, 0.15), (0.03, 0.045, 0.15), (0.062, 0.045, 0.138), (0.075, 0.045, 0.11)], 0.012, bk, seg=10)
+    tube(T, [(0.02, 0.09, 0.02), (0.035, 0.14, 0.006), (0.07, 0.2, 0.004)], 0.004, bk, seg=6)         # cable
+
+
+def pen_cup(b, pos):
+    """Vaso de laton torneado con seis lapices de colores inclinados. Apoya en pos."""
+    br = "M_Museum_Brass"
+    C = Sx(b, pos, 0.0)
+    loft(C, [(z, r, r, 0.0) for (z, r) in ((0.0, 0.034), (0.004, 0.04), (0.088, 0.047), (0.09, 0.0465), (0.09, 0.043), (0.012, 0.0345), (0.01, 0.002))], br, seg=18)
+    cols = ("M_Plastic_Yellow", "M_Plastic_Red", "M_Plastic_Blue", "M_Plastic_Green", "M_Plastic_Orange", "M_Plastic_Black")
+    for k in range(6):
+        a = math.radians(k * 60 + 17)
+        tx, ty = 0.012 * math.cos(a), 0.012 * math.sin(a)
+        C.seg((tx * 0.5, ty * 0.5, 0.03), (tx * 0.5 + 0.045 * math.cos(a), ty * 0.5 + 0.045 * math.sin(a), 0.19 + 0.012 * (k % 3)), 0.0036, cols[k], seg=6)
+
+
+def paper_pad(b, pos, rz=0.0):
+    """Bloc de notas con una hoja escrita a lineas y un lapiz encima. 0.15 x 0.21; apoya en pos."""
+    P_ = Sx(b, pos, rz)
+    P_.box((0, 0, 0.003), (0.158, 0.218, 0.006), "M_Museum_WoodDark", bev=0.001, amp=0.0, cuts=0)
+    P_.box((0, 0, 0.0145), (0.15, 0.21, 0.017), "M_Paper", bev=0.001, amp=0.0, cuts=0)
+    P_.box((0, 0, 0.0238), (0.15, 0.21, 0.0016), "M_Paper", rot=(0, 0, 2.0), bev=0.0, amp=0.0, cuts=0)
+    for k in range(6):
+        P_.box((0.004, -0.075 + k * 0.03, 0.0248), (0.11, 0.0035, 0.0008), "M_Plastic_Blue", bev=0, amp=0.0, cuts=0)
+    P_.seg((0.05, -0.09, 0.0305), (0.062, 0.07, 0.0305), 0.0036, "M_Plastic_Yellow", seg=6)
+
+
+def ledger_book(b, pos, rz=0.0):
+    """Libro de cuentas cerrado: tapas de tela con lomo y esquineras de laton, bloque de paginas visible y etiqueta. 0.20 x 0.27 x 0.045."""
+    L_ = Sx(b, pos, rz)
+    rbox(L_, (0, 0, 0.0225), (0.2, 0.27, 0.045), 0.006, "M_Fabric_Olive", segs=1)
+    L_.box((0.0, 0.0, 0.0225), (0.17, 0.272, 0.03), "M_Paper", bev=0.0, amp=0.0, cuts=0)
+    L_.box((-0.0965, 0.0, 0.0225), (0.012, 0.272, 0.047), "M_Rug_Terracotta", bev=0.002, amp=0.0, cuts=0)         # lomo
+    L_.box((0.0, 0.0, 0.0462), (0.17, 0.23, 0.001), "M_Rug_Terracotta", bev=0.0, amp=0.0, cuts=0)
+    L_.box((0.0, 0.0, 0.0474), (0.07, 0.05, 0.0012), "M_Paper", bev=0.0, amp=0.0, cuts=0)                          # etiqueta
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            L_.box((sx * 0.092, sy * 0.131, 0.0425), (0.022, 0.022, 0.011), "M_Museum_Brass", bev=0.002, amp=0.0, cuts=0)
+
+
+def guest_book(b, pos, rz=0.0):
+    """Libro de visitas abierto con marcapaginas (lomo a lo largo de x local)."""
+    S = Sx(b, pos, rz)
     S.box((0, 0, 0.006), (0.30, 0.44, 0.012), "M_Fabric_Blue", bev=0.004, amp=0.0, cuts=0)
     for sg in (-1, 1):
         S.box((0, sg * 0.104, 0.0145), (0.27, 0.205, 0.005), "M_Paper", bev=0.0015, amp=0.0, cuts=0)
         S.box((0, sg * 0.1, 0.0235), (0.26, 0.19, 0.012), "M_Paper", rot=(sg * 3.0, 0, 0), bev=0.0015, amp=0.0, cuts=0)
-    S.box((0.07, 0.0, 0.0165), (0.012, 0.012, 0.024), "M_Plastic_Red", bev=0.002, amp=0.0, cuts=0)    # marcapaginas
-    b.seg((2.02 - RX, -4.38 - RY, TZ + 0.005), (2.08 - RX, -4.05 - RY, TZ + 0.005), 0.004, "M_Plastic_Black", seg=6)   # pluma
-    # --- campanilla de recepcion: base + cupula torneada + boton
-    bell = Sh(b, (1.74 - RX, -4.55 - RY, TZ), 0.0)
+    S.box((0.07, 0.0, 0.0165), (0.012, 0.012, 0.024), "M_Plastic_Red", bev=0.002, amp=0.0, cuts=0)
+
+
+def desk_bell(b, pos):
+    """Campanilla de recepcion: base + cupula torneada + boton."""
+    br = "M_Museum_Brass"
+    bell = Sx(b, pos, 0.0)
     prof = [(0.0, 0.05), (0.008, 0.05), (0.011, 0.044)]
     for k in range(1, 9):
         a = k / 8 * math.pi / 2
@@ -1797,57 +1847,461 @@ def reception_desk(b):
     loft(bell, [(z, r, r, 0.0) for (z, r) in prof], br, seg=24)
     bell.cyl((0, 0, 0.0575), 0.005, 0.014, br, seg=10, bev=0, amp=0.0)
     bell.cyl((0, 0, 0.066), 0.014, 0.01, br, seg=14, r2=0.011, bev=0, amp=0.0)
-    # --- expositor de folletos de madera con tres bandejas escalonadas, laterales trapezoidales, travesano de laton y folletos con franja y foto
-    st = Sh(b, (1.9 - RX, -4.78 - RY, TZ), -90.0)
-    st.box((0, 0, 0.007), (0.30, 0.14, 0.014), wd, bev=0.004, amp=0.0, cuts=0)                                   # peana
-    st.box((0, 0.045, 0.16), (0.28, 0.012, 0.3), wo, rot=(-8, 0, 0), bev=0.003, amp=0.0, cuts=0)                  # respaldo inclinado
-    for sx in (-1, 1):   # laterales trapezoidales
+
+
+def brochure_stand(b, pos, rz=0.0):
+    """Expositor de folletos de madera con tres bandejas escalonadas, laterales trapezoidales, travesano de laton y folletos con franja y foto."""
+    wo, wd, br = "M_Museum_Wood", "M_Museum_WoodDark", "M_Museum_Brass"
+    st = Sx(b, pos, rz)
+    st.box((0, 0, 0.007), (0.30, 0.14, 0.014), wd, bev=0.004, amp=0.0, cuts=0)
+    st.box((0, 0.045, 0.16), (0.28, 0.012, 0.3), wo, rot=(-8, 0, 0), bev=0.003, amp=0.0, cuts=0)
+    for sx in (-1, 1):
         st.prism([(sx * 0.146 - sx * 0.004, -0.062, 0.012), (sx * 0.146 - sx * 0.004, 0.062, 0.012), (sx * 0.146 - sx * 0.004, 0.097, 0.305), (sx * 0.146 - sx * 0.004, 0.058, 0.305)],
                  (sx * 0.008, 0, 0), wo, bev=0.001, amp=0.0)
     cols = ("M_Paint_Sky", "M_Paint_Rose", "M_Paint_Ochre", "M_Paint_Green", "M_Paint_Cream", "M_Paint_Field")
     for j, (zz, yf, dp) in enumerate(((0.04, -0.06, 0.12), (0.12, -0.04, 0.09), (0.2, -0.02, 0.065))):
-        st.box((0, yf + 0.006, zz + 0.016), (0.28, 0.012, 0.05), wo, bev=0.002, amp=0.0, cuts=0)                  # labio frontal de la bandeja
-        st.box((0, yf + dp / 2, zz + 0.004), (0.28, dp, 0.008), wo, rot=(-6, 0, 0), bev=0.002, amp=0.0, cuts=0)  # fondo de la bandeja (inclinado hacia el respaldo)
+        st.box((0, yf + 0.006, zz + 0.016), (0.28, 0.012, 0.05), wo, bev=0.002, amp=0.0, cuts=0)
+        st.box((0, yf + dp / 2, zz + 0.004), (0.28, dp, 0.008), wo, rot=(-6, 0, 0), bev=0.002, amp=0.0, cuts=0)
         for k in range(3):
             c1, c2, c3 = cols[(j * 3 + k) % 6], cols[(j * 3 + k + 2) % 6], cols[(j * 3 + k + 4) % 6]
             xk = -0.09 + 0.09 * k
             yk = yf + 0.032 + 0.006 * k
-            st.box((xk, yk, zz + 0.054), (0.07, 0.003, 0.098), c1, rot=(-9, 0, 0), bev=0.0008, amp=0.0, cuts=0)    # folleto
-            st.box((xk, yk - 0.0022, zz + 0.083), (0.07, 0.0016, 0.034), c2, rot=(-9, 0, 0), bev=0, amp=0.0, cuts=0)   # franja de cabecera
-            st.box((xk, yk - 0.0022, zz + 0.05), (0.048, 0.0016, 0.036), c3, rot=(-9, 0, 0), bev=0, amp=0.0, cuts=0)   # recuadro de imagen
-    st.seg((-0.14, 0.06, 0.305), (0.14, 0.06, 0.305), 0.005, br, seg=8)                                               # travesano de laton arriba
-    # --- lampara de banquero: base torneada de laton, columna con anillos, pantalla semicilindrica de cristal esmeralda con testeros de laton,
-    #     bombilla tubular dentro y cadenita de encendido con perla
-    lp = Sh(b, (2.56 - RX, -4.78 - RY, TZ), 0.0)
-    loft(lp, [(z, r, r, 0.0) for (z, r) in ((0.0, 0.075), (0.006, 0.076), (0.014, 0.068), (0.022, 0.05), (0.03, 0.036), (0.04, 0.025), (0.052, 0.0165), (0.07, 0.0115), (0.09, 0.009))], br, seg=28)
-    b.seg(lp.p((0, 0, 0.088)), lp.p((0, 0, 0.372)), 0.0075, br, seg=10)
-    for zz in (0.14, 0.22, 0.3):
-        lp.cyl((0, 0, zz), 0.0125, 0.008, br, seg=12, bev=0, amp=0.0)                                                # anillos de la columna
-    arc_band(lp, (0, 0, 0.3), 'y', 0.072, 0.005, 0, 180, 0.30, "M_Glass_Emerald", n=16)                             # pantalla (abierta por abajo)
-    for sg in (-1, 1):
-        lp.prism([(0.072 * math.cos(math.radians(a_)), sg * 0.151, 0.3 + 0.072 * math.sin(math.radians(a_))) for a_ in range(0, 181, 15)], (0, sg * 0.004, 0), br, amp=0.0)   # testeros
-    lp.cyl((0, 0, 0.374), 0.0145, 0.012, br, seg=12, bev=0, amp=0.0)                                                 # collarin sobre la pantalla
-    lp.cyl((0, 0.0, 0.287), 0.014, 0.17, "M_Bulb_Warm", rot=(90, 0, 0), seg=10, bev=0, amp=0.0)                      # bombilla tubular
-    lp.cyl((0, -0.1, 0.287), 0.012, 0.02, br, rot=(90, 0, 0), seg=8, bev=0, amp=0.0)                                # portalamparas
-    lp.seg((0.0, 0.1, 0.287), (0.0, 0.1, 0.19), 0.0016, br, seg=4)                                                   # cadenita
-    lp.cyl((0.0, 0.1, 0.184), 0.0055, 0.012, br, seg=8, bev=0, amp=0.0)                                              # perla
+            st.box((xk, yk, zz + 0.054), (0.07, 0.003, 0.098), c1, rot=(-9, 0, 0), bev=0.0008, amp=0.0, cuts=0)
+            st.box((xk, yk - 0.0022, zz + 0.083), (0.07, 0.0016, 0.034), c2, rot=(-9, 0, 0), bev=0, amp=0.0, cuts=0)
+            st.box((xk, yk - 0.0022, zz + 0.05), (0.048, 0.0016, 0.036), c3, rot=(-9, 0, 0), bev=0, amp=0.0, cuts=0)
+    st.seg((-0.14, 0.06, 0.305), (0.14, 0.06, 0.305), 0.005, br, seg=8)
 
 
-def reception_chair(b):
-    """Silla de madera con respaldo de travesanos y asiento tapizado. Frente -y, base z=0."""
-    wo, wd = "M_Museum_Wood", "M_Museum_WoodDark"
-    yb = lambda z: 0.19 + 0.0532 * z      # eje de los montantes traseros (inclinados hacia atras)
+def reception_desk(b):
+    """Mostrador de recepcion a caballo del arco (se construye en coordenadas del mundo, con warp). Lado publico (Hall, x < 2.8): cuerpo de 1.05 m con
+    cuarterones y filetes, tablero con labio y fieltro, riel de pies de laton. Lado del personal (x > 3.4): repisa de escritura a 0.76 m con pedestal de tres
+    cajones y hueco para las rodillas, y una media puerta batiente (abierta) en el extremo norte que deja ~1 m de paso. Encima: libro de visitas, campanilla,
+    expositor, lampara de banquero, telefono, vaso con lapices, bloc y libro de cuentas."""
+    wo, wd, br = "M_Museum_Wood", "M_Museum_WoodDark", "M_Museum_Brass"
+    Z = FL0
+
+    def bx(x0, x1, y0, y1, z0, z1, mat, bev=0.006):
+        b.box(((x0 + x1) / 2, (y0 + y1) / 2, Z + (z0 + z1) / 2), (x1 - x0, y1 - y0, z1 - z0), mat, bev=bev, amp=0.0, cuts=0)
+    # --- cuerpo publico
+    bx(DX0 + 0.03, DX1 - 0.03, DY0, DY1, 0.0, 0.1, wd)
+    bx(DX0, DX1, DY0, DY1, 0.1, 0.99, wo, 0.004)
+    bx(DX0 - 0.015, DX1 + 0.015, DY0, DY1, 0.985, 1.0, wo, 0.003)                  # faldon bajo el tablero
+    bx(DX0 - 0.04, DX1 + 0.04, DY0, DY1, 1.0, 1.045, wd, 0.008)                    # tablero con labio de 4 cm
+    bx(DX0 + 0.1, DX1 - 0.1, DY0 + 0.12, DY1 - 0.12, 1.045, 1.049, "M_Fabric_Olive", 0.001)   # fieltro de escritura
+    # frente (cara -x): montantes, travesanos y cinco cuarterones con junquillo
+    nb = 5
+    u0, u1 = DY0 + 0.03, DY1 - 0.03
+    ys = [u0 + k * (u1 - u0) / nb for k in range(nb + 1)]
+    for y in ys:
+        bx(DX0 - 0.02, DX0, y - 0.03, y + 0.03, 0.1, 0.985, wo, 0.003)
+    for z0, z1 in ((0.1, 0.16), (0.92, 0.985)):
+        bx(DX0 - 0.02, DX0, DY0, DY1, z0, z1, wo, 0.003)
+    bead = [(0.0, 0.0), (0.012, 0.0), (0.012, 0.006), (0.006, 0.009), (0.0, 0.0055)]
+    for y0, y1 in zip(ys, ys[1:]):
+        bx(DX0 - 0.011, DX0, y0 + 0.03, y1 - 0.03, 0.16, 0.92, wd, 0.002)
+        frame_ring(b, (y1 - y0) / 2 - 0.042, 0.368, bead, wo, cx=(y0 + y1) / 2, cz=Z + 0.54, P=lambda u, v, z: (DX0 - 0.011 - v, u, z))
+    # extremo norte (frente al paso): montantes, travesanos y un cuarteron
+    for xx in (DX0, DX1 - 0.06):
+        bx(xx, xx + 0.06, DY1, DY1 + 0.02, 0.1, 0.985, wo, 0.003)
+    for z0, z1 in ((0.1, 0.16), (0.92, 0.985)):
+        bx(DX0, DX1, DY1, DY1 + 0.02, z0, z1, wo, 0.003)
+    bx(DX0 + 0.06, DX1 - 0.06, DY1, DY1 + 0.009, 0.16, 0.92, wd, 0.002)
+    frame_ring(b, (DX1 - DX0) / 2 - 0.06 - 0.012, 0.368, bead, wo, cx=(DX0 + DX1) / 2, cz=Z + 0.54, P=lambda u, v, z: (u, DY1 + 0.009 + v, z))
+    # riel de pies de laton con soportes
+    tube(b, [(DX0 - 0.055, DY0 + 0.06, Z + 0.21), (DX0 - 0.055, DY1 - 0.06, Z + 0.21)], 0.018, br, seg=12)
+    for y in ys[1:-1]:
+        b.seg((DX0 - 0.02, y, Z + 0.21), (DX0 - 0.055, y, Z + 0.21), 0.007, br, seg=8)
+    # --- lado del personal: repisa a 0.76 m, pedestal de cajones al sur, hueco de rodillas, costado norte
+    PY1 = -4.32
+    bx(DX1 - 0.02, SH_X1, DY0, SH_Y1, 0.72, 0.76, wd, 0.006)
+    bx(DX1 - 0.01, SH_X1 - 0.03, DY0, PY1, 0.05, 0.72, wo, 0.004)
+    bx(DX1 - 0.01, SH_X1 - 0.06, DY0, PY1, 0.0, 0.05, wd)
+    bx(DX1 - 0.01, SH_X1 - 0.03, SH_Y1 - 0.045, SH_Y1 - 0.005, 0.0, 0.72, wo, 0.004)
+    xf = SH_X1 - 0.03
+    for k in range(3):
+        z0 = 0.06 + k * 0.215
+        bx(xf, xf + 0.018, DY0 + 0.02, PY1 - 0.02, z0, z0 + 0.2, wd, 0.003)
+        bx(xf + 0.018, xf + 0.0215, DY0 + 0.06, PY1 - 0.06, z0 + 0.03, z0 + 0.17, wo, 0.001)
+        yc, zc = (DY0 + PY1) / 2, Z + z0 + 0.1
+        b.box((xf + 0.0345, yc, zc), (0.012, 0.11, 0.013), br, bev=0.003, amp=0.0, cuts=0)
+        for sy in (-1, 1):
+            b.cyl((xf + 0.026, yc + sy * 0.045, zc), 0.0045, 0.014, br, rot=(0, 90, 0), seg=6, bev=0, amp=0.0)
+    # --- media puerta batiente (abierta) junto a la jamba norte: poste con bola, travesanos, cuarteron bajo, balaustres torneados, tres bisagras y pestillo
+    G = Sx(b, (GATE[0], GATE[1], Z), -3.0)
+    gw = 0.93
+    G.box((0.0, 0.0, 0.52), (0.07, 0.07, 1.04), wo, bev=0.004, amp=0.0, cuts=0)
+    G.cyl((0.0, 0.0, 1.06), 0.03, 0.04, br, seg=12, bev=0, amp=0.0)
+    for z0, z1 in ((0.1, 0.2), (0.55, 0.6), (0.9, 0.98)):
+        G.box((0.04 + gw / 2, 0, (z0 + z1) / 2), (gw, 0.04, z1 - z0), wo, bev=0.004, amp=0.0, cuts=0)
+    for xx in (0.04, 0.04 + gw - 0.05):
+        G.box((xx + 0.025, 0, 0.54), (0.05, 0.04, 0.88), wo, bev=0.004, amp=0.0, cuts=0)
+    G.box((0.04 + gw / 2, 0, 0.375), (gw - 0.12, 0.012, 0.3), wd, bev=0.002, amp=0.0, cuts=0)
+    for k in range(7):
+        xk = 0.09 + (k + 0.5) * (gw - 0.1) / 7
+        G.seg((xk, 0, 0.6), (xk, 0, 0.9), 0.0095, wd, seg=8)
+    for z in (0.2, 0.55, 0.9):
+        G.box((0.02, 0.0, z), (0.07, 0.006, 0.09), br, bev=0.001, amp=0.0, cuts=0)
+        G.cyl((0.0, 0.0, z), 0.0105, 0.1, br, seg=8, bev=0, amp=0.0)
+    G.cyl((0.04 + gw - 0.012, 0.0, 0.74), 0.014, 0.012, br, rot=(90, 0, 0), seg=10, bev=0, amp=0.0)
+    G.cyl((0.04 + gw - 0.012, 0.0, 0.74), 0.0075, 0.1, br, rot=(90, 0, 0), seg=8, bev=0, amp=0.0)
+    # --- encima del tablero publico (cota del fieltro)
+    TZ = Z + 1.049 - 0.0006
+    guest_book(b, (3.10, -4.1, TZ), 0.0)
+    b.seg((3.27, -4.36, TZ + 0.004), (3.30, -4.02, TZ + 0.004), 0.004, "M_Plastic_Black", seg=6)         # pluma
+    desk_bell(b, (3.1, -3.1, TZ))
+    brochure_stand(b, (3.1, -4.62, TZ), -90.0)
+    # --- encima de la repisa del personal
+    TS = Z + 0.76 - 0.0006
+    banker_lamp(b, (3.62, -4.58, TS), 0.0)
+    telephone(b, (3.7, -3.5, TS), 90.0)
+    pen_cup(b, (3.88, -4.22, TS))
+    paper_pad(b, (3.66, -3.87, TS), -90.0)
+    ledger_book(b, (3.62, -4.15, TS), 20.0)
+
+
+def office_chair(b):
+    """Silla giratoria de oficina: estrella de cinco brazos con ruedas, columna de gas con fuelle, asiento tapizado a 0.45 m, respaldo con lumbar
+    inclinado, reposabrazos de madera con montantes de metal. Frente -y, base z=0."""
+    mt, bk, fab, wd = "M_Museum_Metal", "M_Plastic_Black", "M_Fabric_Olive", "M_Museum_WoodDark"
+    b.cyl((0, 0, 0.1), 0.05, 0.06, mt, seg=12, bev=0, amp=0.0)                                               # cubo de la estrella
+    for k in range(5):
+        a = math.radians(90 + 72 * k)
+        ca, sa = math.cos(a), math.sin(a)
+        tube(b, [(0.03 * ca, 0.03 * sa, 0.105), (0.15 * ca, 0.15 * sa, 0.085), (0.29 * ca, 0.29 * sa, 0.062)], [0.02, 0.016, 0.013], mt, seg=8)
+        b.box((0.29 * ca, 0.29 * sa, 0.05), (0.03, 0.03, 0.04), mt, rot=(0, 0, math.degrees(a)), bev=0, amp=0.0, cuts=0)       # horquilla
+        b.cyl((0.29 * ca, 0.29 * sa, 0.03), 0.03, 0.022, "M_Rubber", rot=(90, 0, math.degrees(a)), seg=12, bev=0, amp=0.0)  # rueda
+    b.cyl((0, 0, 0.23), 0.022, 0.26, "M_Steel", seg=10, bev=0, amp=0.0)                                          # columna de gas
+    b.cyl((0, 0, 0.2), 0.034, 0.16, bk, seg=12, r2=0.027, bev=0, amp=0.0)                                         # fuelle
+    b.box((0, 0.0, 0.372), (0.4, 0.38, 0.03), wd, bev=0.01, amp=0.0, cuts=0)                                      # bastidor del asiento
+    rbox(b, (0, -0.01, 0.415), (0.5, 0.48, 0.07), 0.03, fab, segs=2)                                              # cojin: cara superior a 0.45
     for sx in (-1, 1):
-        b.cyl((sx * 0.2, -0.19, 0.2), 0.02, 0.4, wo, seg=10, r2=0.014, bev=0, amp=0.0)                 # patas delanteras
-        b.seg((sx * 0.2, yb(0.0), 0.0), (sx * 0.2, yb(0.94), 0.94), 0.019, wo, seg=10)                  # patas traseras = montantes del respaldo
-        b.seg((sx * 0.2, -0.19, 0.14), (sx * 0.2, yb(0.14), 0.14), 0.009, wd, seg=6)                    # travesanos laterales
-    b.seg((-0.2, -0.19, 0.14), (0.2, -0.19, 0.14), 0.009, wd, seg=6)
-    b.seg((-0.2, yb(0.14), 0.14), (0.2, yb(0.14), 0.14), 0.009, wd, seg=6)
-    b.box((0, 0.0, 0.405), (0.46, 0.42, 0.05), wo, bev=0.008, amp=0.0, cuts=0)                           # bastidor del asiento
-    b.box((0, -0.01, 0.455), (0.42, 0.4, 0.055), "M_Fabric_Blue", bev=0.02, amp=0.0, cuts=0)              # cojin
-    for zz in (0.62, 0.72, 0.82):                                                                      # travesanos del respaldo
-        b.box((0, yb(zz), zz), (0.4, 0.02, 0.06), wo, rot=(-3, 0, 0), bev=0.006, amp=0.0, cuts=0)
-    b.box((0, yb(0.9), 0.9), (0.44, 0.03, 0.08), wd, rot=(-3, 0, 0), bev=0.008, amp=0.0, cuts=0)         # cresta
+        b.seg((sx * 0.17, 0.14, 0.38), (sx * 0.17, 0.215, 0.56), 0.012, mt, seg=8)                                # soportes del respaldo
+    rbox(b, (0, 0.235, 0.68), (0.46, 0.07, 0.3), 0.03, fab, segs=2, rot=(-9, 0, 0))                              # respaldo
+    rbox(b, (0, 0.205, 0.5), (0.3, 0.05, 0.1), 0.02, fab, segs=1, rot=(-5, 0, 0))                                 # lumbar
+    b.box((0, 0.262, 0.835), (0.3, 0.014, 0.03), wd, rot=(-9, 0, 0), bev=0.004, amp=0.0, cuts=0)                  # remate de madera
+    for sx in (-1, 1):                                                                                           # reposabrazos
+        b.seg((sx * 0.265, 0.07, 0.4), (sx * 0.265, 0.07, 0.66), 0.011, mt, seg=8)
+        b.box((sx * 0.265, 0.0, 0.67), (0.06, 0.28, 0.035), wd, bev=0.012, amp=0.0, cuts=0)
+        b.box((sx * 0.25, 0.07, 0.39), (0.06, 0.07, 0.02), mt, bev=0.003, amp=0.0, cuts=0)
+
+
+def credenza(b):
+    """Aparador del personal contra la pared: zocalo, cuerpo con dos puertas de cuarteron y pomos de laton, tablero con labio y encima un reloj de
+    sobremesa de laton, una bandeja de cartas de dos pisos con papeles y un tampon. 1.2 x 0.6 x 0.78; trasera en y=0, frente -y."""
+    wo, wd, br = "M_Museum_Wood", "M_Museum_WoodDark", "M_Museum_Brass"
+    b.box((0, -0.3, 0.04), (0.98, 0.52, 0.08), wd, bev=0, amp=0.0, cuts=0)
+    b.box((0, -0.29, 0.41), (1.04, 0.58, 0.66), wo, bev=0.004, amp=0.0, cuts=0)
+    b.box((0, -0.31, 0.76), (1.08, 0.62, 0.04), wd, bev=0.008, amp=0.0, cuts=0)
+    bead = [(0.0, -0.6), (0.012, -0.6), (0.012, -0.6055), (0.006, -0.6075), (0.0, -0.603)]
+    for sx in (-1, 1):
+        xc = sx * 0.258
+        b.box((xc, -0.59, 0.41), (0.5, 0.02, 0.62), wo, bev=0.003, amp=0.0, cuts=0)
+        b.box((xc, -0.6015, 0.41), (0.38, 0.003, 0.5), wd, bev=0, amp=0.0, cuts=0)
+        frame_ring(b, 0.19, 0.25, bead, wo, cx=xc, cz=0.41)
+        b.cyl((xc - sx * 0.17, -0.612, 0.5), 0.0055, 0.024, br, rot=(90, 0, 0), seg=6, bev=0, amp=0.0)
+        b.cyl((xc - sx * 0.17, -0.628, 0.5), 0.018, 0.012, br, rot=(90, 0, 0), seg=12, bev=0, amp=0.0)
+    # reloj de sobremesa de laton con esfera de papel, cristal y asa
+    b.box((-0.33, -0.2, 0.785), (0.1, 0.07, 0.01), br, bev=0.002, amp=0.0, cuts=0)
+    b.box((-0.33, -0.2, 0.85), (0.085, 0.055, 0.12), br, bev=0.003, amp=0.0, cuts=0)
+    b.box((-0.33, -0.2335, 0.85), (0.07, 0.003, 0.1), "M_Vitrine_Glass", bev=0, amp=0.0, cuts=0)
+    b.cyl((-0.33, -0.2295, 0.855), 0.031, 0.004, "M_Paper", rot=(90, 0, 0), seg=18, bev=0, amp=0.0)
+    b.seg((-0.33, -0.231, 0.855), (-0.33, -0.231, 0.883), 0.0018, "M_Plastic_Black", seg=4)
+    b.seg((-0.33, -0.231, 0.855), (-0.362, -0.231, 0.852), 0.0018, "M_Plastic_Black", seg=4)
+    tube(b, [(-0.4, -0.2, 0.908), (-0.4, -0.2, 0.93), (-0.33, -0.2, 0.938), (-0.36, -0.2, 0.93), (-0.36, -0.2, 0.908)], 0.004, br, seg=6)
+    # bandeja de cartas de dos pisos con papeles
+    for sx in (-1, 1):
+        b.box((0.3 + sx * 0.147, -0.25, 0.84), (0.012, 0.22, 0.12), wd, bev=0.002, amp=0.0, cuts=0)
+    for k, z in enumerate((0.805, 0.86)):
+        b.box((0.3, -0.25, z), (0.3, 0.22, 0.01), wd, bev=0.002, amp=0.0, cuts=0)
+        b.box((0.3, -0.357, z + 0.02), (0.3, 0.01, 0.04), wd, bev=0.002, amp=0.0, cuts=0)
+        b.box((0.3, -0.25, z + 0.0075), (0.27, 0.19, 0.005 + 0.002 * k), "M_Paper", rot=(0, 0, 3 * k), bev=0, amp=0.0, cuts=0)
+    b.box((0.02, -0.28, 0.788), (0.09, 0.06, 0.016), "M_Plastic_Black", bev=0.003, amp=0.0, cuts=0)          # tampon
+    b.box((0.02, -0.28, 0.7985), (0.075, 0.048, 0.005), "M_Rug_Terracotta", bev=0.002, amp=0.0, cuts=0)
+
+
+# ---------------------------------------------------------------- sala de descanso del personal (cocina pequena, mesa redonda, tablon)
+def cab_door(b, xc, zc, w, h, yf, knob_dx=None, knob_dz=0.0, m=0.1, mat="M_Museum_Wood"):
+    """Puerta de armario de cuarteron: tablero de 2 cm (cara trasera en yf), cuarteron en relieve con junquillo (UN aro) y pomo de laton.
+    Frente hacia -y; (xc, zc) = centro, w x h = medidas, m = ancho del marco."""
+    wd, br = "M_Museum_WoodDark", "M_Museum_Brass"
+    y0 = yf - 0.02
+    b.box((xc, yf - 0.01, zc), (w, 0.02, h), mat, bev=0.003, amp=0.0, cuts=0)
+    b.box((xc, y0 - 0.0015, zc), (w - 2 * m, 0.003, h - 2 * m), wd, bev=0, amp=0.0, cuts=0)
+    bead = [(0.0, y0), (0.012, y0), (0.012, y0 - 0.0055), (0.006, y0 - 0.0075), (0.0, y0 - 0.003)]
+    frame_ring(b, (w - 2 * m) / 2, (h - 2 * m) / 2, bead, mat, cx=xc, cz=zc)
+    if knob_dx is not None:
+        kx, kz = xc + knob_dx, zc + knob_dz
+        b.cyl((kx, y0 - 0.01, kz), 0.0055, 0.02, br, rot=(90, 0, 0), seg=6, bev=0, amp=0.0)
+        b.cyl((kx, y0 - 0.024, kz), 0.017, 0.012, br, rot=(90, 0, 0), seg=12, bev=0, amp=0.0)
+
+
+def mug(b, pos, mat, rz=0.0):
+    """Taza de esmalte con asa. Apoya en pos."""
+    M = Sx(b, pos, rz)
+    loft(M, [(z, r, r, 0.0) for (z, r) in ((0.0, 0.034), (0.003, 0.04), (0.085, 0.043), (0.09, 0.043), (0.09, 0.039), (0.012, 0.0345), (0.01, 0.002))], mat, seg=16)
+    tube(M, [(0.041, 0.0, 0.075), (0.066, 0.0, 0.072), (0.072, 0.0, 0.045), (0.05, 0.0, 0.02), (0.039, 0.0, 0.025)], 0.0045, mat, seg=6)
+
+
+def kitchen_run(b):
+    """Cocina pequena contra el muro (2.4 m): zocalo, armario con puerta, armario del fregadero (carcasa hueca con dos puertas), armario con cajon y dos
+    puertas, encimera de roble oscuro con hueco real para el fregadero de acero (borde, fondo y desague), grifo de cuello de cisne con dos maneras,
+    salpicadero ceramico, dosificador de jabon y estropajo. Trasera en y=0, frente -y, base z=0, centrado en x."""
+    wo, wd, br, st = "M_Museum_Wood", "M_Museum_WoodDark", "M_Museum_Brass", "M_Steel"
+    YF = -0.58
+    b.box((0, -0.29, 0.05), (2.34, 0.5, 0.1), wd, bev=0, amp=0.0, cuts=0)
+    b.box((-0.9, -0.29, 0.48), (0.6, 0.58, 0.76), wo, bev=0.004, amp=0.0, cuts=0)                     # A
+    b.box((0.75, -0.29, 0.48), (0.9, 0.58, 0.76), wo, bev=0.004, amp=0.0, cuts=0)                     # C
+    for sx in (-0.59, 0.29):                                                                           # B: carcasa abierta bajo el fregadero
+        b.box((sx, -0.29, 0.48), (0.02, 0.58, 0.76), wo, bev=0.002, amp=0.0, cuts=0)
+    b.box((-0.15, -0.29, 0.11), (0.58, 0.58, 0.02), wo, bev=0.002, amp=0.0, cuts=0)
+    b.box((-0.15, -0.54, 0.83), (0.58, 0.08, 0.06), wo, bev=0.002, amp=0.0, cuts=0)
+    b.box((-0.15, -0.04, 0.83), (0.58, 0.08, 0.06), wo, bev=0.002, amp=0.0, cuts=0)
+    # encimera con hueco (x -0.4..0.1, y -0.47..-0.09)
+    b.box((-0.805, -0.31, 0.88), (0.81, 0.62, 0.04), wd, bev=0.006, amp=0.0, cuts=0)
+    b.box((0.655, -0.31, 0.88), (1.11, 0.62, 0.04), wd, bev=0.006, amp=0.0, cuts=0)
+    b.box((-0.15, -0.545, 0.88), (0.5, 0.15, 0.04), wd, bev=0.004, amp=0.0, cuts=0)
+    b.box((-0.15, -0.045, 0.88), (0.5, 0.09, 0.04), wd, bev=0.004, amp=0.0, cuts=0)
+    # fregadero de acero: cuatro paredes, fondo, borde y desague
+    for (cx, cy, sx_, sy_) in ((-0.397, -0.28, 0.006, 0.38), (0.097, -0.28, 0.006, 0.38), (-0.15, -0.467, 0.494, 0.006), (-0.15, -0.093, 0.494, 0.006)):
+        b.box((cx, cy, 0.83), (sx_, sy_, 0.14), st, bev=0, amp=0.0, cuts=0)
+    b.box((-0.15, -0.28, 0.763), (0.494, 0.38, 0.006), st, bev=0, amp=0.0, cuts=0)
+    b.cyl((-0.15, -0.28, 0.7675), 0.02, 0.003, "M_Floor_Dark", seg=12, bev=0, amp=0.0)
+    for (cx, cy, sx_, sy_) in ((-0.15, -0.4775, 0.54, 0.025), (-0.15, -0.0825, 0.54, 0.025), (-0.4075, -0.28, 0.025, 0.38), (0.1075, -0.28, 0.025, 0.38)):
+        b.box((cx, cy, 0.902), (sx_, sy_, 0.004), st, bev=0.001, amp=0.0, cuts=0)
+    # salpicadero ceramico con dos juntas
+    b.box((0, -0.0125, 0.949), (2.42, 0.025, 0.098), "M_Ceramic", bev=0.002, amp=0.0, cuts=0)
+    for zz in (0.9335, 0.9665):
+        b.box((0, -0.0255, zz), (2.42, 0.0012, 0.003), "M_Grout", bev=0, amp=0.0, cuts=0)
+    # puertas y cajon
+    cab_door(b, -0.9, 0.48, 0.575, 0.72, YF, knob_dx=0.2, knob_dz=0.24)
+    for xc, kd in ((-0.375, 0.17), (0.075, -0.17)):
+        cab_door(b, xc, 0.48, 0.445, 0.72, YF, knob_dx=kd, knob_dz=0.24, m=0.08)
+    cab_door(b, 0.75, 0.77, 0.88, 0.13, YF, knob_dx=0.0, knob_dz=0.0, m=0.035)
+    for xc, kd in ((0.525, 0.16), (0.975, -0.16)):
+        cab_door(b, xc, 0.405, 0.435, 0.55, YF, knob_dx=kd, knob_dz=0.2)
+    # grifo de cuello de cisne con dos manetas
+    gx, gy = -0.15, -0.075
+    b.cyl((gx, gy, 0.915), 0.026, 0.03, br, seg=12, bev=0, amp=0.0)
+    tube(b, [(gx, gy, 0.925), (gx, gy, 1.02), (gx, gy - 0.005, 1.1), (gx, gy - 0.05, 1.15), (gx, gy - 0.12, 1.14), (gx, gy - 0.18, 1.07), (gx, gy - 0.185, 1.04)], 0.011, br, seg=8)
+    b.cyl((gx, gy - 0.185, 1.03), 0.014, 0.02, br, seg=8, bev=0, amp=0.0)
+    for sx in (-1, 1):
+        b.cyl((gx + sx * 0.075, gy, 0.92), 0.012, 0.03, br, seg=8, bev=0, amp=0.0)
+        b.box((gx + sx * 0.075, gy, 0.945), (0.05, 0.012, 0.012), br, bev=0.003, amp=0.0, cuts=0)
+        b.cyl((gx + sx * 0.098, gy, 0.945), 0.008, 0.016, "M_Plastic_Blue" if sx < 0 else "M_Plastic_Red", seg=8, bev=0, amp=0.0)
+    # dosificador de jabon y estropajo
+    b.cyl((0.2, -0.1, 0.97), 0.028, 0.14, "M_Plastic_Green", seg=12, bev=0, amp=0.0)
+    b.cyl((0.2, -0.1, 1.05), 0.012, 0.03, "M_Plastic_White", seg=8, bev=0, amp=0.0)
+    tube(b, [(0.2, -0.1, 1.065), (0.2, -0.11, 1.075), (0.2, -0.135, 1.07)], 0.005, "M_Plastic_White", seg=6)
+    b.box((0.16, -0.3, 0.9125), (0.075, 0.05, 0.025), "M_Plastic_Yellow", bev=0.006, amp=0.0, cuts=0)
+    b.box((0.16, -0.3, 0.9265), (0.075, 0.05, 0.004), "M_Plastic_Green", bev=0.002, amp=0.0, cuts=0)
+
+
+def upper_cupboards(b):
+    """Dos armarios altos de pared (0.8 x 0.33 x 0.7) con dobles puertas de cuarteron, pomos de laton, cornisa, zocalo y una tira de luz calida bajo cada
+    uno. Base en z=0 (parte baja del armario), trasera en y=0, frente -y, centrado."""
+    wd = "M_Museum_WoodDark"
+    for xc in (-0.41, 0.41):
+        b.box((xc, -0.165, 0.35), (0.8, 0.33, 0.7), "M_Museum_Wood", bev=0.004, amp=0.0, cuts=0)
+        b.box((xc, -0.17, 0.715), (0.84, 0.35, 0.03), wd, bev=0.006, amp=0.0, cuts=0)
+        b.box((xc, -0.17, 0.015), (0.82, 0.34, 0.03), wd, bev=0.004, amp=0.0, cuts=0)
+        for dx, kd in ((-0.1975, 0.15), (0.1975, -0.15)):
+            cab_door(b, xc + dx, 0.36, 0.385, 0.64, -0.33, knob_dx=kd, knob_dz=-0.22, m=0.07)
+        b.box((xc, -0.27, -0.005), (0.6, 0.025, 0.01), "M_Bulb_Warm", bev=0, amp=0.0, cuts=0)
+
+
+def wall_shelves(b):
+    """Dos baldas de madera de 0.5 m con escuadras de hierro: tazas de colores, un bote de te, libros de cocina, un tarro y una hiedra que cuelga del borde.
+    Trasera en y=0, frente -y; la balda baja arranca en z=0."""
+    wo, mt = "M_Museum_Wood", "M_Museum_Metal"
+    for z in (0.0, 0.4):
+        b.box((0, -0.1, z + 0.0125), (0.5, 0.2, 0.025), wo, bev=0.005, amp=0.0, cuts=0)
+        for sx in (-0.19, 0.19):
+            b.prism([(sx - 0.009, 0.0, z), (sx - 0.009, 0.0, z - 0.15), (sx - 0.009, -0.17, z)], (0.018, 0, 0), mt, bev=0.001, amp=0.0)
+    ztop = 0.025
+    for k, (x, m) in enumerate(((-0.16, "M_Plastic_Red"), (-0.05, "M_Plastic_Blue"), (0.06, "M_Plastic_Orange"))):
+        mug(b, (x, -0.09, ztop), m, rz=90 + 25 * k)
+    b.cyl((0.17, -0.07, ztop + 0.05), 0.04, 0.1, "M_Plastic_Yellow", seg=14, bev=0, amp=0.0)          # bote de te
+    b.cyl((0.17, -0.07, ztop + 0.105), 0.042, 0.012, "M_Museum_Brass", seg=14, bev=0, amp=0.0)
+    z2 = 0.4 + ztop
+    for k, (mat, hh, w_) in enumerate((("M_Fabric_Olive", 0.2, 0.03), ("M_Rug_Terracotta", 0.17, 0.025), ("M_Fabric_Mustard", 0.19, 0.035), ("M_Fabric_Blue", 0.15, 0.022))):
+        b.box((-0.2 + sum((0.03, 0.025, 0.035, 0.022)[:k]) + 0.006 * k + w_ / 2, -0.09, z2 + hh / 2), (w_, 0.14, hh), mat, bev=0.002, amp=0.0, cuts=0)
+    loft(b, [(z2 + z, r, r, 0.0) for (z, r) in ((0.0, 0.032), (0.004, 0.038), (0.07, 0.044), (0.11, 0.032), (0.125, 0.022), (0.14, 0.024), (0.15, 0.028))], "M_Ceramic", xf=Matrix.Translation((0.0, -0.1, 0.0)), seg=16)
+    loft(b, [(z2 + z, r, r, 0.0) for (z, r) in ((0.0, 0.03), (0.003, 0.036), (0.05, 0.04), (0.058, 0.044), (0.062, 0.036))], "M_Pot", xf=Matrix.Translation((0.14, -0.1, 0.0)), seg=14)
+    for k in range(8):                                                                               # hiedra que cae por el frente
+        tt = k / 7
+        px, py, pz = 0.14 + 0.03 * math.sin(k * 1.3), -0.1 - 0.1 * tt, z2 + 0.06 - 0.17 * tt * tt - 0.02 * tt
+        b.prism([(px, py, pz + 0.018), (px + 0.016, py, pz), (px, py, pz - 0.018), (px - 0.016, py, pz)], (0, -0.002, 0), "M_Ivy_Light" if k % 2 else "M_Plant_Leaf", amp=0.0)
+    tube(b, [(0.14, -0.1, z2 + 0.06), (0.14, -0.145, z2 + 0.05), (0.15, -0.2, z2 + 0.0), (0.15, -0.205, z2 - 0.1)], 0.0022, "M_Leaf_Dark", seg=4)
+
+
+def microwave(b):
+    """Microondas crema con ventana oscura y marco de acero, panel de mando con dos diales, pantalla y tres botones, asa vertical, rejillas de ventilacion
+    arriba y cuatro patas de goma. 0.46 x 0.33 x 0.28; frente -y, base z=0."""
+    cr, st, gr = "M_Ceramic", "M_Steel", "M_Plastic_Grey"
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            b.cyl((sx * 0.19, sy * 0.12, 0.005), 0.014, 0.01, "M_Rubber", seg=8, bev=0, amp=0.0)
+    rbox(b, (0, 0, 0.145), (0.46, 0.33, 0.27), 0.014, cr, segs=2)
+    b.box((-0.045, -0.1675, 0.145), (0.31, 0.01, 0.235), cr, bev=0.003, amp=0.0, cuts=0)              # puerta
+    b.box((-0.045, -0.174, 0.15), (0.235, 0.004, 0.17), "M_Floor_Dark", bev=0, amp=0.0, cuts=0)       # cristal
+    frame_ring(b, 0.1175, 0.085, [(0.0, -0.1725), (0.014, -0.1725), (0.014, -0.1775), (0.0, -0.1755)], st, cx=-0.045, cz=0.15)
+    b.box((0.175, -0.1675, 0.145), (0.09, 0.01, 0.235), gr, bev=0.003, amp=0.0, cuts=0)               # panel de mando
+    b.box((0.175, -0.1735, 0.225), (0.06, 0.003, 0.03), "M_Floor_Dark", bev=0, amp=0.0, cuts=0)       # pantalla
+    b.box((0.175, -0.1745, 0.225), (0.028, 0.001, 0.012), "M_Bulb_Warm", bev=0, amp=0.0, cuts=0)
+    for zz, mm in ((0.17, st), (0.115, st)):
+        b.cyl((0.175, -0.1765, zz), 0.021, 0.014, mm, rot=(90, 0, 0), seg=16, bev=0, amp=0.0)          # diales
+        b.box((0.175, -0.1845, zz + 0.011), (0.004, 0.002, 0.014), "M_Plastic_Black", bev=0, amp=0.0, cuts=0)
+    for k in range(3):
+        b.box((0.152 + 0.023 * k, -0.1735, 0.065), (0.017, 0.004, 0.017), "M_Plastic_Black" if k < 2 else "M_Plastic_Red", bev=0.001, amp=0.0, cuts=0)
+    tube(b, [(0.085, -0.172, 0.06), (0.085, -0.172, 0.225)], 0.0075, st, seg=8)                         # asa
+    for zz in (0.075, 0.21):
+        b.seg((0.085, -0.1725, zz), (0.085, -0.1795, zz), 0.0055, st, seg=6)
+    for k in range(4):
+        b.box((-0.1 + 0.07 * k, 0.04, 0.2805), (0.05, 0.12, 0.0016), "M_Floor_Dark", bev=0, amp=0.0, cuts=0)
+
+
+def coffee_machine(b):
+    """Cafetera de filtro negra y acero: base con placa calefactora, columna trasera con deposito de agua transparente, cabezal con luz piloto y botones,
+    jarra de cristal con cafe, tapa y asa. 0.26 x 0.2 x 0.36; frente -y, base z=0."""
+    bk, st = "M_Plastic_Black", "M_Steel"
+    rbox(b, (0, 0, 0.015), (0.26, 0.2, 0.03), 0.01, bk, segs=2)
+    b.cyl((0, -0.03, 0.033), 0.082, 0.006, st, seg=20, bev=0, amp=0.0)                                # placa calefactora
+    rbox(b, (0, 0.075, 0.19), (0.2, 0.05, 0.32), 0.015, bk, segs=2)                                   # columna
+    rbox(b, (0, 0.0, 0.34), (0.24, 0.2, 0.06), 0.02, bk, segs=2)                                      # cabezal
+    b.box((0, 0.047, 0.19), (0.16, 0.004, 0.2), "M_Vitrine_Glass", bev=0, amp=0.0, cuts=0)             # deposito (visto de frente)
+    b.box((0, 0.047, 0.15), (0.15, 0.003, 0.12), "M_Paint_Sky", bev=0, amp=0.0, cuts=0)               # agua
+    b.cyl((0, -0.03, 0.308), 0.022, 0.016, st, seg=12, bev=0, amp=0.0)                                # difusor
+    b.box((-0.07, -0.1005, 0.343), (0.016, 0.003, 0.016), "M_Plastic_Red", bev=0, amp=0.0, cuts=0)    # luz piloto
+    for k in range(2):
+        b.box((0.0 + 0.045 * k, -0.1005, 0.343), (0.03, 0.003, 0.014), st, bev=0.001, amp=0.0, cuts=0)
+    zc0 = 0.036
+    loft(b, [(zc0 + z, r, r, 0.0) for (z, r) in ((0.0, 0.05), (0.004, 0.056), (0.06, 0.06), (0.12, 0.055), (0.145, 0.045), (0.155, 0.04))], "M_Vitrine_Glass", xf=Matrix.Translation((0.0, -0.03, 0.0)), seg=20)
+    loft(b, [(zc0 + z, r, r, 0.0) for (z, r) in ((0.004, 0.049), (0.04, 0.054), (0.072, 0.054), (0.0735, 0.003))], "M_Bark", xf=Matrix.Translation((0.0, -0.03, 0.0)), seg=18)   # cafe
+    b.cyl((0.0, -0.03, zc0 + 0.165), 0.043, 0.02, bk, seg=14, bev=0, amp=0.0)                         # tapa
+    tube(b, [(0.055, -0.03, zc0 + 0.14), (0.1, -0.03, zc0 + 0.14), (0.108, -0.03, zc0 + 0.08), (0.062, -0.03, zc0 + 0.03)], 0.0085, bk, seg=8)
+
+
+def kettle(b):
+    """Tetera de cobre al fuego: cuerpo torneado, tapa abombada con pomo de laton, pico afilado y asa de madera oscura. Apoya en z=0."""
+    cu, br = "M_Copper", "M_Museum_Brass"
+    loft(b, [(z, r, r, 0.0) for (z, r) in ((0.0, 0.09), (0.008, 0.098), (0.05, 0.118), (0.1, 0.112), (0.14, 0.085), (0.16, 0.062), (0.168, 0.052))], cu, seg=22, cap_top=False)
+    loft(b, [(z, r, r, 0.0) for (z, r) in ((0.166, 0.054), (0.176, 0.05), (0.195, 0.036), (0.206, 0.018), (0.209, 0.012))], cu, seg=18)
+    b.cyl((0, 0, 0.222), 0.012, 0.03, br, seg=10, bev=0, amp=0.0)
+    b.cyl((0, 0, 0.24), 0.019, 0.012, br, seg=12, bev=0, amp=0.0)
+    tube(b, [(-0.1, 0.0, 0.07), (-0.14, 0.0, 0.1), (-0.17, 0.0, 0.15), (-0.19, 0.0, 0.18)], [0.026, 0.02, 0.013, 0.009], cu, seg=10)
+    tube(b, [(0.09, 0.0, 0.17), (0.14, 0.0, 0.215), (0.185, 0.0, 0.19), (0.19, 0.0, 0.12), (0.14, 0.0, 0.07), (0.108, 0.0, 0.055)], 0.0085, "M_Museum_WoodDark", seg=8)
+
+
+def small_fridge(b):
+    """Nevera pequena de pintura menta con esquinas redondeadas: congelador arriba y puerta grande, asas de acero con soportes, junta oscura, chapa de
+    laton, patas, y un par de notas con imanes. 0.58 x 0.6 x 1.2; trasera en y=0, frente -y, base z=0."""
+    mt, st = "M_Wall_Mint", "M_Steel"
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            b.cyl((sx * 0.24, -0.3 + sy * 0.24, 0.015), 0.02, 0.03, st, seg=10, bev=0, amp=0.0)
+    rbox(b, (0, -0.3, 0.615), (0.58, 0.6, 1.17), 0.035, mt, segs=2)
+    rbox(b, (0, -0.605, 1.045), (0.56, 0.02, 0.24), 0.012, mt, segs=1)
+    rbox(b, (0, -0.605, 0.485), (0.56, 0.02, 0.82), 0.012, mt, segs=1)
+    b.box((0, -0.6165, 0.9085), (0.56, 0.002, 0.012), "M_Floor_Dark", bev=0, amp=0.0, cuts=0)
+    for z0, z1 in ((0.52, 0.82), (0.99, 1.1)):
+        x_ = 0.215
+        tube(b, [(x_, -0.665, z0), (x_, -0.665, z1)], 0.0095, st, seg=8)
+        for zz in (z0 + 0.02, z1 - 0.02):
+            b.seg((x_, -0.6, zz), (x_, -0.665, zz), 0.006, st, seg=6)
+    b.box((-0.17, -0.6175, 0.78), (0.08, 0.003, 0.022), "M_Museum_Brass", bev=0.001, amp=0.0, cuts=0)  # chapa
+    b.box((-0.1, -0.619, 0.58), (0.1, 0.002, 0.13), "M_Paper", rot=(0, 0, 4), bev=0, amp=0.0, cuts=0)  # nota
+    b.box((-0.1, -0.6205, 0.585), (0.07, 0.001, 0.003), "M_Plastic_Black", rot=(0, 0, 4), bev=0, amp=0.0, cuts=0)
+    b.box((-0.105, -0.6205, 0.56), (0.07, 0.001, 0.003), "M_Plastic_Black", rot=(0, 0, 4), bev=0, amp=0.0, cuts=0)
+    b.cyl((-0.1, -0.621, 0.635), 0.011, 0.006, "M_Plastic_Red", rot=(90, 0, 0), seg=10, bev=0, amp=0.0)
+    b.box((0.04, -0.619, 0.42), (0.09, 0.002, 0.09), "M_Plastic_Yellow", rot=(0, 0, -6), bev=0, amp=0.0, cuts=0)
+    b.cyl((0.04, -0.621, 0.455), 0.01, 0.006, "M_Plastic_Blue", rot=(90, 0, 0), seg=10, bev=0, amp=0.0)
+
+
+def round_table(b):
+    """Mesa redonda de cafe (0.84 de diametro, 0.74 de alto): tablero de roble con canto, faldon, columna torneada y tres patas curvas. Encima: un jarron con
+    margaritas y dos tazas. Apoya en z=0, centrada."""
+    wo, wd = "M_Museum_Wood", "M_Museum_WoodDark"
+    b.cyl((0, 0, 0.7225), 0.42, 0.035, wo, seg=28, bev=0, amp=0.0)
+    b.cyl((0, 0, 0.6975), 0.3, 0.025, wd, seg=22, bev=0, amp=0.0)
+    loft(b, [(z, r, r, 0.0) for (z, r) in ((0.04, 0.08), (0.06, 0.05), (0.09, 0.04), (0.2, 0.034), (0.3, 0.045), (0.34, 0.058), (0.38, 0.045), (0.5, 0.036), (0.62, 0.04), (0.665, 0.08), (0.71, 0.1))], wd, seg=16)
+    for k in range(3):
+        a = math.radians(90 + 120 * k)
+        ca, sa = math.cos(a), math.sin(a)
+        tube(b, [(0.04 * ca, 0.04 * sa, 0.1), (0.15 * ca, 0.15 * sa, 0.075), (0.26 * ca, 0.26 * sa, 0.03), (0.31 * ca, 0.31 * sa, 0.012)], [0.026, 0.022, 0.019, 0.017], wd, seg=8)
+    ztop = 0.74
+    loft(b, [(ztop + z, r, r, 0.0) for (z, r) in ((0.0, 0.04), (0.005, 0.05), (0.05, 0.06), (0.1, 0.04), (0.13, 0.025), (0.15, 0.03), (0.155, 0.036))], "M_Plastic_Blue", seg=16)
+    cols = ("M_Flower_White", "M_Flower_Yellow", "M_Flower_Rose", "M_Flower_White", "M_Flower_Yellow", "M_Flower_Rose", "M_Flower_White")
+    for k in range(7):
+        a = math.radians(k * 51.4 + 10)
+        rr = 0.01 + 0.045 * (k % 3) / 2
+        tip = (rr * 1.6 * math.cos(a), rr * 1.6 * math.sin(a), ztop + 0.26 + 0.03 * (k % 2))
+        b.seg((0.008 * math.cos(a), 0.008 * math.sin(a), ztop + 0.14), tip, 0.0024, "M_Plant_Leaf", seg=5)
+        b.cyl(tip, 0.022, 0.005, cols[k], rot=(-12 * math.sin(a), 12 * math.cos(a), 0), seg=10, bev=0, amp=0.0)
+        b.cyl((tip[0], tip[1], tip[2] + 0.002), 0.008, 0.005, "M_Sunflower_Disc", seg=8, bev=0, amp=0.0)
+    mug(b, (0.17, -0.12, ztop), "M_Plastic_Red", rz=-30)
+    mug(b, (-0.17, 0.14, ztop), "M_Plastic_Orange", rz=160)
+
+
+def cafe_chair(b):
+    """Silla de cafe de madera: cuatro patas ahusadas (las traseras suben y forman los montantes del respaldo), asiento con cojin de tela, travesanos,
+    dos travesanos de respaldo y cresta. Asiento a 0.45 m. Frente -y, base z=0."""
+    wo, wd, fab = "M_Museum_Wood", "M_Museum_WoodDark", "M_Fabric_Mustard"
+    yb = lambda z: 0.17 + 0.068 * z
+    for sx in (-1, 1):
+        b.cyl((sx * 0.19, -0.17, 0.2), 0.019, 0.4, wo, seg=10, r2=0.0135, bev=0, amp=0.0)
+        b.seg((sx * 0.19, yb(0.0), 0.0), (sx * 0.19, yb(0.9), 0.9), 0.018, wo, seg=10)
+        b.seg((sx * 0.19, -0.17, 0.17), (sx * 0.19, yb(0.17), 0.17), 0.008, wd, seg=6)
+    b.seg((-0.19, -0.17, 0.17), (0.19, -0.17, 0.17), 0.008, wd, seg=6)
+    b.seg((-0.19, yb(0.17), 0.17), (0.19, yb(0.17), 0.17), 0.008, wd, seg=6)
+    rbox(b, (0, 0.0, 0.415), (0.44, 0.42, 0.03), 0.01, wo, segs=1)
+    rbox(b, (0, -0.005, 0.44), (0.4, 0.38, 0.022), 0.009, fab, segs=2)
+    for zz, hh in ((0.6, 0.06), (0.74, 0.06)):
+        b.box((0, yb(zz), zz), (0.37, 0.018, hh), wo, rot=(-4, 0, 0), bev=0.005, amp=0.0, cuts=0)
+    b.box((0, yb(0.88), 0.87), (0.4, 0.024, 0.07), wd, rot=(-4, 0, 0), bev=0.008, amp=0.0, cuts=0)
+    for xx in (-0.07, 0.07):
+        b.seg((xx, yb(0.45), 0.45), (xx, yb(0.84), 0.84), 0.006, wo, seg=6)
+
+
+def corkboard(b):
+    """Tablon de corcho 0.88 x 0.58 con marco de madera, un horario (ROTA) con lineas, notas de colores y una postal sujetas con chinchetas.
+    Trasera en y=0, frente -y, centrado."""
+    wo = "M_Museum_Wood"
+    b.box((0, -0.008, 0), (0.88, 0.016, 0.58), "M_Bristle", bev=0.002, amp=0.0, cuts=0)
+    frame_ring(b, 0.44, 0.29, [(0.0, 0.0), (0.045, 0.0), (0.045, -0.03), (0.035, -0.036), (0.0, -0.022)], wo)
+    pcol = ("M_Plastic_Red", "M_Plastic_Blue", "M_Plastic_Green", "M_Plastic_Yellow", "M_Plastic_Orange")
+    notes = ((-0.27, 0.06, 0.2, 0.28, 3.0, "M_Paper"), (-0.02, 0.13, 0.14, 0.12, -4.0, "M_Plastic_Yellow"), (0.04, -0.07, 0.13, 0.16, 2.0, "M_Paint_Sky"),
+             (0.27, 0.1, 0.18, 0.14, -2.0, "M_Paint_Rose"), (0.29, -0.13, 0.15, 0.1, 5.0, "M_Paper"), (-0.12, -0.18, 0.12, 0.09, -6.0, "M_Plastic_Yellow"))
+    for k, (x, z, w, h, r, m) in enumerate(notes):
+        b.box((x, -0.0175, z), (w, 0.002 + 0.0004 * k, h), m, rot=(0, r, 0), bev=0, amp=0.0, cuts=0)
+        b.cyl((x, -0.021, z + h / 2 - 0.022), 0.008, 0.008, pcol[k % 5], rot=(90, 0, 0), seg=8, bev=0, amp=0.0)
+    for k in range(6):                                                                                 # lineas del horario
+        b.box((-0.27, -0.0192, 0.12 - 0.035 * k), (0.15, 0.0006, 0.004), "M_Plastic_Black", bev=0, amp=0.0, cuts=0)
+    b.text("ROTA", (-0.27, -0.0215, 0.175), 0.036, "M_Plastic_Black", ext=0.0008)
+    for (x, z, w) in ((-0.02, 0.13, 0.1), (0.04, -0.07, 0.09)):
+        for q in range(2):
+            b.box((x, -0.019, z - 0.012 - 0.02 * q + 0.02), (w, 0.0006, 0.003), "M_Plastic_Black", bev=0, amp=0.0, cuts=0)
+
+
+def break_rug(b):
+    """Alfombra lisa de 1.9 x 1.5 m y 1 cm de alto, en colores solidos (banda terracota, filete crema, campo azul marino) con un rombo central dorado.
+    Apoya en z=0, centrada."""
+    HX, HY, H0 = 0.95, 0.75, 0.01
+
+    def rect(x0, x1, y0, y1, mat, z1=H0):
+        b.box(((x0 + x1) / 2, (y0 + y1) / 2, z1 / 2), (x1 - x0, y1 - y0, z1), mat, bev=0.0, amp=0.0, cuts=0)
+
+    def frame(i0, i1, mat):
+        rect(-HX + i0, HX - i0, -HY + i0, -HY + i1, mat)
+        rect(-HX + i0, HX - i0, HY - i1, HY - i0, mat)
+        rect(-HX + i0, -HX + i1, -HY + i1, HY - i1, mat)
+        rect(HX - i1, HX - i0, -HY + i1, HY - i1, mat)
+    frame(0.0, 0.03, "M_RugSolid_Gold")
+    frame(0.03, 0.16, "M_RugSolid_Terracotta")
+    frame(0.16, 0.19, "M_RugSolid_Cream")
+    rect(-HX + 0.19, HX - 0.19, -HY + 0.19, HY - 0.19, "M_RugSolid_Navy")
+    z0 = H0 - 0.0001
+    b.prism([(0.38, 0.0, z0), (0.0, 0.28, z0), (-0.38, 0.0, z0), (0.0, -0.28, z0)], (0, 0, 0.0016), "M_RugSolid_Gold", bev=0.0, amp=0.0)
+    b.prism([(0.3, 0.0, z0 + 0.0015), (0.0, 0.2, z0 + 0.0015), (-0.3, 0.0, z0 + 0.0015), (0.0, -0.2, z0 + 0.0015)], (0, 0, 0.0008), "M_RugSolid_Terracotta", bev=0.0, amp=0.0)
 
 
 def key_cabinet(b):
@@ -1855,10 +2309,8 @@ def key_cabinet(b):
     Trasera en y=0, frente -y, centrado en z=0."""
     wd, wo, br = "M_Museum_WoodDark", "M_Museum_Wood", "M_Museum_Brass"
     b.box((0, -0.01, 0), (0.9, 0.02, 0.8), wd, bev=0.003, amp=0.0, cuts=0)
-    for sx in (-1, 1):
-        b.box((sx * 0.42, -0.05, 0), (0.06, 0.1, 0.8), wo, bev=0.006, amp=0.0, cuts=0)
+    frame_ring(b, 0.389, 0.339, [(0.0, 0.0), (0.061, 0.0), (0.061, -0.094), (0.055, -0.1), (0.006, -0.1), (0.0, -0.094)], wo)   # carcasa: UN aro a inglete
     for sz in (-1, 1):
-        b.box((0, -0.05, sz * 0.37), (0.78, 0.1, 0.06), wo, bev=0.006, amp=0.0, cuts=0)
         b.box((0, -0.06, sz * 0.4125), (0.96, 0.12, 0.025), wo, bev=0.006, amp=0.0, cuts=0)           # cornisa / zocalo del casillero
     ix, iz = 0.78, 0.68
     nc, nr = 4, 3
@@ -1877,27 +2329,28 @@ def key_cabinet(b):
 
 
 def directory_board(b):
-    """Directorio de pared 1.0 x 1.1: marco de madera, tablero oscuro con filete claro, titulo y plantas con flechas.
+    """Directorio de pared 1.0 x 1.1: marco de madera, tablero oscuro con filete claro, titulo y tres bloques (planta baja: galerias I y II + recepcion;
+    planta alta: III, IV y V; ala trasera: VI) con flechas hacia la puerta de la Gallery I y el arco de la escalera, y un pie de ayuda.
     Trasera en y=0, frente -y, centrado en z=0."""
     wo, bd, lt = "M_Museum_Wood", "M_Sign_Board", "M_Sign_Letters"
     b.box((0, -0.02, 0), (0.88, 0.03, 0.98), bd, bev=0.004, amp=0.0, cuts=0)
-    for sx in (-1, 1):
-        b.box((sx * 0.47, -0.03, 0), (0.06, 0.06, 1.1), wo, bev=0.008, amp=0.0, cuts=0)
-        b.box((0, -0.03, sx * 0.52), (0.88, 0.06, 0.06), wo, bev=0.008, amp=0.0, cuts=0)
+    frame_ring(b, 0.439, 0.489, [(0.0, 0.0), (0.061, 0.0), (0.061, -0.052), (0.051, -0.06), (0.014, -0.06), (0.0, -0.046)], wo)   # marco: UN aro a inglete (1 mm bajo el tablero)
     yf = -0.0365
     for sx in (-1, 1):   # filete claro interior
         b.box((sx * 0.40, yf, 0), (0.012, 0.004, 0.9), lt, bev=0, amp=0.0, cuts=0)
         b.box((0, yf, sx * 0.45), (0.8, 0.004, 0.012), lt, bev=0, amp=0.0, cuts=0)
     tx = -0.040
-    b.text("GALLERIES", (0, tx, 0.385), 0.13, lt, ext=0.008)
-    for zz in (0.285, -0.14):
+    b.text("GALLERIES", (0, tx, 0.385), 0.12, lt, ext=0.008)
+    for zz in (0.325, 0.12, -0.085, -0.29):
         b.box((0, yf, zz), (0.7, 0.004, 0.008), "M_Museum_Brass", bev=0, amp=0.0, cuts=0)
-    for (zh, zl, head, nums) in ((0.205, 0.075, "GROUND FLOOR", "I   II   III   VII"), (-0.225, -0.355, "UPPER FLOOR", "IV   V   VI")):
-        b.text(head, (-0.04, tx, zh), 0.075, lt, ext=0.008)
-        b.text(nums, (0, tx, zl), 0.12, lt, ext=0.008)
-        ax, y0 = 0.32, -0.034     # flecha hacia la derecha (hacia el arco de la escalera y la puerta de la Gallery I)
+    ax, y0 = 0.32, -0.034     # flecha hacia la derecha (hacia el arco de la escalera y la puerta de la Gallery I)
+    for (zh, zl, head, nums) in ((0.275, 0.185, "GROUND FLOOR", "I   II"), (0.07, -0.02, "UPPER FLOOR", "III   IV   V"), (-0.135, -0.225, "BACK WING", "VI")):
+        b.text(head, (-0.04, tx, zh), 0.065, lt, ext=0.008)
+        b.text(nums, (-0.2 if head == "GROUND FLOOR" else 0.0, tx, zl), 0.1, lt, ext=0.008)
         b.prism([(ax - 0.06, y0, zh - 0.006), (ax + 0.012, y0, zh - 0.006), (ax + 0.012, y0, zh - 0.024), (ax + 0.07, y0, zh), (ax + 0.012, y0, zh + 0.024),
                  (ax + 0.012, y0, zh + 0.006), (ax - 0.06, y0, zh + 0.006)], (0, -0.006, 0), lt, amp=0.0)
+    b.text("RECEPTION", (0.19, tx, 0.185), 0.06, lt, ext=0.008)
+    b.text("ASK AT RECEPTION", (0, tx, -0.385), 0.05, lt, ext=0.006)
 
 
 def cat_sculpture(b):
@@ -2006,11 +2459,24 @@ class Sh:
 
     def _finish(s, bm, c, rot, mat, bev, amp, minsize, freq=0.45):
         bmesh.ops.transform(bm, matrix=s.M, verts=bm.verts)
+        s.b._flat = getattr(s, '_flat', False)
         s.b._finish(bm, (0, 0, 0), (0, 0, 0), mat, bev, amp, minsize, freq)
+        s.b._flat = False
 
     def _push(s, bm, mat):
         bmesh.ops.transform(bm, matrix=s.M, verts=bm.verts)
         s.b._push(bm, mat)
+
+
+class Sx(Sh):
+    """Sh que ademas respeta el centro y el giro de las primitivas que pasan por _finish con c/rot distintos de cero (rbox)."""
+
+    def _finish(s, bm, c, rot, mat, bev, amp, minsize, freq=0.45):
+        M0 = Matrix.Translation(Vector(c)) @ Euler([math.radians(a) for a in rot]).to_matrix().to_4x4()
+        bmesh.ops.transform(bm, matrix=s.M @ M0, verts=bm.verts)
+        s.b._flat = getattr(s, '_flat', False)
+        s.b._finish(bm, (0, 0, 0), (0, 0, 0), mat, bev, amp, minsize, freq)
+        s.b._flat = False
 
 
 def bottle(b, pos=(0, 0, 0), h=0.26, r=0.04, mat="M_Plastic_Blue", cap="M_Plastic_White", oy=1.0, rz=0.0):
@@ -2043,25 +2509,26 @@ def spray_bottle(b, pos=(0, 0, 0), mat="M_Plastic_Green", rz=0.0):
 
 
 def mop_head(b, ctr, d=(0, 0, 1), n=44, seed=1, zlow=0.0, reach=0.13):
-    """Hebras de una fregona de cuerda: nacen en un aro perpendicular al mango (eje d), cuelgan y se tumban hacia fuera hasta zlow.
-    ctr = centro del aro de sujecion."""
-    rnd = random.Random(seed)
+    """Cabezal de fregona liso: unos pocos lobulos gruesos (tubos romos de un solo material liso, sin hebras finas) que nacen en un aro
+    perpendicular al mango (eje d), cuelgan y se tumban hacia fuera hasta zlow. ctr = centro del aro de sujecion. n da la densidad (6..10 lobulos)."""
     ctr, d = Vector(ctr), Vector(d).normalized()
     e1 = d.cross(Vector((1, 0, 0))).normalized()
     e2 = d.cross(e1).normalized()
-    zf = zlow + 0.004
-    for k in range(n):
-        a = k * math.tau / n + rnd.uniform(-0.08, 0.08)
-        rin = 0.032 if k % 2 else 0.018
-        st = ctr + (e1 * math.cos(a) + e2 * math.sin(a)) * rin
+    R = 0.018
+    zf = zlow + R + 0.003
+    nl = max(6, min(10, n // 5))
+    for k in range(nl):
+        a = k * math.tau / nl
+        st = ctr + (e1 * math.cos(a) + e2 * math.sin(a)) * 0.022
         uh = Vector((st.x - ctr.x, st.y - ctr.y, 0))
         uh = uh.normalized() if uh.length > 1e-4 else Vector((1, 0, 0))
-        ln = reach * rnd.uniform(0.75, 1.1)
+        ln = reach * (1.0 if k % 2 == 0 else 0.8)
         zr = max(st.z - zf, 0.0)
-        pts = [st, Vector((st.x, st.y, zf + zr * 0.55)) + uh * 0.012,
-               Vector((st.x, st.y, zf + zr * 0.1)) + uh * (0.02 + ln * 0.35),
+        pts = [st, Vector((st.x, st.y, zf + zr * 0.5)) + uh * 0.012,
+               Vector((st.x, st.y, zf + zr * 0.12)) + uh * (0.02 + ln * 0.4),
+               Vector((st.x, st.y, zf)) + uh * (0.02 + ln * 0.8),
                Vector((st.x, st.y, zf)) + uh * (0.02 + ln)]
-        tube(b, pts, 0.0036, "M_Mop_Cotton", seg=3)
+        tube(b, pts, [0.012, R, R, R * 0.9, R * 0.6], "M_Mop_Cotton", seg=8)
 
 
 def wring_mop_bucket(b):
@@ -2414,11 +2881,33 @@ def toilet(b):
     b.cyl((0, 0.26, 0.845), 0.025, 0.01, "M_Museum_Metal", seg=12, bev=0, amp=0.0)                  # pulsador cromado
 
 
+def frame_ring(b, ihw, ihh, prof, mat, cx=0.0, cz=0.0, P=None):
+    """Marco rectangular de UNA sola malla con esquinas a inglete exactas (plano x-z, profundidad en y).
+    ihw/ihh = semiancho/semialto de la abertura de referencia; prof = contorno CERRADO [(d, y)]: d = distancia hacia fuera desde esa abertura,
+    y = profundidad. Cada punto del contorno es un rectangulo desplazado d, asi que las cuatro esquinas encajan sin solapes ni huecos.
+    P = funcion opcional (x, y, z) -> punto del mundo (p. ej. Face.P de un muro, o un cambio de ejes para un marco en el suelo)."""
+    bm = bmesh.new()
+    rings = []
+    for (d, y) in prof:
+        hw, hh = ihw + d, ihh + d
+        rings.append([bm.verts.new(P(cx + sx * hw, y, cz + sz * hh) if P else (cx + sx * hw, y, cz + sz * hh)) for (sx, sz) in ((1, 1), (-1, 1), (-1, -1), (1, -1))])
+    n = len(rings)
+    for i in range(n):
+        a, c = rings[i], rings[(i + 1) % n]
+        for k in range(4):
+            bm.faces.new((a[k], a[(k + 1) % 4], c[(k + 1) % 4], c[k]))
+    b._push(bm, mat)
+
+
 def mirror(b, w=0.55, h=0.75, fw=0.07):
-    """Espejo con marco de madera. Local: cara trasera en y=0, frente hacia -y."""
-    b.box((0, -0.01, 0), (w, 0.02, h), "M_Glass_Mirror", bev=0.004, amp=0.0, cuts=0)
-    for (x, z, sx, sz) in ((-(w + fw) / 2, 0, fw, h + 2 * fw), ((w + fw) / 2, 0, fw, h + 2 * fw), (0, (h + fw) / 2, w, fw), (0, -(h + fw) / 2, w, fw)):
-        b.box((x, -0.02, z), (sx, 0.04, sz), "M_Museum_Wood", bev=0.01, amp=0.002, cuts=0)
+    """Espejo con marco de madera en UN aro a inglete (talla: filete interior, plano y chaflan exterior) y el cristal asentado en un rebaje
+    (2 mm de holgura, bordes tapados por el labio). Local: cara trasera en y=0, frente hacia -y. w x h = cristal; marco exterior w+2fw x h+2fw."""
+    L = 0.012                                                                           # labio que tapa el canto del cristal
+    F = fw + L
+    prof = [(0.0, -0.028), (0.0, -0.016), (L + 0.002, -0.016), (L + 0.002, 0.0), (F, 0.0), (F, -0.030), (F - 0.010, -0.040),
+            (L + 0.022, -0.040), (L + 0.010, -0.034), (L - 0.002, -0.031)]
+    frame_ring(b, w / 2 - L, h / 2 - L, prof, "M_Museum_Wood")
+    b.box((0, -0.009, 0), (w, 0.010, h), "M_Glass_Mirror", bev=0.0015, amp=0.0, cuts=0)
 
 
 def paper_holder(b):
@@ -2500,38 +2989,83 @@ def vanity(b):
     tube(b, [(0.25, -0.1, 0.98), (0.25, -0.1, 1.0), (0.25, -0.12, 1.0)], 0.005, "M_Museum_Metal", seg=5)
 
 
-def pictogram_fig(b, kind, h, y, ox=0.0, oz=0.0, mat="M_Sign_Letters", t=0.004):
-    """Figura de aseo en el plano x-z (cara en y): 'M' hombre (cabeza de 24 lados, torso rectangular, dos brazos, dos piernas rectas)
-    o 'W' mujer (cabeza, vestido triangular, dos brazos, dos piernas). h = alto total; centrada en (ox, oz); espesor t hacia -y."""
-    def poly(pts):
-        b.prism([(ox + u * h, y, oz + v * h) for (u, v) in pts], (0, -t, 0), mat, amp=0.0)
+def _arc(cx, cy, r, a0, a1, n=5):
+    """Puntos (u, v) de un arco de centro (cx, cy), radio r, de a0 a a1 grados (ambos extremos incluidos)."""
+    return [(cx + r * math.cos(math.radians(a0 + (a1 - a0) * k / n)), cy + r * math.sin(math.radians(a0 + (a1 - a0) * k / n))) for k in range(n + 1)]
 
-    def rect(u0, v0, u1, v1):
-        poly([(u0, v0), (u1, v0), (u1, v1), (u0, v1)])
-    poly([(0.085 * math.cos(k * math.tau / 24), 0.415 + 0.085 * math.sin(k * math.tau / 24)) for k in range(24)])      # cabeza
+
+def _fillet_poly(items, n=10):
+    """Contorno desde vertices (u, v, r) -- r > 0 redondea la esquina con un arco de n tramos -- y listas de puntos ya calculados (arcos)."""
+    out = []
+    for i, it in enumerate(items):
+        if isinstance(it, list):
+            out += it
+            continue
+        u, v, r = it
+        if r <= 0:
+            out.append((u, v)); continue
+        pv, nx = items[i - 1], items[(i + 1) % len(items)]
+        a = pv[-1] if isinstance(pv, list) else pv[:2]
+        c = nx[0] if isinstance(nx, list) else nx[:2]
+        e1 = (a[0] - u, a[1] - v); l1 = math.hypot(*e1); e1 = (e1[0] / l1, e1[1] / l1)
+        e2 = (c[0] - u, c[1] - v); l2 = math.hypot(*e2); e2 = (e2[0] / l2, e2[1] / l2)
+        th = math.acos(max(-1.0, min(1.0, e1[0] * e2[0] + e1[1] * e2[1])))
+        d = r / math.tan(th / 2)
+        bx, by = e1[0] + e2[0], e1[1] + e2[1]; bl = math.hypot(bx, by)
+        cc = (u + bx / bl * r / math.sin(th / 2), v + by / bl * r / math.sin(th / 2))
+        t1 = (u + e1[0] * d, v + e1[1] * d); t2 = (u + e2[0] * d, v + e2[1] * d)
+        a1, a2 = math.atan2(t1[1] - cc[1], t1[0] - cc[0]), math.atan2(t2[1] - cc[1], t2[0] - cc[0])
+        da = (a2 - a1 + math.pi) % math.tau - math.pi
+        out += [(cc[0] + r * math.cos(a1 + da * k / n), cc[1] + r * math.sin(a1 + da * k / n)) for k in range(n + 1)]
+    return out
+
+
+def pictogram_outline(kind):
+    """Silueta de aseo (alto total 1 con la cabeza; cuerpo de v=-0.5 a 0.30), UN solo contorno simetrico con arcos suaves. Se define la mitad derecha de
+    arriba al centro y se refleja. 'M': hombros grandes redondeados, brazos con manos en capsula separados del torso por una cuña, piernas con ranura
+    de punta redonda. 'W': hombros pequenos, vestido en A hasta un dobladillo recto, brazos en capsula separados por cunas, dos piernas con pies redondos."""
+    n = 12
     if kind == 'M':
-        rect(-0.13, 0.0, 0.13, 0.30)                                                  # torso
-        rect(0.145, 0.02, 0.22, 0.30)                                                 # brazos
-        rect(-0.22, 0.02, -0.145, 0.30)
-        rect(0.015, -0.5, 0.13, 0.0)                                                  # piernas
-        rect(-0.13, -0.5, -0.015, 0.0)
+        ang, r_h = math.radians(9.8), 0.043
+        cx, cy = 0.197, -0.033
+        hand = [(cx + r_h * math.cos(ang - math.pi * k / n), cy + r_h * math.sin(ang - math.pi * k / n)) for k in range(n + 1)]
+        foot = [(0.058 + 0.047 * math.cos(-math.pi * k / n), -0.453 + 0.047 * math.sin(-math.pi * k / n)) for k in range(n + 1)]
+        slit = [(0.011 * math.cos(math.pi / 2 * k / 6), -0.104 + 0.011 * math.sin(math.pi / 2 * k / 6)) for k in range(7)]
+        half = [(0.0, 0.302, 0), (0.182, 0.302, 0.09), hand, (0.105, 0.167, 0), (0.105, -0.453, 0), foot, slit]
     else:
-        poly([(-0.10, 0.30), (0.10, 0.30), (0.23, -0.17), (-0.23, -0.17)])             # vestido triangular
-        rect(0.125, 0.06, 0.19, 0.30)                                                 # brazos
-        rect(-0.19, 0.06, -0.125, 0.30)
-        rect(0.02, -0.5, 0.085, -0.17)                                                # piernas
-        rect(-0.085, -0.5, -0.02, -0.17)
+        ang, r_h = math.radians(24.8), 0.043
+        cx, cy = 0.230, -0.033
+        hand = [(cx + r_h * math.cos(ang - math.pi * k / n), cy + r_h * math.sin(ang - math.pi * k / n)) for k in range(n + 1)]
+        foot = [(0.0605 + 0.0465 * math.cos(-math.pi * k / n), -0.4535 + 0.0465 * math.sin(-math.pi * k / n)) for k in range(n + 1)]
+        half = [(0.0, 0.302, 0), (0.127, 0.302, 0.03), hand, (0.095, 0.156, 0), (0.188, -0.181, 0), (0.107, -0.181, 0), foot, (0.014, -0.181, 0)]
+    r = _fillet_poly(half, n)
+    pts = []
+    for q in r + [(-u, v) for (u, v) in reversed(r)]:
+        if not pts or abs(q[0] - pts[-1][0]) > 1e-6 or abs(q[1] - pts[-1][1]) > 1e-6:
+            pts.append(q)
+    if abs(pts[0][0] - pts[-1][0]) < 1e-6 and abs(pts[0][1] - pts[-1][1]) < 1e-6:
+        pts.pop()
+    return pts
+
+
+def pictogram_fig(b, kind, h, y, ox=0.0, oz=0.0, mat="M_Sign_Letters", t=0.004):
+    """Figura de aseo en el plano x-z (cara en y): 'M' hombre / 'W' mujer, estilo ISO. Dos piezas planas: la cabeza (circulo de 32 lados) y el cuerpo
+    (UN contorno con hombros redondeados, brazos, vestido o torso y piernas). h = alto total; centrada en (ox, oz); espesor t hacia -y
+    (arranca 0.5 mm dentro del tablero para no coincidir en plano con su cara)."""
+    def poly(pts):
+        b.prism([(ox + u * h, y + 0.0005, oz + v * h) for (u, v) in pts], (0, -(t + 0.0005), 0), mat, amp=0.0, flat=True)
+    poly([(0.085 * math.cos(k * math.tau / 32), 0.415 + 0.085 * math.sin(k * math.tau / 32)) for k in range(32)])      # cabeza
+    poly(pictogram_outline(kind))                                                                                  # cuerpo
 
 
 def pictogram_plate(b, kind, size, y=0.0, ox=0.0, oz=0.0):
-    """Placa cuadrada de tablero oscuro con filete claro y la figura (70% del alto). Trasera en y."""
+    """Placa cuadrada de tablero oscuro con filete claro (un solo aro) y la figura (70% del alto). Trasera en y."""
     b.box((ox, y - 0.009, oz), (size, 0.018, size), "M_Sign_Board", bev=0.004, amp=0.0, cuts=0)
     inset, lw = size * 0.05, size * 0.026
     a = size / 2 - inset
-    for sg in (-1, 1):
-        b.box((ox + sg * (a - lw / 2), y - 0.0195, oz), (lw, 0.003, 2 * a), "M_Sign_Letters", bev=0, amp=0.0, cuts=0)
-        b.box((ox, y - 0.0195, oz + sg * (a - lw / 2)), (2 * a - 2 * lw, 0.003, lw), "M_Sign_Letters", bev=0, amp=0.0, cuts=0)
-    pictogram_fig(b, kind, size * 0.7, y - 0.018, ox, oz, t=0.004)
+    yf = y - 0.018
+    frame_ring(b, a - lw, a - lw, [(0.0, yf + 0.0005), (lw, yf + 0.0005), (lw, yf - 0.003), (0.0, yf - 0.003)], "M_Sign_Letters", cx=ox, cz=oz)
+    pictogram_fig(b, kind, size * 0.7, yf, ox, oz, t=0.004)
 
 
 def pictogram_sign(name, kind, axis, face, s, u, z, coll):
@@ -2715,9 +3249,9 @@ def bench_modern(b, ln=1.8):
 WING = (-7.0, 7.0, 9.0, 21.0)        # interior de la galeria (x0, x1, y0, y1)
 WING_H = 5.0                         # altura libre (techo plano, SIN lucernario)
 WING_TH = 0.3
-LINK = (-0.9, 0.9, D.Y1, WING[2] - WING_TH)     # pasillo de enlace desde la puerta trasera del Stair Hall
+LINK = (-1.035, 1.035, D.Y1, WING[2] - WING_TH)     # pasillo de enlace desde la puerta trasera del Stair Hall
 LINK_H = 2.9
-WING_DOOR = (0.0, 1.8, FL0 - 0.03, FL0 + LINK_H)
+WING_DOOR = (0.0, 2.07, FL0 - 0.03, FL0 + LINK_H)
 # hoja de la puerta trasera (marco de madera: jambas con cara interior en x = +-0.7, cabecero a 0.14 bajo el dintel, cara trasera en y = 6.15)
 _GV_Z0 = FL0 + SADDLE + 0.003
 GV_SPEC = dict(ax='x', jam=-1, side=1, ul=-0.7, z0=_GV_Z0, wl=1.4 - LEAF_CLR, hl=(D.BACK[0][3] - 0.14) - _GV_Z0 - 0.003, Lp=0.07, ang=90,
@@ -2879,7 +3413,7 @@ def wing(cS, cT, cE, cF, cLt):
         to_col(prop("GalleryVII_Pedestal_%d" % i, (x, y, FL0), 0, lambda b, h=h, w=w: plinth(b, h, w)), cE)
         to_col(prop("GalleryVII_Sculpture_%d" % i, (x, y, FL0 + h), 15 * i, fn), cE)
     to_col(prop("GalleryVII_Bench", (1.4, 11.0, FL0), 0, bench_modern), cF)
-    wall_sign("GalleryVII", "GALLERY VII", 'x', IY1, -1, 0.0, FL0 + 3.3, coll=cF)
+    wall_sign("GalleryVII", "GALLERY VI", 'x', IY1, -1, 0.0, FL0 + 3.3, coll=cF)
     to_col(prop("GalleryVII_Plant_0", (-6.3, 9.75, FL0), 0, lambda b: plant_monstera(b, 4, face=math.radians(45), spread=math.radians(85))), cF)
     to_col(prop("GalleryVII_Plant_1", (6.45, 9.6, FL0), 0, lambda b: plant_ficus(b, 9, face=math.radians(135), spread=math.radians(120))), cF)
 
@@ -2888,12 +3422,14 @@ def wing(cS, cT, cE, cF, cLt):
 SNAP_WALL = ("ArtSlot_", "Sign_", "Restroom_1_Toilet", "Restroom_2_Toilet", "Restroom_1_PaperHolder", "Restroom_2_PaperHolder",
              "Restroom_1_Hook", "Restroom_2_Hook", "Restroom_Lobby_Mirror", "Restroom_Lobby_Dryer", "Restroom_Lobby_Counter",
              "Maintenance_FuseBox", "Maintenance_Sink", "Maintenance_ToolRack", "Maintenance_MopLean", "Maintenance_Broom", "Maintenance_Cart",
-             "Maintenance_Shelves", "Maintenance_Workbench", "Maintenance_Lockers", "GalleryV_Featured_Plaque", "Hall_Reception_Cabinet", "Hall_Directory")
-SNAP_GROUND = ("Hall_Plant_", "Hall_Rug", "Hall_Reception_Desk", "Hall_Reception_Chair", "StairHall_Plant", "Landing_Plant", "GalleryVI_Pedestal_", "GalleryIII_Pedestal_", "StairHall_Pedestal",
+             "Maintenance_Shelves", "Maintenance_Workbench", "Maintenance_Lockers", "Maintenance_HookRail", "GalleryV_Featured_Plaque", "Reception_KeyCabinet", "Reception_Credenza", "Reception_Kitchenette", "Reception_UpperCupboards", "Reception_Shelves", "Reception_Fridge",
+             "Reception_Corkboard", "Reception_HookRail", "Hall_Directory")
+SNAP_GROUND = ("Hall_Plant_", "Hall_Rug", "Hall_DoorMat", "Reception_Desk", "Reception_Chair", "Reception_Credenza", "Reception_Kitchenette", "Reception_Fridge", "Reception_Rug", "Reception_Plant_", "StairHall_Plant", "Landing_Plant", "GalleryVI_Pedestal_", "GalleryIII_Pedestal_", "StairHall_Pedestal",
                "GalleryVII_Pedestal_", "GalleryVII_Plant_", "GalleryV_Stanchions", "Maintenance_MopBucket", "Maintenance_Broom", "Maintenance_MopLean", "Maintenance_DustPan", "Maintenance_Cart", "Maintenance_Sink",
                "Maintenance_Lockers", "Maintenance_Workbench", "Maintenance_Shelves", "Maintenance_Boxes", "Landing_Bench", "GalleryIV_Bench",
                "Restroom_1_Brush", "Restroom_2_Brush", "Restroom_1_Bin", "Restroom_2_Bin", "Restroom_Lobby_Bin")
-SNAP_FLOOR = ("GalleryVI_Sculpture_", "StairHall_CatSculpture", "GalleryVII_Sculpture_", "GalleryIII_NicheVase_")
+SNAP_FLOOR = ("GalleryVI_Sculpture_", "StairHall_CatSculpture", "GalleryVII_Sculpture_", "GalleryIII_NicheVase_", "Reception_Microwave", "Reception_CoffeeMachine", "Reception_Kettle",
+              "Reception_Table", "Reception_CafeChair_")
 
 
 def _bvh(names):
@@ -2916,7 +3452,7 @@ def settle():
     bpy.context.view_layer.update()
     meshes = [o for o in bpy.data.objects if o.type == 'MESH']
     Tw = _bvh([o.name for o in meshes if o.name.startswith(("Int_Shell", "Int_Wing_Shell", "Int_Wing_WallFinish", "Int_Wing_Volumes", "Int_Door_Casings", "Int_Restroom_Tiles", "Int_Annex_Shell"))
-               or o.name.endswith(("_Partitions", "_WallFinish")) or o.name == "GalleryII_DisplayPanel"])
+               or o.name.endswith(("_Partitions", "_WallFinish"))])
     floors = [o.name for o in meshes if o.name.endswith("_Floors") or o.name == "Int_Wing_Floor"]
 
     def drop(ob, T):
@@ -2936,7 +3472,7 @@ def settle():
         if ob.name.startswith(SNAP_GROUND):
             drop(ob, Tg)
     bpy.context.view_layer.update()
-    Tf = _bvh(floors + [o.name for o in meshes if "_Pedestal" in o.name or o.name == "GalleryIII_Niches"])
+    Tf = _bvh(floors + [o.name for o in meshes if "_Pedestal" in o.name or o.name in ("GalleryIII_Niches", "Reception_Rug", "Reception_Kitchenette")])
     for ob in meshes:
         mw = ob.matrix_world
         if ob.name.startswith(SNAP_WALL):
@@ -2959,7 +3495,7 @@ def settle():
 # ======================================================================= salas
 def hall_rug(b):
     """Alfombra de lana rectangular 2,0 x 3,0 m (lado largo a lo largo de Y), 1,2 cm de alto: campo azul marino apagado, banda interior,
-    filetes crema, banda exterior terracota con greca de rombos, motivos de esquina, medallon central y flecos cortos en los lados cortos.
+    filetes crema, banda exterior terracota y medallon central: todo en colores lisos (sin greca, flecos ni pelo).
     Origen en el centro y apoyada en z = 0."""
     HX, HY = 1.0, 1.5
     H0 = 0.0098                    # altura de la lana; las incrustaciones suman hasta 1,2 cm
@@ -2974,81 +3510,120 @@ def hall_rug(b):
         rect(-HX + i0, -HX + i1, -HY + i1, HY - i1, 0.0, z1, mat)
         rect(HX - i1, HX - i0, -HY + i1, HY - i1, 0.0, z1, mat)
 
-    def diamond(cx, cy, rx, ry, layer, mat):   # rombo fino incrustado
+    def diamond(cx, cy, rx, ry, layer, mat):   # rombo liso incrustado (3 mm de alto como maximo sobre la lana)
         z0 = H0 + (layer - 1) * IL - 0.0001
         b.prism([(cx + rx, cy, z0), (cx, cy + ry, z0), (cx - rx, cy, z0), (cx, cy - ry, z0)], (0, 0, IL + 0.0001), mat, bev=0.0, amp=0.0)
     OE, OL, BD, IL1, IB = 0.045, 0.065, 0.255, 0.275, 0.335     # insets: filete de borde, banda ancha, filete interior, banda interior
-    rect(-HX + IB, HX - IB, -HY + IB, HY - IB, 0.0, H0, "M_Rug_Navy")           # campo
-    frame(0.0, OE, "M_Rug_Gold")                                                # canto de la alfombra (sin biselar: 1 cm de alto)
-    frame(OE, OL, "M_Rug_Cream")
-    frame(OL, BD, "M_Rug_Terracotta")                                           # banda exterior (lleva la greca)
-    frame(BD, IL1, "M_Rug_Cream")
-    frame(IL1, IB, "M_Fabric_Blue")                                             # banda interior
-    # greca: rombos crema con rombo interior azul marino y cuadritos dorados entre ellos
-    cx_, cy_ = HX - (OL + BD) / 2, HY - (OL + BD) / 2                           # eje de la banda ancha
-    half = (BD - OL) / 2
-    ry_ = half - 0.025                                                          # semidiagonal del rombo de la greca
-    cs = half * 2                                                               # cuadrado de la esquina
-    for (axis, ctr, ln) in (('y', cx_, cy_), ('x', cy_, cx_)):
-        usable = ln - cs
-        n = 11 if axis == 'y' else 6
-        for q in range(n):
-            u = -usable + (q + 0.5) * 2 * usable / n
-            for sg in (-1, 1):
-                if axis == 'y':
-                    x, y = sg * ctr, u
-                else:
-                    x, y = u, sg * ctr
-                diamond(x, y, ry_, ry_, 1, "M_Rug_Cream")
-                diamond(x, y, ry_ * 0.5, ry_ * 0.5, 2, "M_Rug_Navy")
-                su = usable / n
-                nx, ny = (x, y + su) if axis == 'y' else (x + su, y)
-                if q < n - 1:
-                    diamond(nx, ny, 0.026, 0.026, 1, "M_Rug_Gold")             # cuadrito dorado entre rombos (a mitad entre dos rombos)
-    for sx in (-1, 1):   # motivos de esquina: rombos concentricos
-        for sy in (-1, 1):
-            x, y = sx * cx_, sy * cy_
-            diamond(x, y, half - 0.012, half - 0.012, 1, "M_Rug_Cream")
-            diamond(x, y, half - 0.04, half - 0.04, 2, "M_Rug_Gold")
-            diamond(x, y, half - 0.07, half - 0.07, 3, "M_Rug_Navy")
-    # medallon central: rombos alargados concentricos
+    rect(-HX + IB, HX - IB, -HY + IB, HY - IB, 0.0, H0, "M_RugSolid_Navy")      # campo
+    frame(0.0, OE, "M_RugSolid_Gold")                                           # canto de la alfombra (sin biselar: 1 cm de alto)
+    frame(OE, OL, "M_RugSolid_Cream")
+    frame(OL, BD, "M_RugSolid_Terracotta")                                      # banda exterior
+    frame(BD, IL1, "M_RugSolid_Cream")
+    frame(IL1, IB, "M_RugSolid_Blue")                                           # banda interior
+    # medallon central liso: rombos alargados concentricos (sin greca, sin flecos ni pelo: solo superficies planas de color)
     my, mx = 0.95, 0.52
-    diamond(0.0, 0.0, mx, my, 1, "M_Rug_Gold")
-    diamond(0.0, 0.0, mx - 0.03, my - 0.058, 2, "M_Rug_Navy")
-    diamond(0.0, 0.0, mx - 0.12, my - 0.23, 3, "M_Rug_Terracotta")
-    # flecos: hebras finas en los dos lados cortos (y = +-HY), ligeramente abiertas en abanico y de largo irregular
-    rnd = random.Random(21)
-    nfr = 120
-    for sgy in (-1, 1):
-        for q in range(nfr):
-            x = -HX + 0.012 + (q + 0.5) * (2 * HX - 0.024) / nfr
-            ln = 0.07 + rnd.uniform(-0.008, 0.008)
-            ang = rnd.uniform(-5, 5) + x * 3.0
-            yc = sgy * (HY + ln / 2 - 0.004)
-            b.box((x, yc, 0.0017), (0.0042, ln + 0.008, 0.0034), "M_Rug_Cream", rot=(0, 0, ang), bev=0.0, amp=0.0, cuts=0)
+    diamond(0.0, 0.0, mx, my, 1, "M_RugSolid_Gold")
+    diamond(0.0, 0.0, mx - 0.03, my - 0.058, 2, "M_RugSolid_Navy")
+    diamond(0.0, 0.0, mx - 0.12, my - 0.23, 3, "M_RugSolid_Terracotta")
+
+
+def floor_wear(cT):
+    """Huellas de paso MUY suaves y localizadas (solo donde se camina de verdad: frente a puertas y arcos): manchas planas de 3 mm,
+    de contorno irregular, con dos materiales de la familia del suelo (baldosin algo mas oscuro, tarima algo mas clara y pulida).
+    Quedan 1.5 mm sobre el acabado (los suelos son planos), lejos de muros y mobiliario."""
+    b = B("Int_Floor_Wear", 0.5)
+    T, W = "M_Floor_WearTile", "M_Floor_WearWood"
+    items = (
+        # planta baja: baldosin (hall y vestibulo de escaleras)
+        (T, 0.0, -4.66, 1.0, 0.24, 0, 0), (T, -2.4, -2.9, 0.45, 0.75, 0, 0), (T, 2.0, -3.3, 0.55, 0.9, 0, 0),
+        (T, 0.0, -0.12, 1.3, 0.25, 0, 0), (T, 0.0, 0.72, 1.3, 0.25, 0, 0),
+        (T, 2.35, 1.85, 0.45, 0.55, 0, 0), (T, 2.35, 4.2, 0.45, 0.55, 0, 0),
+        # planta baja: tarima junto a las puertas de las galerias
+        (W, -3.9, -2.9, 0.5, 0.75, 0, 0),
+        (W, -5.4, -0.35, 0.65, 0.4, 0, 0), (W, -5.4, 1.05, 0.65, 0.4, 0, 0),
+        # planta alta
+        (W, -2.4, -2.5, 0.45, 0.7, 1, 0), (W, 2.4, -2.5, 0.45, 0.7, 1, 0),
+        (W, -3.9, -2.5, 0.5, 0.65, 1, 0), (W, 3.9, -2.5, 0.5, 0.65, 1, 0),
+        (W, 1.5, -0.32, 0.7, 0.38, 1, 0), (W, 1.5, 0.95, 0.7, 0.38, 1, 0),
+        (W, -2.0, -0.32, 0.8, 0.38, 1, 0),
+        (W, 2.35, 3.0, 0.45, 0.6, 1, 0), (W, 3.9, 3.0, 0.5, 0.6, 1, 0),
+    )
+    for k, (mat, cx, cy, rx, ry, lvl, rot) in enumerate(items):
+        rnd = random.Random(100 + k)
+        z = (FL0, FL1)[lvl] - 0.0015
+        n = 18
+        ph = rnd.uniform(0, 6.28)
+        pts = []
+        for i in range(n):
+            a = 2 * math.pi * i / n
+            j = 1.0 + 0.07 * math.sin(2 * a + ph) + rnd.uniform(-0.05, 0.05)
+            pts.append((cx + rx * j * math.cos(a), cy + ry * j * math.sin(a), z))
+        b.prism(pts, (0, 0, 0.003), mat, bev=0.0, amp=0.0)
+    ob = b.finish(cT)
+    ob.visible_shadow = False      # solo en Blender: evita ruido en el atlas de sombras de EEVEE (el parche es plano y recibe la luz del suelo)
+    return ob
+
+
+def doormat(b):
+    """Felpudo de fibra de coco con borde de goma, 1.3 x 0.7 m y 1 cm de alto (cabe bajo el vuelo de la puerta de entrada). Base en z = 0."""
+    b.box((0, 0, 0.004), (1.3, 0.7, 0.008), "M_Rubber", bev=0.003, amp=0.0, cuts=0)
+    b.box((0, 0, 0.006), (1.22, 0.62, 0.012), "M_Ground_Earth", bev=0.004, amp=0.0, cuts=0)
+
+
+def hook_rail(b, n=3, gap=0.2):
+    """Listón de madera con n colgadores de laton para batas y abrigos del personal. Trasera en y = 0, frente -y, centrado en z = 0."""
+    w = gap * (n - 1) + 0.16
+    b.box((0, -0.011, 0), (w, 0.022, 0.07), "M_Museum_WoodDark", bev=0.006, amp=0.0, cuts=0)
+    for k in range(n):
+        x = (k - (n - 1) / 2) * gap
+        b.cyl((x, -0.0235, 0), 0.012, 0.003, "M_Museum_Brass", rot=(90, 0, 0), seg=10, bev=0, amp=0.0)          # roseta
+        b.seg((x, -0.025, 0), (x, -0.07, 0), 0.007, "M_Museum_Brass", seg=6)
+        b.seg((x, -0.07, 0), (x, -0.07, 0.035), 0.007, "M_Museum_Brass", seg=6)
+        b.cyl((x, -0.07, 0.04), 0.0125, 0.014, "M_Museum_Brass", seg=8, bev=0, amp=0.0)
+
+
+def reception_suite(cF, cSv):
+    """Suite de recepcion: mostrador en el arco del Hall, puesto del personal (silla, llaves, aparador) y sala de descanso (cocina pequena, mesa redonda)."""
+    to_col(warped_prop("Reception_Desk", (3.1, -3.78, FL0), reception_desk), cF)
+    to_col(prop("Reception_Chair", (4.4, -3.81, FL0), -90, office_chair), cF)
+    to_col(prop("Reception_KeyCabinet", (3.8, -5.6, FL0 + 1.65), 180, key_cabinet), cF)
+    to_col(prop("Reception_Credenza", (3.8, -5.6, FL0), 180, credenza), cF)
+    to_col(prop("Reception_Plant_0", (7.1, -5.15, FL0), 0, lambda b: plant_ficus(b, 3, face=math.radians(135), spread=math.radians(120))), cF)
+    # --- sala de descanso: cocina contra el muro norte (x 4.35..6.75), armarios altos y baldas encima, nevera al final, mesa redonda con dos sillas sobre alfombra
+    to_col(prop("Reception_Kitchenette", (5.55, 0.2, FL0), 0, kitchen_run), cSv)
+    to_col(prop("Reception_UpperCupboards", (5.18, 0.2, FL0 + 1.5), 0, upper_cupboards), cSv)
+    to_col(prop("Reception_Shelves", (6.47, 0.2, FL0 + 1.5), 0, wall_shelves), cSv)
+    to_col(prop("Reception_Microwave", (4.68, -0.05, FL0 + 0.9), 0, microwave), cSv)
+    to_col(prop("Reception_CoffeeMachine", (6.02, 0.0, FL0 + 0.9), 0, coffee_machine), cSv)
+    to_col(prop("Reception_Kettle", (6.5, -0.05, FL0 + 0.9), 0, kettle), cSv)
+    to_col(prop("Reception_Fridge", (7.1, 0.2, FL0), 0, small_fridge), cSv)
+    to_col(prop("Reception_Rug", (6.25, -1.8, FL0), 0, break_rug), cSv)
+    to_col(prop("Reception_Table", (6.25, -1.8, FL0), 0, round_table), cSv)
+    to_col(prop("Reception_CafeChair_0", (5.58, -1.8, FL0), 90, cafe_chair), cSv)
+    to_col(prop("Reception_CafeChair_1", (6.92, -1.8, FL0), -90, cafe_chair), cSv)
+    to_col(prop("Reception_Corkboard", (7.6, -1.0, FL0 + 1.55), -90, corkboard), cSv)
+    to_col(prop("Reception_HookRail", (3.2, -0.9, FL0 + 1.65), 90, hook_rail), cSv)
+    to_col(prop("Reception_Plant_1", (3.75, -0.3, FL0), 0, lambda b: plant_snake(b, 6)), cSv)
 
 
 def furnish(cE, cF, cSv):
     random.seed(9)
     # ---------------- Hall
-    to_col(prop("Hall_Reception_Desk", (RX, RY, FL0), 0, reception_desk), cF)
-    to_col(prop("Hall_Reception_Chair", (2.52, -4.2, FL0), -90, reception_chair), cF)
-    to_col(prop("Hall_Reception_Cabinet", (3.0, -4.45, FL0 + 1.65), -90, key_cabinet), cF)
+    reception_suite(cF, cSv)
     to_col(prop("Hall_Bench", (-2.68, -1.15, FL0), 90, lambda b: bench_gallery(b, 1.3, "M_Fabric_Blue")), cF)
     for i, (x, y, fn) in enumerate(((-2.45, -4.8, lambda b: plant_ficus(b, 1, face=math.radians(55), spread=math.radians(110))), (2.45, -1.0, lambda b: plant_ficus(b, 5, face=math.radians(180), spread=math.radians(120))), (-2.38, -0.3, plant_snake))):
         to_col(prop("Hall_Plant_%d" % i, (x, y, FL0), 0, fn), cF)
 
     to_col(prop("Hall_Rug", (0, -2.8, FL0), 0, hall_rug), cF)
+    to_col(prop("Hall_DoorMat", (0.0, -5.15, FL0), 0, doormat), cF)
 
     to_col(prop("Hall_Directory", (-3.0, -4.6, FL0 + 1.7), 90, directory_board), cF)
     wall_sign("GalleryI", "GALLERY I", 'y', -3.0, 1, -2.9, FL0 + 3.05, coll=cF)
-    wall_sign("GalleryII", "GALLERY II", 'y', 3.0, -1, -2.9, FL0 + 3.05, coll=cF)
-    wall_sign("Reception", "RECEPTION", 'y', 3.0, -1, -4.45, FL0 + 2.38, size=0.16, w=1.2, h=0.3, coll=cF)
+    wall_sign("GalleryIII", "GALLERY II", 'x', 0.2, -1, -5.4, FL0 + 3.12, coll=cF)      # galeria terracota (antes III), sobre la puerta que viene de la Gallery I
+    wall_sign("Reception", "RECEPTION", 'y', 3.0, -1, -3.25, FL0 + 3.12, size=0.16, w=1.3, h=0.3, coll=cF)
 
     # ---------------- Stair Hall
     to_col(prop("StairHall_Bench", (1.8, 5.25, FL0), 0, lambda b: bench_gallery(b, 1.3, "M_Fabric_Olive")), cF)
-    to_col(prop("StairHall_Pedestal", (1.3, 2.2, FL0), 0, lambda b: pedestal(b, 0.95, 0.5)), cE)
-    to_col(prop("StairHall_CatSculpture", (1.3, 2.2, FL0 + 0.95), 200, cat_sculpture), cE)
     to_col(prop("StairHall_Plant", (2.55, 3.05, FL0), 0, lambda b: plant_snake(b, 6)), cF)
     wall_sign("Restrooms", "RESTROOMS", 'y', 3.0, -1, 1.85, FL0 + 2.6, size=0.09, w=1.0, coll=cF)
     wall_sign("StaffOnly", "STAFF ONLY", 'y', 3.0, -1, 4.2, FL0 + 2.6, size=0.08, w=0.85, coll=cSv)
@@ -3060,19 +3635,6 @@ def furnish(cE, cF, cSv):
     art_slot("GalleryI_East", 'y', -3.2, -1, -0.95, FL0 + 1.6, 1.0, 0.75, parent=cE)
     art_slot("GalleryI_South", 'x', IY0, 1, -3.68, FL0 + 1.6, 0.6, 0.8, frame="M_Museum_WoodDark", parent=cE)   # deja sitio a las cortinas de la ventana sur
     to_col(prop("GalleryI_Bench", (-5.4, -2.4, FL0), 90, bench_gallery), cE)
-
-    # ---------------- Gallery II (ceruleo, panel exento)
-    def panel(b):
-        b.box((0, 0, 1.35), (2.2, 0.2, 2.5), "M_Wall_Cerulean", bev=0.02, amp=0.004, cuts=2)
-        b.box((0, 0, 0.06), (2.3, 0.3, 0.12), "M_Museum_WoodDark", bev=0.01, amp=0.003, cuts=1)
-        b.box((0, 0, 2.62), (2.26, 0.26, 0.06), "M_Museum_WoodDark", bev=0.01, amp=0.003, cuts=1)
-    to_col(prop("GalleryII_DisplayPanel", (5.5, -2.5, FL0), 90, panel), cE)
-    art_slot("GalleryII_Panel_West", 'y', 5.4, -1, -2.5, FL0 + 1.55, 0.9, 1.15, parent=cE)
-    art_slot("GalleryII_Panel_East", 'y', 5.6, 1, -2.5, FL0 + 1.55, 0.9, 1.15, parent=cE)
-    art_slot("GalleryII_North_A", 'x', 0.2, -1, 4.45, FL0 + 1.65, 1.0, 1.3, parent=cE)
-    art_slot("GalleryII_North_B", 'x', 0.2, -1, 6.45, FL0 + 1.65, 1.0, 1.3, parent=cE)
-    art_slot("GalleryII_East", 'y', IX1, -1, -0.95, FL0 + 1.6, 0.8, 1.0, parent=cE)
-    to_col(prop("GalleryII_Vitrine", (4.15, -0.95, FL0), 0, vitrine), cE)
 
     # ---------------- Gallery III (terracota, obras pequenas, nichos)
     nb = B("GalleryIII_Niches", 0.5)
@@ -3173,28 +3735,30 @@ def furnish(cE, cF, cSv):
     to_col(prop("Landing_Bench", (2.68, 4.6, FL1), -90, lambda b: bench_gallery(b, 1.3, "M_Fabric_Olive")), cF)
     to_col(prop("Landing_Plant", (0.9, 4.6, FL1), 0, lambda b: plant_kentia(b, 3, face=math.radians(215), spread=math.radians(140))), cF)
     art_slot("Landing_South", 'x', 0.4, 1, -0.25, FL1 + 1.6, 1.0, 0.8, parent=cE)
-    wall_sign("GalleryIV", "GALLERY IV", 'x', 0.4, 1, -2.0, FL1 + 3.05, coll=cF)
-    wall_sign("GalleryV", "GALLERY V", 'y', -3.0, 1, -2.5, FL1 + 3.05, coll=cF)
-    wall_sign("GalleryVI_A", "GALLERY VI", 'y', 3.0, -1, -2.5, FL1 + 3.05, coll=cF)
-    wall_sign("GalleryVI_B", "GALLERY VI", 'y', 3.0, -1, 3.0, FL1 + 2.95, coll=cF)
+    wall_sign("GalleryIV", "GALLERY III", 'x', 0.4, 1, -2.0, FL1 + 3.05, coll=cF)
+    wall_sign("GalleryV", "GALLERY IV", 'y', -3.0, 1, -2.5, FL1 + 3.05, coll=cF)
+    wall_sign("GalleryVI_A", "GALLERY V", 'y', 3.0, -1, -2.5, FL1 + 3.05, coll=cF)
+    wall_sign("GalleryVI_B", "GALLERY V", 'y', 3.0, -1, 3.0, FL1 + 2.95, coll=cF)
 
     # ---------------- servicio: vestibulo de aseos (lavabos) y dos aseos
-    # dos tocadores de un seno en el muro oeste (frente a +x), uno al sur y otro al norte de la entrada: el paso a los aseos queda libre
-    for tag, yv in (("S", 0.85), ("N", 2.95)):
-        to_col(prop("Restroom_Lobby_Counter_" + tag, (3.2, yv, FL0), 90, vanity), cSv)
-        to_col(prop("Restroom_Lobby_Mirror_" + tag, (3.2, yv, FL0 + 1.65), 90, lambda b: mirror(b, 0.5, 0.7, 0.07)), cSv)
-    to_col(prop("Restroom_Lobby_Dryer", (4.6, 1.875, FL0 + 1.25), -90, hand_dryer), cSv)
-    to_col(prop("Restroom_Lobby_Bin", (4.4, 1.875, FL0), -90, pedal_bin), cSv)
-    pictogram_sign("Restroom_1", 'W', 'y', 4.6, -1, 1.1, FL0 + 2.5, cSv)      # Restroom_1 = mujeres
-    pictogram_sign("Restroom_2", 'M', 'y', 4.6, -1, 2.65, FL0 + 2.5, cSv)     # Restroom_2 = hombres
+    # dos tocadores de un seno, uno en cada testero del vestibulo (sur y norte), lejos de la puerta de entrada (muro oeste) y de las puertas de los aseos (muro este)
+    xl = 4.5
+    for tag, yv, rz in (("S", 0.4, 180), ("N", 3.425, 0)):
+        to_col(prop("Restroom_Lobby_Counter_" + tag, (xl, yv, FL0), rz, vanity), cSv)
+        to_col(prop("Restroom_Lobby_Mirror_" + tag, (xl, yv, FL0 + 1.65), rz, lambda b: mirror(b, 0.5, 0.7, 0.07)), cSv)
+    xe = RP - 0.075
+    to_col(prop("Restroom_Lobby_Dryer", (xe, 1.875, FL0 + 1.25), -90, hand_dryer), cSv)
+    to_col(prop("Restroom_Lobby_Bin", (xe - 0.2, 1.875, FL0), -90, pedal_bin), cSv)
+    pictogram_sign("Restroom_1", 'W', 'y', xe, -1, 1.1, FL0 + 2.5, cSv)      # Restroom_1 = mujeres
+    pictogram_sign("Restroom_2", 'M', 'y', xe, -1, 2.65, FL0 + 2.5, cSv)     # Restroom_2 = hombres
     for n, (y0, y1) in ((1, (0.4, 1.775)), (2, (1.925, 3.425))):
         cy = (y0 + y1) / 2
         to_col(prop("Restroom_%d_Toilet" % n, (7.23, cy, FL0), -90, toilet), cSv)
         to_col(prop("Restroom_%d_PaperHolder" % n, (7.15, y0, FL0 + 0.7), 180, paper_holder), cSv)     # pared sur, junto al inodoro
         to_col(prop("Restroom_%d_Brush" % n, (7.25, cy - 0.36, FL0), 0, toilet_brush), cSv)
         to_col(prop("Restroom_%d_Bin" % n, (7.3, cy + 0.36, FL0), -90, pedal_bin), cSv)
-        to_col(prop("Restroom_%d_Hook" % n, (5.0, y1, FL0 + 1.6), 0, coat_hook), cSv)                 # pared norte, junto a la puerta
-        art_slot("Restroom_%d_Print" % n, 'x', y1, -1, 5.9, FL0 + 1.5, 0.35, 0.45, frame="M_Frame_Silver", parent=cSv)
+        to_col(prop("Restroom_%d_Hook" % n, (RP + 0.325, y1, FL0 + 1.6), 0, coat_hook), cSv)                 # pared norte, junto a la puerta
+        art_slot("Restroom_%d_Print" % n, 'x', y1, -1, 6.5, FL0 + 1.5, 0.35, 0.45, frame="M_Frame_Silver", parent=cSv)
     # puertas de servicio abiertas 90 grados (pivote en la bisagra, la hoja queda a lo largo de +x)
     for dn, kw in (("StairHall_Restrooms", dict(push=True)), ("Restroom_1", dict(lock=True, pictogram="W")),
                    ("Restroom_2", dict(lock=True, pictogram="M")), ("StairHall_Maintenance", dict(push=True))):
@@ -3202,22 +3766,27 @@ def furnish(cE, cF, cSv):
         door_leaf(LEAF_NAME.get(dn, dn), sp["pivot"], sp["wl"], sp["hl"], sp["ang"], coll=cSv, **kw)
 
     # ---------------- servicio: mantenimiento (sala principal + anexo detras del paso ancho)
-    to_col(prop("Maintenance_Lockers", (4.55, 3.85, FL0), 180, lockers), cSv)
+    # Distribucion: sala principal libre desde la puerta (oeste, y 3.7..4.7) hasta la escotilla; pila, cuadro electrico y panel de herramientas en el muro sur/este.
+    # Anexo (x 2.2..7.6): taquillas, estanteria, cajas y banco de trabajo alineados en el muro norte; carrito, fregona, escoba, recogedor y cubo agrupados
+    # en la esquina suroeste (muro oeste y pilar sur); el centro y el lado este quedan libres para pasar desde el paso.
     to_col(prop("Maintenance_FuseBox", (5.7, 3.575, FL0 + 1.5), 180, utility), cSv)
     to_col(prop("Maintenance_Sink", (6.95, 3.575, FL0), 180, utility_sink), cSv)
     to_col(prop("Maintenance_ToolRack", (7.6, 4.45, FL0 + 1.5), -90, tool_rack), cSv)
-    to_col(prop("Maintenance_MopBucket", (4.7, 5.05, FL0), 0, wring_mop_bucket), cSv)
-    to_col(prop("Maintenance_MopLean", (3.55, 5.3, FL0), 90, mop_lean), cSv)
-    to_col(prop("Maintenance_Broom", (7.33, 5.35, FL0), -90, broom), cSv)
-    to_col(prop("Maintenance_DustPan", (6.9, 5.0, FL0), -90, dustpan), cSv)
-    to_col(prop("Maintenance_Cart", (3.47, 7.1, FL0), 90, cleaning_cart), cSv)
-    to_col(prop("Maintenance_Shelves", (4.35, 8.35, FL0), 0, product_shelf), cSv)
-    to_col(prop("Maintenance_Workbench", (6.55, 8.2, FL0), 0, workbench), cSv)
+    to_col(prop("Maintenance_Lockers", (2.85, 8.3, FL0), 0, lockers), cSv)
+    to_col(prop("Maintenance_Shelves", (4.4, 8.35, FL0), 0, product_shelf), cSv)
+    to_col(prop("Maintenance_Workbench", (6.7, 8.2, FL0), 0, workbench), cSv)
+    to_col(prop("Maintenance_Cart", (2.46, 7.1, FL0), 90, cleaning_cart), cSv)
+    to_col(prop("Maintenance_MopLean", (2.6, 6.3, FL0), 180, mop_lean), cSv)
+    to_col(prop("Maintenance_Broom", (3.05, 6.3, FL0), 180, broom), cSv)
+    to_col(prop("Maintenance_DustPan", (3.6, 6.35, FL0), 180, dustpan), cSv)
+    to_col(prop("Maintenance_MopBucket", (4.3, 6.6, FL0), 180, wring_mop_bucket), cSv)
+
+    to_col(prop("Maintenance_HookRail", (3.2, 5.25, FL0 + 1.65), 90, hook_rail), cSv)       # muro oeste, a la derecha de la puerta (la hoja abierta queda en y 4.66)
 
     def boxes(b):
         b.box((0, 0, 0.18), (0.45, 0.35, 0.36), "M_Museum_AwningB", bev=0.01, amp=0.0, cuts=0)
         b.box((0.02, 0.01, 0.5), (0.36, 0.3, 0.28), "M_Paper", rot=(0, 0, 9), bev=0.01, amp=0.0, cuts=0)
-    to_col(prop("Maintenance_Boxes", (7.2, 6.4, FL0), 0, boxes), cSv)
+    to_col(prop("Maintenance_Boxes", (5.5, 8.35, FL0), 0, boxes), cSv)
 
 # ======================================================================= luminarias (modelos)
 def _profile(b, zs_rs, mat, cx=0.0, cy=0.0, seg=24, **kw):
@@ -3275,12 +3844,12 @@ def chandelier(b, cx, cy, zc):
         arm(math.tau / 16 + k * math.tau / 4, zt - 0.07, 0.07, 0.38, 0.16, 0.05, 0.0085)
 
 
-def pendant_lamp(b, x, y, zc):
+def pendant_lamp(b, x, y, zc, rod=0.28):
     """Lampara colgante: dosel de laton, varilla fina, pantalla campana de esmalte blanco (doble piel con aro de laton) y bombilla de pera. Borde de la pantalla a zc - 0.54."""
     br = "M_Museum_Brass"
     _profile(b, [(zc, 0.075), (zc - 0.012, 0.075), (zc - 0.02, 0.06), (zc - 0.03, 0.035), (zc - 0.04, 0.02)], br, x, y, seg=14)
-    b.seg((x, y, zc - 0.03), (x, y, zc - 0.28), 0.006, br, seg=8)
-    zs_ = zc - 0.28
+    b.seg((x, y, zc - 0.03), (x, y, zc - rod), 0.006, br, seg=8)
+    zs_ = zc - rod
     _profile(b, [(zs_, 0.026), (zs_ - 0.012, 0.03), (zs_ - 0.024, 0.026)], br, x, y, seg=10)                    # casquillo superior
     outer = [(zs_ - 0.02, 0.034), (zs_ - 0.04, 0.07), (zs_ - 0.09, 0.12), (zs_ - 0.16, 0.17), (zs_ - 0.22, 0.2), (zs_ - 0.26, 0.21)]
     inner = [(z + 0.003 if k == len(outer) - 1 else z, r - 0.006) for k, (z, r) in enumerate(outer)][::-1]
@@ -3416,7 +3985,7 @@ def gallery_tracks(b, rn, ztop, ins=1.0):
     if rn == "Gallery_IV":
         xa, xb = -2.0, 2.0
     track_loop(b, xa, xb, ya, yb, ztop)
-    pre = {"Gallery_I": "GalleryI_", "Gallery_II": "GalleryII_", "Gallery_IV": "GalleryIV_", "Gallery_V": "GalleryV_", "Gallery_VI": "GalleryVI_"}[rn]
+    pre = {"Gallery_I": "GalleryI_", "Gallery_IV": "GalleryIV_", "Gallery_V": "GalleryV_", "Gallery_VI": "GalleryVI_"}[rn]
     tg = []
     for ob in bpy.data.objects:
         if ob.name.startswith("ArtSlot_" + pre):
@@ -3482,8 +4051,11 @@ def ceilings_and_lights(cS, cU, cLt):
                 b.box((cx, cy + sgn * hy, zc_), (2 * hx - bw, bw, th), "M_Interior_Ceiling", bev=0.006, amp=0.001, cuts=0)
     # Hall: florón + lampara de arana de laton
     chandelier(b, 0.0, -2.8, C0)
+    # Reception: plafon sobre el mostrador y lampara colgante (varilla larga) sobre la mesa de descanso
+    dome_light(b, 3.95, -3.8, C0)
+    pendant_lamp(b, 6.25, -1.8, C0, rod=1.4)
     # carriles de focos en galerias: un carril rectangular a 1 m de las paredes y un foco por obra
-    for rn, zt_ in (("Gallery_I", C0), ("Gallery_II", C0), ("Gallery_IV", C1 - 0.24), ("Gallery_V", C1), ("Gallery_VI", C1)):
+    for rn, zt_ in (("Gallery_I", C0), ("Gallery_IV", C1 - 0.24), ("Gallery_V", C1), ("Gallery_VI", C1)):
         gallery_tracks(b, rn, zt_)
     # servicio: tubos fluorescentes / plafones
     for rn in ("Restroom_Lobby", "Restroom_1", "Restroom_2", "Maintenance", "Maintenance_Annex"):
@@ -3520,21 +4092,28 @@ def ceilings_and_lights(cS, cU, cLt):
     light("Light_StairHall", (1.0, 3.0, C0 - 0.4), 450, warm, size=0.6)
     light("Light_StairVoid", (-1.85, 3.0, 7.3), 300, warm, size=0.3)
     light("Light_GalleryI", (-5.4, -2.7, C0 - 0.5), 550, neutral, size=0.8)
-    light("Light_GalleryII", (5.4, -2.7, C0 - 0.5), 550, neutral, size=0.8)
-    light("Light_GalleryIII", (-5.4, 3.0, C0 - 0.75), 380, warm, size=0.8)
+    light("Light_Reception_Desk", (3.95, -3.8, C0 - 0.45), 420, neutral, size=0.8)        # luz de clave suave sobre el mostrador
+    light("Light_Reception_Break", (6.25, -1.8, FL0 + 1.88), 360, warm, size=0.3)        # bajo la pantalla de la lampara de la mesa de descanso
+    light("Light_GalleryIII", (-5.4, 3.0, C0 - 0.75), 430, warm, size=0.8)      # esquinas del fondo algo oscuras: +13 %
     light("Light_GalleryIV", (0, -2.7, C1 - 0.5), 550, neutral, size=0.8)
-    light("Light_GalleryV_N", (-5.4, 3.2, C1 - 0.6), 420, neutral, size=0.8)
-    light("Light_GalleryV_S", (-5.4, -3.2, C1 - 0.6), 420, neutral, size=0.8)
+    light("Light_GalleryV_N", (-5.4, 3.2, C1 - 0.6), 390, neutral, size=0.8)      # -7 %: el cuadro destacado manda en la sala
+    light("Light_GalleryV_S", (-5.4, -3.2, C1 - 0.6), 390, neutral, size=0.8)
     light("Light_GalleryVI_N", (5.4, 3.0, C1 - 0.6), 450, neutral, size=0.8)
     light("Light_GalleryVI_S", (5.4, -3.0, C1 - 0.6), 450, neutral, size=0.8)
     light("Light_Landing", (1.0, 3.0, C1 - 0.25), 300, warm, size=0.6)
-    light("Light_Restroom_1", (6.175, 1.0875, C0 - 0.3), 110, cool, size=0.4)
-    light("Light_Restroom_2", (6.175, 2.675, C0 - 0.3), 110, cool, size=0.4)
-    light("Light_Restroom_Lobby", (3.9, 1.9125, C0 - 0.3), 160, warm, size=0.4)
+    light("Light_Restroom_1", (6.525, 1.0875, C0 - 0.3), 110, cool, size=0.4)
+    light("Light_Restroom_2", (6.525, 2.675, C0 - 0.3), 110, cool, size=0.4)
+    light("Light_Restroom_Lobby", (4.25, 1.9125, C0 - 0.3), 160, warm, size=0.4)
     light("Light_Maintenance", (5.4, 4.6, C0 - 0.3), 260, cool, size=0.5)
-    light("Light_Maintenance_Annex", (5.4, 7.3, C0 - 0.3), 260, cool, size=0.5)
+    light("Light_Maintenance_Annex", (4.9, 7.3, C0 - 0.3), 260, cool, size=0.5)
     d = Vector((-3.2, 1.6, FL1 + 1.75)) - Vector((-5.2, 1.6, C1 - 0.35))
-    light("Spot_GalleryV_Featured", (-5.2, 1.6, C1 - 0.35), 350, neutral, kind='SPOT', size=0.1, rot=d.to_track_quat('-Z', 'Y').to_euler(), spot=38)
+    light("Spot_GalleryV_Featured", (-5.2, 1.6, C1 - 0.35), 330, neutral, kind='SPOT', size=0.1, rot=d.to_track_quat('-Z', 'Y').to_euler(), spot=48)   # cono algo mas abierto: sin punto caliente en el centro del cuadro
+    # jerarquia en las demas salas: un foco suave (mas debil que el de la Gallery V) sobre la obra mas grande de cada una; el resto se queda con la luz general
+    for nm, P_, T_ in (("Spot_GalleryI_Key", (-5.6, -1.1, C0 - 0.35), (-7.56, -1.1, FL0 + 1.65)),       # GalleryI_West (1.6 x 1.1)
+                       ("Spot_GalleryIV_Key", (-0.25, -1.9, C1 - 0.5), (-0.25, 0.16, FL1 + 1.65)),      # GalleryIV_North (1.5 x 1.0)
+                       ("Spot_GalleryVI_Key", (5.3, 0.3, C1 - 0.35), (3.24, 0.3, FL1 + 1.6))):          # GalleryVI_West_M (1.4 x 1.0)
+        dd = Vector(T_) - Vector(P_)
+        light(nm, P_, 210, neutral, kind='SPOT', size=0.1, rot=dd.to_track_quat('-Z', 'Y').to_euler(), spot=42)
 
 
 def presentation(cP):
@@ -3550,17 +4129,21 @@ def presentation(cP):
         "Cam_Int_Hall_B": ((-0.6, -0.9, FL0 + 1.65), (2.3, -4.4, FL0 + 1.35)),
         "Cam_Int_Hall_C": ((1.3, -2.4, FL0 + 1.65), (-3.0, -4.6, FL0 + 1.7)),
         "Cam_Int_GalleryI": ((-3.6, -0.2, FL0 + 1.7), (-6.6, -4.2, FL0 + 1.3)),
-        "Cam_Int_GalleryII": ((3.6, -5.1, FL0 + 1.7), (6.8, -0.4, FL0 + 1.3)),
+        "Cam_Int_Reception": ((6.9, -4.2, FL0 + 1.65), (3.6, -3.4, FL0 + 1.15)),
+        "Cam_Int_Reception_B": ((3.9, -3.2, FL0 + 1.65), (6.9, -0.3, FL0 + 1.1)),
+        "Cam_Int_Desk": ((1.4, -3.3, FL0 + 1.65), (3.4, -3.8, FL0 + 0.9)),
         "Cam_Int_GalleryIII": ((-4.0, 0.9, FL0 + 1.6), (-6.5, 4.8, FL0 + 1.2)),
         "Cam_Int_StairHall": ((1.9, 0.9, FL0 + 1.7), (-1.7, 3.4, FL0 + 2.0)),
-        "Cam_Int_RestroomLobby": ((4.45, 3.3, FL0 + 1.7), (3.3, 1.2, FL0 + 1.1)),
+        "Cam_Int_RestroomLobby": ((5.2, 3.3, FL0 + 1.7), (3.3, 1.2, FL0 + 1.1)),
         "Cam_Int_Maintenance": ((5.0, 6.6, FL0 + 1.9), (5.6, 3.8, FL0 + 0.8)),
         "Cam_Int_MaintenanceAnnex": ((7.3, 6.2, FL0 + 1.8), (4.4, 8.4, FL0 + 0.9)),
-        "Cam_Int_Restroom1": ((4.95, 1.2, FL0 + 1.7), (7.4, 1.0, FL0 + 0.7)),
+        "Cam_Int_MaintenanceAnnex_B": ((5.9, 7.5, FL0 + 1.9), (2.9, 6.5, FL0 + 0.7)),
+        "Cam_Int_Restroom1": ((5.6, 1.2, FL0 + 1.7), (7.4, 1.0, FL0 + 0.7)),
         "Cam_Int_GalleryIV": ((0.0, 0.0, FL1 + 1.7), (0.0, -5.5, FL1 + 1.6)),
         "Cam_Int_GalleryV": ((-3.6, -4.6, FL1 + 1.7), (-7.6, 1.2, FL1 + 1.9)),
         "Cam_Int_GalleryVI": ((3.8, -5.0, FL1 + 1.8), (7.6, 1.6, FL1 + 2.0)),
         "Cam_Int_Landing": ((1.7, 0.9, FL1 + 1.7), (-1.6, 3.8, FL1 + 0.4)),
+        "Cam_Int_Link": ((0.0, 6.3, FL0 + 1.6), (0.0, 11.0, FL0 + 1.4)),
         "Cam_Int_GalleryVII": ((-2.4, 9.5, FL0 + 1.65), (3.0, 14.8, FL0 + 1.9)),
         "Cam_Int_GalleryVII_B": ((6.4, 20.5, FL0 + 1.7), (-3.0, 12.0, FL0 + 1.4)),
     }

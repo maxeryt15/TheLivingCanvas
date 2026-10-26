@@ -1,0 +1,341 @@
+{
+ "obj": {
+  "loc": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "rot": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "scale": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "parent": "Pnt_Rig",
+  "mods": [
+   [
+    "ARMATURE",
+    "Pnt_Rig"
+   ]
+  ],
+  "parent_inverse_identity": true,
+  "groups_not_in_rig": []
+ },
+ "acc": {
+  "Pnt_ApronTrim": {
+   "n": 168,
+   "centroid": [
+    0.0,
+    -0.148,
+    0.998
+   ],
+   "bones": {
+    "spine_03": 0.28,
+    "pelvis": 0.21,
+    "spine_02": 0.18
+   },
+   "expected": {
+    "spine_03": 0.29,
+    "pelvis": 0.2,
+    "spine_02": 0.2
+   },
+   "pose": "Crouch",
+   "worst_mm": 6.0
+  },
+  "Pnt_ApronBand": {
+   "n": 244,
+   "centroid": [
+    0.002,
+    -0.014,
+    1.083
+   ],
+   "bones": {
+    "spine_02": 0.5,
+    "spine_03": 0.25,
+    "spine_01": 0.18
+   },
+   "expected": {
+    "spine_02": 0.49,
+    "spine_03": 0.24,
+    "spine_01": 0.18
+   },
+   "pose": "Twist_A",
+   "worst_mm": 3.7
+  },
+  "Pnt_BeretWool": {
+   "n": 42,
+   "centroid": [
+    0.012,
+    -0.069,
+    1.654
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@1",
+   "worst_mm": 0.0
+  },
+  "Pnt_BeretTip": {
+   "n": 12,
+   "centroid": [
+    0.012,
+    -0.069,
+    1.709
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@1",
+   "worst_mm": 0.0
+  },
+  "Pnt_BraceletA": {
+   "n": 36,
+   "centroid": [
+    0.427,
+    -0.175,
+    1.04
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.75,
+    "hand_l": 0.24,
+    "thumb_01_l": 0.0
+   },
+   "pose": "Walk@28",
+   "worst_mm": 2.2
+  },
+  "Pnt_BraceletB": {
+   "n": 36,
+   "centroid": [
+    0.414,
+    -0.158,
+    1.053
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.91,
+    "hand_l": 0.09
+   },
+   "pose": "Walk@28",
+   "worst_mm": 0.3
+  },
+  "Pnt_Brows": {
+   "n": 78,
+   "centroid": [
+    0.0,
+    -0.148,
+    1.561
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@1",
+   "worst_mm": 0.0
+  },
+  "Pnt_BrushRed": {
+   "n": 12,
+   "centroid": [
+    0.061,
+    -0.178,
+    1.235
+   ],
+   "bones": {
+    "spine_03": 1.0
+   },
+   "expected": {
+    "spine_03": 0.97,
+    "spine_02": 0.02,
+    "clavicle_l": 0.01
+   },
+   "pose": "Twist_B",
+   "worst_mm": 1.0
+  },
+  "Pnt_BrushFerrule": {
+   "n": 36,
+   "centroid": [
+    0.061,
+    -0.174,
+    1.203
+   ],
+   "bones": {
+    "spine_03": 1.0
+   },
+   "expected": {
+    "spine_03": 0.95,
+    "spine_02": 0.04,
+    "spine_01": 0.01
+   },
+   "pose": "Twist_B",
+   "worst_mm": 1.1
+  },
+  "Pnt_BrushBlue": {
+   "n": 12,
+   "centroid": [
+    0.018,
+    -0.176,
+    1.221
+   ],
+   "bones": {
+    "spine_03": 1.0
+   },
+   "expected": {
+    "spine_03": 0.93,
+    "spine_02": 0.05,
+    "spine_01": 0.02
+   },
+   "pose": "Twist_A",
+   "worst_mm": 1.3
+  },
+  "Pnt_BrushWood": {
+   "n": 32,
+   "centroid": [
+    0.065,
+    -0.168,
+    1.14
+   ],
+   "bones": {
+    "spine_03": 1.0
+   },
+   "expected": {
+    "spine_03": 0.7,
+    "spine_02": 0.18,
+    "spine_01": 0.11
+   },
+   "pose": "Twist_A",
+   "worst_mm": 19.9
+  },
+  "Pnt_BrushYellow": {
+   "n": 12,
+   "centroid": [
+    0.105,
+    -0.176,
+    1.221
+   ],
+   "bones": {
+    "spine_03": 1.0
+   },
+   "expected": {
+    "spine_03": 0.99,
+    "spine_02": 0.01
+   },
+   "pose": "Twist_B",
+   "worst_mm": 0.8
+  },
+  "Pnt_EyeIris": {
+   "n": 24,
+   "centroid": [
+    -0.0,
+    -0.143,
+    1.55
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@31",
+   "worst_mm": 0.0
+  },
+  "Pnt_EyeWhite": {
+   "n": 44,
+   "centroid": [
+    0.004,
+    -0.139,
+    1.548
+   ],
+   "bones": {
+    "eye_L": 0.55,
+    "eye_R": 0.45
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@10",
+   "worst_mm": 0.0
+  },
+  "Pnt_EyePupil": {
+   "n": 28,
+   "centroid": [
+    -0.0,
+    -0.144,
+    1.551
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@10",
+   "worst_mm": 0.0
+  },
+  "Pnt_Glasses_Mat": {
+   "n": 150,
+   "centroid": [
+    0.0,
+    -0.151,
+    1.544
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "HeadDown",
+   "worst_mm": 0.0
+  },
+  "Pnt_Lipstick_Mat": {
+   "n": 60,
+   "centroid": [
+    0.0,
+    -0.155,
+    1.484
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Twist_A",
+   "worst_mm": 0.0
+  },
+  "NPC_MouthInside": {
+   "n": 4,
+   "centroid": [
+    0.0,
+    -0.15,
+    1.483
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@31",
+   "worst_mm": 0.0
+  }
+ }
+}

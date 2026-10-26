@@ -1,0 +1,442 @@
+{
+ "obj": {
+  "loc": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "rot": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "scale": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "parent": "Gen_Rig",
+  "mods": [
+   [
+    "ARMATURE",
+    "Gen_Rig"
+   ]
+  ],
+  "parent_inverse_identity": true,
+  "groups_not_in_rig": []
+ },
+ "acc": {
+  "Gen_Brows": {
+   "n": 124,
+   "centroid": [
+    -0.0,
+    -0.137,
+    1.595
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "BendForward",
+   "worst_mm": 0.0
+  },
+  "Gen_ButtonThread": {
+   "n": 128,
+   "centroid": [
+    0.0,
+    -0.154,
+    1.052
+   ],
+   "bones": {
+    "spine_01": 0.5,
+    "pelvis": 0.5
+   },
+   "expected": {
+    "spine_03": 0.79,
+    "clavicle_r": 0.09,
+    "pelvis": 0.07
+   },
+   "pose": "Twist_A",
+   "worst_mm": 89.4
+  },
+  "Gen_ButtonHorn": {
+   "n": 48,
+   "centroid": [
+    -0.0,
+    -0.151,
+    1.052
+   ],
+   "bones": {
+    "spine_01": 0.5,
+    "pelvis": 0.5
+   },
+   "expected": {
+    "spine_03": 0.81,
+    "clavicle_r": 0.08,
+    "pelvis": 0.06
+   },
+   "pose": "Twist_A",
+   "worst_mm": 95.5
+  },
+  "Gen_ButtonRim": {
+   "n": 39,
+   "centroid": [
+    -0.002,
+    -0.15,
+    1.042
+   ],
+   "bones": {
+    "pelvis": 0.62,
+    "spine_01": 0.38
+   },
+   "expected": {
+    "spine_03": 0.81,
+    "pelvis": 0.07,
+    "clavicle_r": 0.06
+   },
+   "pose": "Twist_A",
+   "worst_mm": 98.7
+  },
+  "Gen_EyeBlind": {
+   "n": 20,
+   "centroid": [
+    0.029,
+    -0.135,
+    1.586
+   ],
+   "bones": {
+    "eye_L": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@4",
+   "worst_mm": 0.0
+  },
+  "Gen_EyeWhite": {
+   "n": 49,
+   "centroid": [
+    0.002,
+    -0.129,
+    1.584
+   ],
+   "bones": {
+    "eye_L": 0.53,
+    "eye_R": 0.47
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@1",
+   "worst_mm": 0.0
+  },
+  "Gen_EyeIris": {
+   "n": 18,
+   "centroid": [
+    -0.029,
+    -0.135,
+    1.586
+   ],
+   "bones": {
+    "eye_R": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@16",
+   "worst_mm": 0.0
+  },
+  "Gen_EyePupil": {
+   "n": 12,
+   "centroid": [
+    -0.029,
+    -0.136,
+    1.586
+   ],
+   "bones": {
+    "eye_R": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@16",
+   "worst_mm": 0.0
+  },
+  "Gen_PatchLeather": {
+   "n": 262,
+   "centroid": [
+    0.0,
+    -0.003,
+    1.317
+   ],
+   "bones": {
+    "upperarm_l": 0.21,
+    "upperarm_r": 0.2,
+    "lowerarm_l": 0.14
+   },
+   "expected": {
+    "upperarm_l": 0.21,
+    "upperarm_r": 0.2,
+    "lowerarm_l": 0.14
+   },
+   "pose": "Twist_A",
+   "worst_mm": 0.0
+  },
+  "Gen_PatchStitch": {
+   "n": 240,
+   "centroid": [
+    0.0,
+    -0.008,
+    1.329
+   ],
+   "bones": {
+    "upperarm_l": 0.2,
+    "upperarm_r": 0.2,
+    "lowerarm_l": 0.13
+   },
+   "expected": {
+    "upperarm_l": 0.2,
+    "upperarm_r": 0.19,
+    "lowerarm_l": 0.13
+   },
+   "pose": "Twist_B",
+   "worst_mm": 0.0
+  },
+  "Gen_ChainGold": {
+   "n": 452,
+   "centroid": [
+    -0.047,
+    -0.138,
+    1.032
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "spine_03": 0.68,
+    "spine_01": 0.17,
+    "pelvis": 0.09
+   },
+   "pose": "BendForward",
+   "worst_mm": 61.6
+  },
+  "Gen_PocketWatchBezel": {
+   "n": 48,
+   "centroid": [
+    -0.076,
+    -0.127,
+    1.05
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "spine_03": 0.55,
+    "spine_01": 0.26,
+    "spine_02": 0.09
+   },
+   "pose": "Twist_A",
+   "worst_mm": 69.1
+  },
+  "Gen_PocketWatchFace": {
+   "n": 112,
+   "centroid": [
+    -0.093,
+    -0.121,
+    1.074
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "spine_03": 0.53,
+    "spine_01": 0.26,
+    "spine_02": 0.13
+   },
+   "pose": "Twist_A",
+   "worst_mm": 65.8
+  },
+  "Gen_SuitPiping": {
+   "n": 208,
+   "centroid": [
+    0.008,
+    -0.122,
+    1.26
+   ],
+   "bones": {
+    "clavicle_l": 0.5,
+    "clavicle_r": 0.35,
+    "thigh_r": 0.08
+   },
+   "expected": {
+    "spine_03": 0.63,
+    "clavicle_r": 0.1,
+    "pelvis": 0.1
+   },
+   "pose": "Sit",
+   "worst_mm": 38.0
+  },
+  "Gen_SuitFlap": {
+   "n": 16,
+   "centroid": [
+    0.0,
+    -0.123,
+    0.928
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "pelvis": 0.69,
+    "spine_01": 0.19,
+    "spine_03": 0.1
+   },
+   "pose": "Twist_A",
+   "worst_mm": 29.9
+  },
+  "Gen_PocketSquareFold": {
+   "n": 32,
+   "centroid": [
+    0.0,
+    -0.126,
+    0.925
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "pelvis": 0.74,
+    "spine_01": 0.22,
+    "spine_03": 0.03
+   },
+   "pose": "BendForward",
+   "worst_mm": 23.8
+  },
+  "Gen_TieSilk": {
+   "n": 198,
+   "centroid": [
+    -0.0,
+    -0.128,
+    1.23
+   ],
+   "bones": {
+    "clavicle_r": 1.0
+   },
+   "expected": {
+    "spine_03": 0.76,
+    "clavicle_r": 0.13,
+    "neck_01": 0.08
+   },
+   "pose": "Walk@25",
+   "worst_mm": 12.7
+  },
+  "Gen_TieDots": {
+   "n": 84,
+   "centroid": [
+    0.0,
+    -0.131,
+    1.252
+   ],
+   "bones": {
+    "clavicle_r": 1.0
+   },
+   "expected": {
+    "spine_03": 0.71,
+    "clavicle_r": 0.12,
+    "neck_01": 0.11
+   },
+   "pose": "Walk@25",
+   "worst_mm": 12.6
+  },
+  "Gen_TieStripe2": {
+   "n": 50,
+   "centroid": [
+    0.001,
+    -0.145,
+    1.197
+   ],
+   "bones": {
+    "clavicle_r": 1.0
+   },
+   "expected": {
+    "spine_03": 0.79,
+    "clavicle_r": 0.14,
+    "neck_01": 0.03
+   },
+   "pose": "Walk@16",
+   "worst_mm": 14.8
+  },
+  "Gen_WatchBand": {
+   "n": 50,
+   "centroid": [
+    0.452,
+    -0.17,
+    1.097
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.79,
+    "hand_l": 0.21,
+    "thumb_01_l": 0.0
+   },
+   "pose": "Walk@28",
+   "worst_mm": 1.5
+  },
+  "Gen_WatchCase": {
+   "n": 24,
+   "centroid": [
+    0.461,
+    -0.168,
+    1.104
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.78,
+    "hand_l": 0.22,
+    "thumb_01_l": 0.01
+   },
+   "pose": "Walk@28",
+   "worst_mm": 1.2
+  },
+  "Gen_WatchFace": {
+   "n": 24,
+   "centroid": [
+    0.464,
+    -0.167,
+    1.106
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.79,
+    "hand_l": 0.21,
+    "thumb_01_l": 0.0
+   },
+   "pose": "Walk@28",
+   "worst_mm": 1.6
+  },
+  "NPC_MouthInside": {
+   "n": 4,
+   "centroid": [
+    0.0,
+    -0.142,
+    1.519
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Twist_A",
+   "worst_mm": 0.0
+  }
+ }
+}

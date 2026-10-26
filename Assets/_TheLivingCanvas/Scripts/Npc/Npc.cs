@@ -49,8 +49,20 @@ namespace TheLivingCanvas.Npcs
         public string Prompt => $"Talk to {definition.DisplayName}";
         public bool CanInteract => !dialogueUI.IsOpen;
 
+        bool talking;
+        /// <summary>Hablando con el jugador ahora mismo (la rutina de movimiento se detiene).</summary>
+        public bool InConversation
+        {
+            get
+            {
+                if (talking && !dialogueUI.IsOpen) talking = false; // el diálogo es global: soltar al cerrarse
+                return talking;
+            }
+        }
+
         public void Interact(PlayerInteractor interactor)
         {
+            talking = true;
             // Solo gira en el eje vertical para no inclinarse hacia la cámara.
             var toPlayer = interactor.transform.position - transform.position;
             toPlayer.y = 0f;

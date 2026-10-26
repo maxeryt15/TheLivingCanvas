@@ -3,7 +3,192 @@ guid: 3f7597ab26a7dba40882474b2477f16b
 ModelImporter:
   serializedVersion: 24300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Bark
+    second: {fileID: 2100000, guid: cd1161b903342614fa4a8769fc527475, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Bush
+    second: {fileID: 2100000, guid: 743d40e24bd03c14683cb324bdb68618, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Cypress
+    second: {fileID: 2100000, guid: d266fee2840fbbc4c91b014df273f4f7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Fabric_Mustard
+    second: {fileID: 2100000, guid: ff57ea298ce4c9d4b8c4f2817145dae1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Flower_Geranium
+    second: {fileID: 2100000, guid: afe2d3329f5c6a143956c3f8769be482, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Flower_Iris
+    second: {fileID: 2100000, guid: ac78137a610e6d449a2ff0ab126590db, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Flower_Lavender
+    second: {fileID: 2100000, guid: 769387450b7594545bc4f214546b940c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Flower_Rose
+    second: {fileID: 2100000, guid: c24d8f3c1a800c0489f692f00c148eec, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Flower_White
+    second: {fileID: 2100000, guid: 9e4cdb17ff6bc894e989f2783f3cde27, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Flower_Yellow
+    second: {fileID: 2100000, guid: cc47adac5056f93498b1e6506aeddf54, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Ground_Earth
+    second: {fileID: 2100000, guid: 6c6c3270646413c4e883cbbeaaf52fdd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Ground_Grass
+    second: {fileID: 2100000, guid: 5cdd6c68d951b09429153bfafa463c67, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Iron
+    second: {fileID: 2100000, guid: aa483560d1750934797809d0b24a861e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Ivy_Light
+    second: {fileID: 2100000, guid: 43f8517c528e9d7408f4ba34100349ad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Leaf_Dark
+    second: {fileID: 2100000, guid: 68ba607bf80909141beda182c859c194, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Leaf_Sage
+    second: {fileID: 2100000, guid: 0b665cf0b9181ab40a4b9ba01f4950d4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_AwningA
+    second: {fileID: 2100000, guid: b3bb2cf2b8195e24aa86c5e19004d64f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_AwningB
+    second: {fileID: 2100000, guid: 7fbd94f0a7996e041a4f10ba17ac4650, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_Brass
+    second: {fileID: 2100000, guid: d00da136ec797d9458e4b638ca542431, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_Door
+    second: {fileID: 2100000, guid: 05d7268687203974a8d7ca853b50714c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_Metal
+    second: {fileID: 2100000, guid: aa964c667c1a75c49b46f17f493e2031, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_Plaster
+    second: {fileID: 2100000, guid: 807793dd65ba6604687ec1347d850562, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_Roof
+    second: {fileID: 2100000, guid: 9c2d7f75dcf810241a11b5730138bdfa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_Shutter
+    second: {fileID: 2100000, guid: 8041bf7220b08b24eba1379c52a48e6c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_Stone
+    second: {fileID: 2100000, guid: 66f251d4fdf5eb645b26cef40f029da0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_Wood
+    second: {fileID: 2100000, guid: 8d33b4d45a14c4343b8fe81fe62fedbf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Museum_WoodDark
+    second: {fileID: 2100000, guid: 61eafb06249ae384e8d49a6c83d033f3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paper
+    second: {fileID: 2100000, guid: 4215c7fa83d8bf0419aff6cdde6b7f52, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Path_Stone
+    second: {fileID: 2100000, guid: ea9f5304e0a11174f90b8276427faa8d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Path_StoneWarm
+    second: {fileID: 2100000, guid: fcaf56d4e4333e94e84c0212054550a8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Picket
+    second: {fileID: 2100000, guid: 4d3e1670de7ff6442bfc0ddd8de1e60a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Plant_Leaf
+    second: {fileID: 2100000, guid: f434a561c2bcb6743aa5ad6a5829924c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Plant_LeafLight
+    second: {fileID: 2100000, guid: e3db5e766d250a340a5a3a824bf89a61, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Rug_Terracotta
+    second: {fileID: 2100000, guid: 48b93c64bb0146f4a99e9ee5451f2958, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Sign_Board
+    second: {fileID: 2100000, guid: 82cbb9072c9edf942bd4f14d52902971, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Soil
+    second: {fileID: 2100000, guid: 1aac6c50031fd3d4b9ef3f0bd3570a3b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Sunflower_Disc
+    second: {fileID: 2100000, guid: 6b28a3b70c6c79945b2214df82d9c967, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

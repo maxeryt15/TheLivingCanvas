@@ -1,0 +1,68 @@
+{
+ "Gen": {
+  "rest_max_mm": 0.11,
+  "covered_verts": 104,
+  "worst": {
+   "stress_clothin:lowerarm_l": {
+    "mm": 35.67,
+    "pose": "lowerarm_l_Y-120",
+    "frame": 0
+   },
+   "stress_clothin:lowerarm_r": {
+    "mm": 35.67,
+    "pose": "lowerarm_r_Y+120",
+    "frame": 0
+   },
+   "stress:neck_01": {
+    "mm": 21.45,
+    "pose": "neck_01_Y+40",
+    "frame": 0
+   },
+   "stress:head": {
+    "mm": 20.67,
+    "pose": "neck_01_Y-40",
+    "frame": 0
+   },
+   "stress:spine_03": {
+    "mm": 18.85,
+    "pose": "neck_01_Z+40",
+    "frame": 0
+   },
+   "clip:head": {
+    "mm": 15.76,
+    "pose": "U_Pose_Gentleman_HandsOnHips",
+    "frame": 1
+   },
+   "stress:lowerarm_l": {
+    "mm": 15.21,
+    "pose": "lowerarm_l_X+120",
+    "frame": 0
+   },
+   "stress_clothin:upperarm_l": {
+    "mm": 14.17,
+    "pose": "lowerarm_l_X+120",
+    "frame": 0
+   },
+   "stress:lowerarm_r": {
+    "mm": 13.9,
+    "pose": "lowerarm_r_X+120",
+    "frame": 0
+   },
+   "stress_clothin:spine_03": {
+    "mm": 12.64,
+    "pose": "lowerarm_l_X+120",
+    "frame": 0
+   },
+   "clip:spine_03": {
+    "mm": 10.61,
+    "pose": "U_Pose_Gentleman_OneHipRight",
+    "frame": 1
+   },
+   "stress_clothin:upperarm_r": {
+    "mm": 7.23,
+    "pose": "lowerarm_r_X+120",
+    "frame": 0
+   }
+  }
+ }
+}

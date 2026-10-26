@@ -1,0 +1,676 @@
+{
+ "lights": [
+  {
+   "name": "Light_GalleryI",
+   "type": "POINT",
+   "energy": 550.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.800000011920929
+  },
+  {
+   "name": "Light_GalleryIII",
+   "type": "POINT",
+   "energy": 430.0,
+   "color": [
+    1.0,
+    0.8199999928474426,
+    0.6200000047683716
+   ],
+   "radius": 0.800000011920929
+  },
+  {
+   "name": "Light_GalleryIV",
+   "type": "POINT",
+   "energy": 550.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.800000011920929
+  },
+  {
+   "name": "Light_GalleryV_N",
+   "type": "POINT",
+   "energy": 390.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.800000011920929
+  },
+  {
+   "name": "Light_GalleryV_S",
+   "type": "POINT",
+   "energy": 390.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.800000011920929
+  },
+  {
+   "name": "Light_GalleryVI_N",
+   "type": "POINT",
+   "energy": 450.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.800000011920929
+  },
+  {
+   "name": "Light_GalleryVI_S",
+   "type": "POINT",
+   "energy": 450.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.800000011920929
+  },
+  {
+   "name": "Light_GalleryVII_Bounce_East",
+   "type": "AREA",
+   "energy": 130.0,
+   "color": [
+    1.0,
+    0.9399999976158142,
+    0.8600000143051147
+   ],
+   "radius": 0.0,
+   "size": [
+    2.200000047683716,
+    6.0
+   ]
+  },
+  {
+   "name": "Light_GalleryVII_Bounce_Front",
+   "type": "AREA",
+   "energy": 260.0,
+   "color": [
+    1.0,
+    0.9399999976158142,
+    0.8600000143051147
+   ],
+   "radius": 0.0,
+   "size": [
+    10.0,
+    2.5999999046325684
+   ]
+  },
+  {
+   "name": "Light_GalleryVII_Bounce_Mid",
+   "type": "AREA",
+   "energy": 120.0,
+   "color": [
+    1.0,
+    0.9399999976158142,
+    0.8600000143051147
+   ],
+   "radius": 0.0,
+   "size": [
+    4.0,
+    3.0
+   ]
+  },
+  {
+   "name": "Light_GalleryVII_Bounce_NW",
+   "type": "AREA",
+   "energy": 90.0,
+   "color": [
+    1.0,
+    0.9399999976158142,
+    0.8600000143051147
+   ],
+   "radius": 0.0,
+   "size": [
+    4.5,
+    2.0
+   ]
+  },
+  {
+   "name": "Light_GalleryVII_Fill",
+   "type": "AREA",
+   "energy": 1800.0,
+   "color": [
+    1.0,
+    0.9399999976158142,
+    0.8600000143051147
+   ],
+   "radius": 0.0,
+   "size": [
+    11.0,
+    9.0
+   ]
+  },
+  {
+   "name": "Light_Hall",
+   "type": "POINT",
+   "energy": 650.0,
+   "color": [
+    1.0,
+    0.8199999928474426,
+    0.6200000047683716
+   ],
+   "radius": 0.6000000238418579
+  },
+  {
+   "name": "Light_Hall_Front",
+   "type": "POINT",
+   "energy": 250.0,
+   "color": [
+    1.0,
+    0.8199999928474426,
+    0.6200000047683716
+   ],
+   "radius": 0.800000011920929
+  },
+  {
+   "name": "Light_Landing",
+   "type": "POINT",
+   "energy": 300.0,
+   "color": [
+    1.0,
+    0.8199999928474426,
+    0.6200000047683716
+   ],
+   "radius": 0.6000000238418579
+  },
+  {
+   "name": "Light_Link",
+   "type": "POINT",
+   "energy": 140.0,
+   "color": [
+    1.0,
+    0.9399999976158142,
+    0.8600000143051147
+   ],
+   "radius": 0.0
+  },
+  {
+   "name": "Light_Maintenance",
+   "type": "POINT",
+   "energy": 260.0,
+   "color": [
+    0.8600000143051147,
+    0.9200000166893005,
+    1.0
+   ],
+   "radius": 0.5
+  },
+  {
+   "name": "Light_Maintenance_Annex",
+   "type": "POINT",
+   "energy": 260.0,
+   "color": [
+    0.8600000143051147,
+    0.9200000166893005,
+    1.0
+   ],
+   "radius": 0.5
+  },
+  {
+   "name": "Light_Reception_Break",
+   "type": "POINT",
+   "energy": 360.0,
+   "color": [
+    1.0,
+    0.8199999928474426,
+    0.6200000047683716
+   ],
+   "radius": 0.30000001192092896
+  },
+  {
+   "name": "Light_Reception_Desk",
+   "type": "POINT",
+   "energy": 420.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.800000011920929
+  },
+  {
+   "name": "Light_Restroom_1",
+   "type": "POINT",
+   "energy": 110.0,
+   "color": [
+    0.8600000143051147,
+    0.9200000166893005,
+    1.0
+   ],
+   "radius": 0.4000000059604645
+  },
+  {
+   "name": "Light_Restroom_2",
+   "type": "POINT",
+   "energy": 110.0,
+   "color": [
+    0.8600000143051147,
+    0.9200000166893005,
+    1.0
+   ],
+   "radius": 0.4000000059604645
+  },
+  {
+   "name": "Light_Restroom_Lobby",
+   "type": "POINT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.8199999928474426,
+    0.6200000047683716
+   ],
+   "radius": 0.4000000059604645
+  },
+  {
+   "name": "Light_StairHall",
+   "type": "POINT",
+   "energy": 450.0,
+   "color": [
+    1.0,
+    0.8199999928474426,
+    0.6200000047683716
+   ],
+   "radius": 0.6000000238418579
+  },
+  {
+   "name": "Light_StairVoid",
+   "type": "POINT",
+   "energy": 300.0,
+   "color": [
+    1.0,
+    0.8199999928474426,
+    0.6200000047683716
+   ],
+   "radius": 0.30000001192092896
+  },
+  {
+   "name": "Spot_GalleryI_Key",
+   "type": "SPOT",
+   "energy": 210.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.10000000149011612,
+   "spot_size_deg": 42.00000152568579,
+   "spot_blend": 0.4000000059604645
+  },
+  {
+   "name": "Spot_GalleryIV_Key",
+   "type": "SPOT",
+   "energy": 210.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.10000000149011612,
+   "spot_size_deg": 42.00000152568579,
+   "spot_blend": 0.4000000059604645
+  },
+  {
+   "name": "Spot_GalleryV_Featured",
+   "type": "SPOT",
+   "energy": 330.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.10000000149011612,
+   "spot_size_deg": 48.0000017436409,
+   "spot_blend": 0.4000000059604645
+  },
+  {
+   "name": "Spot_GalleryVI_Key",
+   "type": "SPOT",
+   "energy": 210.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.10000000149011612,
+   "spot_size_deg": 42.00000152568579,
+   "spot_blend": 0.4000000059604645
+  },
+  {
+   "name": "Spot_GalleryVII",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_001",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_002",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_003",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_004",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_005",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_006",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_007",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_008",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_009",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_010",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_011",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_012",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_013",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_014",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_015",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_016",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_017",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_018",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_019",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_020",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_021",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_022",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_023",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  },
+  {
+   "name": "Spot_GalleryVII_024",
+   "type": "SPOT",
+   "energy": 160.0,
+   "color": [
+    1.0,
+    0.9200000166893005,
+    0.800000011920929
+   ],
+   "radius": 0.05000000074505806,
+   "spot_size_deg": 33.99999895834923,
+   "spot_blend": 0.5
+  }
+ ]
+}

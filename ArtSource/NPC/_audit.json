@@ -1,0 +1,177 @@
+{
+ "Cur": {
+  "zfight": {},
+  "poke": {
+   "Cur_Shoes": 9
+  },
+  "sliver": {
+   "Cur_Brows": 4,
+   "Cur_Lipstick": 4,
+   "Cur_Shoes": 4
+  },
+  "smallhole": {
+   "Cur_Brooch": 1,
+   "Cur_Shoes": 5,
+   "Cur_Suit": 10
+  },
+  "uvstretch": {
+   "Cur_Low": 492,
+   "Cur_Shoes": 228,
+   "Cur_Suit": 40
+  },
+  "loose": {}
+ },
+ "Grd": {
+  "zfight": {
+   "Grd_Boots x Grd_Suit": 6
+  },
+  "poke": {},
+  "sliver": {
+   "Grd_Brows": 8
+  },
+  "smallhole": {
+   "Grd_Epaulettes": 270,
+   "Grd_SleevePatch": 206,
+   "Grd_Suit": 6
+  },
+  "uvstretch": {
+   "Grd_Boots": 140
+  },
+  "loose": {}
+ },
+ "Stu": {
+  "zfight": {},
+  "poke": {},
+  "sliver": {
+   "Stu_Lipstick": 6
+  },
+  "smallhole": {
+   "Stu_Bag": 74,
+   "Stu_Headphones": 44,
+   "Stu_LipScar": 12
+  },
+  "uvstretch": {
+   "Stu_Low": 87,
+   "Stu_Pants": 102,
+   "Stu_Shoes": 38,
+   "Stu_Tee": 114
+  },
+  "loose": {}
+ },
+ "Gar": {
+  "zfight": {},
+  "poke": {},
+  "sliver": {},
+  "smallhole": {
+   "Gar_Pants": 1
+  },
+  "uvstretch": {
+   "Gar_Boots": 264,
+   "Gar_Low": 145,
+   "Gar_Pants": 68,
+   "Gar_Tee": 114
+  },
+  "loose": {}
+ },
+ "Caf": {
+  "zfight": {},
+  "poke": {},
+  "sliver": {
+   "Caf_Brows": 4
+  },
+  "smallhole": {
+   "Caf_Apron": 156
+  },
+  "uvstretch": {
+   "Caf_Low": 658,
+   "Caf_Shoes": 178
+  },
+  "loose": {}
+ },
+ "Tou": {
+  "zfight": {},
+  "poke": {},
+  "sliver": {
+   "Tou_Lipstick": 10
+  },
+  "smallhole": {
+   "Tou_Bag": 74,
+   "Tou_Camera": 59,
+   "Tou_Sandals": 160
+  },
+  "uvstretch": {
+   "Tou_Low": 1040
+  },
+  "loose": {}
+ },
+ "Gen": {
+  "zfight": {},
+  "poke": {},
+  "sliver": {
+   "Gen_Buttons": 44
+  },
+  "smallhole": {
+   "Gen_Low": 2,
+   "Gen_Patches": 312,
+   "Gen_Shoes": 3,
+   "Gen_Suit": 4
+  },
+  "uvstretch": {
+   "Gen_Shoes": 158
+  },
+  "loose": {}
+ },
+ "Cou": {
+  "zfight": {},
+  "poke": {},
+  "sliver": {
+   "Cou_Lipstick": 4
+  },
+  "smallhole": {
+   "Cou_BootLaces": 18,
+   "Cou_ToolBelt": 256
+  },
+  "uvstretch": {
+   "Cou_Boots": 338,
+   "Cou_Low": 85,
+   "Cou_Pants": 43,
+   "Cou_Tee": 58
+  },
+  "loose": {}
+ },
+ "Doc": {
+  "zfight": {},
+  "poke": {},
+  "sliver": {},
+  "smallhole": {
+   "Doc_Shoes": 5,
+   "Doc_Suit": 9
+  },
+  "uvstretch": {
+   "Doc_Hair": 24,
+   "Doc_Shoes": 170
+  },
+  "loose": {}
+ },
+ "Pnt": {
+  "zfight": {
+   "Pnt_Apron x Pnt_Shirt": 3
+  },
+  "poke": {},
+  "sliver": {
+   "Pnt_Lipstick": 6
+  },
+  "smallhole": {
+   "Pnt_Apron": 156,
+   "Pnt_Neckerchief": 58,
+   "Pnt_Shoes": 11
+  },
+  "uvstretch": {
+   "Pnt_Low": 164,
+   "Pnt_Pants": 84,
+   "Pnt_Shirt": 439,
+   "Pnt_Shoes": 221
+  },
+  "loose": {}
+ }
+}

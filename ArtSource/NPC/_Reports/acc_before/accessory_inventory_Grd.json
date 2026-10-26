@@ -1,0 +1,519 @@
+{
+ "obj": {
+  "loc": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "rot": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "scale": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "parent": "Grd_Rig",
+  "mods": [
+   [
+    "ARMATURE",
+    "Grd_Rig"
+   ]
+  ],
+  "parent_inverse_identity": true,
+  "groups_not_in_rig": []
+ },
+ "acc": {
+  "Grd_Brows": {
+   "n": 124,
+   "centroid": [
+    0.0,
+    -0.144,
+    1.655
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@10",
+   "worst_mm": 0.0
+  },
+  "Grd_ButtonHole": {
+   "n": 36,
+   "centroid": [
+    0.0,
+    -0.198,
+    1.086
+   ],
+   "bones": {
+    "spine_01": 0.67,
+    "pelvis": 0.33
+   },
+   "expected": {
+    "spine_03": 0.42,
+    "pelvis": 0.39,
+    "thigh_r": 0.11
+   },
+   "pose": "Twist_A",
+   "worst_mm": 101.1
+  },
+  "Grd_ButtonFace": {
+   "n": 48,
+   "centroid": [
+    0.0,
+    -0.196,
+    1.086
+   ],
+   "bones": {
+    "spine_01": 0.67,
+    "pelvis": 0.33
+   },
+   "expected": {
+    "spine_03": 0.4,
+    "pelvis": 0.4,
+    "thigh_r": 0.11
+   },
+   "pose": "Twist_A",
+   "worst_mm": 104.4
+  },
+  "Grd_PatchGold": {
+   "n": 116,
+   "centroid": [
+    0.001,
+    0.002,
+    1.338
+   ],
+   "bones": {
+    "upperarm_l": 0.37,
+    "upperarm_r": 0.31,
+    "spine_03": 0.14
+   },
+   "expected": {
+    "upperarm_l": 0.3,
+    "upperarm_r": 0.28,
+    "spine_03": 0.18
+   },
+   "pose": "Twist_A",
+   "worst_mm": 0.0
+  },
+  "Grd_PatchCloth": {
+   "n": 198,
+   "centroid": [
+    0.001,
+    0.002,
+    1.347
+   ],
+   "bones": {
+    "upperarm_l": 0.31,
+    "upperarm_r": 0.28,
+    "spine_03": 0.19
+   },
+   "expected": {
+    "upperarm_l": 0.28,
+    "upperarm_r": 0.25,
+    "spine_03": 0.23
+   },
+   "pose": "Crouch",
+   "worst_mm": 0.0
+  },
+  "Grd_BoardGold": {
+   "n": 148,
+   "centroid": [
+    -0.0,
+    0.0,
+    1.518
+   ],
+   "bones": {
+    "neck_01": 0.44,
+    "spine_03": 0.36,
+    "clavicle_r": 0.05
+   },
+   "expected": {
+    "neck_01": 0.47,
+    "spine_03": 0.34,
+    "clavicle_r": 0.06
+   },
+   "pose": "BendForward",
+   "worst_mm": 0.0
+  },
+  "Grd_BoardCloth": {
+   "n": 194,
+   "centroid": [
+    -0.0,
+    -0.001,
+    1.446
+   ],
+   "bones": {
+    "neck_01": 0.43,
+    "spine_03": 0.33,
+    "clavicle_r": 0.05
+   },
+   "expected": {
+    "neck_01": 0.46,
+    "spine_03": 0.3,
+    "clavicle_l": 0.05
+   },
+   "pose": "Twist_A",
+   "worst_mm": 0.0
+  },
+  "Grd_EyeIris": {
+   "n": 36,
+   "centroid": [
+    0.0,
+    -0.141,
+    1.643
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "BendForward",
+   "worst_mm": 0.0
+  },
+  "Grd_EyeWhite": {
+   "n": 34,
+   "centroid": [
+    0.0,
+    -0.136,
+    1.639
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "BendForward",
+   "worst_mm": 0.0
+  },
+  "Grd_EyePupil": {
+   "n": 26,
+   "centroid": [
+    0.0,
+    -0.142,
+    1.644
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "BendForward",
+   "worst_mm": 0.0
+  },
+  "Grd_MedalGold": {
+   "n": 26,
+   "centroid": [
+    -0.089,
+    -0.166,
+    1.32
+   ],
+   "bones": {
+    "clavicle_r": 1.0
+   },
+   "expected": {
+    "spine_03": 0.83,
+    "clavicle_r": 0.06,
+    "spine_02": 0.06
+   },
+   "pose": "Walk@13",
+   "worst_mm": 17.8
+  },
+  "Grd_MedalRibbonA": {
+   "n": 8,
+   "centroid": [
+    -0.094,
+    -0.161,
+    1.33
+   ],
+   "bones": {
+    "clavicle_r": 1.0
+   },
+   "expected": {
+    "spine_03": 0.8,
+    "clavicle_r": 0.08,
+    "neck_01": 0.08
+   },
+   "pose": "Walk@22",
+   "worst_mm": 10.6
+  },
+  "Grd_MedalRibbonB": {
+   "n": 8,
+   "centroid": [
+    -0.089,
+    -0.164,
+    1.329
+   ],
+   "bones": {
+    "clavicle_r": 1.0
+   },
+   "expected": {
+    "spine_03": 0.79,
+    "clavicle_r": 0.08,
+    "neck_01": 0.08
+   },
+   "pose": "Walk@22",
+   "worst_mm": 7.1
+  },
+  "Grd_MedalRibbonC": {
+   "n": 8,
+   "centroid": [
+    -0.083,
+    -0.165,
+    1.33
+   ],
+   "bones": {
+    "clavicle_r": 1.0
+   },
+   "expected": {
+    "spine_03": 0.8,
+    "neck_01": 0.08,
+    "clavicle_r": 0.07
+   },
+   "pose": "Walk@31",
+   "worst_mm": 7.8
+  },
+  "Grd_MedalStone": {
+   "n": 20,
+   "centroid": [
+    -0.091,
+    -0.171,
+    1.308
+   ],
+   "bones": {
+    "clavicle_r": 1.0
+   },
+   "expected": {
+    "spine_03": 0.86,
+    "spine_02": 0.07,
+    "clavicle_r": 0.03
+   },
+   "pose": "BendForward",
+   "worst_mm": 6.7
+  },
+  "Grd_Mole_Mat": {
+   "n": 12,
+   "centroid": [
+    0.022,
+    -0.148,
+    1.582
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@10",
+   "worst_mm": 0.0
+  },
+  "Grd_RadioBody": {
+   "n": 28,
+   "centroid": [
+    0.112,
+    -0.19,
+    1.344
+   ],
+   "bones": {
+    "clavicle_l": 1.0
+   },
+   "expected": {
+    "spine_03": 0.77,
+    "neck_01": 0.08,
+    "clavicle_l": 0.06
+   },
+   "pose": "Walk@10",
+   "worst_mm": 17.6
+  },
+  "Grd_RadioScreen": {
+   "n": 8,
+   "centroid": [
+    0.106,
+    -0.198,
+    1.335
+   ],
+   "bones": {
+    "clavicle_l": 1.0
+   },
+   "expected": {
+    "spine_03": 0.85,
+    "spine_02": 0.06,
+    "neck_01": 0.05
+   },
+   "pose": "HeadDown",
+   "worst_mm": 14.8
+  },
+  "Grd_RadioGrille": {
+   "n": 40,
+   "centroid": [
+    0.104,
+    -0.194,
+    1.301
+   ],
+   "bones": {
+    "clavicle_l": 1.0
+   },
+   "expected": {
+    "spine_03": 0.83,
+    "spine_02": 0.06,
+    "head": 0.05
+   },
+   "pose": "HeadDown",
+   "worst_mm": 15.2
+  },
+  "Grd_RadioButton": {
+   "n": 8,
+   "centroid": [
+    0.103,
+    -0.19,
+    1.272
+   ],
+   "bones": {
+    "clavicle_l": 1.0
+   },
+   "expected": {
+    "spine_03": 0.79,
+    "head": 0.08,
+    "spine_02": 0.07
+   },
+   "pose": "HeadDown",
+   "worst_mm": 25.7
+  },
+  "Grd_RadioKey": {
+   "n": 64,
+   "centroid": [
+    0.099,
+    -0.187,
+    1.32
+   ],
+   "bones": {
+    "clavicle_l": 0.88,
+    "upperarm_l": 0.12
+   },
+   "expected": {
+    "spine_03": 0.82,
+    "spine_02": 0.06,
+    "neck_01": 0.05
+   },
+   "pose": "ArmsUp_L",
+   "worst_mm": 126.4
+  },
+  "Grd_TieSilk": {
+   "n": 85,
+   "centroid": [
+    -0.0,
+    -0.139,
+    1.37
+   ],
+   "bones": {
+    "clavicle_r": 1.0
+   },
+   "expected": {
+    "spine_03": 0.74,
+    "neck_01": 0.16,
+    "spine_02": 0.04
+   },
+   "pose": "Walk@22",
+   "worst_mm": 26.0
+  },
+  "Grd_TieDots": {
+   "n": 120,
+   "centroid": [
+    0.0,
+    -0.15,
+    1.383
+   ],
+   "bones": {
+    "clavicle_r": 0.5,
+    "clavicle_l": 0.5
+   },
+   "expected": {
+    "spine_03": 0.79,
+    "neck_01": 0.13,
+    "clavicle_l": 0.04
+   },
+   "pose": "HeadDown",
+   "worst_mm": 9.3
+  },
+  "Grd_WatchBand": {
+   "n": 52,
+   "centroid": [
+    0.48,
+    -0.186,
+    1.117
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.63,
+    "hand_l": 0.37,
+    "thumb_01_l": 0.01
+   },
+   "pose": "Walk@28",
+   "worst_mm": 1.9
+  },
+  "Grd_WatchCase": {
+   "n": 24,
+   "centroid": [
+    0.493,
+    -0.183,
+    1.128
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.66,
+    "hand_l": 0.34,
+    "thumb_01_l": 0.0
+   },
+   "pose": "Walk@28",
+   "worst_mm": 2.1
+  },
+  "Grd_WatchFace": {
+   "n": 24,
+   "centroid": [
+    0.496,
+    -0.183,
+    1.13
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.66,
+    "hand_l": 0.34,
+    "thumb_01_l": 0.0
+   },
+   "pose": "Walk@28",
+   "worst_mm": 2.0
+  },
+  "NPC_MouthInside": {
+   "n": 4,
+   "centroid": [
+    0.0,
+    -0.145,
+    1.575
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@37",
+   "worst_mm": 0.0
+  }
+ }
+}

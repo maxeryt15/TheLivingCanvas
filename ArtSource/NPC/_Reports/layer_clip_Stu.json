@@ -1,0 +1,495 @@
+{
+ "zone": [
+  0.86,
+  1.03
+ ],
+ "rest_V1": [
+  18,
+  34.8
+ ],
+ "rest_V2": [
+  58,
+  44.1
+ ],
+ "poses": {
+  "ArmsUp_L": {
+   "V1": null,
+   "V2": null
+  },
+  "ArmsForward_L": {
+   "V1": null,
+   "V2": null
+  },
+  "ArmsBack_L": {
+   "V1": null,
+   "V2": null
+  },
+  "ElbowBend_L": {
+   "V1": null,
+   "V2": null
+  },
+  "ShoulderCross_L": {
+   "V1": null,
+   "V2": null
+  },
+  "ShoulderUpElbow_L": {
+   "V1": null,
+   "V2": null
+  },
+  "LegKick_L": {
+   "V1": {
+    "mm": 10.2,
+    "n": 2,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.97,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 22.8,
+    "n": 24,
+    "bone": "thigh_l",
+    "x": "L",
+    "z": 0.89,
+    "y": "front"
+   }
+  },
+  "LegAbduct_L": {
+   "V1": {
+    "mm": 43.8,
+    "n": 4,
+    "bone": "spine_02",
+    "x": "L",
+    "z": 1.02,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 34.6,
+    "n": 3,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.89,
+    "y": "back"
+   }
+  },
+  "KneeBend_L": {
+   "V1": {
+    "mm": 10.2,
+    "n": 3,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.97,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 27.9,
+    "n": 18,
+    "bone": "thigh_l",
+    "x": "L",
+    "z": 0.88,
+    "y": "front"
+   }
+  },
+  "ArmsUp_R": {
+   "V1": {
+    "mm": 57.5,
+    "n": 10,
+    "bone": "spine_02",
+    "x": "R",
+    "z": 1.02,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 17.4,
+    "n": 6,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 1.01,
+    "y": "back"
+   }
+  },
+  "ArmsForward_R": {
+   "V1": {
+    "mm": 5.2,
+    "n": 3,
+    "bone": "spine_02",
+    "x": "R",
+    "z": 0.99,
+    "y": "front"
+   },
+   "V2": null
+  },
+  "ArmsBack_R": {
+   "V1": {
+    "mm": 10.9,
+    "n": 4,
+    "bone": "spine_02",
+    "x": "R",
+    "z": 1.02,
+    "y": "back"
+   },
+   "V2": null
+  },
+  "ElbowBend_R": {
+   "V1": null,
+   "V2": null
+  },
+  "ShoulderCross_R": {
+   "V1": {
+    "mm": 14.0,
+    "n": 5,
+    "bone": "spine_02",
+    "x": "R",
+    "z": 1.02,
+    "y": "front"
+   },
+   "V2": null
+  },
+  "ShoulderUpElbow_R": {
+   "V1": {
+    "mm": 56.9,
+    "n": 10,
+    "bone": "spine_02",
+    "x": "R",
+    "z": 1.02,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 17.3,
+    "n": 6,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 1.01,
+    "y": "back"
+   }
+  },
+  "LegKick_R": {
+   "V1": {
+    "mm": 4.1,
+    "n": 3,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 0.98,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 29.5,
+    "n": 16,
+    "bone": "thigh_r",
+    "x": "R",
+    "z": 0.88,
+    "y": "front"
+   }
+  },
+  "LegAbduct_R": {
+   "V1": {
+    "mm": 5.2,
+    "n": 1,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.98,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 43.8,
+    "n": 2,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 0.87,
+    "y": "back"
+   }
+  },
+  "KneeBend_R": {
+   "V1": {
+    "mm": 5.1,
+    "n": 3,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 0.99,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 34.7,
+    "n": 11,
+    "bone": "thigh_r",
+    "x": "R",
+    "z": 0.88,
+    "y": "front"
+   }
+  },
+  "Crouch": {
+   "V1": {
+    "mm": 15.2,
+    "n": 5,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 0.89,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 45.2,
+    "n": 55,
+    "bone": "thigh_r",
+    "x": "R",
+    "z": 0.98,
+    "y": "front"
+   }
+  },
+  "Sit": {
+   "V1": {
+    "mm": 9.2,
+    "n": 1,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.97,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 37.0,
+    "n": 40,
+    "bone": "thigh_r",
+    "x": "R",
+    "z": 0.87,
+    "y": "front"
+   }
+  },
+  "BendForward": {
+   "V1": {
+    "mm": 58.4,
+    "n": 65,
+    "bone": "spine_02",
+    "x": "L",
+    "z": 0.99,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 38.0,
+    "n": 47,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.98,
+    "y": "front"
+   }
+  },
+  "Twist_A": {
+   "V1": {
+    "mm": 47.2,
+    "n": 55,
+    "bone": "spine_03",
+    "x": "L",
+    "z": 0.95,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 34.5,
+    "n": 30,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.98,
+    "y": "front"
+   }
+  },
+  "Twist_B": {
+   "V1": {
+    "mm": 56.3,
+    "n": 22,
+    "bone": "spine_02",
+    "x": "L",
+    "z": 0.96,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 40.1,
+    "n": 35,
+    "bone": "thigh_l",
+    "x": "L",
+    "z": 0.87,
+    "y": "back"
+   }
+  },
+  "HeadDown": {
+   "V1": null,
+   "V2": null
+  },
+  "Walk@1": {
+   "V1": {
+    "mm": 32.1,
+    "n": 16,
+    "bone": "spine_02",
+    "x": "L",
+    "z": 0.96,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 6.7,
+    "n": 15,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.89,
+    "y": "front"
+   }
+  },
+  "Walk@5": {
+   "V1": {
+    "mm": 33.2,
+    "n": 18,
+    "bone": "spine_02",
+    "x": "L",
+    "z": 0.96,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 7.2,
+    "n": 16,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.89,
+    "y": "front"
+   }
+  },
+  "Walk@9": {
+   "V1": {
+    "mm": 8.3,
+    "n": 17,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.88,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 7.8,
+    "n": 10,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.88,
+    "y": "front"
+   }
+  },
+  "Walk@13": {
+   "V1": {
+    "mm": 7.9,
+    "n": 10,
+    "bone": "spine_03",
+    "x": "L",
+    "z": 0.99,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 7.7,
+    "n": 16,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 0.95,
+    "y": "back"
+   }
+  },
+  "Walk@17": {
+   "V1": {
+    "mm": 7.3,
+    "n": 12,
+    "bone": "spine_02",
+    "x": "R",
+    "z": 0.99,
+    "y": "back"
+   },
+   "V2": {
+    "mm": 7.7,
+    "n": 14,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 0.94,
+    "y": "back"
+   }
+  },
+  "Walk@21": {
+   "V1": {
+    "mm": 7.7,
+    "n": 11,
+    "bone": "spine_03",
+    "x": "L",
+    "z": 0.96,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 4.0,
+    "n": 7,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 0.9,
+    "y": "back"
+   }
+  },
+  "Walk@25": {
+   "V1": {
+    "mm": 9.6,
+    "n": 13,
+    "bone": "spine_03",
+    "x": "L",
+    "z": 0.95,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 4.6,
+    "n": 11,
+    "bone": "pelvis",
+    "x": "R",
+    "z": 0.92,
+    "y": "back"
+   }
+  },
+  "Walk@29": {
+   "V1": {
+    "mm": 36.6,
+    "n": 24,
+    "bone": "spine_02",
+    "x": "L",
+    "z": 0.98,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 7.8,
+    "n": 14,
+    "bone": "pelvis",
+    "x": "C",
+    "z": 0.89,
+    "y": "front"
+   }
+  },
+  "Walk@33": {
+   "V1": {
+    "mm": 22.0,
+    "n": 20,
+    "bone": "spine_02",
+    "x": "L",
+    "z": 0.99,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 10.2,
+    "n": 23,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.94,
+    "y": "back"
+   }
+  },
+  "Walk@37": {
+   "V1": {
+    "mm": 22.6,
+    "n": 20,
+    "bone": "spine_02",
+    "x": "L",
+    "z": 0.98,
+    "y": "front"
+   },
+   "V2": {
+    "mm": 10.1,
+    "n": 23,
+    "bone": "pelvis",
+    "x": "L",
+    "z": 0.93,
+    "y": "back"
+   }
+  }
+ }
+}

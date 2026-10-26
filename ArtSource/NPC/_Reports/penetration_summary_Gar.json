@@ -1,0 +1,68 @@
+{
+ "Gar": {
+  "rest_max_mm": -4.02,
+  "covered_verts": 48,
+  "worst": {
+   "stress_clothin:upperarm_r": {
+    "mm": 28.61,
+    "pose": "upperarm_r_Z+90",
+    "frame": 0
+   },
+   "stress_clothin:upperarm_l": {
+    "mm": 27.73,
+    "pose": "upperarm_l_Z-90",
+    "frame": 0
+   },
+   "stress_clothin:spine_03": {
+    "mm": 20.81,
+    "pose": "upperarm_l_Z+90",
+    "frame": 0
+   },
+   "stress:upperarm_r": {
+    "mm": 17.38,
+    "pose": "upperarm_r_Z+90",
+    "frame": 0
+   },
+   "stress:upperarm_l": {
+    "mm": 17.35,
+    "pose": "upperarm_l_Z-90",
+    "frame": 0
+   },
+   "clip_clothin:spine_03": {
+    "mm": 13.3,
+    "pose": "U_Pose_Gardener_HandsBehind",
+    "frame": 76
+   },
+   "clip:upperarm_r": {
+    "mm": 10.39,
+    "pose": "U_Gardener_Walk_Male",
+    "frame": 22
+   },
+   "stress_clothin:clavicle_l": {
+    "mm": 9.57,
+    "pose": "lowerarm_l_X+120",
+    "frame": 0
+   },
+   "stress_clothin:clavicle_r": {
+    "mm": 9.41,
+    "pose": "lowerarm_r_X+120",
+    "frame": 0
+   },
+   "clip_clothin:upperarm_l": {
+    "mm": 8.71,
+    "pose": "U_Pose_Gardener_HandsBehind",
+    "frame": 1
+   },
+   "clip:upperarm_l": {
+    "mm": 6.88,
+    "pose": "U_Pose_Gardener_HandsBehind",
+    "frame": 118
+   },
+   "stress:spine_03": {
+    "mm": 6.45,
+    "pose": "upperarm_r_Z-90",
+    "frame": 0
+   }
+  }
+ }
+}

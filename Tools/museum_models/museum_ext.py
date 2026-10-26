@@ -443,20 +443,41 @@ def stone_steps(b, cx, yw, sgn, width, top, nsteps, depth, landing, seed=0):
         b.box((xc, yf + sgn * 0.1, r + 0.3), (0.42, 0.2, 0.2), "M_Path_StoneWarm", bev=0.03, amp=0.004, cuts=0)   # dado de arranque
 
 
+def torus_ring(b, c, u, v, out, R, w, d, mat, n=40, m=8):
+    """Aro continuo (UNA sola malla cerrada con vertices compartidos): radio mayor R, semiancho radial w, fondo d a lo largo de out."""
+    import bmesh
+    bm = b.bm
+    mi = b._mi(mat)
+    ring = []
+    for i in range(n):
+        th = i * math.tau / n
+        rad = u * math.cos(th) + v * math.sin(th)
+        row = []
+        for k in range(m):
+            ph = k * math.tau / m + math.pi / m
+            row.append(bm.verts.new(c + rad * (R + w * math.cos(ph)) + out * (d * math.sin(ph))))
+        ring.append(row)
+    fs = []
+    for i in range(n):
+        for k in range(m):
+            f = bm.faces.new((ring[i][k], ring[(i + 1) % n][k], ring[(i + 1) % n][(k + 1) % m], ring[i][(k + 1) % m]))
+            f.material_index = mi
+            f.smooth = False
+            fs.append(f)
+    bmesh.ops.recalc_face_normals(bm, faces=fs)
+
+
 def oculus(fr, gl, c, out, r):
-    """Ojo de buey: cristal, aro fino de laton, cruceta y anillo de piedra alrededor (nada de disco macizo)."""
+    """Ojo de buey: cristal, aro de laton, cruceta y anillo de piedra. Los aros son toros continuos (antes 28 cilindros sueltos
+    cada uno) y el cristal queda por delante de la pared: el muro tiene deformacion y en el hastial -X el cristal quedaba 1 cm enterrado."""
     out = Vector(out).normalized()
     u = Vector((0, 0, 1)).cross(out).normalized()
     v = Vector((0, 0, 1))
-    def ring(rad, off, thick, mat, n=28):
-        pts = [c + out * off + u * (rad * math.cos(k * math.tau / n)) + v * (rad * math.sin(k * math.tau / n)) for k in range(n + 1)]
-        for p0, p1 in zip(pts, pts[1:]):
-            fr.seg(p0, p1, thick, mat, seg=8)
-    gl.leaf(c + out * 0.02, out, u, r, "M_Museum_Glass", thick=0.03, res=28, shape='disc')
-    ring(r, 0.04, 0.035, "M_Museum_Brass")
-    ring(r + 0.12, 0.03, 0.075, "M_Museum_Stone")
+    gl.leaf(c + out * 0.075, out, u, r, "M_Museum_Glass", thick=0.03, res=32, shape='disc')
+    torus_ring(fr, c + out * 0.07, u, v, out, r, 0.03, 0.035, "M_Museum_Brass")
+    torus_ring(fr, c + out * 0.05, u, v, out, r + 0.12, 0.075, 0.065, "M_Museum_Stone", n=48)
     for d in (u, v):
-        fr.seg(c + out * 0.04 - d * r, c + out * 0.04 + d * r, 0.016, "M_Museum_Brass", seg=6)
+        fr.seg(c + out * 0.09 - d * r, c + out * 0.09 + d * r, 0.016, "M_Museum_Brass", seg=6)
     q = c + out * 0.07 + v * (r + 0.12)   # clave
     fr.box(tuple(q), (abs(u.x) * 0.18 + abs(out.x) * 0.14, abs(u.y) * 0.18 + abs(out.y) * 0.14, 0.26), "M_Museum_Stone",
            bev=0.02, amp=0.004, cuts=0)
@@ -714,14 +735,6 @@ def facade_details(cA, cP):
         ivy_column(b, cx, -7.4, D.FL0 + 0.32, D.FL0 + 2.7, ph, seed=int(ph * 10) + 3)
     b.finish(cA)
 
-    # rincon de jardin trasero: barril de lluvia bajo la bajante
-    g = B("Prop_Garden_Corner", 0.5)
-    g.cyl((7.15, 6.8, 0.42), 0.36, 0.84, "M_Museum_Wood", seg=14, r2=0.33, bev=0, amp=0.012)
-    for zz in (0.18, 0.68):
-        g.cyl((7.15, 6.8, zz), 0.375, 0.05, "M_Museum_Metal", seg=14, bev=0, amp=0.004)
-    g.cyl((7.15, 6.8, 0.83), 0.31, 0.02, "M_Fabric_Blue", seg=14, bev=0, amp=0.003)
-    to_col(g.finish(), cP)
-
     def watering_can(b):
         """Regadera: cuerpo pintado con aros de cinc, cuello, asa superior en arco, asa trasera y cano con alcachofa."""
         b.cyl((0, 0, 0.14), 0.11, 0.24, "M_Museum_Shutter", seg=18, r2=0.105, bev=0, amp=0.002)
@@ -772,30 +785,82 @@ def facade_details(cA, cP):
 
 
 # ----------------------------------------------------------------- entorno
+def path_x(y):
+    """Eje del sendero: sale recto de la escalinata (x=0) y entra en el centro del porton con una S muy suave."""
+    y0, y1 = -8.5, FENCE[2] + 0.55
+    s = min(max((y0 - y) / (y0 - y1), 0.0), 1.0)
+    gx = math.sin((FENCE[2] + 9) * 0.22) * 1.2   # misma formula que el porton en stone_fence
+    return gx * s * s * (3 - 2 * s)
+
+
+def path_w(y):
+    """Semiancho: ensancha al pie de la escalinata (plazoleta) y se queda en ~1 m."""
+    t = min(max((-8.5 - y) / 2.4, 0.0), 1.0)
+    return 1.0 + 0.8 * (1.0 - t * t * (3 - 2 * t)) + 0.06 * math.sin(y * 1.7)
+
+
 def ground(cG):
     b = B("Env_Terrain", 0.25)
     b.box((0, -4, -0.2), (48, 44, 0.4), "M_Ground_Grass", bev=0, amp=0.045, cuts=24)
     b.finish(cG)
-    # sendero de losas hacia la escalinata
-    random.seed(5)
+    # sendero: cinta continua de tierra + losas irregulares escalonadas; arranca ancho al pie de la escalinata y
+    # se estrecha hasta el centro del porton (antes: ondulaba +-1.2 m, desalineado con escalera y porton)
+    import bmesh
+    rnd = random.Random(5)
     b = B("Env_Path", 0.5)
-    ys = [y for y in (-9.2 - i * 0.62 for i in range(24)) if y > FENCE[2] + 0.75]   # termina antes del porton
-    for i, y in enumerate(ys):
-        x = math.sin((y + 9) * 0.22) * 1.2 * min(1.0, (i + 1) / 8.0)
-        wdt = 2.2 + 0.3 * math.sin(i)
-        b.blob((x, y, 0.0), 1.2, "M_Ground_Earth", squash=(wdt / 2.4, 0.46, 0.04), sub=1, amp=0.01)
-        for dx in (-0.55, 0.55):
-            m = random.choice(["M_Path_Stone", "M_Path_StoneWarm", "M_Museum_Stone"])
-            b.blob((x + dx + random.uniform(-0.1, 0.1), y + random.uniform(-0.1, 0.1), 0.02), 0.38 + random.random() * 0.06, m,
-                   squash=(1.15, 0.8, 0.14), sub=1, amp=0.02, rot=(0, 0, random.uniform(0, 180)))
-    # plazoleta ante la escalinata
-    for i in range(14):
-        a = random.uniform(0, math.tau)
-        r = random.uniform(0.1, 1.7)
-        if -9.0 + math.sin(a) * r * 0.7 > -9.15:
-            continue
-        b.blob((math.cos(a) * r * 1.3, -9.0 + math.sin(a) * r * 0.7, 0.025), 0.38, random.choice(["M_Path_Stone", "M_Path_StoneWarm"]), squash=(1.15, 0.8, 0.14), sub=1, amp=0.02,
-               rot=(0, 0, random.uniform(0, 180)))
+    bm = b.bm
+    yA, yB = -8.5, FENCE[2] + 0.55
+    n = int((yA - yB) / 0.3)
+    ys = [yA - (yA - yB) * i / n for i in range(n + 1)]
+    mi_earth = b._mi("M_Ground_Earth")
+    rows = []
+    for y in ys:
+        cx, w = path_x(y), path_w(y)
+        row = []
+        for f, z in ((-1.0, 0.012), (-0.5, 0.035), (0.0, 0.045), (0.5, 0.035), (1.0, 0.012)):
+            wob = rnd.uniform(-0.07, 0.07) if abs(f) == 1.0 else rnd.uniform(-0.02, 0.02)
+            row.append(bm.verts.new((cx + f * (w + wob), y + rnd.uniform(-0.03, 0.03), z)))
+        rows.append(row)
+    fs = []
+    for i in range(len(rows) - 1):
+        for k in range(4):
+            f = bm.faces.new((rows[i][k], rows[i + 1][k], rows[i + 1][k + 1], rows[i][k + 1]))
+            f.material_index = mi_earth
+            f.smooth = False
+            fs.append(f)
+    bmesh.ops.recalc_face_normals(bm, faces=fs)
+    mats = ["M_Path_Stone", "M_Path_StoneWarm", "M_Path_StoneWarm", "M_Museum_Stone"]
+
+    def slab(x, y, sx, sy):
+        nv = rnd.choice((6, 7, 8))
+        yaw = rnd.uniform(-0.2, 0.2)
+        pts = []
+        for k in range(nv):
+            a = k * math.tau / nv + rnd.uniform(-0.15, 0.15)
+            px_, py_ = math.cos(a) * sx * rnd.uniform(0.88, 1.1), math.sin(a) * sy * rnd.uniform(0.88, 1.1)
+            pts.append((x + px_ * math.cos(yaw) - py_ * math.sin(yaw), y + px_ * math.sin(yaw) + py_ * math.cos(yaw), 0.035))
+        b.prism(pts, (0, 0, 0.055), rnd.choice(mats), bev=0.015, amp=0.01)
+
+    y, row_i = yA - 0.4, 0
+    while y > yB + 0.35:
+        cx, w = path_x(y), path_w(y)
+        cnt = 3 if w > 1.3 else 2
+        cnt = cnt if row_i % 2 == 0 else cnt - 1
+        step = min(0.9, (2 * w - 0.5) / max(cnt, 1))
+        for i in range(cnt):
+            slab(cx + (i - (cnt - 1) / 2) * step + rnd.uniform(-0.06, 0.06), y + rnd.uniform(-0.05, 0.05),
+                 rnd.uniform(0.28, 0.37), rnd.uniform(0.2, 0.27))
+        y -= rnd.uniform(0.56, 0.66)
+        row_i += 1
+    y = yA - 0.2     # piedras pequenas en los bordes: unen el sendero con la hierba
+    while y > yB:
+        cx, w = path_x(y), path_w(y)
+        for sd in (-1, 1):
+            if rnd.random() < 0.7:
+                r = rnd.uniform(0.1, 0.16)
+                b.blob((cx + sd * (w + rnd.uniform(-0.04, 0.08)), y + rnd.uniform(-0.15, 0.15), 0.03), r, rnd.choice(mats),
+                       squash=(1.2, 0.9, 0.45), sub=1, amp=0.01, rot=(0, 0, rnd.uniform(0, 180)))
+        y -= rnd.uniform(0.45, 0.7)
     b.finish(cG)
 
 
@@ -815,21 +880,57 @@ def flower(b, c, h=0.45, m="M_Flower_Yellow"):
 
 
 def cypress(b, tx, ty, hgt):
-    """Cipres en llama: copa estrecha, apuntada, con mechones que suben ondulando."""
-    b.cyl((tx, ty, 0.5), 0.2, 1.0, "M_Bark", seg=8, r2=0.15, bev=0, amp=0.03)
-    n = int(hgt / 0.3)
-    lean = random.uniform(-0.25, 0.25)
-    for i in range(n):
-        t = i / (n - 1)
-        r = 0.85 * math.sin(math.pi * (0.1 + 0.9 * t)) ** 0.7 * (1.0 - 0.5 * t) + 0.1
-        r *= random.uniform(0.85, 1.1)
-        a = t * 4.0 + random.uniform(-0.6, 0.6)
-        off = 0.1 + 0.08 * math.sin(i * 1.7)
-        x = tx + math.cos(a) * off + lean * t * t
-        y = ty + math.sin(a) * off
-        b.blob((x, y, 0.9 + t * hgt), r, random.choice(["M_Leaf_Dark", "M_Plant_Leaf", "M_Leaf_Dark"]),
-               squash=(0.85, 0.85, 1.6), sub=2, amp=r * 0.22, rot=(math.cos(a) * 10, math.sin(a) * 10, 0))
-    b.blob((tx + lean + 0.03, ty, 0.9 + hgt + 0.45), 0.16, "M_Leaf_Dark", squash=(0.75, 0.75, 2.4), sub=1, amp=0.04, rot=(0, 10, 0))
+    """Cipres en llama: UNA sola piel continua (tronco + copa + punta) con mechones que suben en espiral.
+    Antes eran ~26 bolas sueltas y una punta separada; ahora los anillos comparten vertices de abajo a arriba."""
+    import bmesh
+    rng = random.Random(int(tx * 100) * 7919 + int(ty * 100))   # propio: no altera la secuencia aleatoria global
+    N = 12                              # lados por anillo
+    zf0, zf1 = 0.9, 0.9 + hgt           # tramo de copa llena
+    top = zf1 + 0.7                     # apice
+    R = int(top / 0.22) + 1
+    lean = rng.uniform(-0.25, 0.25)
+    sm = lambda x: 0.0 if x <= 0 else 1.0 if x >= 1 else x * x * (3 - 2 * x)
+    bm = b.bm
+    mi_bark, mi_a, mi_b = b._mi("M_Bark"), b._mi("M_Leaf_Dark"), b._mi("M_Plant_Leaf")
+    rings = []
+    for i in range(R - 1):                # el ultimo anillo (r=0) se sustituye por el apice
+        z = top * i / (R - 1)
+        t = min(max((z - zf0) / hgt, 0.0), 1.0)
+        trunk = 0.2 - 0.05 * min(z / 0.9, 1.0)
+        rf = 0.85 * math.sin(math.pi * (0.1 + 0.9 * t)) ** 0.7 * (1.0 - 0.5 * t) + 0.1
+        w = sm((z - 0.55) / 0.5)                       # 0 en el tronco, 1 en la copa
+        r = trunk * (1 - w) + rf * w
+        if z > zf1:                                    # punta: afina hasta cerrar en un punto
+            r *= 1.0 - sm((z - zf1) / 0.7)
+        a = t * 4.0
+        off = (0.1 + 0.08 * math.sin(i * 1.7)) * w
+        cx, cy = tx + math.cos(a) * off + lean * t * t, ty + math.sin(a) * off
+        ring = []
+        for j in range(N):
+            th = j * math.tau / N
+            lobe = 1.0 + 0.22 * w * math.sin(3 * th + 5.5 * t * math.tau / 2) + rng.uniform(-0.07, 0.07) * w
+            rr = r * lobe
+            ring.append(bm.verts.new((cx + math.cos(th) * rr, cy + math.sin(th) * rr, z)))
+        rings.append(ring)
+    apex = bm.verts.new((tx + lean, ty, top + 0.1))
+    patch = {}
+    new = []
+    for i in range(R - 1):
+        zm = top * (i + 0.5) / (R - 1)
+        for j in range(N):
+            key = (i // 2, ((j + (i // 2) * 2) % N) // 2)   # parches que se desplazan en espiral
+            if key not in patch:
+                patch[key] = mi_a if rng.random() < 0.62 else mi_b
+            mi = mi_bark if zm < 0.8 else patch[key]
+            j1 = (j + 1) % N
+            if i < R - 2:
+                f = bm.faces.new((rings[i][j], rings[i][j1], rings[i + 1][j1], rings[i + 1][j]))
+            else:
+                f = bm.faces.new((rings[i][j], rings[i][j1], apex))
+            f.material_index = mi
+            f.smooth = False
+            new.append(f)
+    bmesh.ops.recalc_face_normals(bm, faces=new)
 
 
 def dab_flower(b, c, h, m):
@@ -857,7 +958,9 @@ BUSH_SPOTS = [(-9.4, -7.6, 0.8), (9.4, -7.6, 0.8), (-9.6, 6.9, 0.9), (9.6, 6.9, 
               (-8.85, -4.8, 0.42), (-8.85, 3.0, 0.42), (8.85, -4.6, 0.42), (8.85, 1.9, 0.42), (-8.85, -1.6, 0.38),
               (-14.5, -18.0, 0.8), (14.0, -18.5, 0.8), (-18.0, -2.0, 1.0), (18.0, -4.0, 0.9)]
 CYPRESSES = [(13.5, 8.0, 9.5), (-10.5, 11.0, 7.5), (15.2, 5.6, 6.0), (-15.0, 9.0, 8.5), (-18.0, 4.0, 8.0),
-             (12.5, -12.0, 7.0), (-7.0, 13.5, 6.5)]
+             (12.5, -12.0, 7.0), (-7.0, 13.5, 6.5),
+             # jardin delantero: flanquean el sendero sin taparlo (asimetricos a proposito)
+             (-9.5, -13.5, 7.0), (8.5, -15.0, 8.0), (-15.5, -12.0, 6.5), (16.5, -14.5, 7.5), (-12.0, -17.5, 6.0)]
 PROPS_XY = [(-3.3, -11.2), (3.3, -11.2), (-5.0, 6.9), (-2.6, -9.05), (2.6, -9.05), (0.9, -17.5), (-3.6, -7.7), (3.6, -7.7),
             (-1.2, -9.8), (7.15, 6.8), (1.8, 7.0), (-2.0, 7.05)]
 
@@ -875,7 +978,7 @@ def free_spot(x, y):
     for (px_, py_) in PROPS_XY:
         if math.hypot(x - px_, y - py_) < 1.2:
             return False
-    px = math.sin((y + 9) * 0.22) * 1.2
+    px = path_x(y)
     if y < -7.5 and abs(x - px) < 2.0:
         return False
     if abs(abs(x) - 4.4) < 2.2 and abs(y + 9.4) < 1.6:
@@ -895,6 +998,7 @@ def vegetation(cV):
         bush(b, (x, y, 0.0), r)
     b.finish(cV)
 
+    random.seed(22)   # los rosales usan su propio generador; esto fija el reparto de parterres y pradera
     b = B("Veg_FlowerBeds", 0.5)
     for sx in (-1, 1):   # parterres redondos con bordillo de piedra: girasoles al centro, corona de lavanda
         cx, cy = sx * 4.4, -9.4
@@ -967,7 +1071,7 @@ def stone_fence(cG, cV):
         G.pier(b, x, y, h=1.45, w=0.66)
 
     def leaves(cx, y, half, spring):
-        W = half - 0.04
+        W = half - 0.07   # cerrada: las dos hojas se tocan justo en el eje del porton
 
         def top(x):
             return 1.75 + 0.42 * (x / W) ** 1.6
@@ -995,8 +1099,22 @@ def stone_fence(cG, cV):
             for zz in (0.4, 1.5):
                 lb.cyl((0.0, 0, zz), 0.035, 0.14, "M_Museum_Brass", seg=8, bev=0, amp=0.0)
             lb.box((W - 0.09, 0.0, 1.05), (0.1, 0.06, 0.16), "M_Museum_Brass", bev=0.01, amp=0.001, cuts=0)
-        to_col(L.prop("Gate_Leaf_L", (cx - half + 0.17, y, 0.0), 70, leaf), cG)
-        to_col(L.prop("Gate_Leaf_R", (cx + half - 0.17, y, 0.0), 110, leaf), cG)
+        # Bisagra pegada a la cara interior de cada pilar (pilar: |x-cx| >= half). Origen = bisagra, 0 deg = CERRADA.
+        # La derecha es el espejo exacto de la izquierda (malla espejada), asi abrir/cerrar es +ang / -ang para animar.
+        hl = L.prop("Gate_Leaf_L", (cx - half + 0.04, y, 0.0), 0, leaf)
+        hr = L.prop("Gate_Leaf_R", (cx + half - 0.04, y, 0.0), 0, leaf)
+        import bmesh
+        from mathutils import Matrix
+        bm = bmesh.new()
+        bm.from_mesh(hr.data)
+        bmesh.ops.transform(bm, matrix=Matrix.Scale(-1, 4, (1, 0, 0)), verts=bm.verts)
+        bmesh.ops.reverse_faces(bm, faces=bm.faces)
+        bm.to_mesh(hr.data)
+        bm.free()
+        hl.rotation_euler.z = math.radians(90)    # abierta hacia el jardin, simetrica
+        hr.rotation_euler.z = math.radians(-90)
+        to_col(hl, cG)
+        to_col(hr, cG)
     G.gothic_gate(gt, leaves, gate, fy0, half=half)
     # hierba al pie del muro y de la cerca, y algun mechon sobre la albardilla
     for (A, C) in walls + pickets:
@@ -1163,6 +1281,25 @@ def cull_hidden(colls):
     return before, after
 
 
+def weld_clean(colls):
+    """Limpieza final: quita caras degeneradas y suelda vertices duplicados (1e-5 m). Solo posicion: UVs y materiales no cambian."""
+    import bmesh
+    for c in colls:
+        for ob in c.all_objects:
+            if ob.type != 'MESH' or not len(ob.data.vertices):
+                continue
+            bm = bmesh.new()
+            bm.from_mesh(ob.data)
+            bmesh.ops.dissolve_degenerate(bm, dist=1e-6, edges=bm.edges)
+            bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-5)
+            loose = [v for v in bm.verts if not v.link_faces and not v.link_edges]
+            if loose:
+                bmesh.ops.delete(bm, geom=loose, context='VERTS')
+            bm.to_mesh(ob.data)
+            bm.free()
+            ob.data.update()
+
+
 CULL_HIDDEN = True   # borra caras que nunca se ven desde fuera (ver cull_hidden)
 
 
@@ -1181,8 +1318,11 @@ def build():
     vegetation(cV)
     benches_and_lamps(cP)
     if CULL_HIDDEN:
+        # sin esto matrix_world de los ultimos props sigue en identidad y cull_hidden los toma por "interior" (Prop_Sign_Open salia vacio)
+        bpy.context.view_layer.update()
         bf, af = cull_hidden([cA, cP, cV, cG])
         print("caras ocultas borradas:", bf - af, "de", bf)
+    weld_clean([cA, cP, cV, cG])
     presentation(cS)
     # sin objetos sueltos en la raiz
     for ob in bpy.context.scene.collection.objects:

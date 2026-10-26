@@ -12,20 +12,9 @@
    "radius": 0.800000011920929
   },
   {
-   "name": "Light_GalleryII",
-   "type": "POINT",
-   "energy": 550.0,
-   "color": [
-    1.0,
-    0.8999999761581421,
-    0.7799999713897705
-   ],
-   "radius": 0.800000011920929
-  },
-  {
    "name": "Light_GalleryIII",
    "type": "POINT",
-   "energy": 380.0,
+   "energy": 430.0,
    "color": [
     1.0,
     0.8199999928474426,
@@ -47,7 +36,7 @@
   {
    "name": "Light_GalleryV_N",
    "type": "POINT",
-   "energy": 420.0,
+   "energy": 390.0,
    "color": [
     1.0,
     0.8999999761581421,
@@ -58,7 +47,7 @@
   {
    "name": "Light_GalleryV_S",
    "type": "POINT",
-   "energy": 420.0,
+   "energy": 390.0,
    "color": [
     1.0,
     0.8999999761581421,
@@ -230,6 +219,28 @@
    "radius": 0.5
   },
   {
+   "name": "Light_Reception_Break",
+   "type": "POINT",
+   "energy": 360.0,
+   "color": [
+    1.0,
+    0.8199999928474426,
+    0.6200000047683716
+   ],
+   "radius": 0.30000001192092896
+  },
+  {
+   "name": "Light_Reception_Desk",
+   "type": "POINT",
+   "energy": 420.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.800000011920929
+  },
+  {
    "name": "Light_Restroom_1",
    "type": "POINT",
    "energy": 110.0,
@@ -285,16 +296,55 @@
    "radius": 0.30000001192092896
   },
   {
-   "name": "Spot_GalleryV_Featured",
+   "name": "Spot_GalleryI_Key",
    "type": "SPOT",
-   "energy": 350.0,
+   "energy": 210.0,
    "color": [
     1.0,
     0.8999999761581421,
     0.7799999713897705
    ],
    "radius": 0.10000000149011612,
-   "spot_size_deg": 38.00000024201751,
+   "spot_size_deg": 42.00000152568579,
+   "spot_blend": 0.4000000059604645
+  },
+  {
+   "name": "Spot_GalleryIV_Key",
+   "type": "SPOT",
+   "energy": 210.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.10000000149011612,
+   "spot_size_deg": 42.00000152568579,
+   "spot_blend": 0.4000000059604645
+  },
+  {
+   "name": "Spot_GalleryV_Featured",
+   "type": "SPOT",
+   "energy": 330.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.10000000149011612,
+   "spot_size_deg": 48.0000017436409,
+   "spot_blend": 0.4000000059604645
+  },
+  {
+   "name": "Spot_GalleryVI_Key",
+   "type": "SPOT",
+   "energy": 210.0,
+   "color": [
+    1.0,
+    0.8999999761581421,
+    0.7799999713897705
+   ],
+   "radius": 0.10000000149011612,
+   "spot_size_deg": 42.00000152568579,
    "spot_blend": 0.4000000059604645
   },
   {

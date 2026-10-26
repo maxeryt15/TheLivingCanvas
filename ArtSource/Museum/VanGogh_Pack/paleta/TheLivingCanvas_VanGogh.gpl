@@ -1,0 +1,115 @@
+GIMP Palette
+Name: TheLivingCanvas_VanGogh
+Columns: 5
+#
+ 82 106 131 Azul cerúleo
+212 167  44 Amarillo cálido
+101 120  90 Verde oliva
+168  95  71 Terracota
+116 121 131 Azul grisáceo
+224 205 176 Crema envejecida
+185 174 152 Plaster oscuro
+221 214 202 Plaster base
+237 229 211 Plaster claro
+246 240 224 Plaster luz
+200 183 154 Plaster acento
+ 76  85  99 Stone_Blocks oscuro
+116 121 131 Stone_Blocks base
+139 144 154 Stone_Blocks claro
+165 159 151 Stone_Blocks luz
+ 82 106 131 Stone_Blocks acento
+111  58  46 Roof_Tiles oscuro
+168  95  71 Roof_Tiles base
+192 114  90 Roof_Tiles claro
+217 139  99 Roof_Tiles luz
+ 82 106 131 Roof_Tiles acento
+ 94  64  41 Wood_Planks oscuro
+154 110  74 Wood_Planks base
+181 132  89 Wood_Planks claro
+201 160 107 Wood_Planks luz
+ 82 106 131 Wood_Planks acento
+181 156 120 Wood_Grain oscuro
+221 214 202 Wood_Grain base
+232 217 188 Wood_Grain claro
+240 228 204 Wood_Grain luz
+201 160 107 Wood_Grain acento
+ 63  82  64 Painted_Boards oscuro
+101 120  90 Painted_Boards base
+122 143 105 Painted_Boards claro
+147 169 122 Painted_Boards luz
+212 167  44 Painted_Boards acento
+110 131 135 Floor_Tiles_Hall oscuro
+143 163 168 Floor_Tiles_Hall base
+168 186 189 Floor_Tiles_Hall claro
+201 211 210 Floor_Tiles_Hall luz
+212 167  44 Floor_Tiles_Hall acento
+168 151 124 Flagstones oscuro
+205 189 163 Flagstones base
+221 207 182 Flagstones claro
+235 223 200 Flagstones luz
+116 121 131 Flagstones acento
+ 94  96 102 Concrete oscuro
+123 125 130 Concrete base
+154 156 160 Concrete claro
+179 180 182 Concrete luz
+ 82 106 131 Concrete acento
+207 198 178 Ceramic_Glaze oscuro
+240 232 216 Ceramic_Glaze base
+248 242 230 Ceramic_Glaze claro
+255 255 255 Ceramic_Glaze luz
+ 82 106 131 Ceramic_Glaze acento
+ 47  51  60 Metal oscuro
+ 74  79  90 Metal base
+ 98 104 116 Metal claro
+126 133 144 Metal luz
+168  95  71 Metal acento
+154 116  40 Gilded oscuro
+196 154  58 Gilded base
+212 167  44 Gilded claro
+243 220 150 Gilded luz
+168  95  71 Gilded acento
+185 174 152 Fabric oscuro
+221 214 202 Fabric base
+237 229 211 Fabric claro
+246 240 224 Fabric luz
+200 183 154 Fabric acento
+111  58  46 Rug_Hall oscuro
+168  95  71 Rug_Hall base
+192 114  90 Rug_Hall claro
+217 139  99 Rug_Hall luz
+ 82 106 131 Rug_Hall acento
+ 79  99  71 Leaves oscuro
+101 120  90 Leaves base
+127 148 103 Leaves claro
+147 169 122 Leaves luz
+212 167  44 Leaves acento
+184 133  26 Petals oscuro
+212 167  44 Petals base
+232 196  79 Petals claro
+242 220 138 Petals luz
+168  95  71 Petals acento
+ 86 106  68 Grass_Ground oscuro
+110 129  87 Grass_Ground base
+134 154 107 Grass_Ground claro
+156 174 123 Grass_Ground luz
+212 167  44 Grass_Ground acento
+111 114 122 Path_Stone oscuro
+154 154 152 Path_Stone base
+176 173 165 Path_Stone claro
+198 183 154 Path_Stone luz
+168  95  71 Path_Stone acento
+ 47  33  25 Bark oscuro
+ 91  64  48 Bark base
+116  84  64 Bark claro
+138 106  82 Bark luz
+101 120  90 Bark acento
+ 45  74  94 Glass oscuro
+ 69 111 136 Glass base
+ 91 135 160 Glass claro
+200 220 230 Glass luz
+212 167  44 Glass acento
+207 196 168 Paper_Canvas oscuro
+239 230 207 Paper_Canvas base
+246 238 220 Paper_Canvas claro
+255 251 239 Paper_Canvas luz
+200 183 154 Paper_Canvas acento

@@ -1,0 +1,332 @@
+00:03.187  blend            | Read blend: "D:\TheLivingCanvas\ArtSource\NPC\NPCs_Shell_Face_CORRECTIVES_WORK.blend"
+BlenderMCP addon registered
+Reloading external rigs...
+Reloading external metarigs...
+[INFO ] services.locationservice ...............: Not adding link to MakeHuman user data, since neither explicit path nor auto-discovery is set in preferences.
+[INFO ] mpfb.init ..............................: Build info 20261010
+[INFO ] mpfb.init ..............................: MPFB initialization has finished.
+  Corrective_Hips_Crouch_20 pasada 1: ofensores B=3 A=8, aristas estiradas=28
+  Corrective_Hips_Crouch_20 pasada 2: ofensores B=56 A=8, aristas estiradas=25
+  Corrective_Hips_Crouch_20 pasada 3: ofensores B=23 A=9, aristas estiradas=33
+  Corrective_Hips_Crouch_20 pasada 4: ofensores B=46 A=18, aristas estiradas=0
+  Corrective_Hips_Crouch_20 pasada 5: ofensores B=36 A=14, aristas estiradas=0
+  Corrective_Hips_Crouch_20 pasada 6: ofensores B=25 A=12, aristas estiradas=0
+Cur: key Corrective_Hips_Crouch_20 (pose al 20 %): 672 vertices, mov. max 44.1 mm
+Cur: driver Corrective_Hips_Crouch_20: thigh_l rot X signo -1, pico a 22 deg (0 en 0, 0 en 44)
+  Corrective_Hips_Crouch_40 pasada 1: ofensores B=3 A=11, aristas estiradas=98
+  Corrective_Hips_Crouch_40 pasada 2: ofensores B=65 A=19, aristas estiradas=47
+  Corrective_Hips_Crouch_40 pasada 3: ofensores B=59 A=15, aristas estiradas=73
+  Corrective_Hips_Crouch_40 pasada 4: ofensores B=44 A=10, aristas estiradas=0
+  Corrective_Hips_Crouch_40 pasada 5: ofensores B=32 A=13, aristas estiradas=0
+  Corrective_Hips_Crouch_40 pasada 6: ofensores B=10 A=22, aristas estiradas=0
+Cur: key Corrective_Hips_Crouch_40 (pose al 40 %): 840 vertices, mov. max 56.6 mm
+Cur: driver Corrective_Hips_Crouch_40: thigh_l rot X signo -1, pico a 44 deg (0 en 22, 0 en 66)
+  Corrective_Hips_Crouch_60 pasada 1: ofensores B=4 A=9, aristas estiradas=154
+  Corrective_Hips_Crouch_60 pasada 2: ofensores B=40 A=12, aristas estiradas=66
+  Corrective_Hips_Crouch_60 pasada 3: ofensores B=46 A=6, aristas estiradas=86
+  Corrective_Hips_Crouch_60 pasada 4: ofensores B=7 A=17, aristas estiradas=0
+  Corrective_Hips_Crouch_60 pasada 5: ofensores B=86 A=23, aristas estiradas=0
+  Corrective_Hips_Crouch_60 pasada 6: ofensores B=16 A=19, aristas estiradas=0
+Cur: key Corrective_Hips_Crouch_60 (pose al 60 %): 1050 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Hips_Crouch_60: thigh_l rot X signo -1, pico a 66 deg (0 en 44, 0 en 88)
+  Corrective_Hips_Crouch_80 pasada 1: ofensores B=8 A=12, aristas estiradas=228
+  Corrective_Hips_Crouch_80 pasada 2: ofensores B=66 A=15, aristas estiradas=51
+  Corrective_Hips_Crouch_80 pasada 3: ofensores B=40 A=11, aristas estiradas=54
+  Corrective_Hips_Crouch_80 pasada 4: ofensores B=41 A=9, aristas estiradas=0
+  Corrective_Hips_Crouch_80 pasada 5: ofensores B=38 A=14, aristas estiradas=0
+  Corrective_Hips_Crouch_80 pasada 6: ofensores B=39 A=16, aristas estiradas=0
+Cur: key Corrective_Hips_Crouch_80 (pose al 80 %): 1067 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Hips_Crouch_80: thigh_l rot X signo -1, pico a 88 deg (0 en 66, 0 en 110)
+  Corrective_Hips_Crouch_100 pasada 1: ofensores B=11 A=16, aristas estiradas=272
+  Corrective_Hips_Crouch_100 pasada 2: ofensores B=75 A=21, aristas estiradas=64
+  Corrective_Hips_Crouch_100 pasada 3: ofensores B=57 A=18, aristas estiradas=89
+  Corrective_Hips_Crouch_100 pasada 4: ofensores B=50 A=16, aristas estiradas=0
+  Corrective_Hips_Crouch_100 pasada 5: ofensores B=43 A=18, aristas estiradas=0
+  Corrective_Hips_Crouch_100 pasada 6: ofensores B=12 A=20, aristas estiradas=0
+Cur: key Corrective_Hips_Crouch_100 (pose al 100 %): 1139 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Hips_Crouch_100: thigh_l rot X signo -1, pico a 110 deg (0 en 88)
+  Corrective_L_Knee_Bend_20 pasada 1: ofensores B=45 A=20, aristas estiradas=30
+  Corrective_L_Knee_Bend_20 pasada 2: ofensores B=51 A=17, aristas estiradas=35
+  Corrective_L_Knee_Bend_20 pasada 3: ofensores B=53 A=14, aristas estiradas=54
+  Corrective_L_Knee_Bend_20 pasada 4: ofensores B=26 A=22, aristas estiradas=0
+  Corrective_L_Knee_Bend_20 pasada 5: ofensores B=25 A=8, aristas estiradas=0
+  Corrective_L_Knee_Bend_20 pasada 6: ofensores B=28 A=10, aristas estiradas=0
+Cur: key Corrective_L_Knee_Bend_20 (pose al 20 %): 543 vertices, mov. max 30.9 mm
+Cur: driver Corrective_L_Knee_Bend_20: calf_l rot X signo +1, pico a 24 deg (0 en 0, 0 en 48)
+  Corrective_L_Knee_Bend_40 pasada 1: ofensores B=53 A=26, aristas estiradas=98
+  Corrective_L_Knee_Bend_40 pasada 2: ofensores B=32 A=23, aristas estiradas=39
+  Corrective_L_Knee_Bend_40 pasada 3: ofensores B=36 A=27, aristas estiradas=52
+  Corrective_L_Knee_Bend_40 pasada 4: ofensores B=24 A=26, aristas estiradas=0
+  Corrective_L_Knee_Bend_40 pasada 5: ofensores B=39 A=15, aristas estiradas=0
+  Corrective_L_Knee_Bend_40 pasada 6: ofensores B=12 A=14, aristas estiradas=0
+Cur: key Corrective_L_Knee_Bend_40 (pose al 40 %): 713 vertices, mov. max 60.0 mm
+Cur: driver Corrective_L_Knee_Bend_40: calf_l rot X signo +1, pico a 48 deg (0 en 24, 0 en 72)
+  Corrective_L_Knee_Bend_60 pasada 1: ofensores B=44 A=23, aristas estiradas=99
+  Corrective_L_Knee_Bend_60 pasada 2: ofensores B=39 A=21, aristas estiradas=43
+  Corrective_L_Knee_Bend_60 pasada 3: ofensores B=56 A=15, aristas estiradas=41
+  Corrective_L_Knee_Bend_60 pasada 4: ofensores B=18 A=12, aristas estiradas=0
+  Corrective_L_Knee_Bend_60 pasada 5: ofensores B=46 A=14, aristas estiradas=0
+  Corrective_L_Knee_Bend_60 pasada 6: ofensores B=23 A=8, aristas estiradas=0
+Cur: key Corrective_L_Knee_Bend_60 (pose al 60 %): 691 vertices, mov. max 47.1 mm
+Cur: driver Corrective_L_Knee_Bend_60: calf_l rot X signo +1, pico a 72 deg (0 en 48, 0 en 96)
+  Corrective_L_Knee_Bend_80 pasada 1: ofensores B=55 A=27, aristas estiradas=133
+  Corrective_L_Knee_Bend_80 pasada 2: ofensores B=44 A=19, aristas estiradas=68
+  Corrective_L_Knee_Bend_80 pasada 3: ofensores B=43 A=14, aristas estiradas=51
+  Corrective_L_Knee_Bend_80 pasada 4: ofensores B=31 A=20, aristas estiradas=0
+  Corrective_L_Knee_Bend_80 pasada 5: ofensores B=24 A=15, aristas estiradas=0
+  Corrective_L_Knee_Bend_80 pasada 6: ofensores B=41 A=16, aristas estiradas=0
+Cur: key Corrective_L_Knee_Bend_80 (pose al 80 %): 896 vertices, mov. max 59.6 mm
+Cur: driver Corrective_L_Knee_Bend_80: calf_l rot X signo +1, pico a 96 deg (0 en 72, 0 en 120)
+  Corrective_L_Knee_Bend_100 pasada 1: ofensores B=68 A=26, aristas estiradas=139
+  Corrective_L_Knee_Bend_100 pasada 2: ofensores B=34 A=30, aristas estiradas=69
+  Corrective_L_Knee_Bend_100 pasada 3: ofensores B=64 A=27, aristas estiradas=76
+  Corrective_L_Knee_Bend_100 pasada 4: ofensores B=16 A=24, aristas estiradas=0
+  Corrective_L_Knee_Bend_100 pasada 5: ofensores B=55 A=17, aristas estiradas=0
+  Corrective_L_Knee_Bend_100 pasada 6: ofensores B=32 A=18, aristas estiradas=0
+Cur: key Corrective_L_Knee_Bend_100 (pose al 100 %): 978 vertices, mov. max 60.0 mm
+Cur: driver Corrective_L_Knee_Bend_100: calf_l rot X signo +1, pico a 120 deg (0 en 96)
+  Corrective_L_Shoulder_Cross_20 pasada 1: ofensores B=3 A=7, aristas estiradas=1
+  Corrective_L_Shoulder_Cross_20 pasada 2: ofensores B=11 A=17, aristas estiradas=4
+  Corrective_L_Shoulder_Cross_20 pasada 3: ofensores B=89 A=20, aristas estiradas=22
+  Corrective_L_Shoulder_Cross_20 pasada 4: ofensores B=10 A=24, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_20 pasada 5: ofensores B=88 A=21, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_20 pasada 6: ofensores B=22 A=18, aristas estiradas=0
+Cur: key Corrective_L_Shoulder_Cross_20 (pose al 20 %): 554 vertices, mov. max 59.7 mm
+Cur: driver Corrective_L_Shoulder_Cross_20: upperarm_l rot Z signo -1, pico a 20 deg (0 en 0, 0 en 40)
+  Corrective_L_Shoulder_Cross_40 pasada 1: ofensores B=2 A=17, aristas estiradas=4
+  Corrective_L_Shoulder_Cross_40 pasada 2: ofensores B=69 A=16, aristas estiradas=23
+  Corrective_L_Shoulder_Cross_40 pasada 3: ofensores B=24 A=35, aristas estiradas=35
+  Corrective_L_Shoulder_Cross_40 pasada 4: ofensores B=75 A=18, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_40 pasada 5: ofensores B=18 A=23, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_40 pasada 6: ofensores B=70 A=20, aristas estiradas=0
+Cur: key Corrective_L_Shoulder_Cross_40 (pose al 40 %): 751 vertices, mov. max 60.0 mm
+Cur: driver Corrective_L_Shoulder_Cross_40: upperarm_l rot Z signo -1, pico a 40 deg (0 en 20, 0 en 60)
+  Corrective_L_Shoulder_Cross_60 pasada 1: ofensores B=1 A=7, aristas estiradas=14
+  Corrective_L_Shoulder_Cross_60 pasada 2: ofensores B=4 A=13, aristas estiradas=12
+  Corrective_L_Shoulder_Cross_60 pasada 3: ofensores B=47 A=25, aristas estiradas=58
+  Corrective_L_Shoulder_Cross_60 pasada 4: ofensores B=53 A=19, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_60 pasada 5: ofensores B=12 A=23, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_60 pasada 6: ofensores B=78 A=23, aristas estiradas=0
+Cur: key Corrective_L_Shoulder_Cross_60 (pose al 60 %): 720 vertices, mov. max 59.5 mm
+Cur: driver Corrective_L_Shoulder_Cross_60: upperarm_l rot Z signo -1, pico a 60 deg (0 en 40, 0 en 80)
+  Corrective_L_Shoulder_Cross_80 pasada 1: ofensores B=2 A=5, aristas estiradas=22
+  Corrective_L_Shoulder_Cross_80 pasada 2: ofensores B=30 A=10, aristas estiradas=10
+  Corrective_L_Shoulder_Cross_80 pasada 3: ofensores B=36 A=28, aristas estiradas=45
+  Corrective_L_Shoulder_Cross_80 pasada 4: ofensores B=62 A=15, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_80 pasada 5: ofensores B=32 A=18, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_80 pasada 6: ofensores B=17 A=18, aristas estiradas=0
+Cur: key Corrective_L_Shoulder_Cross_80 (pose al 80 %): 690 vertices, mov. max 60.0 mm
+Cur: driver Corrective_L_Shoulder_Cross_80: upperarm_l rot Z signo -1, pico a 80 deg (0 en 60, 0 en 100)
+  Corrective_L_Shoulder_Cross_100 pasada 1: ofensores B=4 A=13, aristas estiradas=32
+  Corrective_L_Shoulder_Cross_100 pasada 2: ofensores B=58 A=17, aristas estiradas=18
+  Corrective_L_Shoulder_Cross_100 pasada 3: ofensores B=47 A=18, aristas estiradas=48
+  Corrective_L_Shoulder_Cross_100 pasada 4: ofensores B=38 A=19, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_100 pasada 5: ofensores B=63 A=11, aristas estiradas=0
+  Corrective_L_Shoulder_Cross_100 pasada 6: ofensores B=26 A=10, aristas estiradas=0
+Cur: key Corrective_L_Shoulder_Cross_100 (pose al 100 %): 607 vertices, mov. max 60.0 mm
+Cur: driver Corrective_L_Shoulder_Cross_100: upperarm_l rot Z signo -1, pico a 100 deg (0 en 80)
+  Corrective_R_Shoulder_Cross_20 pasada 1: ofensores B=1 A=7, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_20 pasada 2: ofensores B=60 A=17, aristas estiradas=20
+  Corrective_R_Shoulder_Cross_20 pasada 3: ofensores B=46 A=14, aristas estiradas=40
+  Corrective_R_Shoulder_Cross_20 pasada 4: ofensores B=38 A=16, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_20 pasada 5: ofensores B=34 A=10, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_20 pasada 6: ofensores B=38 A=12, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Cross_20 (pose al 20 %): 547 vertices, mov. max 48.8 mm
+Cur: driver Corrective_R_Shoulder_Cross_20: upperarm_r rot Z signo +1, pico a 20 deg (0 en 0, 0 en 40)
+  Corrective_R_Shoulder_Cross_40 pasada 1: ofensores B=7 A=14, aristas estiradas=5
+  Corrective_R_Shoulder_Cross_40 pasada 2: ofensores B=68 A=15, aristas estiradas=16
+  Corrective_R_Shoulder_Cross_40 pasada 3: ofensores B=50 A=19, aristas estiradas=28
+  Corrective_R_Shoulder_Cross_40 pasada 4: ofensores B=58 A=16, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_40 pasada 5: ofensores B=47 A=11, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_40 pasada 6: ofensores B=9 A=19, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Cross_40 (pose al 40 %): 662 vertices, mov. max 60.0 mm
+Cur: driver Corrective_R_Shoulder_Cross_40: upperarm_r rot Z signo +1, pico a 40 deg (0 en 20, 0 en 60)
+  Corrective_R_Shoulder_Cross_60 pasada 1: ofensores B=9 A=10, aristas estiradas=16
+  Corrective_R_Shoulder_Cross_60 pasada 2: ofensores B=27 A=11, aristas estiradas=20
+  Corrective_R_Shoulder_Cross_60 pasada 3: ofensores B=65 A=21, aristas estiradas=40
+  Corrective_R_Shoulder_Cross_60 pasada 4: ofensores B=56 A=19, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_60 pasada 5: ofensores B=41 A=6, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_60 pasada 6: ofensores B=37 A=15, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Cross_60 (pose al 60 %): 549 vertices, mov. max 51.3 mm
+Cur: driver Corrective_R_Shoulder_Cross_60: upperarm_r rot Z signo +1, pico a 60 deg (0 en 40, 0 en 80)
+  Corrective_R_Shoulder_Cross_80 pasada 1: ofensores B=10 A=8, aristas estiradas=25
+  Corrective_R_Shoulder_Cross_80 pasada 2: ofensores B=32 A=11, aristas estiradas=10
+  Corrective_R_Shoulder_Cross_80 pasada 3: ofensores B=36 A=17, aristas estiradas=34
+  Corrective_R_Shoulder_Cross_80 pasada 4: ofensores B=61 A=16, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_80 pasada 5: ofensores B=41 A=10, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_80 pasada 6: ofensores B=43 A=15, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Cross_80 (pose al 80 %): 632 vertices, mov. max 60.0 mm
+Cur: driver Corrective_R_Shoulder_Cross_80: upperarm_r rot Z signo +1, pico a 80 deg (0 en 60, 0 en 100)
+  Corrective_R_Shoulder_Cross_100 pasada 1: ofensores B=12 A=11, aristas estiradas=31
+  Corrective_R_Shoulder_Cross_100 pasada 2: ofensores B=53 A=19, aristas estiradas=15
+  Corrective_R_Shoulder_Cross_100 pasada 3: ofensores B=36 A=13, aristas estiradas=26
+  Corrective_R_Shoulder_Cross_100 pasada 4: ofensores B=46 A=22, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_100 pasada 5: ofensores B=57 A=17, aristas estiradas=0
+  Corrective_R_Shoulder_Cross_100 pasada 6: ofensores B=48 A=14, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Cross_100 (pose al 100 %): 716 vertices, mov. max 60.0 mm
+Cur: driver Corrective_R_Shoulder_Cross_100: upperarm_r rot Z signo +1, pico a 100 deg (0 en 80)
+  Corrective_R_Shoulder_Forward_20 pasada 1: ofensores B=3 A=15, aristas estiradas=2
+  Corrective_R_Shoulder_Forward_20 pasada 2: ofensores B=69 A=16, aristas estiradas=16
+  Corrective_R_Shoulder_Forward_20 pasada 3: ofensores B=39 A=30, aristas estiradas=43
+  Corrective_R_Shoulder_Forward_20 pasada 4: ofensores B=59 A=22, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_20 pasada 5: ofensores B=60 A=13, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_20 pasada 6: ofensores B=21 A=17, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Forward_20 (pose al 20 %): 608 vertices, mov. max 55.3 mm
+Cur: driver Corrective_R_Shoulder_Forward_20: upperarm_r rot X signo +1, pico a 18 deg (0 en 0, 0 en 36)
+  Corrective_R_Shoulder_Forward_40 pasada 1: ofensores B=2 A=12, aristas estiradas=10
+  Corrective_R_Shoulder_Forward_40 pasada 2: ofensores B=45 A=14, aristas estiradas=5
+  Corrective_R_Shoulder_Forward_40 pasada 3: ofensores B=33 A=29, aristas estiradas=27
+  Corrective_R_Shoulder_Forward_40 pasada 4: ofensores B=62 A=18, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_40 pasada 5: ofensores B=31 A=26, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_40 pasada 6: ofensores B=56 A=23, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Forward_40 (pose al 40 %): 636 vertices, mov. max 60.0 mm
+Cur: driver Corrective_R_Shoulder_Forward_40: upperarm_r rot X signo +1, pico a 36 deg (0 en 18, 0 en 54)
+  Corrective_R_Shoulder_Forward_60 pasada 1: ofensores B=3 A=14, aristas estiradas=19
+  Corrective_R_Shoulder_Forward_60 pasada 2: ofensores B=46 A=19, aristas estiradas=9
+  Corrective_R_Shoulder_Forward_60 pasada 3: ofensores B=60 A=28, aristas estiradas=54
+  Corrective_R_Shoulder_Forward_60 pasada 4: ofensores B=57 A=21, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_60 pasada 5: ofensores B=39 A=20, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_60 pasada 6: ofensores B=44 A=12, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Forward_60 (pose al 60 %): 668 vertices, mov. max 55.3 mm
+Cur: driver Corrective_R_Shoulder_Forward_60: upperarm_r rot X signo +1, pico a 54 deg (0 en 36, 0 en 72)
+  Corrective_R_Shoulder_Forward_80 pasada 1: ofensores B=8 A=11, aristas estiradas=23
+  Corrective_R_Shoulder_Forward_80 pasada 2: ofensores B=49 A=14, aristas estiradas=12
+  Corrective_R_Shoulder_Forward_80 pasada 3: ofensores B=35 A=17, aristas estiradas=35
+  Corrective_R_Shoulder_Forward_80 pasada 4: ofensores B=49 A=9, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_80 pasada 5: ofensores B=38 A=8, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_80 pasada 6: ofensores B=57 A=8, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Forward_80 (pose al 80 %): 557 vertices, mov. max 57.7 mm
+Cur: driver Corrective_R_Shoulder_Forward_80: upperarm_r rot X signo +1, pico a 72 deg (0 en 54, 0 en 90)
+  Corrective_R_Shoulder_Forward_100 pasada 1: ofensores B=8 A=11, aristas estiradas=32
+  Corrective_R_Shoulder_Forward_100 pasada 2: ofensores B=51 A=12, aristas estiradas=18
+  Corrective_R_Shoulder_Forward_100 pasada 3: ofensores B=30 A=23, aristas estiradas=26
+  Corrective_R_Shoulder_Forward_100 pasada 4: ofensores B=61 A=19, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_100 pasada 5: ofensores B=43 A=18, aristas estiradas=0
+  Corrective_R_Shoulder_Forward_100 pasada 6: ofensores B=56 A=20, aristas estiradas=0
+Cur: key Corrective_R_Shoulder_Forward_100 (pose al 100 %): 732 vertices, mov. max 60.0 mm
+Cur: driver Corrective_R_Shoulder_Forward_100: upperarm_r rot X signo +1, pico a 90 deg (0 en 72)
+  Corrective_R_Leg_Abduct_20 pasada 1: ofensores B=2 A=5, aristas estiradas=4
+  Corrective_R_Leg_Abduct_20 pasada 2: ofensores B=24 A=8, aristas estiradas=20
+  Corrective_R_Leg_Abduct_20 pasada 3: ofensores B=66 A=17, aristas estiradas=26
+  Corrective_R_Leg_Abduct_20 pasada 4: ofensores B=31 A=14, aristas estiradas=0
+  Corrective_R_Leg_Abduct_20 pasada 5: ofensores B=49 A=8, aristas estiradas=0
+  Corrective_R_Leg_Abduct_20 pasada 6: ofensores B=17 A=11, aristas estiradas=0
+Cur: key Corrective_R_Leg_Abduct_20 (pose al 20 %): 507 vertices, mov. max 40.3 mm
+Cur: driver Corrective_R_Leg_Abduct_20: thigh_r rot Z signo +1, pico a 8 deg (0 en 0, 0 en 16)
+  Corrective_R_Leg_Abduct_40 pasada 1: ofensores B=3 A=5, aristas estiradas=12
+  Corrective_R_Leg_Abduct_40 pasada 2: ofensores B=10 A=5, aristas estiradas=14
+  Corrective_R_Leg_Abduct_40 pasada 3: ofensores B=37 A=10, aristas estiradas=40
+  Corrective_R_Leg_Abduct_40 pasada 4: ofensores B=51 A=10, aristas estiradas=0
+  Corrective_R_Leg_Abduct_40 pasada 5: ofensores B=57 A=5, aristas estiradas=0
+  Corrective_R_Leg_Abduct_40 pasada 6: ofensores B=44 A=3, aristas estiradas=0
+Cur: key Corrective_R_Leg_Abduct_40 (pose al 40 %): 548 vertices, mov. max 59.8 mm
+Cur: driver Corrective_R_Leg_Abduct_40: thigh_r rot Z signo +1, pico a 16 deg (0 en 8, 0 en 24)
+  Corrective_R_Leg_Abduct_60 pasada 1: ofensores B=4 A=6, aristas estiradas=33
+  Corrective_R_Leg_Abduct_60 pasada 2: ofensores B=52 A=17, aristas estiradas=39
+  Corrective_R_Leg_Abduct_60 pasada 3: ofensores B=63 A=13, aristas estiradas=62
+  Corrective_R_Leg_Abduct_60 pasada 4: ofensores B=32 A=10, aristas estiradas=0
+  Corrective_R_Leg_Abduct_60 pasada 5: ofensores B=45 A=8, aristas estiradas=0
+  Corrective_R_Leg_Abduct_60 pasada 6: ofensores B=8 A=12, aristas estiradas=0
+Cur: key Corrective_R_Leg_Abduct_60 (pose al 60 %): 604 vertices, mov. max 60.0 mm
+Cur: driver Corrective_R_Leg_Abduct_60: thigh_r rot Z signo +1, pico a 24 deg (0 en 16, 0 en 32)
+  Corrective_R_Leg_Abduct_80 pasada 1: ofensores B=1 A=8, aristas estiradas=49
+  Corrective_R_Leg_Abduct_80 pasada 2: ofensores B=55 A=11, aristas estiradas=45
+  Corrective_R_Leg_Abduct_80 pasada 3: ofensores B=34 A=9, aristas estiradas=57
+  Corrective_R_Leg_Abduct_80 pasada 4: ofensores B=47 A=11, aristas estiradas=0
+  Corrective_R_Leg_Abduct_80 pasada 5: ofensores B=34 A=16, aristas estiradas=0
+  Corrective_R_Leg_Abduct_80 pasada 6: ofensores B=52 A=9, aristas estiradas=0
+Cur: key Corrective_R_Leg_Abduct_80 (pose al 80 %): 706 vertices, mov. max 60.0 mm
+Cur: driver Corrective_R_Leg_Abduct_80: thigh_r rot Z signo +1, pico a 32 deg (0 en 24, 0 en 40)
+  Corrective_R_Leg_Abduct_100 pasada 1: ofensores B=4 A=7, aristas estiradas=63
+  Corrective_R_Leg_Abduct_100 pasada 2: ofensores B=27 A=8, aristas estiradas=50
+  Corrective_R_Leg_Abduct_100 pasada 3: ofensores B=51 A=13, aristas estiradas=58
+  Corrective_R_Leg_Abduct_100 pasada 4: ofensores B=66 A=8, aristas estiradas=0
+  Corrective_R_Leg_Abduct_100 pasada 5: ofensores B=11 A=10, aristas estiradas=0
+  Corrective_R_Leg_Abduct_100 pasada 6: ofensores B=63 A=10, aristas estiradas=0
+Cur: key Corrective_R_Leg_Abduct_100 (pose al 100 %): 752 vertices, mov. max 60.0 mm
+Cur: driver Corrective_R_Leg_Abduct_100: thigh_r rot Z signo +1, pico a 40 deg (0 en 32)
+  Corrective_Spine_Bend_20 pasada 1: ofensores B=2 A=4, aristas estiradas=9
+  Corrective_Spine_Bend_20 pasada 2: ofensores B=0 A=9, aristas estiradas=3
+  Corrective_Spine_Bend_20 pasada 3: ofensores B=73 A=12, aristas estiradas=26
+  Corrective_Spine_Bend_20 pasada 4: ofensores B=10 A=19, aristas estiradas=0
+  Corrective_Spine_Bend_20 pasada 5: ofensores B=70 A=19, aristas estiradas=0
+  Corrective_Spine_Bend_20 pasada 6: ofensores B=28 A=17, aristas estiradas=0
+Cur: key Corrective_Spine_Bend_20 (pose al 20 %): 561 vertices, mov. max 52.9 mm
+Cur: driver Corrective_Spine_Bend_20: spine_01 rot X signo +1, pico a 7 deg (0 en 0, 0 en 14)
+  Corrective_Spine_Bend_40 pasada 1: ofensores B=2 A=8, aristas estiradas=25
+  Corrective_Spine_Bend_40 pasada 2: ofensores B=59 A=20, aristas estiradas=7
+  Corrective_Spine_Bend_40 pasada 3: ofensores B=48 A=11, aristas estiradas=36
+  Corrective_Spine_Bend_40 pasada 4: ofensores B=54 A=18, aristas estiradas=0
+  Corrective_Spine_Bend_40 pasada 5: ofensores B=44 A=21, aristas estiradas=0
+  Corrective_Spine_Bend_40 pasada 6: ofensores B=44 A=15, aristas estiradas=0
+Cur: key Corrective_Spine_Bend_40 (pose al 40 %): 686 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Spine_Bend_40: spine_01 rot X signo +1, pico a 14 deg (0 en 7, 0 en 21)
+  Corrective_Spine_Bend_60 pasada 1: ofensores B=2 A=8, aristas estiradas=49
+  Corrective_Spine_Bend_60 pasada 2: ofensores B=27 A=14, aristas estiradas=30
+  Corrective_Spine_Bend_60 pasada 3: ofensores B=56 A=14, aristas estiradas=39
+  Corrective_Spine_Bend_60 pasada 4: ofensores B=52 A=27, aristas estiradas=0
+  Corrective_Spine_Bend_60 pasada 5: ofensores B=39 A=21, aristas estiradas=0
+  Corrective_Spine_Bend_60 pasada 6: ofensores B=45 A=12, aristas estiradas=0
+Cur: key Corrective_Spine_Bend_60 (pose al 60 %): 731 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Spine_Bend_60: spine_01 rot X signo +1, pico a 21 deg (0 en 14, 0 en 28)
+  Corrective_Spine_Bend_80 pasada 1: ofensores B=3 A=8, aristas estiradas=67
+  Corrective_Spine_Bend_80 pasada 2: ofensores B=54 A=14, aristas estiradas=36
+  Corrective_Spine_Bend_80 pasada 3: ofensores B=55 A=14, aristas estiradas=46
+  Corrective_Spine_Bend_80 pasada 4: ofensores B=44 A=13, aristas estiradas=0
+  Corrective_Spine_Bend_80 pasada 5: ofensores B=51 A=17, aristas estiradas=0
+  Corrective_Spine_Bend_80 pasada 6: ofensores B=13 A=13, aristas estiradas=0
+Cur: key Corrective_Spine_Bend_80 (pose al 80 %): 692 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Spine_Bend_80: spine_01 rot X signo +1, pico a 28 deg (0 en 21, 0 en 35)
+  Corrective_Spine_Bend_100 pasada 1: ofensores B=4 A=9, aristas estiradas=94
+  Corrective_Spine_Bend_100 pasada 2: ofensores B=52 A=13, aristas estiradas=35
+  Corrective_Spine_Bend_100 pasada 3: ofensores B=61 A=15, aristas estiradas=53
+  Corrective_Spine_Bend_100 pasada 4: ofensores B=40 A=11, aristas estiradas=0
+  Corrective_Spine_Bend_100 pasada 5: ofensores B=57 A=11, aristas estiradas=0
+  Corrective_Spine_Bend_100 pasada 6: ofensores B=33 A=16, aristas estiradas=0
+Cur: key Corrective_Spine_Bend_100 (pose al 100 %): 779 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Spine_Bend_100: spine_01 rot X signo +1, pico a 35 deg (0 en 28)
+  Corrective_Spine_Twist_20 pasada 1: ofensores B=2 A=14, aristas estiradas=8
+  Corrective_Spine_Twist_20 pasada 2: ofensores B=68 A=16, aristas estiradas=4
+  Corrective_Spine_Twist_20 pasada 3: ofensores B=36 A=16, aristas estiradas=44
+  Corrective_Spine_Twist_20 pasada 4: ofensores B=60 A=25, aristas estiradas=0
+  Corrective_Spine_Twist_20 pasada 5: ofensores B=36 A=35, aristas estiradas=0
+  Corrective_Spine_Twist_20 pasada 6: ofensores B=61 A=29, aristas estiradas=0
+Cur: key Corrective_Spine_Twist_20 (pose al 20 %): 642 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Spine_Twist_20: spine_02 rot X signo +1, pico a 9 deg (0 en 0, 0 en 18)
+  Corrective_Spine_Twist_40 pasada 1: ofensores B=3 A=8, aristas estiradas=15
+  Corrective_Spine_Twist_40 pasada 2: ofensores B=28 A=10, aristas estiradas=8
+  Corrective_Spine_Twist_40 pasada 3: ofensores B=53 A=16, aristas estiradas=36
+  Corrective_Spine_Twist_40 pasada 4: ofensores B=34 A=16, aristas estiradas=0
+  Corrective_Spine_Twist_40 pasada 5: ofensores B=67 A=16, aristas estiradas=0
+  Corrective_Spine_Twist_40 pasada 6: ofensores B=13 A=5, aristas estiradas=0
+Cur: key Corrective_Spine_Twist_40 (pose al 40 %): 572 vertices, mov. max 45.5 mm
+Cur: driver Corrective_Spine_Twist_40: spine_02 rot X signo +1, pico a 18 deg (0 en 9, 0 en 27)
+  Corrective_Spine_Twist_60 pasada 1: ofensores B=2 A=6, aristas estiradas=37
+  Corrective_Spine_Twist_60 pasada 2: ofensores B=24 A=14, aristas estiradas=32
+  Corrective_Spine_Twist_60 pasada 3: ofensores B=81 A=18, aristas estiradas=29
+  Corrective_Spine_Twist_60 pasada 4: ofensores B=20 A=21, aristas estiradas=0
+  Corrective_Spine_Twist_60 pasada 5: ofensores B=26 A=21, aristas estiradas=0
+  Corrective_Spine_Twist_60 pasada 6: ofensores B=41 A=18, aristas estiradas=0
+Cur: key Corrective_Spine_Twist_60 (pose al 60 %): 728 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Spine_Twist_60: spine_02 rot X signo +1, pico a 27 deg (0 en 18, 0 en 36)
+  Corrective_Spine_Twist_80 pasada 1: ofensores B=1 A=11, aristas estiradas=53
+  Corrective_Spine_Twist_80 pasada 2: ofensores B=41 A=13, aristas estiradas=17
+  Corrective_Spine_Twist_80 pasada 3: ofensores B=39 A=20, aristas estiradas=34
+  Corrective_Spine_Twist_80 pasada 4: ofensores B=64 A=20, aristas estiradas=0
+  Corrective_Spine_Twist_80 pasada 5: ofensores B=55 A=25, aristas estiradas=0
+  Corrective_Spine_Twist_80 pasada 6: ofensores B=17 A=21, aristas estiradas=0
+Cur: key Corrective_Spine_Twist_80 (pose al 80 %): 758 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Spine_Twist_80: spine_02 rot X signo +1, pico a 36 deg (0 en 27, 0 en 45)
+  Corrective_Spine_Twist_100 pasada 1: ofensores B=4 A=8, aristas estiradas=69
+  Corrective_Spine_Twist_100 pasada 2: ofensores B=54 A=15, aristas estiradas=20
+  Corrective_Spine_Twist_100 pasada 3: ofensores B=57 A=10, aristas estiradas=41
+  Corrective_Spine_Twist_100 pasada 4: ofensores B=32 A=16, aristas estiradas=0
+  Corrective_Spine_Twist_100 pasada 5: ofensores B=70 A=16, aristas estiradas=0
+  Corrective_Spine_Twist_100 pasada 6: ofensores B=13 A=19, aristas estiradas=0
+Cur: key Corrective_Spine_Twist_100 (pose al 100 %): 695 vertices, mov. max 60.0 mm
+Cur: driver Corrective_Spine_Twist_100: spine_02 rot X signo +1, pico a 45 deg (0 en 36)
+BATCHDONE Cur 40 keys
+BlenderMCP addon unregistered
+Blender 5.2.3 LTS (hash e13b728c6880 built 2026-10-22 01:37:16)
+
+Blender quit

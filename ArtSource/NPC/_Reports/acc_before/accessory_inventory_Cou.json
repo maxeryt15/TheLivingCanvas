@@ -1,0 +1,356 @@
+{
+ "obj": {
+  "loc": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "rot": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "scale": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "parent": "Cou_Rig",
+  "mods": [
+   [
+    "ARMATURE",
+    "Cou_Rig"
+   ]
+  ],
+  "parent_inverse_identity": true,
+  "groups_not_in_rig": []
+ },
+ "acc": {
+  "Cou_BootTongue": {
+   "n": 72,
+   "centroid": [
+    0.0,
+    -0.112,
+    0.16
+   ],
+   "bones": {
+    "calf_r": 0.39,
+    "calf_l": 0.39,
+    "foot_r": 0.11
+   },
+   "expected": {
+    "calf_r": 0.35,
+    "calf_l": 0.32,
+    "foot_l": 0.18
+   },
+   "pose": "Walk@31",
+   "worst_mm": 12.3
+  },
+  "Cou_BootEyelet": {
+   "n": 570,
+   "centroid": [
+    -0.002,
+    -0.113,
+    0.168
+   ],
+   "bones": {
+    "calf_r": 0.42,
+    "calf_l": 0.41,
+    "foot_r": 0.08
+   },
+   "expected": {
+    "calf_r": 0.37,
+    "calf_l": 0.33,
+    "foot_l": 0.16
+   },
+   "pose": "Walk@31",
+   "worst_mm": 11.1
+  },
+  "Cou_BootLace": {
+   "n": 144,
+   "centroid": [
+    -0.0,
+    -0.113,
+    0.168
+   ],
+   "bones": {
+    "calf_r": 0.39,
+    "calf_l": 0.39,
+    "foot_r": 0.11
+   },
+   "expected": {
+    "calf_r": 0.36,
+    "calf_l": 0.33,
+    "foot_l": 0.17
+   },
+   "pose": "Walk@31",
+   "worst_mm": 9.9
+  },
+  "Cou_BraceletA": {
+   "n": 84,
+   "centroid": [
+    0.0,
+    -0.156,
+    1.071
+   ],
+   "bones": {
+    "lowerarm_r": 0.5,
+    "lowerarm_l": 0.5
+   },
+   "expected": {
+    "lowerarm_r": 0.36,
+    "lowerarm_l": 0.34,
+    "hand_l": 0.15
+   },
+   "pose": "Walk@37",
+   "worst_mm": 1.3
+  },
+  "Cou_Brows": {
+   "n": 124,
+   "centroid": [
+    0.0,
+    -0.132,
+    1.62
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@40",
+   "worst_mm": 0.0
+  },
+  "Cou_EyeIris": {
+   "n": 24,
+   "centroid": [
+    0.0,
+    -0.129,
+    1.611
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@10",
+   "worst_mm": 0.0
+  },
+  "Cou_EyeWhite": {
+   "n": 42,
+   "centroid": [
+    0.0,
+    -0.126,
+    1.606
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@34",
+   "worst_mm": 0.0
+  },
+  "Cou_EyePupil": {
+   "n": 30,
+   "centroid": [
+    0.0,
+    -0.13,
+    1.608
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@10",
+   "worst_mm": 0.0
+  },
+  "Cou_GloveLeather": {
+   "n": 613,
+   "centroid": [
+    -0.228,
+    -0.021,
+    0.816
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "thigh_r": 0.72,
+    "pelvis": 0.28,
+    "spine_02": 0.0
+   },
+   "pose": "Crouch",
+   "worst_mm": 56.8
+  },
+  "Cou_GloveCuff": {
+   "n": 104,
+   "centroid": [
+    -0.215,
+    0.003,
+    0.934
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "thigh_r": 0.62,
+    "pelvis": 0.35,
+    "spine_02": 0.03
+   },
+   "pose": "LegAbduct_R",
+   "worst_mm": 8.4
+  },
+  "Cou_Lipstick_Mat": {
+   "n": 68,
+   "centroid": [
+    0.0,
+    -0.146,
+    1.542
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Crouch",
+   "worst_mm": 0.0
+  },
+  "Cou_BeltLeather": {
+   "n": 868,
+   "centroid": [
+    0.006,
+    -0.002,
+    0.905
+   ],
+   "bones": {
+    "pelvis": 0.71,
+    "thigh_r": 0.14,
+    "thigh_l": 0.08
+   },
+   "expected": {
+    "pelvis": 0.56,
+    "thigh_l": 0.22,
+    "thigh_r": 0.21
+   },
+   "pose": "Crouch",
+   "worst_mm": 45.0
+  },
+  "Cou_BeltMetal": {
+   "n": 16,
+   "centroid": [
+    -0.0,
+    -0.158,
+    0.905
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "pelvis": 0.65,
+    "thigh_r": 0.18,
+    "thigh_l": 0.15
+   },
+   "pose": "Crouch",
+   "worst_mm": 22.0
+  },
+  "Cou_ToolSteel": {
+   "n": 166,
+   "centroid": [
+    -0.092,
+    -0.106,
+    0.78
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "thigh_r": 0.63,
+    "pelvis": 0.28,
+    "thigh_l": 0.08
+   },
+   "pose": "Crouch",
+   "worst_mm": 100.4
+  },
+  "Cou_ToolGrip": {
+   "n": 31,
+   "centroid": [
+    0.179,
+    -0.113,
+    0.767
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "thigh_l": 0.73,
+    "pelvis": 0.26,
+    "spine_01": 0.0
+   },
+   "pose": "Crouch",
+   "worst_mm": 95.9
+  },
+  "Cou_PouchLeather": {
+   "n": 32,
+   "centroid": [
+    -0.012,
+    0.003,
+    0.837
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "pelvis": 0.45,
+    "thigh_r": 0.3,
+    "thigh_l": 0.24
+   },
+   "pose": "Crouch",
+   "worst_mm": 94.6
+  },
+  "Cou_Nail": {
+   "n": 126,
+   "centroid": [
+    0.098,
+    0.084,
+    0.892
+   ],
+   "bones": {
+    "pelvis": 0.71,
+    "thigh_l": 0.16,
+    "thigh_r": 0.13
+   },
+   "expected": {
+    "pelvis": 0.53,
+    "thigh_l": 0.34,
+    "thigh_r": 0.12
+   },
+   "pose": "Crouch",
+   "worst_mm": 28.9
+  },
+  "NPC_MouthInside": {
+   "n": 4,
+   "centroid": [
+    0.0,
+    -0.141,
+    1.541
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@13",
+   "worst_mm": 0.0
+  }
+ }
+}

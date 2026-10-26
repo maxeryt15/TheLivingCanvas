@@ -1,0 +1,310 @@
+{
+ "obj": {
+  "loc": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "rot": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "scale": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "parent": "Caf_Rig",
+  "mods": [
+   [
+    "ARMATURE",
+    "Caf_Rig"
+   ]
+  ],
+  "parent_inverse_identity": true,
+  "groups_not_in_rig": []
+ },
+ "acc": {
+  "Caf_ApronTrim": {
+   "n": 242,
+   "centroid": [
+    -0.0,
+    -0.134,
+    0.913
+   ],
+   "bones": {
+    "spine_03": 0.26,
+    "thigh_r": 0.2,
+    "thigh_l": 0.19
+   },
+   "expected": {
+    "spine_03": 0.24,
+    "pelvis": 0.19,
+    "thigh_l": 0.19
+   },
+   "pose": "Crouch",
+   "worst_mm": 21.2
+  },
+  "Caf_ApronBand": {
+   "n": 260,
+   "centroid": [
+    0.002,
+    -0.033,
+    1.12
+   ],
+   "bones": {
+    "spine_03": 0.4,
+    "spine_02": 0.3,
+    "spine_01": 0.17
+   },
+   "expected": {
+    "spine_03": 0.34,
+    "spine_02": 0.29,
+    "spine_01": 0.21
+   },
+   "pose": "Twist_B",
+   "worst_mm": 4.4
+  },
+  "Caf_BraceletA": {
+   "n": 38,
+   "centroid": [
+    -0.417,
+    -0.147,
+    1.02
+   ],
+   "bones": {
+    "lowerarm_r": 1.0
+   },
+   "expected": {
+    "lowerarm_r": 0.78,
+    "hand_r": 0.22,
+    "thumb_01_r": 0.0
+   },
+   "pose": "Walk@10",
+   "worst_mm": 1.0
+  },
+  "Caf_BraceletB": {
+   "n": 40,
+   "centroid": [
+    -0.403,
+    -0.126,
+    1.036
+   ],
+   "bones": {
+    "lowerarm_r": 1.0
+   },
+   "expected": {
+    "lowerarm_r": 0.94,
+    "hand_r": 0.06
+   },
+   "pose": "Walk@10",
+   "worst_mm": 0.6
+  },
+  "Caf_Brows": {
+   "n": 124,
+   "centroid": [
+    0.0,
+    -0.129,
+    1.541
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "BendForward",
+   "worst_mm": 0.0
+  },
+  "Caf_EyeIris": {
+   "n": 28,
+   "centroid": [
+    0.0,
+    -0.126,
+    1.531
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@19",
+   "worst_mm": 0.0
+  },
+  "Caf_EyeWhite": {
+   "n": 40,
+   "centroid": [
+    0.0,
+    -0.122,
+    1.527
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@10",
+   "worst_mm": 0.0
+  },
+  "Caf_EyePupil": {
+   "n": 28,
+   "centroid": [
+    0.0,
+    -0.127,
+    1.53
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@19",
+   "worst_mm": 0.0
+  },
+  "Caf_Lipstick_Mat": {
+   "n": 66,
+   "centroid": [
+    0.0,
+    -0.138,
+    1.465
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "HeadDown",
+   "worst_mm": 0.0
+  },
+  "Caf_BowCloth": {
+   "n": 64,
+   "centroid": [
+    -0.0,
+    -0.157,
+    0.039
+   ],
+   "bones": {
+    "ball_r": 0.5,
+    "ball_l": 0.5
+   },
+   "expected": {
+    "foot_r": 0.26,
+    "ball_l": 0.26,
+    "foot_l": 0.24
+   },
+   "pose": "Walk@1",
+   "worst_mm": 5.2
+  },
+  "Caf_BowKnot": {
+   "n": 16,
+   "centroid": [
+    -0.0,
+    -0.158,
+    0.041
+   ],
+   "bones": {
+    "ball_r": 0.5,
+    "ball_l": 0.5
+   },
+   "expected": {
+    "foot_l": 0.35,
+    "foot_r": 0.34,
+    "ball_r": 0.16
+   },
+   "pose": "Walk@1",
+   "worst_mm": 10.1
+  },
+  "Caf_Wart_Mat": {
+   "n": 12,
+   "centroid": [
+    0.018,
+    -0.134,
+    1.505
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Twist_B",
+   "worst_mm": 0.0
+  },
+  "Caf_WatchBand": {
+   "n": 58,
+   "centroid": [
+    0.427,
+    -0.154,
+    1.018
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.72,
+    "hand_l": 0.28,
+    "thumb_01_l": 0.01
+   },
+   "pose": "Walk@28",
+   "worst_mm": 1.4
+  },
+  "Caf_WatchCase": {
+   "n": 24,
+   "centroid": [
+    0.439,
+    -0.152,
+    1.028
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.73,
+    "hand_l": 0.27
+   },
+   "pose": "Walk@28",
+   "worst_mm": 0.8
+  },
+  "Caf_WatchFace": {
+   "n": 24,
+   "centroid": [
+    0.442,
+    -0.152,
+    1.03
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.75,
+    "hand_l": 0.25
+   },
+   "pose": "Walk@28",
+   "worst_mm": 0.7
+  },
+  "NPC_MouthInside": {
+   "n": 4,
+   "centroid": [
+    0.0,
+    -0.132,
+    1.462
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@4",
+   "worst_mm": 0.0
+  }
+ }
+}

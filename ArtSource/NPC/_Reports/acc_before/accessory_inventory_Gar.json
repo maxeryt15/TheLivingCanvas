@@ -1,0 +1,253 @@
+{
+ "obj": {
+  "loc": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "rot": [
+   0.0,
+   0.0,
+   0.0
+  ],
+  "scale": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "parent": "Gar_Rig",
+  "mods": [
+   [
+    "ARMATURE",
+    "Gar_Rig"
+   ]
+  ],
+  "parent_inverse_identity": true,
+  "groups_not_in_rig": []
+ },
+ "acc": {
+  "Gar_Brows": {
+   "n": 124,
+   "centroid": [
+    -0.0,
+    -0.141,
+    1.644
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Twist_A",
+   "worst_mm": 0.0
+  },
+  "Gar_EyeWhite": {
+   "n": 41,
+   "centroid": [
+    0.0,
+    -0.134,
+    1.632
+   ],
+   "bones": {
+    "eye_R": 0.51,
+    "eye_L": 0.49
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@22",
+   "worst_mm": 0.0
+  },
+  "Gar_EyeIris": {
+   "n": 34,
+   "centroid": [
+    -0.002,
+    -0.139,
+    1.635
+   ],
+   "bones": {
+    "eye_R": 0.53,
+    "eye_L": 0.47
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@4",
+   "worst_mm": 0.0
+  },
+  "Gar_EyePupil": {
+   "n": 26,
+   "centroid": [
+    0.0,
+    -0.14,
+    1.635
+   ],
+   "bones": {
+    "eye_L": 0.5,
+    "eye_R": 0.5
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@22",
+   "worst_mm": 0.0
+  },
+  "Gar_GloveLeather": {
+   "n": 578,
+   "centroid": [
+    -0.232,
+    -0.073,
+    0.778
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "thigh_r": 0.8,
+    "pelvis": 0.16,
+    "calf_r": 0.02
+   },
+   "pose": "Sit",
+   "worst_mm": 95.4
+  },
+  "Gar_GloveCuff": {
+   "n": 94,
+   "centroid": [
+    -0.215,
+    -0.046,
+    0.902
+   ],
+   "bones": {
+    "pelvis": 1.0
+   },
+   "expected": {
+    "thigh_r": 0.56,
+    "pelvis": 0.38,
+    "spine_01": 0.05
+   },
+   "pose": "LegKick_R",
+   "worst_mm": 21.2
+  },
+  "Gar_HatStraw": {
+   "n": 192,
+   "centroid": [
+    -0.003,
+    -0.043,
+    1.716
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 0.91,
+    "neck_01": 0.09,
+    "spine_03": 0.0
+   },
+   "pose": "Walk@31",
+   "worst_mm": 0.3
+  },
+  "Gar_HatStrawB": {
+   "n": 193,
+   "centroid": [
+    -0.003,
+    -0.042,
+    1.722
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 0.94,
+    "neck_01": 0.06,
+    "spine_03": 0.0
+   },
+   "pose": "Walk@16",
+   "worst_mm": 0.3
+  },
+  "Gar_HatBand": {
+   "n": 64,
+   "centroid": [
+    -0.003,
+    -0.046,
+    1.693
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 0.92,
+    "neck_01": 0.08,
+    "spine_03": 0.0
+   },
+   "pose": "Walk@4",
+   "worst_mm": 0.4
+  },
+  "Gar_StrawTip": {
+   "n": 42,
+   "centroid": [
+    0.085,
+    -0.229,
+    1.565
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Crouch",
+   "worst_mm": 0.0
+  },
+  "Gar_StrawStalk": {
+   "n": 12,
+   "centroid": [
+    0.054,
+    -0.195,
+    1.563
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@13",
+   "worst_mm": 0.0
+  },
+  "Gar_BraceletA": {
+   "n": 36,
+   "centroid": [
+    0.468,
+    -0.185,
+    1.102
+   ],
+   "bones": {
+    "lowerarm_l": 1.0
+   },
+   "expected": {
+    "lowerarm_l": 0.77,
+    "hand_l": 0.22,
+    "thumb_01_l": 0.01
+   },
+   "pose": "Walk@28",
+   "worst_mm": 1.4
+  },
+  "NPC_MouthInside": {
+   "n": 4,
+   "centroid": [
+    0.0,
+    -0.148,
+    1.568
+   ],
+   "bones": {
+    "head": 1.0
+   },
+   "expected": {
+    "head": 1.0
+   },
+   "pose": "Walk@22",
+   "worst_mm": 0.0
+  }
+ }
+}

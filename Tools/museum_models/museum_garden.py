@@ -120,9 +120,7 @@ def meadow_flower(b, c, h, species):
     base = Vector(c)
     bend = Vector((random.uniform(-0.06, 0.06), random.uniform(-0.06, 0.06), 0))
     top = base + UP * h + bend
-    mid = base + UP * h * 0.5 + bend * 0.3
-    b.seg(base, mid, 0.006, "M_Plant_Leaf", seg=4)
-    b.seg(mid, top, 0.005, "M_Plant_Leaf", seg=4)
+    b.seg(base, top, 0.0055, "M_Plant_Leaf", seg=3)   # un solo tallo triangular (antes 2 tramos de 4 lados): -10 tris por flor
     for k in range(random.choice((1, 2))):
         q = base.lerp(top, random.uniform(0.25, 0.55))
         a = random.uniform(0, math.tau)
@@ -130,7 +128,7 @@ def meadow_flower(b, c, h, species):
         tip = (out + UP * 0.6).normalized()
         nn = (UP - tip * UP.dot(tip)).normalized()
         ln = random.uniform(0.05, 0.07)
-        b.leaf(q + tip * ln * 0.9, nn, tip, ln, random.choice(["M_Plant_LeafLight", "M_Plant_Leaf"]), thick=0, res=6)
+        b.leaf(q + tip * ln * 0.9, nn, tip, ln, random.choice(["M_Plant_LeafLight", "M_Plant_Leaf"]), thick=0, res=4)
     n = (UP + Vector((random.uniform(-0.35, 0.35), random.uniform(-0.35, 0.35), 0))).normalized()
     n, a, bb = _basis(n)
     np_ = random.randint(n0, n1)
@@ -140,8 +138,8 @@ def meadow_flower(b, c, h, species):
         rad = a * math.cos(ang) + bb * math.sin(ang)
         tip = (rad + n * 0.12).normalized()
         nn = (n - tip * n.dot(tip)).normalized()
-        b.leaf(top + rad * ps * 0.25 + tip * ps * 0.85, nn, tip, ps, pm, thick=0, res=6)
-    b.leaf(top + n * 0.006, n, a, ps * 0.42, cm, thick=0.006, res=8, shape='disc')
+        b.leaf(top + rad * ps * 0.25 + tip * ps * 0.85, nn, tip, ps, pm, thick=0, res=5)   # petalo de 5 lados (3 tris)
+    b.leaf(top + n * 0.006, n, a, ps * 0.42, cm, thick=0, res=6, shape='disc')   # centro: hexagono plano, sin extruir
 
 
 def flower_patch(b, cx, cy, count, species, ok, mix=0.12, spread=(0.5, 0.9)):
@@ -231,32 +229,54 @@ def rose(b, c, n, mat):
 
 
 def rose_bush(b, c, r, roses=8):
-    """Copa ordenada: hojas como tejas (punta hacia abajo) sobre un nucleo, y rosas asomando."""
+    """Rosal como UNA piel continua (misma estetica que los cipreses): cupula de anillos compartidos, mechones en espiral,
+    parches de dos verdes y rosas asomando. Antes: 4 bolas + cientos de hojas sueltas."""
+    import bmesh
     c = Vector(c)
-    cores = []
-    for i in range(3):
-        a = i * math.tau / 3 + random.uniform(-0.3, 0.3)
-        rr = r * random.uniform(0.62, 0.8)
-        cc = c + Vector((math.cos(a) * r * 0.42, math.sin(a) * r * 0.42, rr * 0.82))
-        cores.append((cc, rr))
-    cores.append((c + UP * r * 1.0, r * 0.75))
-    for (cc, rr) in cores:
-        b.blob(tuple(cc), rr * 0.82, "M_Leaf_Dark", squash=(1, 1, 0.9), sub=2, amp=rr * 0.06)
-        nl = int(34 * (rr / 0.6) ** 2) + 10
-        for k in range(nl):
-            d = Vector((random.gauss(0, 1), random.gauss(0, 1), random.gauss(0, 1) * 0.7 + 0.35)).normalized()
-            p = cc + d * rr * 0.9
-            if p.z < c.z + 0.05:
-                continue
-            tip = (-UP + d * 0.35).normalized()
-            tip = (tip - d * tip.dot(d)).normalized()
-            b.leaf(p, (d + UP * 0.2).normalized(), tip, random.uniform(0.13, 0.17) * (0.8 + rr * 0.3),
-                   random.choice(["M_Plant_Leaf", "M_Plant_LeafLight", "M_Plant_Leaf"]), thick=0.006, res=7)
-    mat = random.choice(["M_Flower_Rose", "M_Flower_White", "M_Flower_Rose"])
+    rng = random.Random(int(c.x * 100) * 7919 + int(c.y * 100) + 17)   # propio: no altera la secuencia global
+    N, M = 16, 14
+    H, Rw = r * 1.65, r * 1.2
+    ph = rng.uniform(0, math.tau)
+    lean = Vector((rng.uniform(-0.15, 0.15), rng.uniform(-0.15, 0.15), 0)) * r
+    bm = b.bm
+    mi = (b._mi("M_Leaf_Dark"), b._mi("M_Plant_Leaf"))
+    rings, centers = [], []
+    for i in range(M):
+        t = i / M
+        z = c.z - 0.03 + (H + 0.03) * t
+        base = Rw * math.sqrt(max(0.0, 1.0 - t ** 2.2))
+        ctr = Vector((c.x + lean.x * t * t, c.y + lean.y * t * t, z))
+        row = []
+        for j in range(N):
+            th = j * math.tau / N
+            rr = base * (1.0 + 0.18 * math.sin(4 * th + ph + 3.2 * t * math.pi) + 0.1 * math.sin(7 * th - 2 * ph + 6.0 * t * math.pi)
+                         + rng.uniform(-0.06, 0.06))
+            row.append(bm.verts.new((ctr.x + math.cos(th) * rr, ctr.y + math.sin(th) * rr, z)))
+        rings.append(row)
+        centers.append(ctr)
+    apex = bm.verts.new((c.x + lean.x, c.y + lean.y, c.z + H + 0.04))
+    patch, fs = {}, []
+    for i in range(M):
+        for j in range(N):
+            key = (i // 2, ((j + (i // 2) * 2) % N) // 2)   # parches que giran con la altura
+            if key not in patch:
+                patch[key] = mi[0] if rng.random() < 0.66 else mi[1]
+            j1 = (j + 1) % N
+            if i < M - 1:
+                f = bm.faces.new((rings[i][j], rings[i][j1], rings[i + 1][j1], rings[i + 1][j]))
+            else:
+                f = bm.faces.new((rings[i][j], rings[i][j1], apex))
+            f.material_index = patch[key]
+            f.smooth = False
+            fs.append(f)
+    bmesh.ops.recalc_face_normals(bm, faces=fs)
+    mat = rng.choice(["M_Flower_Rose", "M_Flower_White", "M_Flower_Rose"])
     for k in range(roses):
-        cc, rr = random.choice(cores)
-        d = Vector((random.gauss(0, 1), random.gauss(0, 1), abs(random.gauss(0, 1)) + 0.4)).normalized()
-        rose(b, cc + d * rr * 0.98, d, mat)
+        i, j = rng.randint(2, M - 2), rng.randrange(N)
+        p = Vector(rings[i][j].co)
+        d = Vector((p.x - centers[i].x, p.y - centers[i].y, 0)).normalized()
+        d = (d + UP * 0.4).normalized()
+        rose(b, p + d * 0.01, d, mat)
 
 
 # ----------------------------------------------------------------- macetas
