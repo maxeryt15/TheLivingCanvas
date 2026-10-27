@@ -64,3 +64,8 @@ carga con timeout/fallo, Reduced Motion y High Contrast en la carga, 16:9 y 16:1
 - SettingsPanel ya usaba UITheme/sliders pintados; sin cambios.
 - Retirado `Core/PauseMenu.cs` (legacy) y su `BuildPauseMenu`/`BuildControlsPanel` en `StudioSceneBuilder`.
 - Verificado en Play (capturas): menú, ajustes y pausa en Museum.
+
+## Fase 6 del revamp (2026-10-27): coherencia y audio
+- `UIButtonSound` (en `UIFactory.Button` y `MenuButtons`): Hover/Select/Confirm. `Notifications` anuncia `UISound.Notification`. Lista en `Docs/UI_Sonidos.md`.
+- Colores fijos restantes en `Scripts/Ui` movidos al tema (contorno claro, sombra, transición Ink, objetivo completado). Quedan solo tintes blancos neutros.
+- Fase 5 (migrar paneles legacy) en espera: ninguno está en Museum; se migra cada uno cuando su sistema llegue.

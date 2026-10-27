@@ -37,7 +37,7 @@ namespace TheLivingCanvas.Ui
             switch (kind)
             {
                 case Kind.Paper: return t.cream;
-                case Kind.Ink: return new Color32(0x1F, 0x2F, 0x52, 255);
+                case Kind.Ink: return Color.Lerp(t.ink, t.cerulean, .35f);
                 case Kind.Fade: return new Color(t.ink.r * .45f, t.ink.g * .45f, t.ink.b * .45f, 1f);
                 default: return t.ink;
             }

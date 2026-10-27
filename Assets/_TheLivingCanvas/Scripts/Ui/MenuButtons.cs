@@ -32,6 +32,7 @@ namespace TheLivingCanvas.Ui
             l.outlineColor = t.OutlineDark;
             UIFactory.Stretch(l.rectTransform);
             if (align == TextAlignmentOptions.Left) l.rectTransform.offsetMin = new Vector2(44, 0);
+            r.gameObject.AddComponent<UIButtonSound>();
             b.onClick.AddListener(onClick);
             return b;
         }

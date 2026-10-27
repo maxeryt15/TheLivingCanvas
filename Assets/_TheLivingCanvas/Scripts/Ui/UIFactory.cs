@@ -123,9 +123,9 @@ namespace TheLivingCanvas.Ui
             var t = UITheme.Current;
             bool lightText = tmp.color.grayscale > 0.5f;
             tmp.outlineWidth = outline;
-            tmp.outlineColor = lightText ? (Color32)new Color(t.ink.r * .6f, t.ink.g * .6f, t.ink.b * .6f) : (Color32)new Color(.97f, .93f, .8f);
+            tmp.outlineColor = lightText ? (Color32)new Color(t.ink.r * .6f, t.ink.g * .6f, t.ink.b * .6f) : (Color32)t.OutlineLight;
             if (tmp.GetComponent<Shadow>() == null)
-                tmp.gameObject.AddComponent<Shadow>().effectColor = new Color(0, 0, 0, .6f);
+                tmp.gameObject.AddComponent<Shadow>().effectColor = UITheme.A(t.OutlineDark, .6f);
         }
 
         public static Button Button(string name, Transform parent, string label, Vector2 size)
@@ -158,6 +158,7 @@ namespace TheLivingCanvas.Ui
                     disabledColor = new Color(1, 1, 1, .4f), colorMultiplier = 1f, fadeDuration = t.buttonFade
                 };
             }
+            r.gameObject.AddComponent<UIButtonSound>();
             var l = Label("Label", r, label, TextStyle.Body);
             Stretch(l.rectTransform);
             return b;

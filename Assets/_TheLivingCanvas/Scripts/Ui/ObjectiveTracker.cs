@@ -110,7 +110,7 @@ namespace TheLivingCanvas.Ui
                 e.Alpha = Mathf.MoveTowards(e.Alpha, visible ? fade : 0f, dt / 0.25f);
                 e.Label.alpha = e.Alpha;
                 e.Label.text = e.Done ? "<s>" + e.Text + "</s>" : e.Text;
-                e.Label.color = e.Done ? new Color(t.olive.r * 1.4f, t.olive.g * 1.5f, t.olive.b * 1.3f, e.Alpha) : UITheme.A(t.cream, e.Alpha);
+                e.Label.color = e.Done ? UITheme.A(Color.Lerp(t.olive, t.cream, .4f), e.Alpha) : UITheme.A(t.cream, e.Alpha);
                 e.Label.rectTransform.anchoredPosition = new Vector2(0, -y);
                 if (visible) y += LineHeight;
             }

@@ -59,6 +59,7 @@ namespace TheLivingCanvas.Ui
             foreach (var existing in toasts)
                 if (!existing.Leaving && existing.Text == text) { existing.Born = Time.unscaledTime; existing.Life = life; return; }
 
+            UIEvents.Play(UISound.Notification);
             var t = UITheme.Current;
             bool quiet = kind == Kind.Saved;
             var panel = UIFactory.Panel("Toast", root, new Vector2(quiet ? 300f : Width, quiet ? 56f : Height));
