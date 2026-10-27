@@ -57,3 +57,10 @@ de editor generan texturas procedurales. Reglas: ningún texto va sobre pintura 
 Probado con llamadas desde editor (no con teclado, ratón ni mando reales): pausa, ajustes, diálogo, avisos, objetivos, cuaderno, música.
 No probado: Esc real y flujo Main Menu → New Game → Museum, cambio de resolución en un build, fundido entre piezas de música,
 carga con timeout/fallo, Reduced Motion y High Contrast en la carga, 16:9 y 16:10, mando.
+
+## Fase 4 del revamp (2026-10-27): menú principal y pausa
+- `MenuButtons.Create` (Scripts/Ui): botón de menú compartido (texto + trazo pintado al seleccionar) para MainMenu y PauseScreen.
+- MainMenu: versión (`v` + Application.version) abajo a la izquierda. PauseScreen: título "Paused" con contorno y botones-pincelada centrados.
+- SettingsPanel ya usaba UITheme/sliders pintados; sin cambios.
+- Retirado `Core/PauseMenu.cs` (legacy) y su `BuildPauseMenu`/`BuildControlsPanel` en `StudioSceneBuilder`.
+- Verificado en Play (capturas): menú, ajustes y pausa en Museum.

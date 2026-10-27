@@ -61,6 +61,10 @@ namespace TheLivingCanvas.Ui
 #if UNITY_WEBGL
             quitButton.gameObject.SetActive(false);
 #endif
+            var ver = UIFactory.Label("Version", mainGroup.transform, "v" + Application.version, UIFactory.TextStyle.Small, TextAlignmentOptions.Left);
+            ver.color = UITheme.A(t.cream, .6f);
+            UIFactory.ContrastOnPaint(ver, .3f);
+            UIFactory.Place(ver.rectTransform, new Vector2(0, 0), new Vector2(0, 0), new Vector2(48, 32), new Vector2(300, 32));
             settings = SettingsPanel.Create(canvas.transform, CloseSettings);
             settingsPanel = settings.Root;
             BuildConfirm(canvas.transform);
@@ -135,32 +139,8 @@ namespace TheLivingCanvas.Ui
             else if (confirmPanel.activeSelf) CloseConfirm();
         }
 
-        // Botón sin caja: solo texto; al pasar el ratón o seleccionarlo, un trazo pintado se desvanece detrás.
-        Button MenuButton(string label, float y, UnityEngine.Events.UnityAction onClick)
-        {
-            var t = UITheme.Current;
-            var r = UIFactory.Rect(label + "Button", mainGroup.transform);
-            UIFactory.Place(r, new Vector2(0, .5f), new Vector2(0, .5f), new Vector2(160, y), new Vector2(520, 76));
-            var stroke = r.gameObject.AddComponent<Image>();
-            stroke.sprite = t.promptStroke;
-            stroke.type = Image.Type.Simple;
-            stroke.color = t.promptStroke != null ? Color.white : t.cerulean;
-            var b = r.gameObject.AddComponent<Button>();
-            b.targetGraphic = stroke;
-            b.transition = Selectable.Transition.ColorTint;
-            b.colors = new ColorBlock
-            {
-                normalColor = new Color(1, 1, 1, 0), highlightedColor = new Color(1, 1, 1, .9f), selectedColor = new Color(1, 1, 1, .9f),
-                pressedColor = new Color(.8f, .8f, .8f, 1f), disabledColor = new Color(1, 1, 1, 0), colorMultiplier = 1f, fadeDuration = .18f
-            };
-            var l = UIFactory.Label("Label", r, label, UIFactory.TextStyle.Heading, TextAlignmentOptions.Left);
-            UIFactory.ContrastOnPaint(l, 0.4f);
-            l.outlineColor = t.OutlineDark;
-            UIFactory.Stretch(l.rectTransform);
-            l.rectTransform.offsetMin = new Vector2(44, 0);
-            b.onClick.AddListener(onClick);
-            return b;
-        }
+        Button MenuButton(string label, float y, UnityEngine.Events.UnityAction onClick) =>
+            MenuButtons.Create(label, mainGroup.transform, new Vector2(0, .5f), new Vector2(160, y), new Vector2(520, 76), TextAlignmentOptions.Left, onClick);
 
         // ---------- Acciones ----------
 

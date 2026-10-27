@@ -210,6 +210,8 @@ namespace TheLivingCanvas.Ui
             menuGroup = UIFactory.Rect("Menu", canvas.transform).gameObject;
             UIFactory.Stretch((RectTransform)menuGroup.transform);
             var title = UIFactory.Label("Title", menuGroup.transform, "Paused", UIFactory.TextStyle.Title);
+            UIFactory.ContrastOnPaint(title, 0.35f);
+            title.outlineColor = t.OutlineDark;
             UIFactory.Place(title.rectTransform, new Vector2(.5f, .5f), new Vector2(.5f, .5f), new Vector2(0, 230), new Vector2(900, 130));
 
             resumeButton = MenuButton("Resume", 100, Resume);
@@ -223,12 +225,7 @@ namespace TheLivingCanvas.Ui
             group.gameObject.SetActive(false);
         }
 
-        Button MenuButton(string label, float y, UnityEngine.Events.UnityAction onClick)
-        {
-            var b = UIFactory.Button(label + "Button", menuGroup.transform, label, new Vector2(420, 72));
-            UIFactory.Place((RectTransform)b.transform, new Vector2(.5f, .5f), new Vector2(.5f, .5f), new Vector2(0, y), new Vector2(420, 72));
-            b.onClick.AddListener(onClick);
-            return b;
-        }
+        Button MenuButton(string label, float y, UnityEngine.Events.UnityAction onClick) =>
+            MenuButtons.Create(label, menuGroup.transform, new Vector2(.5f, .5f), new Vector2(0, y), new Vector2(420, 72), TextAlignmentOptions.Center, onClick);
     }
 }
