@@ -20,7 +20,7 @@ namespace TheLivingCanvas.Ui
         PlayerInteractor interactor;
 
         // Mira
-        Image reticle;
+        Image reticle, reticleHalo;
         RectTransform reticleRect;
         UIAnimator ringAnim;
         float reticleK;
@@ -76,10 +76,11 @@ namespace TheLivingCanvas.Ui
             bool locked = Cursor.lockState == CursorLockMode.Locked;
             var current = aiming && locked ? interactor.Current : null;
 
-            reticle.enabled = aiming && locked;
+            reticle.enabled = reticleHalo.enabled = aiming && locked;
             reticleK = Mathf.MoveTowards(reticleK, current != null ? 1f : 0f, Time.unscaledDeltaTime / 0.25f);
             float k = Mathf.SmoothStep(0f, 1f, reticleK);
             reticle.color = Color.Lerp(ReticleIdle, ReticleActive, k);
+            reticleHalo.color = UITheme.A(UITheme.Current.OutlineDark, Mathf.Lerp(.5f, .7f, k));
             reticleRect.localScale = Vector3.one * Mathf.Lerp(1f, 1.5f, k);
 
             bool show = current != null;
@@ -236,10 +237,18 @@ namespace TheLivingCanvas.Ui
             ringAnim = ringRect.gameObject.AddComponent<UIAnimator>().Configure(UIAnimKind.InkReveal, UIAnimKind.FadeOut, 1.3f);
             ringAnim.Set(false);
 
-            // Mancha de pintura pequeña como mira
+            // Mancha de pintura pequeña como mira, con un halo de tinta detrás para leerse sobre cualquier fondo
             reticleRect = UIFactory.Rect("Reticle", parent);
-            UIFactory.Place(reticleRect, new Vector2(.5f, .5f), new Vector2(.5f, .5f), Vector2.zero, new Vector2(11, 11));
-            reticle = reticleRect.gameObject.AddComponent<Image>();
+            UIFactory.Place(reticleRect, new Vector2(.5f, .5f), new Vector2(.5f, .5f), Vector2.zero, new Vector2(12, 12));
+            var haloRect = UIFactory.Rect("Halo", reticleRect);
+            UIFactory.Place(haloRect, new Vector2(.5f, .5f), new Vector2(.5f, .5f), Vector2.zero, new Vector2(21, 21));
+            reticleHalo = haloRect.gameObject.AddComponent<Image>();
+            reticleHalo.sprite = BrushStrokes.Blot(6);
+            reticleHalo.color = UITheme.A(t.OutlineDark, .55f);
+            reticleHalo.raycastTarget = false;
+            var dotRect = UIFactory.Rect("Dot", reticleRect);
+            UIFactory.Stretch(dotRect);
+            reticle = dotRect.gameObject.AddComponent<Image>();
             reticle.sprite = t.reticle != null ? t.reticle : BrushStrokes.Blot(2);
             reticle.color = ReticleIdle;
             reticle.raycastTarget = false;
@@ -250,8 +259,8 @@ namespace TheLivingCanvas.Ui
             promptRoot = UIFactory.Rect("InteractionPrompt", parent);
             UIFactory.Place(promptRoot, new Vector2(.5f, 0), new Vector2(.5f, .5f), new Vector2(0, 150), new Vector2(300, 84));
             var row = promptRoot.gameObject.AddComponent<HorizontalLayoutGroup>();
-            row.padding = new RectOffset(56, 64, 14, 14);
-            row.spacing = 20;
+            row.padding = new RectOffset(48, 56, 10, 10);
+            row.spacing = 14;
             row.childAlignment = TextAnchor.MiddleCenter;
             row.childControlWidth = row.childControlHeight = true;
             row.childForceExpandWidth = row.childForceExpandHeight = false;
@@ -262,8 +271,8 @@ namespace TheLivingCanvas.Ui
             var strokeRect = UIFactory.Rect("Stroke", promptRoot);
             strokeRect.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
             UIFactory.Stretch(strokeRect);
-            strokeRect.offsetMin = new Vector2(-30, -12);
-            strokeRect.offsetMax = new Vector2(30, 12);
+            strokeRect.offsetMin = new Vector2(-26, -8);
+            strokeRect.offsetMax = new Vector2(26, 8);
             var stroke = strokeRect.gameObject.AddComponent<Image>();
             skin = lastSkin >= 0 && lastSkin < t.SkinCount ? lastSkin : (t.CycleSkins ? 0 : Mathf.Max(0, t.SavedSkin + 1));
             t.SkinSprites(skin, out var skinBlot, out var skinStroke);
@@ -281,7 +290,7 @@ namespace TheLivingCanvas.Ui
             // Marca con la tecla: mancha crema con la letra en tinta
             var keyRect = UIFactory.Rect("Key", promptRoot);
             var le = keyRect.gameObject.AddComponent<LayoutElement>();
-            le.minWidth = le.preferredWidth = 104; le.minHeight = le.preferredHeight = 74;
+            le.minWidth = le.preferredWidth = 88; le.minHeight = le.preferredHeight = 64;
             var blotRect = UIFactory.Rect("Blot", keyRect);
             UIFactory.Stretch(blotRect);
             var blot = blotRect.gameObject.AddComponent<Image>();
@@ -294,6 +303,12 @@ namespace TheLivingCanvas.Ui
             blotRect.localRotation = Quaternion.Euler(0, 0, BlotRot);
             wBlot = blotRect;
             blotAnim = blotRect.gameObject.AddComponent<UIAnimator>().Configure(UIAnimKind.InkReveal, UIAnimKind.FadeOut, 2.3f, 0.12f);
+            // Disco de tinta bajo la letra: se lee igual sobre cualquier variante pintada
+            var discRect = UIFactory.Rect("Disc", keyRect);
+            UIFactory.Stretch(discRect);
+            discRect.offsetMin = new Vector2(16, 12); discRect.offsetMax = new Vector2(-16, -12);
+            var disc = discRect.gameObject.AddComponent<Image>();
+            disc.sprite = BrushStrokes.Blot(4); disc.color = UITheme.A(t.OutlineDark, .88f); disc.raycastTarget = false;
             keyText = UIFactory.Label("Letter", keyRect, "E", UIFactory.TextStyle.Body);
             UIFactory.Stretch(keyText.rectTransform);
             keyText.fontStyle = FontStyles.Bold;
@@ -302,14 +317,14 @@ namespace TheLivingCanvas.Ui
             keyText.outlineColor = t.OutlineDark; // contorno negro: la letra blanca resalta sobre la marca
             keyText.textWrappingMode = TextWrappingModes.NoWrap;
             keyText.enableAutoSizing = true;
-            keyText.fontSizeMin = 18; keyText.fontSizeMax = 46;
+            keyText.fontSizeMin = 16; keyText.fontSizeMax = 36;
             keyAnim = keyRect.gameObject.AddComponent<UIAnimator>().Configure(UIAnimKind.FadeIn, UIAnimKind.FadeOut, 0f, 0.2f);
 
             // Acción
             // Acción: dentro de una caja de layout con una pincelada oscura detrás (resaltado de tinta) para leerse sobre la pintura
             var labelBox = UIFactory.Rect("LabelBox", promptRoot);
             var boxRow = labelBox.gameObject.AddComponent<HorizontalLayoutGroup>();
-            boxRow.padding = new RectOffset(52, 52, 14, 14); // margen amplio: las puntas afiladas del barrido caen fuera del texto
+            boxRow.padding = new RectOffset(46, 46, 10, 10); // margen amplio: las puntas afiladas del barrido caen fuera del texto
             boxRow.childAlignment = TextAnchor.MiddleLeft;
             boxRow.childControlWidth = boxRow.childControlHeight = true;
             boxRow.childForceExpandWidth = boxRow.childForceExpandHeight = false;
@@ -326,7 +341,7 @@ namespace TheLivingCanvas.Ui
 
             promptLabel = UIFactory.Label("Label", labelBox, "", UIFactory.TextStyle.Body, TextAlignmentOptions.Left);
             promptLabel.textWrappingMode = TextWrappingModes.NoWrap;
-            promptLabel.fontSize = t.bodySize * 1.25f;
+            promptLabel.fontSize = t.bodySize * 1.1f;
             promptLabel.fontStyle = FontStyles.Bold;
             promptLabel.color = t.Paper;
             UIFactory.ContrastOnPaint(promptLabel, 0.4f);

@@ -489,6 +489,7 @@ namespace TheLivingCanvas.EditorTools
             new GameObject("JournalScreen", typeof(TheLivingCanvas.Ui.JournalScreen)); // cuaderno: objetos, pigmentos, notas (I / Tab / Y)
             new GameObject("Notifications", typeof(TheLivingCanvas.Ui.Notifications)); // avisos arriba a la derecha
             new GameObject("ObjectiveTracker", typeof(TheLivingCanvas.Ui.ObjectiveTracker)); // objetivos arriba a la izquierda
+            new GameObject("HudStatus", typeof(TheLivingCanvas.Ui.HudStatus)); // monedas, nivel y pigmentos abajo a la izquierda
 
             // Música: las piezas de Audio/Music en orden aleatorio, fundidas entre sí
             var musicGo = new GameObject("Music", typeof(TheLivingCanvas.Audio.MusicPlaylist));
@@ -516,7 +517,8 @@ namespace TheLivingCanvas.EditorTools
             imgRt.anchorMax = Vector2.one;
             imgRt.offsetMin = imgRt.offsetMax = Vector2.zero;
             var img = imgGo.GetComponent<UnityEngine.UI.Image>();
-            img.color = Color.black;
+            var inkFade = TheLivingCanvas.Ui.UITheme.Current.ink; // tinta muy oscura en vez de negro puro
+            img.color = new Color(inkFade.r * .35f, inkFade.g * .35f, inkFade.b * .35f, 1f);
             img.raycastTarget = false;
 
             // Puntos de aparicion y puertas (se crean tras ApplyStatic/AddColliders: sin flags estaticos ni MeshCollider)

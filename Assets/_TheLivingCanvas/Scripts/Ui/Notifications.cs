@@ -66,26 +66,24 @@ namespace TheLivingCanvas.Ui
             var rect = panel.rectTransform;
             UIFactory.Place(rect, new Vector2(1, 1), new Vector2(1, 1), new Vector2(-RightMargin, -TopMargin), rect.sizeDelta);
 
-            var shade = UIFactory.Rect("Shade", rect);
-            UIFactory.Stretch(shade);
-            shade.offsetMin = new Vector2(34, 30); shade.offsetMax = new Vector2(-34, -30);
-            var shadeImg = shade.gameObject.AddComponent<Image>();
-            shadeImg.color = t.Shade(.55f);
-            shadeImg.raycastTarget = false;
+            // Nota de papel: tarjeta crema con texto de tinta; el tipo se marca con una pincelada distinta.
+            if (t.card != null) { panel.sprite = t.card; panel.type = Image.Type.Sliced; panel.color = Color.white; }
+            else panel.color = t.Paper;
 
-            // Mancha de color a la izquierda según el tipo
-            var dot = UIFactory.Rect("Dot", rect);
-            UIFactory.Place(dot, new Vector2(0, .5f), new Vector2(.5f, .5f), new Vector2(44, 0), new Vector2(quiet ? 12 : 18, quiet ? 12 : 18));
-            var dotImg = dot.gameObject.AddComponent<Image>();
-            dotImg.sprite = UIFactory.DotSprite();
-            dotImg.color = KindColor(kind);
-            dotImg.raycastTarget = false;
+            var mark = UIFactory.Rect("Mark", rect);
+            UIFactory.Place(mark, new Vector2(0, .5f), new Vector2(.5f, .5f), new Vector2(quiet ? 34 : 42, 0), new Vector2(quiet ? 22 : 34, quiet ? 22 : 34));
+            var markImg = mark.gameObject.AddComponent<Image>();
+            markImg.sprite = KindSprite(kind);
+            markImg.color = KindColor(kind);
+            markImg.raycastTarget = false;
+            mark.localRotation = Quaternion.Euler(0, 0, kind == Kind.Place ? -12f : 8f);
 
             var label = UIFactory.Label("Text", rect, text, quiet ? UIFactory.TextStyle.Small : UIFactory.TextStyle.Body, TextAlignmentOptions.Left);
-            UIFactory.ContrastOnPaint(label, 0.25f);
+            label.color = t.TextOnPaper;
+            UIFactory.ContrastOnPaint(label, 0.1f);
             UIFactory.Stretch(label.rectTransform);
-            label.rectTransform.offsetMin = new Vector2(quiet ? 66 : 76, 4);
-            label.rectTransform.offsetMax = new Vector2(-40, -4);
+            label.rectTransform.offsetMin = new Vector2(quiet ? 58 : 76, 4);
+            label.rectTransform.offsetMax = new Vector2(-28, -4);
             label.enableAutoSizing = true;
             label.fontSizeMax = label.fontSize; label.fontSizeMin = label.fontSize * .7f;
 
@@ -95,6 +93,17 @@ namespace TheLivingCanvas.Ui
             while (CountActive() > MaxVisible) ExpireOldest();
         }
 
+        static Sprite KindSprite(Kind kind)
+        {
+            switch (kind)
+            {
+                case Kind.Reward: return BrushStrokes.Blot(3);
+                case Kind.Place: return BrushStrokes.Dab(2, 160, 112);
+                case Kind.Saved: return BrushStrokes.Blot(5);
+                default: return BrushStrokes.Ring(2);
+            }
+        }
+
         static Color KindColor(Kind kind)
         {
             var t = UITheme.Current;
@@ -102,8 +111,8 @@ namespace TheLivingCanvas.Ui
             {
                 case Kind.Reward: return t.warmYellow;
                 case Kind.Place: return t.olive;
-                case Kind.Saved: return UITheme.A(t.cream, .6f);
-                default: return t.cerulean;
+                case Kind.Saved: return UITheme.A(t.greyBlue, .8f);
+                default: return t.Info;
             }
         }
 
