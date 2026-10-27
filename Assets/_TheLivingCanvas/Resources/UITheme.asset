@@ -21,6 +21,7 @@ MonoBehaviour:
   ink: {r: 0.16862746, g: 0.13333334, b: 0.105882354, a: 1}
   titleFont: {fileID: 11400000, guid: bcc2e0cbda5cc1d4aab4492ab42ae179, type: 2}
   bodyFont: {fileID: 11400000, guid: a69adbf8684d6314499114fc6abd1c4c, type: 2}
+  bodyItalicFont: {fileID: 11400000, guid: 90220c7ee6461474e84f32f6d1fc2531, type: 2}
   panel: {fileID: 21300000, guid: c53bb471997ddec438f957936b2221f4, type: 3}
   buttonNormal: {fileID: 21300000, guid: 14b0f1edf7edc2d439cc423c15cc18f9, type: 3}
   buttonHover: {fileID: 21300000, guid: 9212aec6e5648934f812b028b4311711, type: 3}

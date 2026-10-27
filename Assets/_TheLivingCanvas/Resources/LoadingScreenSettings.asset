@@ -68,12 +68,15 @@ MonoBehaviour:
     messages:
     - "Preparing the colors\u2026"
     - "Arranging the canvas\u2026"
+    - "Setting up the easel\u2026"
   - state: 2
     messages:
     - "Preparing the gallery\u2026"
     - "Every painting begins somewhere\u2026"
     - "Finding a little more color\u2026"
     - "Taking a moment to look closer\u2026"
+    - "Letting the light settle\u2026"
+    - "Some rooms take their time\u2026"
   - state: 3
     messages:
     - "Opening the doors\u2026"

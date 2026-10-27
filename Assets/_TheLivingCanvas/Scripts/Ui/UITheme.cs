@@ -22,6 +22,7 @@ namespace TheLivingCanvas.Ui
         [Header("Fonts")]
         public TMP_FontAsset titleFont;
         public TMP_FontAsset bodyFont;
+        [Tooltip("Cursiva del cuerpo (mensajes de carga, citas). Si falta se usa la sintetizada.")] public TMP_FontAsset bodyItalicFont;
 
         [Header("Sprites (9-slice)")]
         public Sprite panel;

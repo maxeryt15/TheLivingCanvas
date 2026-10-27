@@ -14,7 +14,8 @@ namespace TheLivingCanvas.Ui
         const float MessageFade = 0.3f;
 
         CanvasGroup group;
-        Image paper, shadow, sketch, painted, barBack, barFill;
+        Image paper, shadow, sketch, painted, barBack, barFill, barTrail;
+        RectTransform brush;
         RectTransform canvasHolder, paperRect;
         TextMeshProUGUI titleText, messageText;
         Material revealMat;
@@ -24,6 +25,8 @@ namespace TheLivingCanvas.Ui
         float seed;
 
         static readonly int RevealId = Shader.PropertyToID("_Reveal");
+
+        const float BrushTilt = -26f;
 
         public float Alpha { get => group.alpha; set => group.alpha = value; }
         public bool BlocksRaycasts { set => group.blocksRaycasts = value; }
@@ -99,27 +102,56 @@ namespace TheLivingCanvas.Ui
             // Título discreto sobre el lienzo
             titleText = UIFactory.Label("Title", root, "The Living Canvas", UIFactory.TextStyle.Heading);
             UIFactory.Place(titleText.rectTransform, new Vector2(.5f, .985f), new Vector2(.5f, 1f), Vector2.zero, new Vector2(1000, 60));
-            titleText.fontStyle = FontStyles.Bold;
-            titleText.fontSize = 36;
-            titleText.characterSpacing = 6f;
+            titleText.fontSize = 58;
+            titleText.characterSpacing = 2f;
             titleText.color = UITheme.A(t.ink, .85f);
 
-            // Progreso: pincelada que se rellena bajo el lienzo
+            // Progreso: recuadro con una barra de pintura que avanza con un pincel en la punta (como los sliders)
             var back = UIFactory.Rect("BarBack", root);
-            UIFactory.Place(back, new Vector2(.5f, .115f), new Vector2(.5f, .5f), Vector2.zero, new Vector2(760, 40));
-            barBack = back.gameObject.AddComponent<Image>();
+            UIFactory.Place(back, new Vector2(.5f, .115f), new Vector2(.5f, .5f), Vector2.zero, new Vector2(760, 30));
+            var frame = UIFactory.Rect("Frame", back);
+            frame.anchorMin = Vector2.zero; frame.anchorMax = Vector2.one;
+            frame.offsetMin = new Vector2(-16, -12); frame.offsetMax = new Vector2(16, 12);
+            var frameImg = frame.gameObject.AddComponent<Image>();
+            frameImg.sprite = t.slot; frameImg.type = t.slot != null ? Image.Type.Sliced : Image.Type.Simple;
+            frameImg.color = t.slot != null ? UITheme.A(Color.white, .9f) : UITheme.A(t.ink, .55f);
+            frameImg.raycastTarget = false;
+            var groove = UIFactory.Rect("Groove", back);
+            UIFactory.Stretch(groove);
+            barBack = groove.gameObject.AddComponent<Image>();
+            barBack.sprite = t.barBack; barBack.type = t.barBack != null ? Image.Type.Sliced : Image.Type.Simple;
+            barBack.color = t.barBack != null ? Color.white : UITheme.A(t.ink, .6f);
             barBack.raycastTarget = false;
-            barBack.color = UITheme.A(t.ink, .16f);
-            var fillRect = UIFactory.Rect("BarFill", back);
-            UIFactory.Stretch(fillRect);
-            barFill = fillRect.gameObject.AddComponent<Image>();
-            barFill.type = Image.Type.Filled;
-            barFill.fillMethod = Image.FillMethod.Horizontal;
-            barFill.raycastTarget = false;
+            var fillArea = UIFactory.Rect("FillArea", back);
+            UIFactory.Stretch(fillArea);
+            fillArea.offsetMin = new Vector2(2, 1); fillArea.offsetMax = new Vector2(-2, -1);
+            fillArea.gameObject.AddComponent<RectMask2D>();
+            Image Paint(string n, int sd, Color col, float hk)
+            {
+                var pr = UIFactory.Rect(n, fillArea);
+                UIFactory.Place(pr, new Vector2(0, .5f), new Vector2(0, .5f), Vector2.zero, new Vector2(756, 30 * hk));
+                var im = pr.gameObject.AddComponent<Image>();
+                im.sprite = BrushStrokes.Swipe(sd, 512, 96);
+                im.type = Image.Type.Filled; im.fillMethod = Image.FillMethod.Horizontal; im.fillOrigin = 0;
+                im.color = col; im.raycastTarget = false;
+                return im;
+            }
+            barTrail = Paint("PaintTrail", 11, Color.Lerp(t.cerulean, t.terracotta, .35f), 2.6f);
+            barFill = Paint("Paint", 7, Color.Lerp(t.cerulean, Color.white, .3f), 2.3f);
+            var brushRect = UIFactory.Rect("Brush", back);
+            brushRect.anchorMin = brushRect.anchorMax = new Vector2(0f, .5f);
+            brushRect.sizeDelta = new Vector2(170, 64);
+            brushRect.pivot = new Vector2(.985f, .5f);
+            brushRect.localRotation = Quaternion.Euler(0, 0, BrushTilt);
+            var brushImg = brushRect.gameObject.AddComponent<Image>();
+            brushImg.sprite = BrushStrokes.Brush(); brushImg.raycastTarget = false;
+            var bsh = brushRect.gameObject.AddComponent<Shadow>();
+            bsh.effectColor = new Color(0, 0, 0, .35f); bsh.effectDistance = new Vector2(2, -3);
+            brush = brushRect;
 
             messageText = UIFactory.Label("Message", root, "", UIFactory.TextStyle.Body);
             UIFactory.Place(messageText.rectTransform, new Vector2(.5f, .06f), new Vector2(.5f, .5f), Vector2.zero, new Vector2(1200, 56));
-            messageText.fontStyle = FontStyles.Italic;
+            if (t.bodyItalicFont != null) messageText.font = t.bodyItalicFont; else messageText.fontStyle = FontStyles.Italic;
             messageText.color = t.ink;
             messageText.textWrappingMode = TextWrappingModes.NoWrap;
             ApplyContrast(false);
@@ -145,10 +177,6 @@ namespace TheLivingCanvas.Ui
 
             titleText.text = title;
             titleText.gameObject.SetActive(showTitle);
-            // Pincelada azul clara (la variante "Almond" del prompt); si no existe, trazo procedural liso
-            t.SkinSprites(t.SkinCount - 1, out _, out var barStroke);
-            barBack.sprite = barFill.sprite = barStroke != null ? barStroke : BrushStrokes.Stroke(7, 512, 96);
-            barFill.color = barStroke != null ? Color.white : t.cerulean;
             SetProgress(0f);
         }
 
@@ -156,6 +184,7 @@ namespace TheLivingCanvas.Ui
         {
             progress = Mathf.Clamp01(p);
             barFill.fillAmount = progress;
+            if (brush != null) brush.anchorMin = brush.anchorMax = new Vector2(progress, .5f);
             if (revealMat != null) revealMat.SetFloat(RevealId, progress);
         }
 
@@ -206,6 +235,11 @@ namespace TheLivingCanvas.Ui
             }
             else messageAlpha = Mathf.MoveTowards(messageAlpha, 1f, Time.unscaledDeltaTime / MessageFade);
             messageText.alpha = messageAlpha;
+            if (barTrail != null)
+            {
+                float f = barTrail.fillAmount;
+                barTrail.fillAmount = progress >= f ? progress : Mathf.Lerp(f, progress, 1f - Mathf.Exp(-6f * Time.unscaledDeltaTime));
+            }
         }
 
         void OnDestroy()

@@ -96,8 +96,8 @@ namespace TheLivingCanvas.Ui
 
         static MessageSet[] DefaultMessages() => new[]
         {
-            new MessageSet { state = LoadingState.Preparing, messages = new[] { "Preparing the colors…", "Arranging the canvas…" } },
-            new MessageSet { state = LoadingState.Loading, messages = new[] { "Preparing the gallery…", "Every painting begins somewhere…", "Finding a little more color…", "Taking a moment to look closer…" } },
+            new MessageSet { state = LoadingState.Preparing, messages = new[] { "Preparing the colors…", "Arranging the canvas…", "Setting up the easel…" } },
+            new MessageSet { state = LoadingState.Loading, messages = new[] { "Preparing the gallery…", "Every painting begins somewhere…", "Finding a little more color…", "Taking a moment to look closer…", "Letting the light settle…", "Some rooms take their time…" } },
             new MessageSet { state = LoadingState.Activating, messages = new[] { "Opening the doors…" } },
             new MessageSet { state = LoadingState.Completing, messages = new[] { "Ready." } },
             new MessageSet { state = LoadingState.Failed, messages = new[] { "We couldn't open that room. Returning to where you were." } },

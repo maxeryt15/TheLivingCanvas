@@ -57,3 +57,11 @@ Layout proporcional: el lienzo mantiene 16:9 dentro de una zona que escala con l
 ## Sin verificar todavía
 Timeout real (una carga que se queda sin avanzar `timeoutSeconds`; solo se probó la ruta de fallo), 16:9 real y mando.
 No hay audio asignado: los ganchos `UISound.LoadingStart / LoadingBrush / LoadingComplete` existen pero nada suena aún.
+
+## Rediseño visual (Fase 3 del revamp de UI, 2026-10-27)
+- Título en Caveat Brush (58 pt, `UITheme.titleFont`); mensajes en Lora Italic (`UITheme.bodyItalicFont`, asset `Lora Italic SDF`).
+- Barra de progreso = mismo lenguaje que los sliders: recuadro (`slot`), ranura (`barBack`), pintura con estela terracota que se retrasa
+  y pincel (`BrushStrokes.Brush`) en la punta que avanza con el progreso.
+- Mensajes nuevos ("Setting up the easel…", "Letting the light settle…", "Some rooms take their time…").
+- Verificado en Edit con una captura (barra al 60 %, título, mensaje). Pendiente: Play real, 16:9/16:10, ReducedMotion/HighContrast, mando.
+- Sin variantes de ilustración nuevas: quedan las 2 procedurales (ventana, atardecer); el arte final lo pinta el usuario.
