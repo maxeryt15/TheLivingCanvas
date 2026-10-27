@@ -52,8 +52,12 @@ namespace TheLivingCanvas.Interaction
         {
             int count = Physics.SphereCastNonAlloc(view.position, aimRadius, view.forward, hits, reach, ~0, QueryTriggerInteraction.Collide);
 
-            // Lo primero que toca la mirada (sin contar al propio jugador) decide: una pared delante tapa lo de detrás.
-            RaycastHit? nearest = null;
+            // Se recorren los impactos de cerca a lejos: los interactuables disponibles son candidatos y lo primero
+            // que no lo es (una pared, un interactuable desactivado) tapa lo que hay detrás.
+            // Entre los candidatos gana el de mayor prioridad; a igualdad, el más cercano.
+            System.Array.Sort(hits, 0, count, DistanceComparer);
+            IInteractable best = null;
+            var bestPriority = int.MinValue;
             for (int i = 0; i < count; i++)
             {
                 if (hits[i].collider.transform.IsChildOf(transform)) continue;
@@ -61,14 +65,20 @@ namespace TheLivingCanvas.Interaction
                 // solo cuenta si se mira hacia él.
                 if (hits[i].distance <= 0f && Vector3.Angle(view.forward, hits[i].collider.bounds.center - view.position) > MaxInsideAngle)
                     continue;
-                if (nearest == null || hits[i].distance < nearest.Value.distance)
-                    nearest = hits[i];
-            }
-            if (nearest == null) return null;
 
-            var candidate = nearest.Value.collider.GetComponentInParent<IInteractable>();
-            return candidate != null && candidate.CanInteract ? candidate : null;
+                var candidate = hits[i].collider.GetComponentInParent<IInteractable>();
+                if (candidate == null || !candidate.CanInteract) break;
+                int priority = PriorityOf(candidate);
+                if (priority > bestPriority) { best = candidate; bestPriority = priority; }
+            }
+            return best;
         }
+
+        static readonly System.Collections.Generic.IComparer<RaycastHit> DistanceComparer =
+            System.Collections.Generic.Comparer<RaycastHit>.Create((a, b) => a.distance.CompareTo(b.distance));
+
+        public static int PriorityOf(IInteractable i) =>
+            (int)(i is IInteractionPriority p ? p.Priority : InteractionPriority.Examine);
 
         void OnDrawGizmosSelected()
         {

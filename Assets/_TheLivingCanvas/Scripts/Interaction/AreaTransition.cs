@@ -16,7 +16,12 @@ namespace TheLivingCanvas.Interaction
         [SerializeField] GameObject interiorRoot;
         [SerializeField] bool startInside;
         [SerializeField] CanvasGroup fade;
-        [SerializeField] float fadeSeconds = 0.35f;
+        [Tooltip("Cómo se cubre la pantalla al viajar entre áreas.")]
+        [SerializeField] TheLivingCanvas.Ui.ScreenTransition.Kind transitionKind = TheLivingCanvas.Ui.ScreenTransition.Kind.Brush;
+        [Tooltip("Si está activo, cada viaje usa el siguiente tipo (pincelada, tinta, disolución) en vez de siempre el mismo.")]
+        [SerializeField] bool cycleKinds = true;
+        [SerializeField] float coverSeconds = 0.6f;
+        [SerializeField] float uncoverSeconds = 0.8f;
         [SerializeField] float holdSeconds = 0.1f;
         [Tooltip("Raiz del jugador (con CharacterController).")]
         [SerializeField] Transform player;
@@ -24,6 +29,7 @@ namespace TheLivingCanvas.Interaction
         [SerializeField] CinemachinePanTilt panTilt;
 
         public bool Busy { get; private set; }
+        static int travelCount;
 
         void Awake()
         {
@@ -40,7 +46,13 @@ namespace TheLivingCanvas.Interaction
         IEnumerator TravelRoutine(Transform destination, bool toInside)
         {
             Busy = true;
-            yield return Fade(0f, 1f);
+            var kind = transitionKind;
+            if (cycleKinds)
+            {
+                var order = new[] { TheLivingCanvas.Ui.ScreenTransition.Kind.Brush, TheLivingCanvas.Ui.ScreenTransition.Kind.Ink, TheLivingCanvas.Ui.ScreenTransition.Kind.Dissolve };
+                kind = order[travelCount++ % order.Length];
+            }
+            yield return TheLivingCanvas.Ui.ScreenTransition.Cover(kind, coverSeconds);
 
             var movement = player.GetComponent<PlayerMovement>();
             var controller = player.GetComponent<CharacterController>();
@@ -65,22 +77,9 @@ namespace TheLivingCanvas.Interaction
             if (movement != null) movement.enabled = true;
 
             if (holdSeconds > 0f) yield return new WaitForSecondsRealtime(holdSeconds);
-            yield return Fade(1f, 0f);
+            yield return TheLivingCanvas.Ui.ScreenTransition.Uncover(uncoverSeconds);
             Busy = false;
-        }
-
-        IEnumerator Fade(float from, float to)
-        {
-            if (fade == null) yield break;
-            float t = 0f;
-            float dur = Mathf.Max(0.0001f, fadeSeconds);
-            while (t < dur)
-            {
-                t += Time.unscaledDeltaTime;
-                fade.alpha = Mathf.Lerp(from, to, Mathf.Clamp01(t / dur));
-                yield return null;
-            }
-            fade.alpha = to;
+            TheLivingCanvas.Ui.Notifications.Show(toInside ? "You step into the museum" : "You step out into the gardens");
         }
 
         void SetInside(bool inside)

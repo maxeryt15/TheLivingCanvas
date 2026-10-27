@@ -61,8 +61,9 @@ namespace TheLivingCanvas.Audio
 
         void ApplyVolumes()
         {
-            day.volume = volume * masterFade * (1f - eveningMix);
-            evening.volume = volume * masterFade * eveningMix;
+            float level = volume * masterFade * Core.GameSettings.MusicVolume;
+            day.volume = level * (1f - eveningMix);
+            evening.volume = level * eveningMix;
         }
     }
 }

@@ -92,8 +92,8 @@ namespace TheLivingCanvas.Npcs
             return new NpcStop
             {
                 point = p,
-                waitMin = seat ? 1f : look ? 60f : 3f,
-                waitMax = seat ? 2f : look ? 120f : 9f,
+                waitMin = seat ? 1f : look ? 20f : 3f,
+                waitMax = seat ? 2f : look ? 45f : 9f,
                 faceStopForward = look
             };
         }

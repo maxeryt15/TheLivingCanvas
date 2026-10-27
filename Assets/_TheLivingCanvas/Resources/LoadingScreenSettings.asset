@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41bc27394b1840f488d5f7f88e130f23, type: 3}
+  m_Name: LoadingScreenSettings
+  m_EditorClassIdentifier: TheLivingCanvas::TheLivingCanvas.Ui.LoadingScreenSettings
+  variants:
+  - name: Garden window
+    paper: {fileID: 7089214670932882385, guid: 39228edf2614ef3488ce178844f222cd, type: 3}
+    sketch: {fileID: -1208162339501049681, guid: 89f55afb316edca4bae49fda4f8bc8bd, type: 3}
+    painted: {fileID: 5614266892335575944, guid: afc509a1cd894044c8a3b9bb131d8fbf, type: 3}
+    paintedFaded: {fileID: -7550683982325167318, guid: 5e08823d1d6f71842ac13b2afbddb632, type: 3}
+    paperTint: {r: 0.93, g: 0.87, b: 0.74, a: 1}
+  - name: Garden at dusk
+    paper: {fileID: -1079296104938751319, guid: 3354ea75fa5323b48b58f0c2e7454f1b, type: 3}
+    sketch: {fileID: -8933523814475861869, guid: c6ec2d5069ebaad40878f822109e2428, type: 3}
+    painted: {fileID: -3996689714868099419, guid: 7d3aa4572eb94a64db03dba1d85d6637, type: 3}
+    paintedFaded: {fileID: -5796939434487632120, guid: 03cc6d6be408b5d45bd351c11c5dab0f, type: 3}
+    paperTint: {r: 0.9, g: 0.82, b: 0.7, a: 1}
+  useFaded: 0
+  showTitle: 1
+  title: The Living Canvas
+  coverSeconds: 0.9
+  entryFade: 0.4
+  minDisplay: 1.6
+  postLoadSeconds: 5
+  progressSmoothing: 0.35
+  completionHold: 0.35
+  exitFade: 0.4
+  uncoverSeconds: 0.9
+  timeoutSeconds: 60
+  ambientIntensity: 0.5
+  revealCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  messageInterval: 5
+  messages:
+  - state: 1
+    messages:
+    - "Preparing the colors\u2026"
+    - "Arranging the canvas\u2026"
+  - state: 2
+    messages:
+    - "Preparing the gallery\u2026"
+    - "Every painting begins somewhere\u2026"
+    - "Finding a little more color\u2026"
+    - "Taking a moment to look closer\u2026"
+  - state: 3
+    messages:
+    - "Opening the doors\u2026"
+  - state: 4
+    messages:
+    - Ready.
+  - state: 6
+    messages:
+    - We couldn't open that room. Returning to where you were.
+  debugLog: 0
