@@ -67,3 +67,6 @@ MonoBehaviour:
   panelOpen: 0.15
   panelClose: 0.12
   buttonFade: 0.08
+  tooltip: {fileID: 21300000, guid: 309c5dfb3ff256b45b8bc9e8077ca3fb, type: 3}
+  card: {fileID: 21300000, guid: 66f95939330d2c140b59777f982078b8, type: 3}
+  slot: {fileID: 21300000, guid: f73bfe34a92978a4789802fe1772449f, type: 3}

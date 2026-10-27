@@ -58,7 +58,7 @@ namespace TheLivingCanvas.Ui
                 e = new Entry { Id = id };
                 var l = UIFactory.Label("Objective_" + id, listRoot, "", UIFactory.TextStyle.Body, TextAlignmentOptions.Left);
                 UIFactory.ContrastOnPaint(l, 0.45f);
-                l.outlineColor = Color.black;
+                l.outlineColor = UITheme.Current.OutlineDark;
                 UIFactory.Place(l.rectTransform, new Vector2(0, 1), new Vector2(0, 1), Vector2.zero, new Vector2(Width, LineHeight));
                 e.Label = l;
                 entries.Add(e);
@@ -110,7 +110,7 @@ namespace TheLivingCanvas.Ui
                 e.Alpha = Mathf.MoveTowards(e.Alpha, visible ? fade : 0f, dt / 0.25f);
                 e.Label.alpha = e.Alpha;
                 e.Label.text = e.Done ? "<s>" + e.Text + "</s>  ✓" : e.Text;
-                e.Label.color = e.Done ? new Color(t.olive.r * 1.4f, t.olive.g * 1.5f, t.olive.b * 1.3f, e.Alpha) : new Color(t.cream.r, t.cream.g, t.cream.b, e.Alpha);
+                e.Label.color = e.Done ? new Color(t.olive.r * 1.4f, t.olive.g * 1.5f, t.olive.b * 1.3f, e.Alpha) : UITheme.A(t.cream, e.Alpha);
                 e.Label.rectTransform.anchoredPosition = new Vector2(0, -y);
                 if (visible) y += LineHeight;
             }
@@ -132,9 +132,9 @@ namespace TheLivingCanvas.Ui
 
             header = UIFactory.Label("Header", area, "OBJECTIVES", UIFactory.TextStyle.Small, TextAlignmentOptions.Left);
             header.characterSpacing = 8f;
-            header.color = new Color(t.warmYellow.r, t.warmYellow.g, t.warmYellow.b, .9f);
+            header.color = UITheme.A(t.warmYellow, .9f);
             UIFactory.ContrastOnPaint(header, 0.45f);
-            header.outlineColor = Color.black;
+            header.outlineColor = UITheme.Current.OutlineDark;
             UIFactory.Place(header.rectTransform, new Vector2(0, 1), new Vector2(0, 1), Vector2.zero, new Vector2(Width, 30));
 
             listRoot = UIFactory.Rect("List", area);

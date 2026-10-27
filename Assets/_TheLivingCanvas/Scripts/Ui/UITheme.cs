@@ -85,6 +85,37 @@ namespace TheLivingCanvas.Ui
             }
         }
 
+        [Header("Extra sprites (9-slice)")]
+        [Tooltip("Fondo de tooltips y fichas pequeñas.")] public Sprite tooltip;
+        [Tooltip("Tarjeta de papel (fichas, notas, objetos).")] public Sprite card;
+        [Tooltip("Casilla de inventario / pigmento.")] public Sprite slot;
+
+        // --- Colores semánticos derivados de la paleta (ninguna pantalla debe usar new Color(...) sueltos) ---
+        public static Color A(Color c, float a) => new Color(c.r, c.g, c.b, a);
+        static Color Mul(Color c, float r, float g, float b, float a) => new Color(c.r * r, c.g * g, c.b * b, a);
+
+        public Color Accent => warmYellow;
+        public Color Reward => warmYellow;
+        public Color Positive => olive;
+        public Color Info => cerulean;
+        public Color Warn => terracotta;
+        public Color Locked => greyBlue;
+        public Color Paper => Color.Lerp(cream, Color.white, .35f);
+        public Color TextOnPaper => ink;
+        public Color TextOnInk => cream;
+        /// <summary>Contorno oscuro para texto claro sobre pintura.</summary>
+        public Color OutlineDark => Mul(ink, .35f, .35f, .35f, 1f);
+        /// <summary>Contorno claro para texto oscuro sobre pintura.</summary>
+        public Color OutlineLight => Paper;
+        /// <summary>Oscurecido de fondo (atenúa el mundo tras un panel).</summary>
+        public Color Dim(float alpha) => Mul(ink, .6f, .6f, .7f, alpha);
+        /// <summary>Velo de tinta tras paneles y tarjetas.</summary>
+        public Color Shade(float alpha) => Mul(ink, .5f, .5f, .6f, alpha);
+        public Color ReticleIdle => A(cream, .42f);
+        public Color ReticleActive => A(Paper, .95f);
+        public Color PromptStrokeTint => A(Color.Lerp(greyBlue, Color.white, .15f), .94f);
+        public Color HudBand => Mul(ink, .35f, .35f, .45f, .78f);
+
         public Color PanelTint => new Color(ink.r, ink.g, ink.b, 0.88f);
         public TMP_FontAsset Title => titleFont != null ? titleFont : bodyFont;
     }

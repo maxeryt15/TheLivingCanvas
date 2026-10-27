@@ -49,7 +49,7 @@ namespace TheLivingCanvas.Ui
 
             var title = UIFactory.Label("Title", mainGroup.transform, "The Living Canvas", UIFactory.TextStyle.Title, TextAlignmentOptions.Left);
             UIFactory.ContrastOnPaint(title, 0.35f);
-            title.outlineColor = Color.black;
+            title.outlineColor = t.OutlineDark;
             UIFactory.Place(title.rectTransform, new Vector2(0, .5f), new Vector2(0, .5f), new Vector2(160, 200), new Vector2(1100, 130));
 
             bool hasSave = File.Exists(SaveManager.SavePath);
@@ -101,7 +101,7 @@ namespace TheLivingCanvas.Ui
             shade.sizeDelta = new Vector2(1250, 0);
             var shadeImg = shade.gameObject.AddComponent<Image>();
             shadeImg.sprite = HorizontalFade();
-            shadeImg.color = new Color(t.ink.r * .5f, t.ink.g * .5f, t.ink.b * .6f, .85f);
+            shadeImg.color = t.Shade(.85f);
             shadeImg.raycastTarget = false;
         }
 
@@ -144,7 +144,7 @@ namespace TheLivingCanvas.Ui
             var stroke = r.gameObject.AddComponent<Image>();
             stroke.sprite = t.promptStroke;
             stroke.type = Image.Type.Simple;
-            stroke.color = t.promptStroke != null ? Color.white : new Color(t.cerulean.r, t.cerulean.g, t.cerulean.b, 1f);
+            stroke.color = t.promptStroke != null ? Color.white : t.cerulean;
             var b = r.gameObject.AddComponent<Button>();
             b.targetGraphic = stroke;
             b.transition = Selectable.Transition.ColorTint;
@@ -155,7 +155,7 @@ namespace TheLivingCanvas.Ui
             };
             var l = UIFactory.Label("Label", r, label, UIFactory.TextStyle.Heading, TextAlignmentOptions.Left);
             UIFactory.ContrastOnPaint(l, 0.4f);
-            l.outlineColor = Color.black;
+            l.outlineColor = t.OutlineDark;
             UIFactory.Stretch(l.rectTransform);
             l.rectTransform.offsetMin = new Vector2(44, 0);
             b.onClick.AddListener(onClick);

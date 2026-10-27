@@ -204,7 +204,7 @@ namespace TheLivingCanvas.Ui
             var dim = UIFactory.Rect("Dim", canvas.transform);
             UIFactory.Stretch(dim);
             var dimImg = dim.gameObject.AddComponent<Image>();
-            dimImg.color = new Color(t.ink.r * .6f, t.ink.g * .6f, t.ink.b * .7f, .72f);
+            dimImg.color = t.Dim(.72f);
             dimImg.raycastTarget = true;
 
             menuGroup = UIFactory.Rect("Menu", canvas.transform).gameObject;

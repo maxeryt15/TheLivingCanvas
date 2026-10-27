@@ -70,7 +70,7 @@ namespace TheLivingCanvas.Ui
             UIFactory.Stretch(shade);
             shade.offsetMin = new Vector2(34, 30); shade.offsetMax = new Vector2(-34, -30);
             var shadeImg = shade.gameObject.AddComponent<Image>();
-            shadeImg.color = new Color(t.ink.r * .5f, t.ink.g * .5f, t.ink.b * .6f, .55f);
+            shadeImg.color = t.Shade(.55f);
             shadeImg.raycastTarget = false;
 
             // Mancha de color a la izquierda según el tipo
@@ -102,7 +102,7 @@ namespace TheLivingCanvas.Ui
             {
                 case Kind.Reward: return t.warmYellow;
                 case Kind.Place: return t.olive;
-                case Kind.Saved: return new Color(t.cream.r, t.cream.g, t.cream.b, .6f);
+                case Kind.Saved: return UITheme.A(t.cream, .6f);
                 default: return t.cerulean;
             }
         }

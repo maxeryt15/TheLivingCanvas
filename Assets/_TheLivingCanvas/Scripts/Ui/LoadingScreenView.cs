@@ -27,7 +27,7 @@ namespace TheLivingCanvas.Ui
 
         public float Alpha { get => group.alpha; set => group.alpha = value; }
         public bool BlocksRaycasts { set => group.blocksRaycasts = value; }
-        public Color PaperColor { get; private set; } = new Color(.93f, .87f, .74f, 1f);
+        public Color PaperColor { get; private set; } = UITheme.Current.Paper;
 
         public static LoadingScreenView Create(Transform parent)
         {
@@ -73,7 +73,7 @@ namespace TheLivingCanvas.Ui
             shadowRect.offsetMin = new Vector2(10, -18); shadowRect.offsetMax = new Vector2(10, -18);
             shadow = shadowRect.gameObject.AddComponent<Image>();
             shadow.raycastTarget = false;
-            shadow.color = new Color(t.ink.r, t.ink.g, t.ink.b, .18f);
+            shadow.color = UITheme.A(t.ink, .18f);
 
             var sketchRect = UIFactory.Rect("Sketch", fit);
             UIFactory.Stretch(sketchRect);
@@ -102,14 +102,14 @@ namespace TheLivingCanvas.Ui
             titleText.fontStyle = FontStyles.Bold;
             titleText.fontSize = 36;
             titleText.characterSpacing = 6f;
-            titleText.color = new Color(t.ink.r, t.ink.g, t.ink.b, .85f);
+            titleText.color = UITheme.A(t.ink, .85f);
 
             // Progreso: pincelada que se rellena bajo el lienzo
             var back = UIFactory.Rect("BarBack", root);
             UIFactory.Place(back, new Vector2(.5f, .115f), new Vector2(.5f, .5f), Vector2.zero, new Vector2(760, 40));
             barBack = back.gameObject.AddComponent<Image>();
             barBack.raycastTarget = false;
-            barBack.color = new Color(t.ink.r, t.ink.g, t.ink.b, .16f);
+            barBack.color = UITheme.A(t.ink, .16f);
             var fillRect = UIFactory.Rect("BarFill", back);
             UIFactory.Stretch(fillRect);
             barFill = fillRect.gameObject.AddComponent<Image>();
@@ -148,7 +148,7 @@ namespace TheLivingCanvas.Ui
             // Pincelada azul clara (la variante "Almond" del prompt); si no existe, trazo procedural liso
             t.SkinSprites(t.SkinCount - 1, out _, out var barStroke);
             barBack.sprite = barFill.sprite = barStroke != null ? barStroke : BrushStrokes.Stroke(7, 512, 96);
-            barFill.color = barStroke != null ? Color.white : new Color(t.cerulean.r, t.cerulean.g, t.cerulean.b, 1f);
+            barFill.color = barStroke != null ? Color.white : t.cerulean;
             SetProgress(0f);
         }
 
@@ -171,10 +171,10 @@ namespace TheLivingCanvas.Ui
         {
             var t = UITheme.Current;
             messageText.outlineWidth = highContrast ? 0.35f : 0.12f;
-            messageText.outlineColor = highContrast ? (Color32)Color.white : (Color32)new Color(PaperColor.r, PaperColor.g, PaperColor.b);
+            messageText.outlineColor = highContrast ? (Color32)Color.white : (Color32)PaperColor;
             messageText.color = highContrast ? Color.black : t.ink;
             messageText.fontSize = highContrast ? t.bodySize * 1.2f : t.bodySize;
-            titleText.color = highContrast ? Color.black : new Color(t.ink.r, t.ink.g, t.ink.b, .85f);
+            titleText.color = highContrast ? Color.black : UITheme.A(t.ink, .85f);
         }
 
         /// <summary>Movimiento ambiente casi imperceptible (el lienzo respira). 0 = quieto.</summary>

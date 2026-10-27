@@ -93,6 +93,63 @@ namespace TheLivingCanvas.Ui
             });
         }
 
+        /// <summary>
+        /// Pincel completo a color (mango de madera lacada, virola de metal con dos crimpados, cerdas con la punta cargada de
+        /// amarillo), horizontal, punta a la derecha (pivote x≈0.985). Luz desde arriba, contorno de tinta. No se tiñe.
+        /// </summary>
+        public static Sprite Brush(int w = 384, int h = 128)
+        {
+            return Cached(6, 2, w, h, () =>
+            {
+                var t = UITheme.Current;
+                Color wood = new Color32(0xA8, 0x6E, 0x44, 255), woodDark = new Color32(0x5A, 0x34, 0x20, 255);
+                Color metal = Color.Lerp(t.greyBlue, Color.white, .5f), metalDark = Color.Lerp(t.greyBlue, t.ink, .55f);
+                Color bristle = new Color32(0xF3, 0xEA, 0xD0, 255), bristleDark = new Color32(0xC9, 0xB8, 0x92, 255), paint = t.warmYellow;
+                Color outline = t.OutlineDark;
+                var px = new Color32[w * h];
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                    {
+                        float u = (x + .5f) / w, v = (y + .5f) / h * 2f - 1f; // v>0 = arriba (recibe la luz)
+                        float half; Color c;
+                        if (u < .56f) // mango: cola redondeada, se ensancha hacia la virola
+                        {
+                            float k = u / .56f;
+                            half = Mathf.Lerp(.15f, .23f, k) * Mathf.Sqrt(Mathf.Clamp01(u / .05f));
+                            float grain = Mathf.PerlinNoise(u * 38f, v * 2.5f + 2f);
+                            float shade = Mathf.Clamp01(.5f - v * .5f); // abajo más oscuro
+                            c = Color.Lerp(wood, woodDark, shade * .85f + grain * .18f);
+                            float gloss = Mathf.Exp(-Mathf.Pow((v / half - .5f) * 5f, 2f)) * .55f; // brillo de laca a lo largo
+                            c = Color.Lerp(c, Color.white, gloss * Mathf.Clamp01(1f - Mathf.Abs(u - .3f) * 1.6f));
+                        }
+                        else if (u < .72f) // virola
+                        {
+                            half = .33f;
+                            float crimp = Mathf.Min(Mathf.Abs(u - .605f), Mathf.Abs(u - .675f)) < .006f ? 1f : 0f;
+                            float shade = Mathf.Clamp01(.5f - v * .55f);
+                            c = Color.Lerp(metal, metalDark, shade);
+                            c = Color.Lerp(c, metalDark, crimp * .7f);
+                            c = Color.Lerp(c, Color.white, Mathf.Exp(-Mathf.Pow((v / half - .55f) * 6f, 2f)) * .7f);
+                        }
+                        else // cerdas
+                        {
+                            float s = (u - .72f) / .28f;
+                            half = .4f * (1f - Mathf.Pow(s, 2.1f)) * (1f + .06f * Mathf.Sin(s * 9f));
+                            float lines = Mathf.PerlinNoise(s * 2.5f, v * 12f + 5f); // cerdas individuales
+                            c = Color.Lerp(bristle, bristleDark, Mathf.Clamp01(.35f - v * .3f + (lines - .5f) * .6f));
+                            float load = Mathf.SmoothStep(.16f, .58f, s + (lines - .5f) * .3f);
+                            c = Color.Lerp(c, Color.Lerp(paint, Color.white, Mathf.Max(0f, v) * .18f), load);
+                        }
+                        float edge = (half - Mathf.Abs(v)) * h * .5f; // px hasta el borde
+                        float a = Mathf.Clamp01(edge / 1.4f);
+                        c = Color.Lerp(c, outline, Mathf.Clamp01(1f - edge / 2.6f) * .75f); // contorno de tinta
+                        c.a = a;
+                        px[y * w + x] = c;
+                    }
+                return px;
+            });
+        }
+
         static Sprite Cached(int kind, int seed, int w, int h, System.Func<Color32[]> make)
         {
             long key = ((long)kind << 48) ^ ((long)seed << 24) ^ ((long)w << 12) ^ (long)h;

@@ -158,7 +158,7 @@ namespace TheLivingCanvas.Ui
             UIFactory.Stretch(shade);
             shade.offsetMin = new Vector2(46, 46); shade.offsetMax = new Vector2(-46, -46);
             var shadeImg = shade.gameObject.AddComponent<Image>();
-            shadeImg.color = new Color(t.ink.r * .5f, t.ink.g * .5f, t.ink.b * .6f, .6f);
+            shadeImg.color = t.Shade(.6f);
             shadeImg.raycastTarget = false;
 
             speakerLabel = UIFactory.Label("Speaker", panel.transform, "", UIFactory.TextStyle.Heading, TextAlignmentOptions.Left);

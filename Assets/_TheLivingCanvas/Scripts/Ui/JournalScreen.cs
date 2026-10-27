@@ -248,7 +248,7 @@ namespace TheLivingCanvas.Ui
             string detail = item.Detail;
             if (item.Quantity > 1 && string.IsNullOrEmpty(detail)) detail = $"x{item.Quantity}"; // el detalle de algunos objetos ya trae la cantidad
             var d = UIFactory.Label("Detail", row, detail, UIFactory.TextStyle.Small, TextAlignmentOptions.Right);
-            d.color = new Color(UITheme.Current.cream.r, UITheme.Current.cream.g, UITheme.Current.cream.b, .85f);
+            d.color = UITheme.A(UITheme.Current.cream, .85f);
             UIFactory.ContrastOnPaint(d, 0.3f);
             UIFactory.Place(d.rectTransform, new Vector2(1, .5f), new Vector2(1, .5f), Vector2.zero, new Vector2(320, 56));
         }
@@ -271,7 +271,7 @@ namespace TheLivingCanvas.Ui
             var dim = UIFactory.Rect("Dim", canvas.transform);
             UIFactory.Stretch(dim);
             var dimImg = dim.gameObject.AddComponent<Image>();
-            dimImg.color = new Color(t.ink.r * .6f, t.ink.g * .6f, t.ink.b * .7f, .55f);
+            dimImg.color = t.Dim(.55f);
 
             var panel = UIFactory.Panel("Journal", canvas.transform, PanelSize);
             UIFactory.Place(panel.rectTransform, new Vector2(.5f, .5f), new Vector2(.5f, .5f), Vector2.zero, PanelSize);
@@ -279,7 +279,7 @@ namespace TheLivingCanvas.Ui
             UIFactory.Stretch(shade);
             shade.offsetMin = new Vector2(50, 50); shade.offsetMax = new Vector2(-50, -50);
             var shadeImg = shade.gameObject.AddComponent<Image>();
-            shadeImg.color = new Color(t.ink.r * .5f, t.ink.g * .5f, t.ink.b * .6f, .6f);
+            shadeImg.color = t.Shade(.6f);
             shadeImg.raycastTarget = false;
 
             var title = UIFactory.Label("Title", panel.transform, "Journal", UIFactory.TextStyle.Heading);
@@ -312,7 +312,7 @@ namespace TheLivingCanvas.Ui
             var barBack = UIFactory.Rect("XpBack", satchelPage.transform);
             UIFactory.Place(barBack, new Vector2(0, 1), new Vector2(0, 1), new Vector2(1000, -345), new Vector2(380, 16));
             var bb = barBack.gameObject.AddComponent<Image>();
-            bb.color = new Color(t.ink.r, t.ink.g, t.ink.b, .8f); bb.raycastTarget = false;
+            bb.color = UITheme.A(t.ink, .8f); bb.raycastTarget = false;
             var fillRect = UIFactory.Rect("XpFill", barBack);
             UIFactory.Stretch(fillRect);
             xpFill = fillRect.gameObject.AddComponent<Image>();
@@ -364,7 +364,7 @@ namespace TheLivingCanvas.Ui
             var t = UITheme.Current;
             var l = UIFactory.Label(text + "Header", parent, text, UIFactory.TextStyle.Small, TextAlignmentOptions.Left);
             l.characterSpacing = 8f;
-            l.color = new Color(t.warmYellow.r, t.warmYellow.g, t.warmYellow.b, .9f);
+            l.color = UITheme.A(t.warmYellow, .9f);
             UIFactory.ContrastOnPaint(l, 0.3f);
             UIFactory.Place(l.rectTransform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(x, -(yOffset == 0 ? 205 : 205 - yOffset)), new Vector2(500, 30));
         }

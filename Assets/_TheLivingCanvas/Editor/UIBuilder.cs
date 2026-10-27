@@ -47,6 +47,9 @@ namespace TheLivingCanvas.EditorTools
             theme.buttonDisabled = Make("button_disabled", new Color32(0x4A, 0x4A, 0x4A, 160), new Color32(0x80, 0x80, 0x80, 160), 9, 2);
             theme.barBack = Make("bar_back", new Color32(0x2B, 0x22, 0x1B, 200), new Color32(0xE0, 0xCD, 0xB0, 70), 6, 1);
             theme.barFill = Make("bar_fill", new Color32(0xD4, 0xA7, 0x2C, 255), new Color32(0xD4, 0xA7, 0x2C, 255), 6, 0);
+            theme.tooltip = Make("tooltip", new Color32(0x2B, 0x22, 0x1B, 245), new Color32(0xD4, 0xA7, 0x2C, 110), 7, 1);
+            theme.card = Make("card", new Color32(0xEC, 0xDF, 0xC6, 255), new Color32(0xA8, 0x8F, 0x68, 200), 8, 2);
+            theme.slot = Make("slot", new Color32(0x3A, 0x2F, 0x26, 230), new Color32(0xE0, 0xCD, 0xB0, 80), 6, 1);
 
             var def = TMP_Settings.defaultFontAsset;
             if (def != null) { if (theme.bodyFont == null) theme.bodyFont = def; if (theme.titleFont == null) theme.titleFont = def; }
@@ -145,7 +148,9 @@ namespace TheLivingCanvas.EditorTools
             y -= 90;
             var slider = UIFactory.Slider("VolumeSlider", panel.transform, new Vector2(420, 24), 0, 1, .7f);
             UIFactory.Place((RectTransform)slider.transform, top, top, new Vector2(0, y), new Vector2(420, 24));
-            y -= 60;
+            var slider2 = UIFactory.Slider("LowSlider", panel.transform, new Vector2(420, 24), 0, 1, .18f);
+            UIFactory.Place((RectTransform)slider2.transform, top, top, new Vector2(0, y - 62), new Vector2(420, 24));
+            y -= 125;
             var toggle = UIFactory.Toggle("FullscreenToggle", panel.transform, "Fullscreen", true);
             UIFactory.Place((RectTransform)toggle.transform, top, top, new Vector2(0, y), new Vector2(420, 48));
             y -= 70;
@@ -298,6 +303,7 @@ namespace TheLivingCanvas.EditorTools
             int r = radius * 2;
             float bw = Mathf.Max(borderPx, 0) * 1.0f;
             var px = new Color32[size * size];
+            float sx = (name.GetHashCode() & 0xFF) * .37f, sy = ((name.GetHashCode() >> 8) & 0xFF) * .21f;
             for (int y = 0; y < size; y++)
                 for (int x = 0; x < size; x++)
                 {
@@ -308,7 +314,11 @@ namespace TheLivingCanvas.EditorTools
                     inside += (Mathf.PerlinNoise(x * .09f + 3.1f, y * .09f + 7.7f) - .5f) * 1.6f;
                     float cover = Mathf.Clamp01(inside + .5f); // alfa antialias del contorno exterior
                     float inBorder = bw > 0 ? Mathf.Clamp01(bw + .5f - inside) : 0f; // 1 en el anillo del borde
+                    // Cerdas de pincel: vetas horizontales de brillo (direccion y escala propositivas, no ruido uniforme).
+                    float streak = (Mathf.PerlinNoise(x * .035f + sx, y * .5f + sy) - .5f) * .16f
+                                 + (Mathf.PerlinNoise(x * .13f + sy, y * 1.1f + sx) - .5f) * .06f;
                     Color f = fill, bc = border;
+                    f.r = Mathf.Clamp01(f.r * (1f + streak)); f.g = Mathf.Clamp01(f.g * (1f + streak)); f.b = Mathf.Clamp01(f.b * (1f + streak));
                     Color c = Color.Lerp(f, bc, inBorder * bc.a);
                     c.a = Mathf.Lerp(f.a, Mathf.Max(f.a, bc.a), inBorder) * cover;
                     px[y * size + x] = c;

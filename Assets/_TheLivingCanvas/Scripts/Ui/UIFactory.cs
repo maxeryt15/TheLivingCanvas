@@ -168,27 +168,53 @@ namespace TheLivingCanvas.Ui
             var t = UITheme.Current;
             var r = Rect(name, parent);
             r.sizeDelta = size;
+            // Recuadro: pequeño marco de tinta tras la barra; la pintura queda dentro, el pincel sobresale.
+            var frame = Rect("Frame", r);
+            frame.anchorMin = Vector2.zero; frame.anchorMax = Vector2.one;
+            frame.offsetMin = new Vector2(-14f, -size.y * .5f); frame.offsetMax = new Vector2(14f, size.y * .5f);
+            var fr = frame.gameObject.AddComponent<Image>();
+            fr.sprite = t.slot; fr.type = t.slot != null ? Image.Type.Sliced : Image.Type.Simple;
+            fr.color = t.slot != null ? Color.white : UITheme.A(t.ink, .8f);
             var back = Rect("Background", r);
             Stretch(back);
             var bi = back.gameObject.AddComponent<Image>();
             bi.sprite = t.barBack; bi.type = t.barBack != null ? Image.Type.Sliced : Image.Type.Simple;
-            bi.color = t.barBack != null ? Color.white : new Color(t.ink.r, t.ink.g, t.ink.b, .7f);
+            bi.color = t.barBack != null ? Color.white : UITheme.A(t.ink, .7f);
+            // Pintura: trazos que se descubren (Filled) de izquierda a derecha, recortados al interior del recuadro.
             var area = Rect("Fill Area", r);
             Stretch(area);
-            var fill = Rect("Fill", area);
-            fill.sizeDelta = Vector2.zero;
-            var fi = fill.gameObject.AddComponent<Image>();
-            fi.sprite = t.barFill; fi.type = t.barFill != null ? Image.Type.Sliced : Image.Type.Simple;
-            fi.color = t.barFill != null ? Color.white : t.warmYellow;
+            area.offsetMin = new Vector2(2f, 1f); area.offsetMax = new Vector2(-2f, -1f);
+            area.gameObject.AddComponent<RectMask2D>();
+            Image Paint(string n, int seed, Color col, float heightK, float yOff)
+            {
+                var pr = Rect(n, area);
+                Place(pr, new Vector2(0, .5f), new Vector2(0, .5f), new Vector2(0, yOff), new Vector2(size.x - 4f, size.y * heightK));
+                var im = pr.gameObject.AddComponent<Image>();
+                im.sprite = BrushStrokes.Swipe(seed, 512, 96);
+                im.type = Image.Type.Filled; im.fillMethod = Image.FillMethod.Horizontal; im.fillOrigin = 0;
+                im.color = col; im.raycastTarget = false;
+                return im;
+            }
+            var trail = Paint("PaintTrail", 11, Color.Lerp(t.warmYellow, t.terracotta, .4f), 2.6f, 0f);
+            var front = Paint("Paint", 7, t.warmYellow, 2.3f, 0f);
+            var high = Paint("PaintHighlight", 3, UITheme.A(t.Paper, .34f), .5f, size.y * .22f);
+            // Pincel: la punta (derecha del sprite) marca el valor. Con sombra suave para despegarlo del recuadro.
             var handleArea = Rect("Handle Slide Area", r);
             Stretch(handleArea);
             var handle = Rect("Handle", handleArea);
-            handle.sizeDelta = new Vector2(size.y * 1.4f, size.y * 1.4f);
+            handle.sizeDelta = new Vector2(size.y * 5.2f, size.y * 1.75f);
+            handle.pivot = new Vector2(.985f, .5f);
             var hi = handle.gameObject.AddComponent<Image>();
-            hi.color = t.cream;
+            hi.sprite = BrushStrokes.Brush();
+            var sh = handle.gameObject.AddComponent<Shadow>();
+            sh.effectColor = new Color(0f, 0f, 0f, .45f); sh.effectDistance = new Vector2(2f, -3f);
             var s = r.gameObject.AddComponent<Slider>();
-            s.fillRect = fill; s.handleRect = handle; s.targetGraphic = hi;
+            s.fillRect = null; s.handleRect = handle; s.targetGraphic = hi;
+            s.transition = Selectable.Transition.None;
             s.minValue = min; s.maxValue = max; s.value = value;
+            var ps = r.gameObject.AddComponent<PaintedSlider>();
+            ps.fillFront = front; ps.fillBack = trail; ps.fillHighlight = high; ps.handle = handle;
+            ps.Snap();
             return s;
         }
 

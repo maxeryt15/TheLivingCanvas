@@ -41,8 +41,8 @@ namespace TheLivingCanvas.Ui
         IDisposable anyButton;
         InputAction boundAction;
 
-        static readonly Color ReticleIdle = new Color(.88f, .8f, .69f, .42f);
-        static readonly Color ReticleActive = new Color(.95f, .88f, .74f, .95f);
+        static Color ReticleIdle => UITheme.Current.ReticleIdle;
+        static Color ReticleActive => UITheme.Current.ReticleActive;
 
         void Awake()
         {
@@ -231,7 +231,7 @@ namespace TheLivingCanvas.Ui
             UIFactory.Place(ringRect, new Vector2(.5f, .5f), new Vector2(.5f, .5f), Vector2.zero, new Vector2(46, 46));
             var ring = ringRect.gameObject.AddComponent<Image>();
             ring.sprite = BrushStrokes.Ring(3);
-            ring.color = new Color(t.cream.r, t.cream.g, t.cream.b, .75f);
+            ring.color = UITheme.A(t.cream, .75f);
             ring.raycastTarget = false;
             ringAnim = ringRect.gameObject.AddComponent<UIAnimator>().Configure(UIAnimKind.InkReveal, UIAnimKind.FadeOut, 1.3f);
             ringAnim.Set(false);
@@ -271,7 +271,7 @@ namespace TheLivingCanvas.Ui
             stroke.sprite = paintedStroke ? skinStroke : BrushStrokes.Stroke(7, 512, 96);
             strokeImg = stroke;
             // Se multiplica por un tono oscuro para atenuar el trazo: el texto crema destaca sobre él.
-            stroke.color = paintedStroke ? new Color(.52f, .54f, .62f, .94f) : new Color(t.ink.r, t.ink.g, t.ink.b, .75f);
+            stroke.color = paintedStroke ? t.PromptStrokeTint : UITheme.A(t.ink, .75f);
             stroke.raycastTarget = false;
             strokeOver = MakeOverlay(strokeRect, stroke);
             strokeRect.localRotation = Quaternion.Euler(0, 0, StrokeRot);
@@ -287,7 +287,7 @@ namespace TheLivingCanvas.Ui
             var blot = blotRect.gameObject.AddComponent<Image>();
             bool paintedBlot = skinBlot != null;
             blot.sprite = paintedBlot ? skinBlot : BrushStrokes.Dab(5, 160, 112);
-            blot.color = paintedBlot ? Color.white : new Color(t.cream.r, t.cream.g, t.cream.b, .95f);
+            blot.color = paintedBlot ? Color.white : UITheme.A(t.cream, .95f);
             blotImg = blot;
             blot.raycastTarget = false;
             blotOver = MakeOverlay(blotRect, blot);
@@ -297,9 +297,9 @@ namespace TheLivingCanvas.Ui
             keyText = UIFactory.Label("Letter", keyRect, "E", UIFactory.TextStyle.Body);
             UIFactory.Stretch(keyText.rectTransform);
             keyText.fontStyle = FontStyles.Bold;
-            keyText.color = Color.white;
+            keyText.color = t.Paper;
             UIFactory.ContrastOnPaint(keyText, 0.4f);
-            keyText.outlineColor = Color.black; // contorno negro: la letra blanca resalta sobre la marca
+            keyText.outlineColor = t.OutlineDark; // contorno negro: la letra blanca resalta sobre la marca
             keyText.textWrappingMode = TextWrappingModes.NoWrap;
             keyText.enableAutoSizing = true;
             keyText.fontSizeMin = 18; keyText.fontSizeMax = 46;
@@ -319,7 +319,7 @@ namespace TheLivingCanvas.Ui
             UIFactory.Stretch(bandRect);
             var band = bandRect.gameObject.AddComponent<Image>();
             band.sprite = BrushStrokes.Swipe(9);
-            band.color = new Color(.05f, .06f, .12f, .78f);
+            band.color = t.HudBand;
             band.raycastTarget = false;
             bandRect.localRotation = Quaternion.Euler(0, 0, BandRot); // ligeramente inclinado, como un trazo a mano
             wBand = bandRect;
@@ -328,9 +328,9 @@ namespace TheLivingCanvas.Ui
             promptLabel.textWrappingMode = TextWrappingModes.NoWrap;
             promptLabel.fontSize = t.bodySize * 1.25f;
             promptLabel.fontStyle = FontStyles.Bold;
-            promptLabel.color = Color.white;
+            promptLabel.color = t.Paper;
             UIFactory.ContrastOnPaint(promptLabel, 0.4f);
-            promptLabel.outlineColor = Color.black; // contorno negro: legible sobre cualquier pincelada
+            promptLabel.outlineColor = t.OutlineDark; // contorno negro: legible sobre cualquier pincelada
             labelAnim = labelBox.gameObject.AddComponent<UIAnimator>().Configure(UIAnimKind.FadeIn, UIAnimKind.FadeOut, 0f, 0.3f);
 
             strokeAnim.Set(false); blotAnim.Set(false); keyAnim.Set(false); labelAnim.Set(false);
