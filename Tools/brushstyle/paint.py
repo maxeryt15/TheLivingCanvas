@@ -137,6 +137,56 @@ def load_base(path, n):
     return dict(img=im, orig=orig, under=under, region=region, c2=c2, s2=s2)
 
 
+def load_islands(path, material, n):
+    """Islas UV (de uv_islands.py) rasterizadas a n px: 0 = fuera, k = isla k. Las islas que se solapan (prendas en
+    capas que comparten texels) se unen en una sola: comparten pintura, asi que el trazo puede ir de una a otra."""
+    polys = json.load(open(path, encoding="utf-8"))[material]
+    ids = np.zeros((n, n), np.int32)
+    parent = list(range(len(polys) + 1))
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    for k, isl in enumerate(polys, 1):
+        pts = [np.round(np.array([[u * n, (1 - v) * n] for u, v in f]) * 16).astype(np.int32) for f in isl]
+        allp = np.concatenate(pts) // 16
+        x0, y0 = np.clip(allp.min(0) - 1, 0, n)
+        x1, y1 = np.clip(allp.max(0) + 2, 0, n)
+        m = np.zeros((y1 - y0, x1 - x0), np.uint8)
+        cv2.fillPoly(m, [p - np.array([x0, y0]) * 16 for p in pts], 1, shift=4)
+        sub = ids[y0:y1, x0:x1]
+        for o in np.unique(sub[(m > 0) & (sub > 0)]):
+            parent[find(o)] = k
+        sub[m > 0] = k
+    roots = np.array([find(i) for i in range(len(parent))])
+    ids = roots[ids]
+    print(f"Islas UV de {material}: {len(polys)} -> {len(np.unique(ids)) - 1} tras unir solapes")
+    return ids
+
+
+def pad_islands(img, inside, margin):
+    """Extiende el borde de las islas hacia fuera `margin` px (mipmaps y filtrado no traen el fondo a la costura)."""
+    out, mask = img.copy(), inside.astype(np.float32)
+    k = np.ones((3, 3), np.float32)
+    for _ in range(margin):
+        w = cv2.filter2D(mask, -1, k, borderType=cv2.BORDER_CONSTANT)
+        new = (mask == 0) & (w > 0)
+        if not new.any():
+            break
+        if out.ndim == 3:
+            s = np.stack([cv2.filter2D(out[..., c] * mask, -1, k, borderType=cv2.BORDER_CONSTANT)
+                          for c in range(out.shape[2])], -1)
+            out[new] = s[new] / w[new][:, None]
+        else:
+            s = cv2.filter2D(out * mask, -1, k, borderType=cv2.BORDER_CONSTANT)
+            out[new] = s[new] / w[new]
+        mask[new] = 1
+    return out
+
+
 def match_original(g, base, amount):
     """Acerca el trazo del tema al de la propia textura (medido con el analizador). Para texturas de veta larga y recta
     (madera, corteza, metal) el trazo del tema (corto y curvo) rompia la veta en garabatos."""
@@ -241,7 +291,7 @@ def stroke_geometry(pts, pad):
     return (x0, y0, x1, y1), dist.reshape(shape), u.reshape(shape), side.reshape(shape)
 
 
-def paint(n, g, rng, base=None, follow=0.6, edge_de=25.0):
+def paint(n, g, rng, base=None, follow=0.6, edge_de=25.0, islands=None):
     field, swirls = flow_field(n, g, rng)
     under = underpaint(n, g, rng, base)
     stop = None
@@ -267,9 +317,15 @@ def paint(n, g, rng, base=None, follow=0.6, edge_de=25.0):
         L = g["aspect"] * w * math.exp(rng.normal(0, g["length_jitter"]))
         same = rng.random() < 0.5 + g["bend_same_side"] / 2
         bend = (1 if same else -1) * rng.uniform(0.2, 0.7) / (g["bend_radius_rel_width"] * w)
+        isl = 0
+        if islands is not None:   # atlas UV: el trazo nace y se queda dentro de su isla
+            isl = islands[int(p[1]) % n, int(p[0]) % n]
+            if isl == 0:
+                continue
         if base:
             c0 = region[int(p[1]) % n, int(p[0]) % n]
-            stop = lambda q, c0=c0: np.linalg.norm(region[int(q[1]) % n, int(q[0]) % n] - c0) > edge_de  # noqa: E731
+            stop = lambda q, c0=c0, isl=isl: (np.linalg.norm(region[int(q[1]) % n, int(q[0]) % n] - c0) > edge_de  # noqa: E731
+                                              or (isl and islands[int(q[1]) % n, int(q[0]) % n] != isl))
         pts = trace_stroke(field, n, p, L, rng.normal(0, jit), bend, jit * 0.5, rng, axial=bool(base), stop=stop)
         (x0, y0, x1, y1), dist, u, side = stroke_geometry(pts, w)
         # ancho: carga de pintura al inicio, se afina y seca hacia la punta; borde irregular
@@ -287,6 +343,8 @@ def paint(n, g, rng, base=None, follow=0.6, edge_de=25.0):
         ix = np.ix_(rows, cols)
         if base:   # el ancho del trazo tampoco cruza la junta: se recorta donde la zona cambia de color
             a = a * smoothstep(edge_de, edge_de * 0.6, np.linalg.norm(region[ix] - c0, axis=2))
+            if isl:
+                a = a * (islands[ix] == isl)
             if a.max() <= 0.01:
                 continue
         sx, sy = int(p[0]) % n, int(p[1]) % n
@@ -478,6 +536,9 @@ def main():
     ap.add_argument("--match", type=float, default=0.0,
                     help="--base: 0 = trazo del tema, 1 = largo, curva, desvio y ancho medidos en la propia textura "
                          "(vetas: madera, corteza, metal cepillado)")
+    ap.add_argument("--islands", help="--base de atlas UV: JSON de uv_islands.py; el trazo no cruza bordes de isla")
+    ap.add_argument("--material", help="--islands: material del JSON (p. ej. Stu_clothes_Paint)")
+    ap.add_argument("--margin", type=int, default=16, help="--islands: px que se extiende el borde de cada isla")
     ap.add_argument("--no-compare", action="store_true")
     args = ap.parse_args()
     style, g = load_style(args.theme)
@@ -501,9 +562,13 @@ def main():
     for kv in args.set:   # despues de --match: el retoque a mano siempre gana
         k, v = kv.split("=", 1)
         g[k] = json.loads(v)
-    canvas, height, field, swirls, strokes = paint(n, g, rng, base, args.follow, args.edge_de)
+    islands = load_islands(args.islands, args.material, n) if args.islands else None
+    canvas, height, field, swirls, strokes = paint(n, g, rng, base, args.follow, args.edge_de, islands)
     if base:
         canvas = base["orig"] + args.amount * (canvas - base["orig"])
+    if islands is not None:   # fuera de las islas: borde extendido y, mas alla, el original
+        canvas = pad_islands(canvas, islands > 0, args.margin)
+        height = pad_islands(height, islands > 0, args.margin)
     os.makedirs(out, exist_ok=True)
     albedo = Image.fromarray(lab_to_rgb8(canvas))
     albedo.save(os.path.join(out, f"T_{name}_Albedo.png"))
