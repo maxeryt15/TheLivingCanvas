@@ -1,0 +1,302 @@
+{
+  "artist": "vangogh",
+  "theme": "foliage",
+  "work_short_side_px": 400,
+  "aggregate": {
+    "stroke_width_px": 7.0,
+    "stroke_length_px": 32.0,
+    "aspect": 4.57,
+    "width_rel": 0.0175,
+    "curvature_per_px": 0.0274,
+    "curve_radius_rel_width": 5.21,
+    "turn_consistency": 0.5,
+    "jitter_deg": 8.9,
+    "coherence": 0.51,
+    "coherent_area": 0.86,
+    "neighbour_dE": 14.5,
+    "direction_order": 0.407,
+    "swirls_per_region": 0.75,
+    "swirl_radius_rel": 0.109,
+    "direction_deg": 71.8,
+    "direction_agreement": 0.339
+  },
+  "regions": [
+    {
+      "name": "01#3",
+      "file": "vangogh/01_wheatfield_cypresses_1889.webp",
+      "box": [
+        0.0,
+        0.55,
+        0.25,
+        0.75
+      ],
+      "weight": 1.0,
+      "size_px": [
+        500,
+        400
+      ],
+      "stroke_width_px": 7.0,
+      "stroke_length_px": 33.0,
+      "length_p90_px": 72.0,
+      "aspect": 4.71,
+      "width_rel": 0.0175,
+      "curvature_per_px": 0.0274,
+      "curve_radius_rel_width": 5.21,
+      "turn_consistency": 0.5,
+      "jitter_deg": 9.4,
+      "direction_deg": 56.1,
+      "direction_order": 0.199,
+      "coherence": 0.51,
+      "coherent_area": 0.863,
+      "swirls": [
+        {
+          "cx_rel": 0.231,
+          "cy_rel": 0.453,
+          "radius_rel": 0.109,
+          "score": 0.6
+        }
+      ],
+      "neighbour_dE": 14.5,
+      "value_p5_p95": [
+        17.2,
+        71.1
+      ],
+      "thresholds_dE": {
+        "edge": 5.1,
+        "stroke": 14.7
+      },
+      "palette": [
+        [
+          "#455B36",
+          0.287
+        ],
+        [
+          "#6E865D",
+          0.275
+        ],
+        [
+          "#9CAD8B",
+          0.159
+        ],
+        [
+          "#253425",
+          0.143
+        ],
+        [
+          "#64768B",
+          0.09
+        ],
+        [
+          "#827D28",
+          0.046
+        ]
+      ]
+    },
+    {
+      "name": "06#1",
+      "file": "vangogh/06_garden_white_house.webp",
+      "box": [
+        0.0,
+        0.05,
+        0.35,
+        0.5
+      ],
+      "weight": 0.4,
+      "size_px": [
+        400,
+        624
+      ],
+      "stroke_width_px": 8.0,
+      "stroke_length_px": 36.0,
+      "length_p90_px": 87.0,
+      "aspect": 4.5,
+      "width_rel": 0.02,
+      "curvature_per_px": 0.0288,
+      "curve_radius_rel_width": 4.33,
+      "turn_consistency": 0.5,
+      "jitter_deg": 9.1,
+      "direction_deg": 93.3,
+      "direction_order": 0.391,
+      "coherence": 0.534,
+      "coherent_area": 0.861,
+      "swirls": [
+        {
+          "cx_rel": 0.781,
+          "cy_rel": 0.321,
+          "radius_rel": 0.109,
+          "score": 0.56
+        }
+      ],
+      "neighbour_dE": 20.4,
+      "value_p5_p95": [
+        28.0,
+        79.6
+      ],
+      "thresholds_dE": {
+        "edge": 6.1,
+        "stroke": 17.3
+      },
+      "palette": [
+        [
+          "#4A6F5F",
+          0.294
+        ],
+        [
+          "#3B4F5F",
+          0.215
+        ],
+        [
+          "#8CC5B2",
+          0.2
+        ],
+        [
+          "#648E5B",
+          0.195
+        ],
+        [
+          "#AFAE49",
+          0.061
+        ],
+        [
+          "#AD7748",
+          0.035
+        ]
+      ]
+    },
+    {
+      "name": "13#0",
+      "file": "vangogh/13_olive_trees_1889.webp",
+      "box": [
+        0.3,
+        0.0,
+        0.75,
+        0.45
+      ],
+      "weight": 1.0,
+      "size_px": [
+        640,
+        400
+      ],
+      "stroke_width_px": 6.0,
+      "stroke_length_px": 27.0,
+      "length_p90_px": 66.1,
+      "aspect": 4.5,
+      "width_rel": 0.015,
+      "curvature_per_px": 0.0263,
+      "curve_radius_rel_width": 6.35,
+      "turn_consistency": 0.58,
+      "jitter_deg": 8.7,
+      "direction_deg": 69.3,
+      "direction_order": 0.407,
+      "coherence": 0.513,
+      "coherent_area": 0.86,
+      "swirls": [
+        {
+          "cx_rel": 0.62,
+          "cy_rel": 0.852,
+          "radius_rel": 0.109,
+          "score": 0.6
+        }
+      ],
+      "neighbour_dE": 14.0,
+      "value_p5_p95": [
+        21.5,
+        68.5
+      ],
+      "thresholds_dE": {
+        "edge": 4.9,
+        "stroke": 14.1
+      },
+      "palette": [
+        [
+          "#57812A",
+          0.32
+        ],
+        [
+          "#436023",
+          0.188
+        ],
+        [
+          "#879846",
+          0.141
+        ],
+        [
+          "#89A492",
+          0.133
+        ],
+        [
+          "#6E8957",
+          0.126
+        ],
+        [
+          "#27351D",
+          0.092
+        ]
+      ]
+    },
+    {
+      "name": "14#1",
+      "file": "vangogh/14_olive_grove_orange_sky_1889.webp",
+      "box": [
+        0.7,
+        0.18,
+        1.0,
+        0.5
+      ],
+      "weight": 1.0,
+      "size_px": [
+        600,
+        400
+      ],
+      "stroke_width_px": 7.0,
+      "stroke_length_px": 32.0,
+      "length_p90_px": 81.1,
+      "aspect": 4.57,
+      "width_rel": 0.0175,
+      "curvature_per_px": 0.0279,
+      "curve_radius_rel_width": 5.12,
+      "turn_consistency": 0.33,
+      "jitter_deg": 8.9,
+      "direction_deg": 73.8,
+      "direction_order": 0.463,
+      "coherence": 0.508,
+      "coherent_area": 0.857,
+      "swirls": [],
+      "neighbour_dE": 19.0,
+      "value_p5_p95": [
+        10.9,
+        58.3
+      ],
+      "thresholds_dE": {
+        "edge": 7.0,
+        "stroke": 19.9
+      },
+      "palette": [
+        [
+          "#27261F",
+          0.301
+        ],
+        [
+          "#4C4127",
+          0.268
+        ],
+        [
+          "#666533",
+          0.173
+        ],
+        [
+          "#4C3646",
+          0.1
+        ],
+        [
+          "#99903E",
+          0.094
+        ],
+        [
+          "#A75A1D",
+          0.063
+        ]
+      ]
+    }
+  ]
+}

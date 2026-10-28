@@ -14,8 +14,9 @@ namespace TheLivingCanvas.Painting
     /// En blanco o a medias: interactuar sigue pintando.
     /// Terminado: interactuar recoge la pintura al inventario y el caballete queda vacío.
     /// </summary>
-    public class CanvasInteractable : MonoBehaviour, IInteractable, ISaveable
+    public class CanvasInteractable : MonoBehaviour, IInteractable, IInteractionPriority, ISaveable
     {
+        public InteractionPriority Priority => InteractionPriority.Artwork;
         [Tooltip("Punto desde el que la cámara mira el lienzo de frente al pintar.")]
         [SerializeField] Transform viewPoint;
         [SerializeField] PaintSurface surface;

@@ -34,6 +34,9 @@ namespace TheLivingCanvas.Painting
                     amounts[start.pigment] = start.amount;
         }
 
+        /// <summary>Todos los pigmentos con su cantidad (solo lectura).</summary>
+        public IEnumerable<KeyValuePair<PigmentDefinition, int>> All => amounts;
+
         public int Get(PigmentDefinition pigment) => amounts.TryGetValue(pigment, out int amount) ? amount : 0;
 
         public void Add(PigmentDefinition pigment, int amount)

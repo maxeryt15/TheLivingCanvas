@@ -56,12 +56,29 @@ namespace TheLivingCanvas.Player
         /// <summary>Multiplica la sensibilidad de la mirada (1 = la del builder).</summary>
         public void SetLookSensitivity(float multiplier)
         {
-            for (int i = 0; i < baseGains.Length; i++)
-                firstPersonInput.Controllers[i].Input.Gain = baseGains[i] * multiplier;
+            ApplyLookGains(multiplier);
         }
+
+        void ApplyInvertY() => ApplyLookGains(TheLivingCanvas.Core.GameSettings.Sensitivity);
+
+        void ApplyLookGains(float sens)
+        {
+            if (baseGains == null) return;
+            float sign = TheLivingCanvas.Core.GameSettings.InvertY ? -1f : 1f;
+            for (int i = 0; i < baseGains.Length; i++)
+            {
+                string n = firstPersonInput.Controllers[i].Name;
+                bool vertical = n.Contains("Y") || n.Contains("Tilt");
+                firstPersonInput.Controllers[i].Input.Gain = baseGains[i] * sens * (vertical ? sign : 1f);
+            }
+        }
+
+        void OnEnable() => TheLivingCanvas.Core.GameSettings.LookChanged += ApplyInvertY;
+        void OnDisable() => TheLivingCanvas.Core.GameSettings.LookChanged -= ApplyInvertY;
 
         void Start()
         {
+            ApplyInvertY();
             LookAlongPlayer();
             SetMode(CameraMode.FirstPerson);
         }

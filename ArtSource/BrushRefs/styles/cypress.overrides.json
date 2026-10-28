@@ -1,0 +1,7 @@
+{
+  "_nota": "A ojo: remolinos pequenos = lenguas de llama que se rizan. El analizador no los ve (son mas pequenos que su radio minimo).",
+  "swirls": 6,
+  "swirl_radius_rel": 0.08,
+  "drift_amount": 0.45,
+  "neighbour_dE": 16
+}

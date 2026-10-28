@@ -12,8 +12,9 @@ using UnityEngine;
 namespace TheLivingCanvas.Npcs
 {
     /// <summary>Personaje con el que se puede hablar: se gira hacia el jugador y abre el diálogo con su saludo y gestiona su encargo actual.</summary>
-    public class Npc : MonoBehaviour, IInteractable, ISaveable
+    public class Npc : MonoBehaviour, IInteractable, IInteractionPriority, ISaveable
     {
+        public InteractionPriority Priority => InteractionPriority.Dialogue;
         [SerializeField] NpcDefinition definition;
         [SerializeField] DialogueUI dialogueUI;
         [SerializeField] CommissionUI commissionUI;

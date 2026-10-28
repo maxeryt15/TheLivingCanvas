@@ -1,0 +1,6 @@
+# imagenes de referencia (pesadas): cada uno pone las suyas segun data/refs.json
+data/vangogh/
+data/monet/
+data/_sheets/
+out/
+__pycache__/

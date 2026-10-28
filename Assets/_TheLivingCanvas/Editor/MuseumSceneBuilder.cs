@@ -482,8 +482,24 @@ namespace TheLivingCanvas.EditorTools
             var panTilt = rig.GetComponentInChildren<Unity.Cinemachine.CinemachinePanTilt>(true);
             if (panTilt != null) panTilt.PanAxis.Value = yaw;
 
-            // HUD (prompt "[E] ..." + mira) para poder usar las puertas
-            StudioSceneBuilder.BuildHud(player.GetComponent<TheLivingCanvas.Interaction.PlayerInteractor>());
+            // HUD nuevo (mira, prompt "[E] ...", resumen, avisos): se construye solo al arrancar
+            new GameObject("HUD", typeof(TheLivingCanvas.Ui.Hud));
+            new GameObject("PauseScreen", typeof(TheLivingCanvas.Ui.PauseScreen)); // pausa con ajustes, Main Menu y Quit
+            new GameObject("DialogueBox", typeof(TheLivingCanvas.Ui.DialogueBox)); // diálogos de los NPCs y subtítulos
+            new GameObject("JournalScreen", typeof(TheLivingCanvas.Ui.JournalScreen)); // cuaderno: objetos, pigmentos, notas (I / Tab / Y)
+            new GameObject("Notifications", typeof(TheLivingCanvas.Ui.Notifications)); // avisos arriba a la derecha
+            new GameObject("ObjectiveTracker", typeof(TheLivingCanvas.Ui.ObjectiveTracker)); // objetivos arriba a la izquierda
+            new GameObject("HudStatus", typeof(TheLivingCanvas.Ui.HudStatus)); // monedas, nivel y pigmentos abajo a la izquierda
+
+            // Música: las piezas de Audio/Music en orden aleatorio, fundidas entre sí
+            var musicGo = new GameObject("Music", typeof(TheLivingCanvas.Audio.MusicPlaylist));
+            var musicSo = new SerializedObject(musicGo.GetComponent<TheLivingCanvas.Audio.MusicPlaylist>());
+            var trackGuids = AssetDatabase.FindAssets("t:AudioClip", new[] { "Assets/_TheLivingCanvas/Audio/Music" });
+            var tracksProp = musicSo.FindProperty("tracks");
+            tracksProp.arraySize = trackGuids.Length;
+            for (int i = 0; i < trackGuids.Length; i++)
+                tracksProp.GetArrayElementAtIndex(i).objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(AssetDatabase.GUIDToAssetPath(trackGuids[i]));
+            musicSo.ApplyModifiedPropertiesWithoutUndo();
 
             // Fundido a negro para las transiciones entre areas
             var fadeGo = new GameObject("AreaFade", typeof(Canvas), typeof(CanvasGroup));
@@ -501,7 +517,8 @@ namespace TheLivingCanvas.EditorTools
             imgRt.anchorMax = Vector2.one;
             imgRt.offsetMin = imgRt.offsetMax = Vector2.zero;
             var img = imgGo.GetComponent<UnityEngine.UI.Image>();
-            img.color = Color.black;
+            var inkFade = TheLivingCanvas.Ui.UITheme.Current.ink; // tinta muy oscura en vez de negro puro
+            img.color = new Color(inkFade.r * .35f, inkFade.g * .35f, inkFade.b * .35f, 1f);
             img.raycastTarget = false;
 
             // Puntos de aparicion y puertas (se crean tras ApplyStatic/AddColliders: sin flags estaticos ni MeshCollider)
@@ -525,7 +542,7 @@ namespace TheLivingCanvas.EditorTools
             areasSo.ApplyModifiedPropertiesWithoutUndo();
 
             BuildDoor("Door_Enter_Museum", exterior, new Vector3(0f, 2.0f, 6.1f) - exterior.position, new Vector3(2.4f, 3.0f, 0.4f),
-                "Enter museum", true, spawnInterior, areas);
+                "Enter to the museum", true, spawnInterior, areas);
             BuildDoor("Door_Exit_Museum", interior, new Vector3(0f, 2.0f, 5.45f), new Vector3(2.4f, 3.0f, 0.3f),
                 "Exit museum", false, spawnExterior, areas);
 

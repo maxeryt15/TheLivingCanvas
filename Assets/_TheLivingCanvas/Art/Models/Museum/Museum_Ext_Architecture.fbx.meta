@@ -27,6 +27,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: M_Floor_Dark
+    second: {fileID: 2100000, guid: 7df104834821ad040bff4f96867e424a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: M_Flower_Geranium
     second: {fileID: 2100000, guid: afe2d3329f5c6a143956c3f8769be482, type: 2}
   - first:
@@ -179,6 +184,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: M_Sign_Board
     second: {fileID: 2100000, guid: 82cbb9072c9edf942bd4f14d52902971, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Sign_Letters
+    second: {fileID: 2100000, guid: 5dd8f3ad3ca24984689e16135bddef00, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule

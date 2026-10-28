@@ -137,6 +137,7 @@ namespace TheLivingCanvas.Save
                 if (File.Exists(path)) File.Replace(temp, path, null);
                 else File.Move(temp, path);
                 PaintingStore.DeleteUnreferenced();
+                TheLivingCanvas.Ui.Notifications.Show("Game saved", TheLivingCanvas.Ui.Notifications.Kind.Saved);
             }
             catch (Exception e) { Debug.LogException(e); }
         }
@@ -149,7 +150,7 @@ namespace TheLivingCanvas.Save
             catch (Exception e) { Debug.LogException(e); }
             PaintingStore.DeleteAll();
             Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); // Studio.unity está en Build Settings
+            TheLivingCanvas.Ui.SceneLoader.Load(SceneManager.GetActiveScene().name); // la escena debe estar en Build Settings
         }
 
         /// <summary>Borra la partida guardada (para probar, con el juego parado).</summary>

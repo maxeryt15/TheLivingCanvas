@@ -11,8 +11,9 @@ namespace TheLivingCanvas.Gallery
     /// Marco de la galería. Vacío: interactuar abre la lista de pinturas para colgar una (sale del inventario).
     /// Ocupado: interactuar la descuelga y la devuelve al inventario. Una placa muestra los datos de la pintura.
     /// </summary>
-    public class GalleryFrame : MonoBehaviour, IInteractable, ISaveable
+    public class GalleryFrame : MonoBehaviour, IInteractable, IInteractionPriority, ISaveable
     {
+        public InteractionPriority Priority => InteractionPriority.Artwork;
         static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
         static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 

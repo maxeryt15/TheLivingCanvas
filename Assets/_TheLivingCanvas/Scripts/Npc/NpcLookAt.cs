@@ -14,6 +14,9 @@ namespace TheLivingCanvas.Npcs
         [SerializeField, Range(10f, 90f)] float maxAngle = 70f;
         [SerializeField, Range(0f, 1f)] float headShare = 0.65f;
 
+        /// <summary>Si no es null, tiene prioridad sobre el LookTarget de la parada (p. ej. la cámara del jugador al hablar).</summary>
+        public Transform LookOverride { get; set; }
+
         Transform head, neck;
         float weight;
         Vector3 lastTarget;
@@ -30,8 +33,13 @@ namespace TheLivingCanvas.Npcs
         void LateUpdate()
         {
             if (head == null) return;
-            Transform stop = routine != null && routine.Arrived ? routine.CurrentStopPoint : null;
-            Transform target = stop != null ? stop.Find("LookTarget") : null;
+            // Mientras charla con el jugador mira a sus ojos (LookOverride); si no, al LookTarget de la parada.
+            Transform target = LookOverride;
+            if (target == null)
+            {
+                Transform stop = routine != null && routine.Arrived ? routine.CurrentStopPoint : null;
+                target = stop != null ? stop.Find("LookTarget") : null;
+            }
             if (target != null) { lastTarget = target.position; hasTarget = true; }
 
             weight = Mathf.MoveTowards(weight, target != null ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, blendSeconds));

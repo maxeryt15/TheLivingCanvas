@@ -112,3 +112,6 @@ No recomendar "un filtro de óleo / acuarela / shader painterly descargado y lis
 - Fase 2 (prototipo): hecha 2026-10-11, pendiente de aprobación. `Scenes/Prototype_Museum.unity` (menú TheLivingCanvas/Build Art Prototype Scene),
   shader `TLC/Painterly` (HLSL URP, ver cabecera), `PainterlyDescolor` (tecla F en Play), texturas placeholder en `Art/Textures/Painted`,
   plantillas Krita en `ArtSource/Templates`. Guía: `Docs/Guia_Texturas_Painterly.md`. Studio.unity NO se ha tocado.
+- BrushStyle (re-trazado Van Gogh, 2026-10-27/28, rama `brushstyle-museum-retexture`): museo (105 materiales, 93 en TLC/Painterly),
+  ropa y pelo de los 11 NPC (piel, ojos y cejas sin tocar), 15 materiales planos del museo y 6 portadas de UI. Flujo y ajustes: `ArtSource/BrushRefs/styles/PARAMETROS.md`.
+  Pendiente: accesorios planos de NPC (~210 materiales), brillo del cuadro gris destacado, trazo quizá grande en cuadros pequeños.

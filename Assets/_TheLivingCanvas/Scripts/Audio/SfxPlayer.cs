@@ -41,6 +41,13 @@ namespace TheLivingCanvas.Audio
             brush = CreateSource(brushLoop, true);
         }
 
+        void Update()
+        {
+            float level = volume * Core.GameSettings.SfxVolume;
+            oneShots.volume = level;
+            brush.volume = level;
+        }
+
         void OnEnable()
         {
             wallet.Changed += OnCoinsChanged;

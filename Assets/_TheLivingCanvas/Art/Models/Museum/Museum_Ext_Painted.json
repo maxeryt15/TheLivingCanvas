@@ -1,6 +1,6 @@
 {
  "M_Bark": {
-  "tex": "T_Bark.png",
+  "tex": "BrushStyle/T_Bark_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.7303189909672123,
@@ -8,10 +8,12 @@
    0.6319041604010261
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Bark_Brush.png"
  },
  "M_Bush": {
-  "tex": "T_Bush_Swirl.png",
+  "tex": "BrushStyle/T_Bush_Swirl_Albedo.png",
   "scale": 1.0,
   "tint": [
    1,
@@ -19,10 +21,12 @@
    1
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Bush_Swirl_Brush.png"
  },
  "M_Cypress": {
-  "tex": "T_Cypress.png",
+  "tex": "BrushStyle/T_Cypress_Albedo.png",
   "scale": 1.0,
   "tint": [
    1,
@@ -30,10 +34,12 @@
    1
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Cypress_Brush.png"
  },
  "M_Fabric_Mustard": {
-  "tex": "T_Gilded.png",
+  "tex": "BrushStyle/T_Gilded_Albedo.png",
   "scale": 3.0,
   "tint": [
    1.039208134667033,
@@ -41,10 +47,11 @@
    0.32325005294415826
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Flower_Geranium": {
-  "tex": "T_Plaster.png",
+  "tex": "BrushStyle/T_Plaster_Albedo.png",
   "scale": 3.0,
   "tint": [
    0.6143077355933344,
@@ -52,10 +59,14 @@
    0.09451009133387586
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Plaster_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Flower_Iris": {
-  "tex": "T_Plaster.png",
+  "tex": "BrushStyle/T_Plaster_Albedo.png",
   "scale": 3.0,
   "tint": [
    0.13541319660041637,
@@ -63,10 +74,14 @@
    0.5119523988690919
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Plaster_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Flower_Lavender": {
-  "tex": "T_Plaster.png",
+  "tex": "BrushStyle/T_Plaster_Albedo.png",
   "scale": 3.0,
   "tint": [
    0.29531947315125595,
@@ -74,10 +89,14 @@
    0.5119523988690919
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Plaster_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Flower_Rose": {
-  "tex": "T_Plaster.png",
+  "tex": "BrushStyle/T_Plaster_Albedo.png",
   "scale": 3.0,
   "tint": [
    0.7493323510466372,
@@ -85,10 +104,14 @@
    0.26221090826051496
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Plaster_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Flower_White": {
-  "tex": "T_Plaster.png",
+  "tex": "BrushStyle/T_Plaster_Albedo.png",
   "scale": 3.0,
   "tint": [
    1.022000612901989,
@@ -96,10 +119,14 @@
    0.8816880007944461
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Plaster_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Flower_Yellow": {
-  "tex": "T_Gilded.png",
+  "tex": "BrushStyle/T_Gilded_Albedo.png",
   "scale": 3.0,
   "tint": [
    1.039208134667033,
@@ -107,10 +134,11 @@
    0.32325005294415826
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Ground_Earth": {
-  "tex": "T_Grass_Ground.png",
+  "tex": "BrushStyle/T_Grass_Ground_Albedo.png",
   "scale": 0.5,
   "tint": [
    0.3506722793975118,
@@ -118,10 +146,12 @@
    0.18658820766440798
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Grass_Ground_Brush.png"
  },
  "M_Ground_Grass": {
-  "tex": "T_Grass_Ground.png",
+  "tex": "BrushStyle/T_Grass_Ground_Albedo.png",
   "scale": 1.2999999523162842,
   "tint": [
    0.47199573981301635,
@@ -129,10 +159,12 @@
    0.38250220463167794
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Grass_Ground_Brush.png"
  },
  "M_Iron": {
-  "tex": "T_Metal.png",
+  "tex": "BrushStyle/T_Metal_Albedo.png",
   "scale": 4.0,
   "tint": [
    0.4444506412223861,
@@ -140,10 +172,11 @@
    0.4632524224197376
   ],
   "rough": 0.550000011920929,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Ivy_Light": {
-  "tex": "T_Leaves.png",
+  "tex": "BrushStyle/T_Leaves_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.6640418518324545,
@@ -151,10 +184,12 @@
    0.5911938900510112
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Leaves_Brush.png"
  },
  "M_Leaf_Dark": {
-  "tex": "T_Leaves.png",
+  "tex": "BrushStyle/T_Leaves_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.32420630356561814,
@@ -162,10 +197,12 @@
    0.29518745945129293
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Leaves_Brush.png"
  },
  "M_Leaf_Sage": {
-  "tex": "T_Leaves.png",
+  "tex": "BrushStyle/T_Leaves_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.7733542215219984,
@@ -173,10 +210,12 @@
    0.7093012499261562
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Leaves_Brush.png"
  },
  "M_Museum_AwningA": {
-  "tex": "T_Roof_Tiles.png",
+  "tex": "BrushStyle/T_Roof_Tiles_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.989055737651292,
@@ -184,10 +223,12 @@
    0.8709062796759909
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Roof_Tiles_Brush.png"
  },
  "M_Museum_AwningB": {
-  "tex": "T_Plaster.png",
+  "tex": "BrushStyle/T_Plaster_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.9662678650161992,
@@ -195,10 +236,14 @@
    0.8154671354421648
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Plaster_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Museum_Brass": {
-  "tex": "T_Gilded.png",
+  "tex": "BrushStyle/T_Gilded_Albedo.png",
   "scale": 4.0,
   "tint": [
    0.9721432717441107,
@@ -206,10 +251,11 @@
    0.7652479479276749
   ],
   "rough": 0.44999998807907104,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Museum_Door": {
-  "tex": "T_Painted_Boards.png",
+  "tex": "BrushStyle/T_Painted_Boards_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.28776336671353153,
@@ -217,10 +263,12 @@
    0.626280441221289
   ],
   "rough": 0.8500000238418579,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Painted_Boards_Brush.png"
  },
  "M_Museum_Metal": {
-  "tex": "T_Metal.png",
+  "tex": "BrushStyle/T_Metal_Albedo.png",
   "scale": 4.0,
   "tint": [
    0.6843392054379943,
@@ -228,10 +276,11 @@
    0.7297338389062105
   ],
   "rough": 0.550000011920929,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Museum_Plaster": {
-  "tex": "T_Plaster.png",
+  "tex": "BrushStyle/T_Plaster_Albedo.png",
   "scale": 2.200000047683716,
   "tint": [
    0.9620513497139991,
@@ -239,10 +288,14 @@
    0.7924005359654163
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Plaster_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Museum_Roof": {
-  "tex": "T_Roof_Tiles.png",
+  "tex": "BrushStyle/T_Roof_Tiles_Albedo.png",
   "scale": 1.0,
   "tint": [
    1.0,
@@ -250,10 +303,12 @@
    1.0
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Roof_Tiles_Brush.png"
  },
  "M_Museum_Shutter": {
-  "tex": "T_Painted_Boards.png",
+  "tex": "BrushStyle/T_Painted_Boards_Albedo.png",
   "scale": 3.0,
   "tint": [
    0.7654922708591954,
@@ -261,10 +316,12 @@
    0.7396147373180672
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Painted_Boards_Brush.png"
  },
  "M_Museum_Stone": {
-  "tex": "T_Stone_Blocks.png",
+  "tex": "BrushStyle/T_Stone_Blocks_Albedo.png",
   "scale": 1.0,
   "tint": [
    1.0,
@@ -272,10 +329,12 @@
    1.0
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Stone_Blocks_Brush.png"
  },
  "M_Museum_Wood": {
-  "tex": "T_Wood_Grain.png",
+  "tex": "BrushStyle/T_Wood_Grain_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.6800861653325416,
@@ -283,10 +342,12 @@
    0.3496758286803532
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wood_Grain_Brush.png"
  },
  "M_Museum_WoodDark": {
-  "tex": "T_Wood_Grain.png",
+  "tex": "BrushStyle/T_Wood_Grain_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.3064875309471097,
@@ -294,10 +355,12 @@
    0.15055145481942653
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wood_Grain_Brush.png"
  },
  "M_Paper": {
-  "tex": "T_Plaster.png",
+  "tex": "BrushStyle/T_Plaster_Albedo.png",
   "scale": 2.0,
   "tint": [
    1.0280056526596866,
@@ -305,10 +368,14 @@
    0.8848557468819678
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Plaster_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Path_Stone": {
-  "tex": "T_Path_Stone.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.9598449734310712,
@@ -316,10 +383,12 @@
    0.9581484317563177
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png"
  },
  "M_Path_StoneWarm": {
-  "tex": "T_Path_Stone.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.9249482203480521,
@@ -327,10 +396,12 @@
    0.7683616287507751
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png"
  },
  "M_Picket": {
-  "tex": "T_Plaster.png",
+  "tex": "BrushStyle/T_Plaster_Albedo.png",
   "scale": 2.0,
   "tint": [
    1.0040087413433483,
@@ -338,10 +409,14 @@
    0.8972332906313838
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Plaster_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Plant_Leaf": {
-  "tex": "T_Leaves.png",
+  "tex": "BrushStyle/T_Leaves_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.5966033067279846,
@@ -349,10 +424,12 @@
    0.5637549397927227
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Leaves_Brush.png"
  },
  "M_Plant_LeafLight": {
-  "tex": "T_Leaves.png",
+  "tex": "BrushStyle/T_Leaves_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.7734174882701906,
@@ -360,10 +437,12 @@
    0.6834011443228977
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Leaves_Brush.png"
  },
  "M_Rug_Terracotta": {
-  "tex": "T_Roof_Tiles.png",
+  "tex": "BrushStyle/T_Roof_Tiles_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.9854076505641276,
@@ -371,10 +450,12 @@
    0.8278750438427572
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Roof_Tiles_Brush.png"
  },
  "M_Sign_Board": {
-  "tex": "T_Painted_Boards.png",
+  "tex": "BrushStyle/T_Painted_Boards_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.10825280335022354,
@@ -382,10 +463,12 @@
    0.2481946543821567
   ],
   "rough": 0.8500000238418579,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Painted_Boards_Brush.png"
  },
  "M_Soil": {
-  "tex": "T_Path_Stone.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.22059597703254763,
@@ -393,10 +476,12 @@
    0.13422321380901395
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png"
  },
  "M_Sunflower_Disc": {
-  "tex": "T_Bark.png",
+  "tex": "BrushStyle/T_Bark_Albedo.png",
   "scale": 3.0,
   "tint": [
    0.45437835642511926,
@@ -404,6 +489,34 @@
    0.22988134316911757
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Bark_Brush.png"
+ },
+ "M_Floor_Dark": {
+  "tex": "BrushStyle/T_Floor_Dark_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.9,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Floor_Dark_Brush.png"
+ },
+ "M_Sign_Letters": {
+  "tex": "BrushStyle/T_Sign_Letters_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.8,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Sign_Letters_Brush.png"
  }
 }
