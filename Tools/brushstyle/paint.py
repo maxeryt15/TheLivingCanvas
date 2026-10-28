@@ -119,7 +119,7 @@ def load_base(path, n):
     """Textura del usuario en Lab: original, suavizada (color de los trazos), muy suavizada (zonas que el trazo no
     cruza) y direccion de sus propios trazos (structure tensor del analizador, en angulo doble porque es axial)."""
     import analyze as A
-    im = Image.open(path).convert("RGB").resize((n, n), Image.LANCZOS)
+    im = (path if isinstance(path, Image.Image) else Image.open(path)).convert("RGB").resize((n, n), Image.LANCZOS)
     rgb = np.asarray(im)
     orig = cv2.cvtColor(rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
     def wrap_blur(img, sigma):   # OpenCV no acepta BORDER_WRAP en GaussianBlur: se rodea con copia envuelta
@@ -544,13 +544,25 @@ def main():
     args = ap.parse_args()
     style, g = load_style(args.theme)
     rng = np.random.default_rng(args.seed)
-    base = None
+    base, rect = None, None
     if args.base:
-        w, h = Image.open(args.base).size
+        src = Image.open(args.base)
+        w, h = src.size
         if w != h:
-            sys.exit(f"--base necesita una textura cuadrada (es {w}x{h})")
-        n = args.size or w
-        base = load_base(args.base, n)
+            # imagen rectangular (UI, pantallas de carga): se rellena en espejo hasta un cuadrado, se pinta y se recorta.
+            # Las costuras del envoltorio quedan en el relleno; el alfa original se conserva.
+            if args.size or args.islands:
+                sys.exit("--base rectangular no admite --size ni --islands")
+            n = max(w, h)
+            oy, ox = (n - h) // 2, (n - w) // 2
+            rgb = np.asarray(src.convert("RGB"))
+            sq = np.pad(rgb, ((oy, n - h - oy), (ox, n - w - ox), (0, 0)), mode="reflect")
+            rect = (ox, oy, w, h, src.convert("RGBA").getchannel("A"))
+            base = load_base(Image.fromarray(sq), n)
+            args.no_compare = True
+        else:
+            n = args.size or w
+            base = load_base(args.base, n)
         if args.match > 0:
             match_original(g, base, args.match)
         name = os.path.splitext(os.path.basename(args.base))[0]
@@ -574,6 +586,13 @@ def main():
         canvas = pad_islands(canvas, islands > 0, args.margin)
         height = pad_islands(height, islands > 0, args.margin)
     os.makedirs(out, exist_ok=True)
+    if rect:   # vuelta al tamano original: solo albedo con su alfa (la UI no usa relieve)
+        ox, oy, w, h, alpha = rect
+        albedo = Image.fromarray(lab_to_rgb8(canvas[oy:oy + h, ox:ox + w])).convert("RGBA")
+        albedo.putalpha(alpha)
+        albedo.save(os.path.join(out, f"T_{name}_Albedo.png"))
+        print(f"{len(strokes)} trazos -> {out} ({w}x{h})")
+        return
     albedo = Image.fromarray(lab_to_rgb8(canvas))
     albedo.save(os.path.join(out, f"T_{name}_Albedo.png"))
     h = (height - height.min()) / (np.ptp(height) + 1e-6)
