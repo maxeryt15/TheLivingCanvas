@@ -17,6 +17,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: M_Canvas_Slot
+    second: {fileID: 2100000, guid: 2afeaa4076867c74e883b3ad9fa8d488, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: M_Ceramic
     second: {fileID: 2100000, guid: 36c63a049f5f5bb45b8f3ba5e576f9d7, type: 2}
   - first:
@@ -39,6 +44,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: M_Fabric_Olive
     second: {fileID: 2100000, guid: a01dfcb0d26305144b0771ab5b9b1eda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Floor_Dark
+    second: {fileID: 2100000, guid: d59bc47b105567f45b678f963f572128, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -79,6 +89,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: M_Ground_Earth
     second: {fileID: 2100000, guid: 3869bf6e6f812b24d9c0d13f695ed218, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Grout
+    second: {fileID: 2100000, guid: eaae2454e6aa5f94d8990d9db64122a5, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -174,6 +189,56 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: M_Museum_WoodDark
     second: {fileID: 2100000, guid: d0123ae5d77342b44aebc598a9f2e679, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paint_Cream
+    second: {fileID: 2100000, guid: f1bef12833fdff140853412f41d1c7b9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paint_Deep
+    second: {fileID: 2100000, guid: ae59b84d99022d7489a830e0de11427b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paint_Field
+    second: {fileID: 2100000, guid: 51067ea13df6e114e9cfef2f8b87c50f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paint_Green
+    second: {fileID: 2100000, guid: 36d4fd6cf0aaf4847b258f3e481cf8a5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paint_GreyField
+    second: {fileID: 2100000, guid: bf96443243bb8794f87b2f3af02e3ca8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paint_GreySky
+    second: {fileID: 2100000, guid: 059e404fbf04b5140a2667f89d174802, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paint_Ochre
+    second: {fileID: 2100000, guid: a0cf0ba19677a3745b703437480b4719, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paint_Rose
+    second: {fileID: 2100000, guid: d9e98ab7760424445ae6288b658d9e9a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paint_Sky
+    second: {fileID: 2100000, guid: 4fd8b06dca66e9f4aa1f80fb0e89928e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Paper
+    second: {fileID: 2100000, guid: 592b36c808d761f4eab118dad5d3b5e7, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -287,6 +352,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: M_Sign_Letters
+    second: {fileID: 2100000, guid: bc608fc204613a843a618b689ea759e4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: M_Soil
     second: {fileID: 2100000, guid: cb8c12ec6d534ed4fb810ca6deb2a301, type: 2}
   - first:
@@ -299,6 +369,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: M_Sunflower_Disc
     second: {fileID: 2100000, guid: cdf3053add2775f4cb63af423539caa0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: M_Track_White
+    second: {fileID: 2100000, guid: 0a14c4d1e723ea546ad25469826db751, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule

@@ -492,5 +492,31 @@
   "metal": 0.0,
   "shader": "painterly",
   "brush": "BrushStyle/T_Bark_Brush.png"
+ },
+ "M_Floor_Dark": {
+  "tex": "BrushStyle/T_Floor_Dark_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.9,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Floor_Dark_Brush.png"
+ },
+ "M_Sign_Letters": {
+  "tex": "BrushStyle/T_Sign_Letters_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.8,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Sign_Letters_Brush.png"
  }
 }

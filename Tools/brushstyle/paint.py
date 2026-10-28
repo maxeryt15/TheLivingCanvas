@@ -539,6 +539,7 @@ def main():
     ap.add_argument("--islands", help="--base de atlas UV: JSON de uv_islands.py; el trazo no cruza bordes de isla")
     ap.add_argument("--material", help="--islands: material del JSON (p. ej. Stu_clothes_Paint)")
     ap.add_argument("--margin", type=int, default=16, help="--islands: px que se extiende el borde de cada isla")
+    ap.add_argument("--name", help="sin --base: nombre de salida (T_<Nombre>_*) en vez del del tema; va a restroke/<Nombre>")
     ap.add_argument("--no-compare", action="store_true")
     args = ap.parse_args()
     style, g = load_style(args.theme)
@@ -559,6 +560,9 @@ def main():
         n = args.size or 1024
         name = "".join(p.capitalize() for p in args.theme.split("_"))
         out = os.path.join(OUT_ROOT, args.theme)
+        if args.name:   # material sin textura: no pisa las texturas del tema
+            name = args.name
+            out = os.path.join(OUT_ROOT, "restroke", name)
     for kv in args.set:   # despues de --match: el retoque a mano siempre gana
         k, v = kv.split("=", 1)
         g[k] = json.loads(v)

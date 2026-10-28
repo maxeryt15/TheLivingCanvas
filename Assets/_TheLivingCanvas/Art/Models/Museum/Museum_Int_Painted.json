@@ -933,5 +933,200 @@
   "brush": "BrushStyle/T_Wall_Soft_Brush.png",
   "brush_strength": 0.08,
   "brush_breakup": 0.2
+ },
+ "M_Paint_Cream": {
+  "tex": "BrushStyle/T_Paint_Cream_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paint_Cream_Brush.png"
+ },
+ "M_Paint_Deep": {
+  "tex": "BrushStyle/T_Paint_Deep_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paint_Deep_Brush.png"
+ },
+ "M_Paint_Field": {
+  "tex": "BrushStyle/T_Paint_Field_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paint_Field_Brush.png"
+ },
+ "M_Paint_Green": {
+  "tex": "BrushStyle/T_Paint_Green_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paint_Green_Brush.png"
+ },
+ "M_Paint_GreyField": {
+  "tex": "BrushStyle/T_Paint_GreyField_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paint_GreyField_Brush.png"
+ },
+ "M_Paint_GreySky": {
+  "tex": "BrushStyle/T_Paint_GreySky_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paint_GreySky_Brush.png"
+ },
+ "M_Paint_Ochre": {
+  "tex": "BrushStyle/T_Paint_Ochre_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paint_Ochre_Brush.png"
+ },
+ "M_Paint_Rose": {
+  "tex": "BrushStyle/T_Paint_Rose_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paint_Rose_Brush.png"
+ },
+ "M_Paint_Sky": {
+  "tex": "BrushStyle/T_Paint_Sky_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paint_Sky_Brush.png"
+ },
+ "M_Canvas_Slot": {
+  "tex": "BrushStyle/T_Canvas_Slot_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Canvas_Slot_Brush.png"
+ },
+ "M_Paper": {
+  "tex": "BrushStyle/T_Paper_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Paper_Brush.png"
+ },
+ "M_Floor_Dark": {
+  "tex": "BrushStyle/T_Floor_Dark_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.9,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Floor_Dark_Brush.png"
+ },
+ "M_Grout": {
+  "tex": "BrushStyle/T_Grout_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.95,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Grout_Brush.png"
+ },
+ "M_Sign_Letters": {
+  "tex": "BrushStyle/T_Sign_Letters_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.8,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Sign_Letters_Brush.png"
+ },
+ "M_Track_White": {
+  "tex": "BrushStyle/T_Track_White_Albedo.png",
+  "scale": 1.0,
+  "tint": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough": 0.5,
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Track_White_Brush.png"
  }
 }
