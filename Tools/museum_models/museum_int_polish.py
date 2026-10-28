@@ -106,7 +106,7 @@ RP = 5.375
 PARTS = [
     ("GF_P1_West", 'y', -3.1, 0.2, IY0, IY1, 0), ("GF_P2_East", 'y', 3.1, 0.2, IY0, IY1, 0),
     ("GF_P3", 'x', 0.3, 0.2, IX0, -3.2, 0), ("GF_P4", 'x', 0.3, 0.2, -3.0, 3.0, 0), ("GF_P5", 'x', 0.3, 0.2, 3.2, IX1, 0),
-    ("GF_P6", 'y', RP, 0.15, 0.4, 3.425, 0), ("GF_P7", 'x', 1.85, 0.15, RP + 0.075, IX1, 0), ("GF_P8", 'x', 3.5, 0.15, 3.2, IX1, 0),
+    ("GF_P6", 'y', RP, 0.15, 0.4, 3.925, 0), ("GF_P7", 'x', 2.1, 0.15, RP + 0.075, IX1, 0), ("GF_P8", 'x', 4.0, 0.15, 3.2, IX1, 0),
     ("UF_Q1", 'y', -3.1, 0.2, IY0, IY1, 1), ("UF_Q2", 'y', 3.1, 0.2, IY0, IY1, 1), ("UF_Q3", 'x', 0.3, 0.2, -3.0, 3.0, 1),
 ]
 # puertas en tabiques: (eje, fijo, centro, ancho, z_inf, z_sup, nombre, tipo)
@@ -115,10 +115,10 @@ DOORS = [
     ('y', 3.1, -3.25, 3.3, FL0, FL0 + 2.7, "Hall_Reception", 'arch'),     # arco ancho: el mostrador queda a caballo del muro (publico = Hall, personal = suite)
     ('x', 0.3, -5.4, 1.4, FL0, FL0 + 2.7, "GalleryI_GalleryIII", 'open'),
     ('x', 0.3, 0.0, 3.0, FL0, FL0 + 3.2, "Hall_StairHall", 'arch'),
-    ('y', 3.1, 1.85, 1.0, FL0, FL0 + 2.2, "StairHall_Restrooms", 'leaf'),
-    ('y', RP, 1.1, 0.8, FL0, FL0 + 2.1, "Restroom_1", 'leaf'),
-    ('y', RP, 2.65, 0.8, FL0, FL0 + 2.1, "Restroom_2", 'leaf'),
-    ('y', 3.1, 4.2, 1.0, FL0, FL0 + 2.2, "StairHall_Maintenance", 'leaf'),
+    ('y', 3.1, 2.1, 1.0, FL0, FL0 + 2.2, "StairHall_Restrooms", 'leaf'),
+    ('y', RP, 1.2, 0.8, FL0, FL0 + 2.1, "Restroom_1", 'leaf'),
+    ('y', RP, 3.05, 0.8, FL0, FL0 + 2.1, "Restroom_2", 'leaf'),
+    ('y', 3.1, 4.65, 1.0, FL0, FL0 + 2.2, "StairHall_Maintenance", 'leaf'),
     ('y', -3.1, -2.5, 1.4, FL1, FL1 + 2.7, "GalleryIV_GalleryV", 'open'),
     ('y', 3.1, -2.5, 1.4, FL1, FL1 + 2.7, "GalleryIV_GalleryVI", 'open'),
     ('y', 3.1, 3.0, 1.2, FL1, FL1 + 2.6, "Landing_GalleryVI", 'open'),
@@ -149,10 +149,10 @@ ROOMS = {
     "Reception":        (3.2, IX1, IY0, 0.2, 0, "M_Interior_FloorWood", "M_Interior_Wallpaper", "M_Interior_Wainscot", 1.0, False),
     "Gallery_III":      (IX0, -3.2, 0.4, IY1, 0, "M_Interior_FloorWood", "M_Wall_Terracotta", None, 0, True),
     "Stair_Hall":       (-3.0, 3.0, 0.4, IY1, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Interior_Wainscot", 1.0, False),
-    "Restroom_Lobby":   (3.2, RP - 0.075, 0.4, 3.425, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
-    "Restroom_1":       (RP + 0.075, IX1, 0.4, 1.775, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
-    "Restroom_2":       (RP + 0.075, IX1, 1.925, 3.425, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
-    "Maintenance":      (3.2, IX1, 3.575, IY1, 0, "M_Interior_Concrete", "M_Wall_Grey", None, 0, False),
+    "Restroom_Lobby":   (3.2, RP - 0.075, 0.4, 3.925, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
+    "Restroom_1":       (RP + 0.075, IX1, 0.4, 2.025, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
+    "Restroom_2":       (RP + 0.075, IX1, 2.175, 3.925, 0, "M_Interior_FloorTile", "M_Interior_Wallpaper", "M_Ceramic", 1.1, False),
+    "Maintenance":      (3.2, IX1, 4.075, IY1, 0, "M_Interior_Concrete", "M_Wall_Grey", None, 0, False),
     "Maintenance_Annex": (ANNEX[0], ANNEX[1], ANNEX[2], ANNEX[3], 0, "M_Interior_Concrete", "M_Wall_Grey", None, 0, False),
     "Gallery_IV":       (-3.0, 3.0, IY0, 0.2, 1, "M_Interior_FloorWood", "M_Wall_Olive", None, 0, True),
     "Gallery_V":        (IX0, -3.2, IY0, IY1, 1, "M_Interior_FloorWood", "M_Wall_Grey", None, 0, True),
@@ -3537,7 +3537,7 @@ def floor_wear(cT):
         # planta baja: baldosin (hall y vestibulo de escaleras)
         (T, 0.0, -4.66, 1.0, 0.24, 0, 0), (T, -2.4, -2.9, 0.45, 0.75, 0, 0), (T, 2.0, -3.3, 0.55, 0.9, 0, 0),
         (T, 0.0, -0.12, 1.3, 0.25, 0, 0), (T, 0.0, 0.72, 1.3, 0.25, 0, 0),
-        (T, 2.35, 1.85, 0.45, 0.55, 0, 0), (T, 2.35, 4.2, 0.45, 0.55, 0, 0),
+        (T, 2.35, 2.1, 0.45, 0.55, 0, 0), (T, 2.35, 4.65, 0.45, 0.55, 0, 0),
         # planta baja: tarima junto a las puertas de las galerias
         (W, -3.9, -2.9, 0.5, 0.75, 0, 0),
         (W, -5.4, -0.35, 0.65, 0.4, 0, 0), (W, -5.4, 1.05, 0.65, 0.4, 0, 0),
@@ -3625,8 +3625,8 @@ def furnish(cE, cF, cSv):
     # ---------------- Stair Hall
     to_col(prop("StairHall_Bench", (2.25, 5.25, FL0), 0, lambda b: bench_gallery(b, 1.3, "M_Fabric_Olive")), cF)
     to_col(prop("StairHall_Plant", (2.55, 3.05, FL0), 0, lambda b: plant_snake(b, 6)), cF)
-    wall_sign("Restrooms", "RESTROOMS", 'y', 3.0, -1, 1.85, FL0 + 2.6, size=0.09, w=1.0, coll=cF)
-    wall_sign("StaffOnly", "STAFF ONLY", 'y', 3.0, -1, 4.2, FL0 + 2.6, size=0.08, w=0.85, coll=cSv)
+    wall_sign("Restrooms", "RESTROOMS", 'y', 3.0, -1, 2.1, FL0 + 2.6, size=0.09, w=1.0, coll=cF)
+    wall_sign("StaffOnly", "STAFF ONLY", 'y', 3.0, -1, 4.65, FL0 + 2.6, size=0.08, w=0.85, coll=cSv)
 
     # ---------------- Gallery I (ocre, paisajes)
     art_slot("GalleryI_West", 'y', IX0, 1, -1.1, FL0 + 1.65, 1.6, 1.1, parent=cE)
@@ -3743,15 +3743,15 @@ def furnish(cE, cF, cSv):
     # ---------------- servicio: vestibulo de aseos (lavabos) y dos aseos
     # dos tocadores de un seno, uno en cada testero del vestibulo (sur y norte), lejos de la puerta de entrada (muro oeste) y de las puertas de los aseos (muro este)
     xl = 4.5
-    for tag, yv, rz in (("S", 0.4, 180), ("N", 3.425, 0)):
-        to_col(prop("Restroom_Lobby_Counter_" + tag, (xl, yv, FL0), rz, vanity), cSv)
-        to_col(prop("Restroom_Lobby_Mirror_" + tag, (xl, yv, FL0 + 1.65), rz, lambda b: mirror(b, 0.5, 0.7, 0.07)), cSv)
     xe = RP - 0.075
-    to_col(prop("Restroom_Lobby_Dryer", (xe, 1.875, FL0 + 1.25), -90, hand_dryer), cSv)
-    to_col(prop("Restroom_Lobby_Bin", (xe - 0.2, 1.875, FL0), -90, pedal_bin), cSv)
-    pictogram_sign("Restroom_1", 'W', 'y', xe, -1, 1.1, FL0 + 2.5, cSv)      # Restroom_1 = mujeres
-    pictogram_sign("Restroom_2", 'M', 'y', xe, -1, 2.65, FL0 + 2.5, cSv)     # Restroom_2 = hombres
-    for n, (y0, y1) in ((1, (0.4, 1.775)), (2, (1.925, 3.425))):
+    # un solo tocador, en el muro este entre las puertas de los aseos (el secamanos esta en el testero sur)
+    for tag, (px, py), rz in (("S", (xe, 2.1375), -90),):
+        to_col(prop("Restroom_Lobby_Counter_" + tag, (px, py, FL0), rz, vanity), cSv)
+        to_col(prop("Restroom_Lobby_Mirror_" + tag, (px, py, FL0 + 1.65), rz, lambda b: mirror(b, 0.5, 0.7, 0.07)), cSv)
+    to_col(prop("Restroom_Lobby_Dryer", (xl, 0.4, FL0 + 1.25), 180, hand_dryer), cSv)
+    pictogram_sign("Restroom_1", 'W', 'y', xe, -1, 1.2, FL0 + 2.5, cSv)      # Restroom_1 = mujeres
+    pictogram_sign("Restroom_2", 'M', 'y', xe, -1, 3.05, FL0 + 2.5, cSv)     # Restroom_2 = hombres
+    for n, (y0, y1) in ((1, (0.4, 2.025)), (2, (2.175, 3.925))):
         cy = (y0 + y1) / 2
         to_col(prop("Restroom_%d_Toilet" % n, (7.23, cy, FL0), -90, toilet), cSv)
         to_col(prop("Restroom_%d_PaperHolder" % n, (7.15, y0, FL0 + 0.7), 180, paper_holder), cSv)     # pared sur, junto al inodoro
@@ -3769,9 +3769,9 @@ def furnish(cE, cF, cSv):
     # Distribucion: sala principal libre desde la puerta (oeste, y 3.7..4.7) hasta la escotilla; pila, cuadro electrico y panel de herramientas en el muro sur/este.
     # Anexo (x 2.2..7.6): taquillas, estanteria, cajas y banco de trabajo alineados en el muro norte; carrito, fregona, escoba, recogedor y cubo agrupados
     # en la esquina suroeste (muro oeste y pilar sur); el centro y el lado este quedan libres para pasar desde el paso.
-    to_col(prop("Maintenance_FuseBox", (5.7, 3.575, FL0 + 1.5), 180, utility), cSv)
-    to_col(prop("Maintenance_Sink", (6.95, 3.575, FL0), 180, utility_sink), cSv)
-    to_col(prop("Maintenance_ToolRack", (7.6, 4.45, FL0 + 1.5), -90, tool_rack), cSv)
+    to_col(prop("Maintenance_FuseBox", (5.7, 4.075, FL0 + 1.5), 180, utility), cSv)
+    to_col(prop("Maintenance_Sink", (6.95, 4.075, FL0), 180, utility_sink), cSv)
+    to_col(prop("Maintenance_ToolRack", (7.6, 4.95, FL0 + 1.5), -90, tool_rack), cSv)
     to_col(prop("Maintenance_Lockers", (2.85, 8.3, FL0), 0, lockers), cSv)
     to_col(prop("Maintenance_Shelves", (4.4, 8.35, FL0), 0, product_shelf), cSv)
     to_col(prop("Maintenance_Workbench", (6.7, 8.2, FL0), 0, workbench), cSv)
@@ -3781,7 +3781,7 @@ def furnish(cE, cF, cSv):
     to_col(prop("Maintenance_DustPan", (3.6, 6.35, FL0), 180, dustpan), cSv)
     to_col(prop("Maintenance_MopBucket", (4.3, 6.6, FL0), 180, wring_mop_bucket), cSv)
 
-    to_col(prop("Maintenance_HookRail", (3.2, 5.25, FL0 + 1.65), 90, hook_rail), cSv)       # muro oeste, a la derecha de la puerta (la hoja abierta queda en y 4.66)
+    to_col(prop("Maintenance_HookRail", (3.2, 5.4, FL0 + 1.65), 90, lambda b: hook_rail(b, 2)), cSv)       # muro oeste, a la derecha de la puerta (la hoja abierta queda en y 5.11)
 
     def boxes(b):
         b.box((0, 0, 0.18), (0.45, 0.35, 0.36), "M_Museum_AwningB", bev=0.01, amp=0.0, cuts=0)
@@ -4101,10 +4101,10 @@ def ceilings_and_lights(cS, cU, cLt):
     light("Light_GalleryVI_N", (5.4, 3.0, C1 - 0.6), 450, neutral, size=0.8)
     light("Light_GalleryVI_S", (5.4, -3.0, C1 - 0.6), 450, neutral, size=0.8)
     light("Light_Landing", (1.0, 3.0, C1 - 0.25), 300, warm, size=0.6)
-    light("Light_Restroom_1", (6.525, 1.0875, C0 - 0.3), 110, cool, size=0.4)
-    light("Light_Restroom_2", (6.525, 2.675, C0 - 0.3), 110, cool, size=0.4)
-    light("Light_Restroom_Lobby", (4.25, 1.9125, C0 - 0.3), 160, warm, size=0.4)
-    light("Light_Maintenance", (5.4, 4.6, C0 - 0.3), 260, cool, size=0.5)
+    light("Light_Restroom_1", (6.525, 1.2125, C0 - 0.3), 110, cool, size=0.4)
+    light("Light_Restroom_2", (6.525, 3.05, C0 - 0.3), 110, cool, size=0.4)
+    light("Light_Restroom_Lobby", (4.25, 2.1625, C0 - 0.3), 160, warm, size=0.4)
+    light("Light_Maintenance", (5.4, 4.85, C0 - 0.3), 260, cool, size=0.5)
     light("Light_Maintenance_Annex", (4.9, 7.3, C0 - 0.3), 260, cool, size=0.5)
     d = Vector((-3.2, 1.6, FL1 + 1.75)) - Vector((-5.2, 1.6, C1 - 0.35))
     light("Spot_GalleryV_Featured", (-5.2, 1.6, C1 - 0.35), 330, neutral, kind='SPOT', size=0.1, rot=d.to_track_quat('-Z', 'Y').to_euler(), spot=48)   # cono algo mas abierto: sin punto caliente en el centro del cuadro
@@ -4135,7 +4135,7 @@ def presentation(cP):
         "Cam_Int_GalleryIII": ((-4.0, 0.9, FL0 + 1.6), (-6.5, 4.8, FL0 + 1.2)),
         "Cam_Int_StairHall": ((1.9, 0.9, FL0 + 1.7), (-1.7, 3.4, FL0 + 2.0)),
         "Cam_Int_RestroomLobby": ((5.2, 3.3, FL0 + 1.7), (3.3, 1.2, FL0 + 1.1)),
-        "Cam_Int_Maintenance": ((5.0, 6.6, FL0 + 1.9), (5.6, 3.8, FL0 + 0.8)),
+        "Cam_Int_Maintenance": ((5.0, 6.6, FL0 + 1.9), (5.6, 4.3, FL0 + 0.8)),
         "Cam_Int_MaintenanceAnnex": ((7.3, 6.2, FL0 + 1.8), (4.4, 8.4, FL0 + 0.9)),
         "Cam_Int_MaintenanceAnnex_B": ((5.9, 7.5, FL0 + 1.9), (2.9, 6.5, FL0 + 0.7)),
         "Cam_Int_Restroom1": ((5.6, 1.2, FL0 + 1.7), (7.4, 1.0, FL0 + 0.7)),
@@ -4156,6 +4156,21 @@ def presentation(cP):
         co.rotation_euler = (Vector(tgt) - Vector(pos)).to_track_quat('-Z', 'Y').to_euler()
         cP.objects.link(co)
     sc.camera = bpy.data.objects["Cam_Int_Hall"]
+
+
+FLAT_STRUCTURE = ("Int_Shell_Walls", "Int_Slabs", "Int_GF_Floors", "Int_UF_Floors", "Int_GF_Partitions", "Int_UF_Partitions",
+                  "Int_GF_WallFinish", "Int_UF_WallFinish", "Int_Wing_Shell", "Int_Wing_Floor", "Int_Wing_WallFinish", "Int_Wing_Volumes", "Int_Annex_Shell")
+
+
+def flat_shade_structure():
+    """Muros, forjados y acabados se construyen como cajas sueltas (una por tramo entre huecos) con sombreado suave: en los bordes de cada
+    caja la normal suavizada se inclina hacia la cara lateral y aparecen franjas verticales claras/oscuras a cada lado de puertas y esquinas.
+    Son superficies planas (la ondulacion es de milimetros), asi que se sombrean planas."""
+    for n in FLAT_STRUCTURE:
+        ob = bpy.data.objects.get(n)
+        if ob is not None and ob.type == 'MESH':
+            for pl in ob.data.polygons:
+                pl.use_smooth = False
 
 
 def build():
@@ -4185,6 +4200,7 @@ def build():
     windows_int(cO)     # despues de colgar los cuadros: las cortinas se apartan de ellos
     presentation(cP)
     settle()
+    flat_shade_structure()
     for ob in bpy.context.scene.collection.objects:
         print("SUELTO:", ob.name)
     print("objetos:", len(bpy.data.objects), "materiales:", len(bpy.data.materials),

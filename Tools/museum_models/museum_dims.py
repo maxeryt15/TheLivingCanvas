@@ -33,7 +33,7 @@ WEST = [   # muro x=-8, corre en Y
     win(-3.3, 1.4, 1), win(0.6, 1.4, 1), win(3.8, 1.4, 1),
 ]
 EAST = [   # muro x=+8
-    win(-3.0, 1.4, 0), win(0.8, 0.7, 0, 1.9, 2.7), win(2.95, 0.7, 0, 1.9, 2.7),   # PB: sala II, aseo 2, pasillo
+    win(-3.0, 1.4, 0), win(1.2125, 0.7, 0, 1.9, 2.7), win(3.05, 0.7, 0, 1.9, 2.7),   # PB: sala II, aseo 2, pasillo
     win(-3.0, 1.4, 1), win(1.2, 1.4, 1), win(3.8, 1.4, 1),
 ]
 
@@ -41,4 +41,4 @@ EAST = [   # muro x=+8
 C0 = FL0 + STORY          # techo planta baja = 4.1
 C1 = WT                   # techo planta alta = 8.1
 STAIR_HOLE = (-2.9, -0.8, 1.0, 5.5)     # hueco de escalera en el forjado (x0, x1, y0, y1)
-HATCH = (5.55, 6.45, 3.95, 4.85)        # escotilla al sotano en el cuarto de mantenimiento
+HATCH = (5.55, 6.45, 4.25, 5.15)        # escotilla al sotano en el cuarto de mantenimiento

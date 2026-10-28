@@ -1303,6 +1303,16 @@ def weld_clean(colls):
 CULL_HIDDEN = True   # borra caras que nunca se ven desde fuera (ver cull_hidden)
 
 
+def flat_shade_walls():
+    """Los muros se construyen como cajas sueltas (una por tramo entre huecos): con sombreado suave la normal de los bordes de cada caja se
+    inclina hacia la cara lateral y salen franjas verticales claras/oscuras junto a puertas, ventanas y esquinas. Se sombrean planos."""
+    for n in ("Ext_Walls", "Ext_Plinth"):
+        ob = bpy.data.objects.get(n)
+        if ob is not None and ob.type == 'MESH':
+            for pl in ob.data.polygons:
+                pl.use_smooth = False
+
+
 def build():
     L.clear_scene()
     random.seed(3)
@@ -1323,6 +1333,7 @@ def build():
         bf, af = cull_hidden([cA, cP, cV, cG])
         print("caras ocultas borradas:", bf - af, "de", bf)
     weld_clean([cA, cP, cV, cG])
+    flat_shade_walls()
     presentation(cS)
     # sin objetos sueltos en la raiz
     for ob in bpy.context.scene.collection.objects:

@@ -620,26 +620,57 @@ def prop(name, pos, rot, fn, uvscale=1.0):
 def wall(b, axis, fixed, a0, a1, z0, z1, th, mat, openings=(), amp=0.02):
     """Muro recto. axis 'x': corre a lo largo de X en y=fixed. 'y': a lo largo de Y en x=fixed.
     openings: (centro, ancho, z_inferior, z_superior) absolutos."""
-    def piece(u0, u1, za, zb):
+    OV = 0.03   # solape lateral entre tramos: cada tramo rodea un hueco y se mete OV bajo la columna vecina; asi no queda rendija donde las mallas
+                # (con distinto reparto de cortes y ondulacion propia) no coinciden. La zona solapada es coplanar y con el mismo UV: no se ve.
+
+    def solid_ranges(ua, ub, za, zb):
+        """Subrangos z de za..zb en los que la columna entre ua y ub tiene muro (sin huecos)."""
+        um_ = (ua + ub) / 2
+        holes_ = sorted((max(zs, za), min(zt, zb)) for (c, w, zs, zt) in openings if c - w / 2 < um_ < c + w / 2 and zs < zb and zt > za)
+        res, z_ = [], za
+        for hs, ht in holes_:
+            if hs - z_ > 0.01:
+                res.append((z_, hs))
+            z_ = max(z_, ht)
+        if zb - z_ > 0.01:
+            res.append((z_, zb))
+        return res
+
+    def box_uz(ua, ub, za, zb):
+        # amp=0: la ondulacion por ruido hacia que dos tramos vecinos (distinta malla) no coincidieran en la junta; la deformacion expresiva
+        # la sigue dando warp() (continua) y la textura pintada
+        uc, zc = (ua + ub) / 2, (za + zb) / 2
+        if axis == 'x':
+            b.box((uc, fixed, zc), (ub - ua, th, zb - za), mat, bev=0, amp=0.0, cuts=max(1, int((ub - ua) / 1.2)))
+        else:
+            b.box((fixed, uc, zc), (th, ub - ua, zb - za), mat, bev=0, amp=0.0, cuts=max(1, int((ub - ua) / 1.2)))
+
+    def piece(u0, u1, za, zb, nb_l=None, nb_r=None):
         if u1 - u0 < 0.01 or zb - za < 0.01:
             return
-        uc, zc = (u0 + u1) / 2, (za + zb) / 2
-        if axis == 'x':
-            b.box((uc, fixed, zc), (u1 - u0, th, zb - za), mat, bev=0, amp=amp, cuts=max(1, int((u1 - u0) / 1.2)))
-        else:
-            b.box((fixed, uc, zc), (th, u1 - u0, zb - za), mat, bev=0, amp=amp, cuts=max(1, int((u1 - u0) / 1.2)))
+        box_uz(u0, u1, za, zb)
+        # tiras de solape bajo las columnas vecinas, solo donde la vecina tiene muro (no invaden los huecos)
+        if nb_l is not None:
+            for (a, b_) in solid_ranges(nb_l[0], nb_l[1], za, zb):
+                box_uz(u0 - min(OV, (nb_l[1] - nb_l[0]) * 0.5), u0 + 0.02, a, b_)
+        if nb_r is not None:
+            for (a, b_) in solid_ranges(nb_r[0], nb_r[1], za, zb):
+                box_uz(u1 - 0.02, u1 + min(OV, (nb_r[1] - nb_r[0]) * 0.5), a, b_)
 
     # columnas entre todos los bordes de hueco: admite varios huecos apilados en la misma vertical
     us = sorted({a0, a1} | {min(max(c - w / 2, a0), a1) for (c, w, _, _) in openings}
                 | {min(max(c + w / 2, a0), a1) for (c, w, _, _) in openings})
-    for u0, u1 in zip(us, us[1:]):
+    cols = list(zip(us, us[1:]))
+    for i, (u0, u1) in enumerate(cols):
         um = (u0 + u1) / 2
         holes = sorted((zs, zt) for (c, w, zs, zt) in openings if c - w / 2 < um < c + w / 2)
+        nl = cols[i - 1] if i > 0 else None
+        nr = cols[i + 1] if i + 1 < len(cols) else None
         z = z0
         for zs, zt in holes:
-            piece(u0, u1, z, min(zs, z1))
+            piece(u0, u1, z, min(zs, z1), nl, nr)
             z = max(z, zt)
-        piece(u0, u1, z, z1)
+        piece(u0, u1, z, z1, nl, nr)
 
 
 # ---- helpers de coordenadas locales de pared -------------------------------
