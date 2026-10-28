@@ -1,0 +1,352 @@
+{
+  "artist": "vangogh",
+  "theme": "sky_dash",
+  "work_short_side_px": 400,
+  "aggregate": {
+    "stroke_width_px": 8.0,
+    "stroke_length_px": 42.5,
+    "aspect": 5.0,
+    "width_rel": 0.02,
+    "curvature_per_px": 0.0215,
+    "curve_radius_rel_width": 7.07,
+    "turn_consistency": 0.33,
+    "jitter_deg": 7.7,
+    "coherence": 0.56,
+    "coherent_area": 0.886,
+    "neighbour_dE": 10.2,
+    "direction_order": 0.582,
+    "swirls_per_region": 0.2,
+    "swirl_radius_rel": 0.109,
+    "direction_deg": 173.3,
+    "direction_agreement": 0.307
+  },
+  "regions": [
+    {
+      "name": "02#0",
+      "file": "vangogh/02_starry_night_rhone_1888.webp",
+      "box": [
+        0.05,
+        0.0,
+        1.0,
+        0.3
+      ],
+      "weight": 1.0,
+      "size_px": [
+        1643,
+        400
+      ],
+      "stroke_width_px": 5.0,
+      "stroke_length_px": 21.0,
+      "length_p90_px": 51.7,
+      "aspect": 4.2,
+      "width_rel": 0.0125,
+      "curvature_per_px": 0.0211,
+      "curve_radius_rel_width": 9.47,
+      "turn_consistency": 0.6,
+      "jitter_deg": 7.2,
+      "direction_deg": 0.9,
+      "direction_order": 0.637,
+      "coherence": 0.496,
+      "coherent_area": 0.831,
+      "swirls": [
+        {
+          "cx_rel": 0.339,
+          "cy_rel": 0.055,
+          "radius_rel": 0.109,
+          "score": 0.56
+        }
+      ],
+      "neighbour_dE": 7.7,
+      "value_p5_p95": [
+        16.9,
+        71.5
+      ],
+      "thresholds_dE": {
+        "edge": 3.0,
+        "stroke": 8.6
+      },
+      "palette": [
+        [
+          "#3B5473",
+          0.316
+        ],
+        [
+          "#24334D",
+          0.249
+        ],
+        [
+          "#577596",
+          0.22
+        ],
+        [
+          "#80A4C0",
+          0.109
+        ],
+        [
+          "#6D8881",
+          0.062
+        ],
+        [
+          "#B6C897",
+          0.043
+        ]
+      ]
+    },
+    {
+      "name": "06#0",
+      "file": "vangogh/06_garden_white_house.webp",
+      "box": [
+        0.42,
+        0.0,
+        1.0,
+        0.4
+      ],
+      "weight": 0.4,
+      "size_px": [
+        478,
+        400
+      ],
+      "stroke_width_px": 6.0,
+      "stroke_length_px": 24.0,
+      "length_p90_px": 62.3,
+      "aspect": 4.0,
+      "width_rel": 0.015,
+      "curvature_per_px": 0.0215,
+      "curve_radius_rel_width": 7.75,
+      "turn_consistency": 0.43,
+      "jitter_deg": 7.7,
+      "direction_deg": 72.1,
+      "direction_order": 0.522,
+      "coherence": 0.426,
+      "coherent_area": 0.795,
+      "swirls": [],
+      "neighbour_dE": 5.0,
+      "value_p5_p95": [
+        71.5,
+        87.3
+      ],
+      "thresholds_dE": {
+        "edge": 2.0,
+        "stroke": 5.2
+      },
+      "palette": [
+        [
+          "#B8DDC3",
+          0.392
+        ],
+        [
+          "#AAD7C6",
+          0.303
+        ],
+        [
+          "#8AC9BC",
+          0.138
+        ],
+        [
+          "#A2CAA9",
+          0.136
+        ],
+        [
+          "#6B9696",
+          0.017
+        ],
+        [
+          "#36516E",
+          0.014
+        ]
+      ]
+    },
+    {
+      "name": "12#0",
+      "file": "vangogh/12_white_house_night_1890.webp",
+      "box": [
+        0.15,
+        0.0,
+        0.68,
+        0.14
+      ],
+      "weight": 1.0,
+      "size_px": [
+        1830,
+        400
+      ],
+      "stroke_width_px": 8.5,
+      "stroke_length_px": 42.5,
+      "length_p90_px": 117.3,
+      "aspect": 5.0,
+      "width_rel": 0.0213,
+      "curvature_per_px": 0.0315,
+      "curve_radius_rel_width": 3.74,
+      "turn_consistency": 0.33,
+      "jitter_deg": 9.8,
+      "direction_deg": 7.0,
+      "direction_order": 0.508,
+      "coherence": 0.56,
+      "coherent_area": 0.886,
+      "swirls": [],
+      "neighbour_dE": 10.2,
+      "value_p5_p95": [
+        36.7,
+        72.1
+      ],
+      "thresholds_dE": {
+        "edge": 3.1,
+        "stroke": 8.9
+      },
+      "palette": [
+        [
+          "#7790B3",
+          0.274
+        ],
+        [
+          "#A198A7",
+          0.235
+        ],
+        [
+          "#5173A0",
+          0.169
+        ],
+        [
+          "#5F8394",
+          0.133
+        ],
+        [
+          "#B4AD9C",
+          0.1
+        ],
+        [
+          "#345391",
+          0.088
+        ]
+      ]
+    },
+    {
+      "name": "12#1",
+      "file": "vangogh/12_white_house_night_1890.webp",
+      "box": [
+        0.74,
+        0.28,
+        1.0,
+        0.42
+      ],
+      "weight": 1.0,
+      "size_px": [
+        886,
+        400
+      ],
+      "stroke_width_px": 8.0,
+      "stroke_length_px": 46.0,
+      "length_p90_px": 126.1,
+      "aspect": 5.75,
+      "width_rel": 0.02,
+      "curvature_per_px": 0.0244,
+      "curve_radius_rel_width": 5.11,
+      "turn_consistency": 0.25,
+      "jitter_deg": 8.1,
+      "direction_deg": 9.9,
+      "direction_order": 0.582,
+      "coherence": 0.617,
+      "coherent_area": 0.91,
+      "swirls": [],
+      "neighbour_dE": 10.2,
+      "value_p5_p95": [
+        25.8,
+        74.3
+      ],
+      "thresholds_dE": {
+        "edge": 3.0,
+        "stroke": 8.5
+      },
+      "palette": [
+        [
+          "#7B97AA",
+          0.37
+        ],
+        [
+          "#A5ACA2",
+          0.239
+        ],
+        [
+          "#608C8D",
+          0.209
+        ],
+        [
+          "#466688",
+          0.087
+        ],
+        [
+          "#223A30",
+          0.068
+        ],
+        [
+          "#8D754E",
+          0.029
+        ]
+      ]
+    },
+    {
+      "name": "14#0",
+      "file": "vangogh/14_olive_grove_orange_sky_1889.webp",
+      "box": [
+        0.15,
+        0.0,
+        0.75,
+        0.3
+      ],
+      "weight": 1.0,
+      "size_px": [
+        1280,
+        400
+      ],
+      "stroke_width_px": 8.0,
+      "stroke_length_px": 65.0,
+      "length_p90_px": 159.2,
+      "aspect": 8.12,
+      "width_rel": 0.02,
+      "curvature_per_px": 0.0177,
+      "curve_radius_rel_width": 7.07,
+      "turn_consistency": 0.2,
+      "jitter_deg": 5.7,
+      "direction_deg": 128.0,
+      "direction_order": 0.801,
+      "coherence": 0.631,
+      "coherent_area": 0.922,
+      "swirls": [],
+      "neighbour_dE": 23.2,
+      "value_p5_p95": [
+        54.4,
+        88.6
+      ],
+      "thresholds_dE": {
+        "edge": 8.0,
+        "stroke": 22.7
+      },
+      "palette": [
+        [
+          "#CAC78F",
+          0.253
+        ],
+        [
+          "#DED172",
+          0.251
+        ],
+        [
+          "#F2CE49",
+          0.24
+        ],
+        [
+          "#A7B6A6",
+          0.157
+        ],
+        [
+          "#DC9136",
+          0.054
+        ],
+        [
+          "#6C5C5D",
+          0.046
+        ]
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
  "M_Bark": {
-  "tex": "T_Bark.png",
+  "tex": "BrushStyle/T_Bark_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.7303189909672123,
@@ -8,10 +8,12 @@
    0.6319041604010261
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Bark_Brush.png"
  },
  "M_Bristle": {
-  "tex": "T_Wood_Grain.png",
+  "tex": "BrushStyle/T_Wood_Grain_Albedo.png",
   "scale": 1.5,
   "tint": [
    1.0739268963498967,
@@ -19,10 +21,12 @@
    0.34158957798223855
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wood_Grain_Brush.png"
  },
  "M_Ceramic": {
-  "tex": "T_Ceramic.png",
+  "tex": "BrushStyle/T_Ceramic_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.9878340684634908,
@@ -30,10 +34,14 @@
    0.8144947410501973
   ],
   "rough": 0.25,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Ceramic_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Copper": {
-  "tex": "T_Gilded.png",
+  "tex": "BrushStyle/T_Gilded_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.7894124638737419,
@@ -41,10 +49,11 @@
    0.2962940258596442
   ],
   "rough": 0.3799999952316284,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Fabric_Blue": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.1955798264346021,
@@ -52,10 +61,12 @@
    0.3678999111799932
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_Fabric_Mustard": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.8725286052456043,
@@ -63,10 +74,12 @@
    0.12429808098783357
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_Fabric_Olive": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.25117596457767477,
@@ -74,10 +87,14 @@
    0.21730304260811256
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_Floor_StoneA": {
-  "tex": "T_Path_Stone.png",
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.0,
   "tint": [
    1.0553044425848248,
@@ -88,7 +105,7 @@
   "metal": 0.0
  },
  "M_Floor_StoneB": {
-  "tex": "T_Path_Stone.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.0,
   "tint": [
    1.0026586171566247,
@@ -96,10 +113,12 @@
    0.8041530993533657
   ],
   "rough": 0.800000011920929,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png"
  },
  "M_Flower_Rose": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.7186992960013269,
@@ -107,10 +126,14 @@
    0.25455840931173224
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Flower_White": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.9926569641333924,
@@ -118,10 +141,14 @@
    0.8589637729142943
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Flower_Yellow": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.795644200276988,
@@ -129,10 +156,14 @@
    0.12187986409524014
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Frame_Gold": {
-  "tex": "T_Gilded.png",
+  "tex": "BrushStyle/T_Gilded_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.9110301780737982,
@@ -140,10 +171,11 @@
    0.6713471326956699
   ],
   "rough": 0.44999998807907104,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Frame_Silver": {
-  "tex": "T_Metal.png",
+  "tex": "BrushStyle/T_Metal_Albedo.png",
   "scale": 1.0,
   "tint": [
    1.4079894063908949,
@@ -151,10 +183,11 @@
    1.5
   ],
   "rough": 0.4000000059604645,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Ground_Earth": {
-  "tex": "T_Path_Stone.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.34175137694576263,
@@ -162,10 +195,12 @@
    0.18350671490150586
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png"
  },
  "M_Hatch_Metal": {
-  "tex": "T_Metal.png",
+  "tex": "BrushStyle/T_Metal_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.5176716207001384,
@@ -173,10 +208,11 @@
    0.5843446573169828
   ],
   "rough": 0.6000000238418579,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Interior_Ceiling": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    1.0049541335675882,
@@ -184,10 +220,14 @@
    0.762065650118975
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Interior_Concrete": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.31000980203227774,
@@ -195,10 +235,14 @@
    0.33720491476648884
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Interior_FloorTile": {
-  "tex": "T_Floor_Tile.png",
+  "tex": "BrushStyle/T_Floor_Tile_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.8424545788104615,
@@ -206,10 +250,12 @@
    0.9030568120358212
   ],
   "rough": 0.550000011920929,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Floor_Tile_Brush.png"
  },
  "M_Interior_FloorWood": {
-  "tex": "T_Wood_Grain.png",
+  "tex": "BrushStyle/T_Wood_Grain_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.867396533670501,
@@ -217,10 +263,12 @@
    0.5732654544675029
   ],
   "rough": 0.800000011920929,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wood_Grain_Brush.png"
  },
  "M_Interior_Wainscot": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.23613047302068405,
@@ -228,10 +276,18 @@
    0.2056286877480269
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Interior_Wallpaper": {
-  "tex": "T_Wall_Soft.png",
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2,
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.9597469359970435,
@@ -242,7 +298,7 @@
   "metal": 0.0
  },
  "M_Ivy_Light": {
-  "tex": "T_Leaves.png",
+  "tex": "BrushStyle/T_Leaves_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.6640418518324545,
@@ -250,10 +306,12 @@
    0.5911938900510112
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Leaves_Brush.png"
  },
  "M_Leaf_Dark": {
-  "tex": "T_Leaves.png",
+  "tex": "BrushStyle/T_Leaves_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.32420630356561814,
@@ -261,10 +319,12 @@
    0.29518745945129293
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Leaves_Brush.png"
  },
  "M_Mop_Cotton": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 1.5,
   "tint": [
    1.0215318432117466,
@@ -272,10 +332,12 @@
    0.8241866100049364
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_Museum_AwningB": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.9298594971322978,
@@ -283,10 +345,14 @@
    0.7322905324690687
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Museum_Brass": {
-  "tex": "T_Gilded.png",
+  "tex": "BrushStyle/T_Gilded_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.9610005811059112,
@@ -294,10 +360,11 @@
    0.6713471326956699
   ],
   "rough": 0.44999998807907104,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Museum_Door": {
-  "tex": "T_Painted_Boards.png",
+  "tex": "BrushStyle/T_Painted_Boards_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.28776336671353153,
@@ -305,10 +372,12 @@
    0.626280441221289
   ],
   "rough": 0.8500000238418579,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Painted_Boards_Brush.png"
  },
  "M_Museum_Metal": {
-  "tex": "T_Metal.png",
+  "tex": "BrushStyle/T_Metal_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.4475936271554113,
@@ -316,10 +385,11 @@
    0.5270342331881667
   ],
   "rough": 0.550000011920929,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Museum_Plaster": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.9107302725325936,
@@ -327,10 +397,14 @@
    0.6592788726934655
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Museum_Shutter": {
-  "tex": "T_Painted_Boards.png",
+  "tex": "BrushStyle/T_Painted_Boards_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.7319911581384171,
@@ -338,10 +412,12 @@
    0.7024168331470738
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Painted_Boards_Brush.png"
  },
  "M_Museum_Stone": {
-  "tex": "T_Path_Stone.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.7962522545869062,
@@ -349,10 +425,14 @@
    0.825776701949239
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png"
  },
  "M_Museum_Wood": {
-  "tex": "T_Wood_Grain.png",
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wood_Grain_Brush.png",
+  "tex": "BrushStyle/T_Wood_Grain_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.7463416389108124,
@@ -363,7 +443,7 @@
   "metal": 0.0
  },
  "M_Museum_WoodDark": {
-  "tex": "T_Wood_Grain.png",
+  "tex": "BrushStyle/T_Wood_Grain_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.3232325300830451,
@@ -371,10 +451,12 @@
    0.1697545643534458
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wood_Grain_Brush.png"
  },
  "M_Path_Stone": {
-  "tex": "T_Path_Stone.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.9196899468621426,
@@ -382,10 +464,12 @@
    0.9162968635126354
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png"
  },
  "M_Path_StoneWarm": {
-  "tex": "T_Path_Stone.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.9249482203480521,
@@ -393,10 +477,14 @@
    0.7683616287507751
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png"
  },
  "M_Plant_Leaf": {
-  "tex": "T_Leaves.png",
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Leaves_Brush.png",
+  "tex": "BrushStyle/T_Leaves_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.5966033067279846,
@@ -407,7 +495,7 @@
   "metal": 0.0
  },
  "M_Plant_LeafLight": {
-  "tex": "T_Leaves.png",
+  "tex": "BrushStyle/T_Leaves_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.7734174882701906,
@@ -415,10 +503,12 @@
    0.6834011443228977
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Leaves_Brush.png"
  },
  "M_Plastic_Black": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.06872671618453563,
@@ -426,10 +516,14 @@
    0.07926583625206858
   ],
   "rough": 0.5,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Plastic_Blue": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.12926547614089193,
@@ -437,10 +531,14 @@
    0.4524252913251015
   ],
   "rough": 0.44999998807907104,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Plastic_Green": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.19881597505421122,
@@ -448,10 +546,14 @@
    0.18797595567835698
   ],
   "rough": 0.44999998807907104,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Plastic_Grey": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.4370453092821907,
@@ -459,10 +561,14 @@
    0.5062594439645868
   ],
   "rough": 0.5,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Plastic_Orange": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.8285227518352822,
@@ -470,10 +576,14 @@
    0.1058588147301518
   ],
   "rough": 0.44999998807907104,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Plastic_Red": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.6007062567960105,
@@ -481,10 +591,14 @@
    0.12107097456494195
   ],
   "rough": 0.5,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Plastic_White": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.9587377535049753,
@@ -492,10 +606,14 @@
    0.8699257376523717
   ],
   "rough": 0.44999998807907104,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Plastic_Yellow": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.9065145215003971,
@@ -503,10 +621,14 @@
    0.1046638308899945
   ],
   "rough": 0.44999998807907104,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Pot": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.6728897845781389,
@@ -514,10 +636,14 @@
    0.35663616078354604
   ],
   "rough": 0.8999999761581421,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Rubber": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.046107217970958826,
@@ -525,10 +651,14 @@
    0.05128753568572224
   ],
   "rough": 0.800000011920929,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Rug_Gold": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.63241754563844,
@@ -536,10 +666,12 @@
    0.18086595322002014
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_Rug_Terracotta": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.5630801000473461,
@@ -547,10 +679,12 @@
    0.16962163093443208
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_RugSolid_Blue": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 0.699999988079071,
   "tint": [
    0.1955798264346021,
@@ -558,10 +692,12 @@
    0.3678999111799932
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_RugSolid_Cream": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 0.699999988079071,
   "tint": [
    0.9049593423570788,
@@ -569,10 +705,12 @@
    0.5630801000473461
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_RugSolid_Gold": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 0.699999988079071,
   "tint": [
    0.63241754563844,
@@ -580,10 +718,12 @@
    0.18086595322002014
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_RugSolid_Navy": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 0.699999988079071,
   "tint": [
    0.1446187584751583,
@@ -591,10 +731,12 @@
    0.2414728507713799
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_RugSolid_Terracotta": {
-  "tex": "T_Fabric.png",
+  "tex": "BrushStyle/T_Fabric_Albedo.png",
   "scale": 0.699999988079071,
   "tint": [
    0.5630801000473461,
@@ -602,10 +744,12 @@
    0.16962163093443208
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Fabric_Brush.png"
  },
  "M_Sign_Board": {
-  "tex": "T_Painted_Boards.png",
+  "tex": "BrushStyle/T_Painted_Boards_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.10825280335022354,
@@ -613,10 +757,12 @@
    0.2481946543821567
   ],
   "rough": 0.8500000238418579,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Painted_Boards_Brush.png"
  },
  "M_Soil": {
-  "tex": "T_Path_Stone.png",
+  "tex": "BrushStyle/T_Path_Stone_Albedo.png",
   "scale": 1.5,
   "tint": [
    0.22059597703254763,
@@ -624,10 +770,12 @@
    0.13422321380901395
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Path_Stone_Brush.png"
  },
  "M_Steel": {
-  "tex": "T_Metal.png",
+  "tex": "BrushStyle/T_Metal_Albedo.png",
   "scale": 1.0,
   "tint": [
    1.409080094735856,
@@ -635,10 +783,11 @@
    1.5
   ],
   "rough": 0.3499999940395355,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "lit"
  },
  "M_Sunflower_Disc": {
-  "tex": "T_Bark.png",
+  "tex": "BrushStyle/T_Bark_Albedo.png",
   "scale": 2.0,
   "tint": [
    0.45437835642511926,
@@ -646,10 +795,12 @@
    0.22988134316911757
   ],
   "rough": 1.0,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Bark_Brush.png"
  },
  "M_Wall_Cerulean": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.44357752098961717,
@@ -657,10 +808,14 @@
    0.608378462935963
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Wall_Coral": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.7343270984002898,
@@ -668,10 +823,14 @@
    0.26236124785399895
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Wall_Grey": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.5490023463298135,
@@ -679,10 +838,14 @@
    0.5754348235411424
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Wall_Mint": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.5490023463298135,
@@ -690,10 +853,14 @@
    0.6196580282765456
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Wall_Ochre": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.8415699321910226,
@@ -701,10 +868,14 @@
    0.3591413326362744
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Wall_Olive": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.5386877960651595,
@@ -712,10 +883,14 @@
    0.4262892303431806
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Wall_Rose": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.8207103215116861,
@@ -723,10 +898,14 @@
    0.42205645023554356
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Wall_Terracotta": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.6368581947926857,
@@ -734,10 +913,14 @@
    0.3178090285314684
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  },
  "M_Wall_White": {
-  "tex": "T_Wall_Soft.png",
+  "tex": "BrushStyle/T_Wall_Soft_Albedo.png",
   "scale": 1.0,
   "tint": [
    0.9611649449858773,
@@ -745,6 +928,10 @@
    0.8443087325204015
   ],
   "rough": 0.949999988079071,
-  "metal": 0.0
+  "metal": 0.0,
+  "shader": "painterly",
+  "brush": "BrushStyle/T_Wall_Soft_Brush.png",
+  "brush_strength": 0.08,
+  "brush_breakup": 0.2
  }
 }

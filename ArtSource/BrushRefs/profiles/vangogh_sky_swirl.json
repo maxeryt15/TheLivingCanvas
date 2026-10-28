@@ -1,0 +1,422 @@
+{
+  "artist": "vangogh",
+  "theme": "sky_swirl",
+  "work_short_side_px": 400,
+  "aggregate": {
+    "stroke_width_px": 6.0,
+    "stroke_length_px": 29.0,
+    "aspect": 4.67,
+    "width_rel": 0.015,
+    "curvature_per_px": 0.0195,
+    "curve_radius_rel_width": 8.54,
+    "turn_consistency": 0.49,
+    "jitter_deg": 6.0,
+    "coherence": 0.564,
+    "coherent_area": 0.896,
+    "neighbour_dE": 11.8,
+    "direction_order": 0.145,
+    "swirls_per_region": 2.4,
+    "swirl_radius_rel": 0.109,
+    "direction_deg": 46.6,
+    "direction_agreement": 0.076
+  },
+  "regions": [
+    {
+      "name": "01#0",
+      "file": "vangogh/01_wheatfield_cypresses_1889.webp",
+      "box": [
+        0.0,
+        0.0,
+        0.62,
+        0.45
+      ],
+      "weight": 1.0,
+      "size_px": [
+        551,
+        400
+      ],
+      "stroke_width_px": 8.0,
+      "stroke_length_px": 29.0,
+      "length_p90_px": 68.4,
+      "aspect": 3.62,
+      "width_rel": 0.02,
+      "curvature_per_px": 0.0272,
+      "curve_radius_rel_width": 4.59,
+      "turn_consistency": 0.5,
+      "jitter_deg": 8.1,
+      "direction_deg": 2.0,
+      "direction_order": 0.035,
+      "coherence": 0.529,
+      "coherent_area": 0.872,
+      "swirls": [
+        {
+          "cx_rel": 0.193,
+          "cy_rel": 0.172,
+          "radius_rel": 0.109,
+          "score": 0.68
+        }
+      ],
+      "neighbour_dE": 7.2,
+      "value_p5_p95": [
+        56.3,
+        83.9
+      ],
+      "thresholds_dE": {
+        "edge": 2.2,
+        "stroke": 6.3
+      },
+      "palette": [
+        [
+          "#9AA6BA",
+          0.205
+        ],
+        [
+          "#CCCBB9",
+          0.193
+        ],
+        [
+          "#B6BCC0",
+          0.186
+        ],
+        [
+          "#A4AFA2",
+          0.143
+        ],
+        [
+          "#788BAE",
+          0.14
+        ],
+        [
+          "#8D9BA2",
+          0.132
+        ]
+      ]
+    },
+    {
+      "name": "03#0",
+      "file": "vangogh/03_starry_night_1889_detail.webp",
+      "box": [
+        0.28,
+        0.02,
+        0.78,
+        0.98
+      ],
+      "weight": 1.0,
+      "size_px": [
+        491,
+        400
+      ],
+      "stroke_width_px": 5.5,
+      "stroke_length_px": 30.0,
+      "length_p90_px": 80.0,
+      "aspect": 5.45,
+      "width_rel": 0.0138,
+      "curvature_per_px": 0.0175,
+      "curve_radius_rel_width": 10.41,
+      "turn_consistency": 0.49,
+      "jitter_deg": 5.2,
+      "direction_deg": 7.7,
+      "direction_order": 0.186,
+      "coherence": 0.648,
+      "coherent_area": 0.941,
+      "swirls": [
+        {
+          "cx_rel": 0.846,
+          "cy_rel": 0.336,
+          "radius_rel": 0.109,
+          "score": 0.88
+        },
+        {
+          "cx_rel": 0.675,
+          "cy_rel": 0.055,
+          "radius_rel": 0.109,
+          "score": 0.8
+        },
+        {
+          "cx_rel": 0.14,
+          "cy_rel": 0.922,
+          "radius_rel": 0.109,
+          "score": 0.77
+        },
+        {
+          "cx_rel": 0.789,
+          "cy_rel": 0.828,
+          "radius_rel": 0.109,
+          "score": 0.68
+        },
+        {
+          "cx_rel": 0.433,
+          "cy_rel": 0.555,
+          "radius_rel": 0.312,
+          "score": 0.59
+        }
+      ],
+      "neighbour_dE": 18.2,
+      "value_p5_p95": [
+        18.2,
+        84.4
+      ],
+      "thresholds_dE": {
+        "edge": 6.3,
+        "stroke": 18.1
+      },
+      "palette": [
+        [
+          "#4B5B8D",
+          0.266
+        ],
+        [
+          "#757F96",
+          0.223
+        ],
+        [
+          "#283579",
+          0.19
+        ],
+        [
+          "#C2C7CD",
+          0.141
+        ],
+        [
+          "#313A5B",
+          0.134
+        ],
+        [
+          "#AA9F72",
+          0.045
+        ]
+      ]
+    },
+    {
+      "name": "19#0",
+      "file": "vangogh/19_road_cypress_star_1890.webp",
+      "box": [
+        0.0,
+        0.0,
+        0.38,
+        0.42
+      ],
+      "weight": 1.0,
+      "size_px": [
+        400,
+        578
+      ],
+      "stroke_width_px": 6.0,
+      "stroke_length_px": 28.0,
+      "length_p90_px": 72.0,
+      "aspect": 4.67,
+      "width_rel": 0.015,
+      "curvature_per_px": 0.0193,
+      "curve_radius_rel_width": 8.65,
+      "turn_consistency": 0.33,
+      "jitter_deg": 6.0,
+      "direction_deg": 49.0,
+      "direction_order": 0.144,
+      "coherence": 0.571,
+      "coherent_area": 0.908,
+      "swirls": [
+        {
+          "cx_rel": 0.648,
+          "cy_rel": 0.449,
+          "radius_rel": 0.312,
+          "score": 0.87
+        },
+        {
+          "cx_rel": 0.125,
+          "cy_rel": 0.784,
+          "radius_rel": 0.109,
+          "score": 0.59
+        }
+      ],
+      "neighbour_dE": 13.5,
+      "value_p5_p95": [
+        20.9,
+        80.7
+      ],
+      "thresholds_dE": {
+        "edge": 4.9,
+        "stroke": 13.9
+      },
+      "palette": [
+        [
+          "#7A9AB7",
+          0.274
+        ],
+        [
+          "#536F96",
+          0.259
+        ],
+        [
+          "#293D67",
+          0.207
+        ],
+        [
+          "#7EA095",
+          0.129
+        ],
+        [
+          "#B4CBD4",
+          0.101
+        ],
+        [
+          "#B0C377",
+          0.03
+        ]
+      ]
+    },
+    {
+      "name": "19#1",
+      "file": "vangogh/19_road_cypress_star_1890.webp",
+      "box": [
+        0.62,
+        0.0,
+        1.0,
+        0.42
+      ],
+      "weight": 1.0,
+      "size_px": [
+        400,
+        580
+      ],
+      "stroke_width_px": 6.0,
+      "stroke_length_px": 28.0,
+      "length_p90_px": 70.1,
+      "aspect": 4.67,
+      "width_rel": 0.015,
+      "curvature_per_px": 0.0195,
+      "curve_radius_rel_width": 8.54,
+      "turn_consistency": 0.47,
+      "jitter_deg": 6.0,
+      "direction_deg": 62.0,
+      "direction_order": 0.15,
+      "coherence": 0.564,
+      "coherent_area": 0.896,
+      "swirls": [
+        {
+          "cx_rel": 0.164,
+          "cy_rel": 0.145,
+          "radius_rel": 0.188,
+          "score": 0.9
+        }
+      ],
+      "neighbour_dE": 11.8,
+      "value_p5_p95": [
+        19.4,
+        76.1
+      ],
+      "thresholds_dE": {
+        "edge": 4.4,
+        "stroke": 12.6
+      },
+      "palette": [
+        [
+          "#94B1BC",
+          0.228
+        ],
+        [
+          "#5B7A7C",
+          0.226
+        ],
+        [
+          "#6E8EAC",
+          0.226
+        ],
+        [
+          "#283B45",
+          0.156
+        ],
+        [
+          "#3E5980",
+          0.136
+        ],
+        [
+          "#BCA570",
+          0.029
+        ]
+      ]
+    },
+    {
+      "name": "20#1",
+      "file": "vangogh/20_cypresses_1889.webp",
+      "box": [
+        0.65,
+        0.05,
+        1.0,
+        0.5
+      ],
+      "weight": 1.0,
+      "size_px": [
+        400,
+        653
+      ],
+      "stroke_width_px": 8.0,
+      "stroke_length_px": 34.0,
+      "length_p90_px": 76.0,
+      "aspect": 4.25,
+      "width_rel": 0.02,
+      "curvature_per_px": 0.0253,
+      "curve_radius_rel_width": 4.93,
+      "turn_consistency": 0.6,
+      "jitter_deg": 7.1,
+      "direction_deg": 77.6,
+      "direction_order": 0.145,
+      "coherence": 0.511,
+      "coherent_area": 0.857,
+      "swirls": [
+        {
+          "cx_rel": 0.656,
+          "cy_rel": 0.617,
+          "radius_rel": 0.188,
+          "score": 0.65
+        },
+        {
+          "cx_rel": 0.391,
+          "cy_rel": 0.11,
+          "radius_rel": 0.312,
+          "score": 0.64
+        },
+        {
+          "cx_rel": 0.852,
+          "cy_rel": 0.191,
+          "radius_rel": 0.109,
+          "score": 0.59
+        }
+      ],
+      "neighbour_dE": 5.3,
+      "value_p5_p95": [
+        61.4,
+        85.3
+      ],
+      "thresholds_dE": {
+        "edge": 2.0,
+        "stroke": 5.0
+      },
+      "palette": [
+        [
+          "#C0BAA5",
+          0.252
+        ],
+        [
+          "#D2CCAB",
+          0.231
+        ],
+        [
+          "#C0D1BB",
+          0.172
+        ],
+        [
+          "#9CB7A4",
+          0.166
+        ],
+        [
+          "#7CA194",
+          0.164
+        ],
+        [
+          "#B1B06B",
+          0.015
+        ]
+      ]
+    }
+  ]
+}

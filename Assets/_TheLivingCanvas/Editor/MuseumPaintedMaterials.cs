@@ -6,8 +6,10 @@ using UnityEngine;
 namespace TheLivingCanvas.EditorTools
 {
     /// <summary>
-    /// Crea materiales URP Lit con las texturas pintadas (Van Gogh) y los asigna por nombre a los FBX del museo
+    /// Crea materiales con las texturas pintadas (Van Gogh) y los asigna por nombre a los FBX del museo
     /// (remap del importer). Datos: Museum_Int_Painted.json / Museum_Ext_Painted.json (exportados desde Blender).
+    /// Por defecto URP Lit. Con "shader": "painterly" en la entrada usa TLC/Painterly y "brush" como _BrushMap
+    /// (texturas re-trazadas de Tools/brushstyle, en Textures/Painted/Museum/BrushStyle).
     /// </summary>
     public static class MuseumPaintedMaterials
     {
@@ -15,7 +17,10 @@ namespace TheLivingCanvas.EditorTools
         const string MatDir = "Assets/_TheLivingCanvas/Art/Materials/Museum/Painted";
         const string TexDir = "Assets/_TheLivingCanvas/Art/Textures/Painted/Museum";
 
-        [System.Serializable] class Entry { public string tex; public float scale = 1f; public float[] tint; public float rough = 1f; public float metal; }
+        // Mismos valores que los materiales de prueba M_BrushStyle_* (aprobados en BrushStyle_Test.unity).
+        const float BrushStrength = 0.3f, BrushBreakup = 0.45f;
+
+        [System.Serializable] class Entry { public string tex; public float scale = 1f; public float[] tint; public float rough = 1f; public float metal; public string shader = "lit"; public string brush; public float brushStrength = BrushStrength; public float brushBreakup = BrushBreakup; }
 
         [MenuItem("TheLivingCanvas/Museum/Apply Painted Materials")]
         public static void ApplyAll()
@@ -32,21 +37,36 @@ namespace TheLivingCanvas.EditorTools
             var entries = ParseEntries(File.ReadAllText(jsonPath));
             if (!AssetDatabase.IsValidFolder(MatDir)) Directory.CreateDirectory(MatDir);
 
-            var shader = Shader.Find("Universal Render Pipeline/Lit");
+            var lit = Shader.Find("Universal Render Pipeline/Lit");
+            var painterly = Shader.Find("TLC/Painterly");
             var mats = new Dictionary<string, Material>();
             foreach (var kv in entries)
             {
                 var e = kv.Value;
+                var shader = e.shader == "painterly" ? painterly : lit;
                 string path = $"{MatDir}/{tag}_{kv.Key}.mat";
                 var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
                 if (mat == null) { mat = new Material(shader); AssetDatabase.CreateAsset(mat, path); }
+                else if (mat.shader != shader) mat.shader = shader;   // mismo asset: el remap de los FBX no cambia
                 var tex = AssetDatabase.LoadAssetAtPath<Texture2D>($"{TexDir}/{e.tex}");
+                if (tex == null) Debug.LogWarning($"[MuseumPaintedMaterials] Falta la textura {TexDir}/{e.tex} ({kv.Key})");
                 mat.SetTexture("_BaseMap", tex);
                 mat.SetTextureScale("_BaseMap", new Vector2(e.scale, e.scale));
                 var lin = new Color(e.tint[0], e.tint[1], e.tint[2], 1f);
                 mat.SetColor("_BaseColor", lin.gamma);   // el JSON viene en lineal; la propiedad de color espera gamma
-                mat.SetFloat("_Smoothness", 1f - e.rough);
-                mat.SetFloat("_Metallic", e.metal);
+                if (shader == painterly)
+                {
+                    // _BrushMap usa las UV ya escaladas por _BaseMap_ST: con _BrushScale 1 queda alineado con la textura
+                    mat.SetTexture("_BrushMap", string.IsNullOrEmpty(e.brush) ? null : AssetDatabase.LoadAssetAtPath<Texture2D>($"{TexDir}/{e.brush}"));
+                    mat.SetFloat("_BrushScale", 1f);
+                    mat.SetFloat("_BrushStrength", e.brushStrength);
+                    mat.SetFloat("_BrushBreakup", e.brushBreakup);
+                }
+                else
+                {
+                    mat.SetFloat("_Smoothness", 1f - e.rough);
+                    mat.SetFloat("_Metallic", e.metal);
+                }
                 EditorUtility.SetDirty(mat);
                 mats[kv.Key] = mat;
             }
@@ -77,6 +97,11 @@ namespace TheLivingCanvas.EditorTools
                     rough = System.Convert.ToSingle(d["rough"]),
                     metal = System.Convert.ToSingle(d["metal"]),
                 };
+                if (d.ContainsKey("shader")) e.shader = (string)d["shader"];
+                if (d.ContainsKey("brush")) e.brush = (string)d["brush"];
+                // paredes grandes y planas: con la pincelada por defecto parecian camuflaje de cerca
+                if (d.ContainsKey("brush_strength")) e.brushStrength = System.Convert.ToSingle(d["brush_strength"]);
+                if (d.ContainsKey("brush_breakup")) e.brushBreakup = System.Convert.ToSingle(d["brush_breakup"]);
                 var t = (List<object>)d["tint"];
                 e.tint = new[] { System.Convert.ToSingle(t[0]), System.Convert.ToSingle(t[1]), System.Convert.ToSingle(t[2]) };
                 result[kv.Key] = e;

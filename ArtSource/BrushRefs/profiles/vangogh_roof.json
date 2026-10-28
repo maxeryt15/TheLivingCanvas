@@ -1,0 +1,96 @@
+{
+  "artist": "vangogh",
+  "theme": "roof",
+  "work_short_side_px": 400,
+  "aggregate": {
+    "stroke_width_px": 9.5,
+    "stroke_length_px": 42.0,
+    "aspect": 4.42,
+    "width_rel": 0.0238,
+    "curvature_per_px": 0.0311,
+    "curve_radius_rel_width": 3.39,
+    "turn_consistency": 0.33,
+    "jitter_deg": 10.4,
+    "coherence": 0.585,
+    "coherent_area": 0.899,
+    "neighbour_dE": 17.8,
+    "direction_order": 0.334,
+    "swirls_per_region": 1.0,
+    "swirl_radius_rel": 0.109,
+    "direction_deg": 35.2,
+    "direction_agreement": 0.334
+  },
+  "regions": [
+    {
+      "name": "12#2",
+      "file": "vangogh/12_white_house_night_1890.webp",
+      "box": [
+        0.18,
+        0.17,
+        0.58,
+        0.3
+      ],
+      "weight": 1.0,
+      "size_px": [
+        1481,
+        400
+      ],
+      "stroke_width_px": 9.5,
+      "stroke_length_px": 42.0,
+      "length_p90_px": 145.0,
+      "aspect": 4.42,
+      "width_rel": 0.0238,
+      "curvature_per_px": 0.0311,
+      "curve_radius_rel_width": 3.39,
+      "turn_consistency": 0.33,
+      "jitter_deg": 10.4,
+      "direction_deg": 35.2,
+      "direction_order": 0.334,
+      "coherence": 0.585,
+      "coherent_area": 0.899,
+      "swirls": [
+        {
+          "cx_rel": 0.907,
+          "cy_rel": 0.5,
+          "radius_rel": 0.109,
+          "score": 0.55
+        }
+      ],
+      "neighbour_dE": 17.8,
+      "value_p5_p95": [
+        19.4,
+        69.5
+      ],
+      "thresholds_dE": {
+        "edge": 4.4,
+        "stroke": 12.6
+      },
+      "palette": [
+        [
+          "#6E8BAB",
+          0.271
+        ],
+        [
+          "#8A5635",
+          0.201
+        ],
+        [
+          "#BB602E",
+          0.157
+        ],
+        [
+          "#796D5D",
+          0.144
+        ],
+        [
+          "#BB9B78",
+          0.128
+        ],
+        [
+          "#38291F",
+          0.099
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "_info": [
+    "Textura del museo -> tema de pincelada y ajustes para re-trazarla (Tools/brushstyle/restroke_all.py).",
+    "follow: 0 = flujo del tema, 1 = direccion de los trazos de la textura. amount: opacidad de los trazos nuevos.",
+    "edge_de: salto de color que el trazo no cruza (juntas, tablas, tejas). set: claves del generador solo para esta textura.",
+    "shader: el que usara el material en Unity (paso 3). lit = se queda en URP/Lit (metal: Painterly no tiene metalico).",
+    "Usos: veces que aparece en Museum_Int_Painted.json / Museum_Ext_Painted.json."
+  ],
+  "textures": {
+    "T_Wall_Soft":      {"family": "pared",    "theme": "scattered_dash", "follow": 0.6, "amount": 1.0, "edge_de": 25, "set": {"impasto": 0.3, "bristles": 0.35}, "shader": "painterly", "uses": "int 28"},
+    "T_Plaster":        {"family": "pared",    "theme": "scattered_dash", "follow": 0.6, "amount": 1.0, "edge_de": 25, "set": {"impasto": 0.3, "bristles": 0.35}, "shader": "painterly", "uses": "ext 9"},
+    "T_Ceramic":        {"family": "pared",    "theme": "scattered_dash", "follow": 0.7, "amount": 0.8, "edge_de": 25, "set": {"impasto": 0.25, "bristles": 0.3}, "shader": "painterly", "uses": "int 1"},
+    "T_Fabric":         {"family": "tela",     "theme": "hatch",          "follow": 0.9, "amount": 0.6, "edge_de": 25, "set": {"impasto": 0.25, "bristles": 0.6, "aspect": 6}, "shader": "painterly", "uses": "int 11"},
+    "T_Wood_Grain":     {"family": "madera",   "theme": "hatch",          "follow": 1.0, "match": 1.0, "amount": 1.0, "edge_de": 25, "set": {"impasto": 0.45}, "shader": "painterly", "uses": "int 4, ext 2"},
+    "T_Painted_Boards": {"family": "madera",   "theme": "hatch",          "follow": 0.9, "amount": 1.0, "edge_de": 20, "set": {"impasto": 0.45}, "shader": "painterly", "uses": "int 3, ext 3"},
+    "T_Bark":           {"family": "corteza",  "theme": "cypress",        "follow": 1.0, "match": 1.0, "amount": 1.0, "edge_de": 30, "set": {"impasto": 0.7, "stroke_width_rel": 0.0095}, "shader": "painterly", "uses": "int 2, ext 2"},
+    "T_Path_Stone":     {"family": "piedra",   "theme": "ground",         "follow": 0.6, "amount": 1.0, "edge_de": 25, "set": {}, "shader": "painterly", "uses": "int 7, ext 3"},
+    "T_Stone_Blocks":   {"family": "piedra",   "theme": "ground",         "follow": 0.6, "amount": 1.0, "edge_de": 25, "set": {}, "shader": "painterly", "uses": "ext 1"},
+    "T_Floor_Tile":     {"family": "piedra",   "theme": "ground",         "follow": 0.7, "amount": 0.9, "edge_de": 20, "set": {"impasto": 0.4}, "shader": "painterly", "uses": "int 1"},
+    "T_Roof_Tiles":     {"family": "tejado",   "theme": "roof",           "follow": 0.6, "amount": 1.0, "edge_de": 22, "set": {}, "shader": "painterly", "uses": "ext 3"},
+    "T_Grass_Ground":   {"family": "pasto",    "theme": "field",          "follow": 0.6, "amount": 1.0, "edge_de": 30, "set": {}, "shader": "painterly", "uses": "ext 2"},
+    "T_Leaves":         {"family": "follaje",  "theme": "foliage",        "follow": 0.6, "amount": 1.0, "edge_de": 25, "set": {}, "shader": "painterly", "uses": "int 4, ext 5"},
+    "T_Bush_Swirl":     {"family": "follaje",  "theme": "foliage",        "follow": 0.8, "amount": 1.0, "edge_de": 30, "set": {}, "shader": "painterly", "uses": "ext 1"},
+    "T_Cypress":        {"family": "cipres",   "theme": "cypress",        "follow": 1.0, "match": 1.0, "amount": 1.0, "edge_de": 30, "set": {}, "shader": "painterly", "uses": "ext 1"},
+    "T_Gilded":         {"family": "metal",    "theme": "scattered_dash", "follow": 0.8, "amount": 0.7, "edge_de": 30, "set": {"impasto": 0.5}, "shader": "lit", "uses": "int 3, ext 3"},
+    "T_Metal":          {"family": "metal",    "theme": "sky_dash",       "follow": 1.0, "match": 1.0, "amount": 0.9, "edge_de": 30, "set": {"impasto": 0.3, "stroke_width_rel": 0.009}, "shader": "lit", "uses": "int 4, ext 2"}
+  },
+  "skip": {
+    "T_Wall_Wavy": "no la usa ningun material del museo",
+    "T_Grass_Ground_Munch": "variante Munch, no usada",
+    "T_Path_Stone_Munch": "variante Munch, no usada",
+    "T_Plaster_Munch": "variante Munch, no usada"
+  }
+}
