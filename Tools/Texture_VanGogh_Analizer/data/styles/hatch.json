@@ -1,0 +1,56 @@
+{
+  "theme": "hatch",
+  "mix_requested": {
+    "vangogh": 0.9,
+    "monet": 0.1
+  },
+  "mix_used": {
+    "vangogh": 1.0
+  },
+  "measured": {
+    "aspect": 4.0,
+    "coherence": 0.484,
+    "coherent_area": 0.845,
+    "curvature_per_px": 0.0157,
+    "curve_radius_rel_width": 5.56,
+    "direction_agreement": 0.06,
+    "direction_deg": 44.7,
+    "direction_order": 0.602,
+    "jitter_deg": 5.2,
+    "neighbour_dE": 7.1,
+    "stroke_length_px": 28.0,
+    "stroke_width_px": 7.0,
+    "swirls_per_region": 0.0,
+    "turn_consistency": 0.33,
+    "width_rel": 0.0175
+  },
+  "generator": {
+    "direction_deg": null,
+    "drift_amount": 0.9,
+    "palette_weighted": true,
+    "stroke_width_rel": 0.0158,
+    "width_jitter": 0.3,
+    "aspect": 3.2,
+    "length_jitter": 0.35,
+    "bend_radius_rel_width": 5.56,
+    "bend_same_side": 0.33,
+    "jitter_deg": 5.2,
+    "swirls": 0,
+    "swirl_radius_rel": 0.192,
+    "swirl_same_spin": 0.5,
+    "drift_scale": 2,
+    "coverage": 1.44,
+    "neighbour_dE": 7.1,
+    "palette": [
+      "#526A83",
+      "#D4A72C",
+      "#65785A",
+      "#A85F47",
+      "#747983",
+      "#E0CDB0"
+    ],
+    "palette_scale": 2,
+    "impasto": 0.6,
+    "bristles": 0.5
+  }
+}

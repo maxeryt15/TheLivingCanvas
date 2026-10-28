@@ -1,0 +1,281 @@
+{
+  "artist": "vangogh",
+  "theme": "field",
+  "work_short_side_px": 400,
+  "aggregate": {
+    "stroke_width_px": 7.0,
+    "stroke_length_px": 31.0,
+    "aspect": 4.43,
+    "width_rel": 0.0175,
+    "curvature_per_px": 0.0216,
+    "curve_radius_rel_width": 5.84,
+    "turn_consistency": 0.33,
+    "jitter_deg": 7.3,
+    "coherence": 0.54,
+    "coherent_area": 0.866,
+    "neighbour_dE": 12.9,
+    "direction_order": 0.486,
+    "swirls_per_region": 0.0,
+    "swirl_radius_rel": null,
+    "direction_deg": 96.4,
+    "direction_agreement": 0.391
+  },
+  "regions": [
+    {
+      "name": "01#2",
+      "file": "vangogh/01_wheatfield_cypresses_1889.webp",
+      "box": [
+        0.25,
+        0.72,
+        0.8,
+        0.95
+      ],
+      "weight": 1.0,
+      "size_px": [
+        957,
+        400
+      ],
+      "stroke_width_px": 7.0,
+      "stroke_length_px": 31.0,
+      "length_p90_px": 79.9,
+      "aspect": 4.43,
+      "width_rel": 0.0175,
+      "curvature_per_px": 0.0245,
+      "curve_radius_rel_width": 5.84,
+      "turn_consistency": 0.43,
+      "jitter_deg": 8.2,
+      "direction_deg": 2.9,
+      "direction_order": 0.107,
+      "coherence": 0.487,
+      "coherent_area": 0.843,
+      "swirls": [],
+      "neighbour_dE": 9.2,
+      "value_p5_p95": [
+        38.0,
+        71.1
+      ],
+      "thresholds_dE": {
+        "edge": 3.2,
+        "stroke": 9.1
+      },
+      "palette": [
+        [
+          "#9D841D",
+          0.301
+        ],
+        [
+          "#BAA02C",
+          0.25
+        ],
+        [
+          "#846F20",
+          0.223
+        ],
+        [
+          "#6B6E35",
+          0.132
+        ],
+        [
+          "#A99C57",
+          0.059
+        ],
+        [
+          "#3C4931",
+          0.034
+        ]
+      ]
+    },
+    {
+      "name": "09#0",
+      "file": "vangogh/09_harvest_provence_1888.webp",
+      "box": [
+        0.0,
+        0.62,
+        1.0,
+        1.0
+      ],
+      "weight": 1.0,
+      "size_px": [
+        1302,
+        400
+      ],
+      "stroke_width_px": 8.8,
+      "stroke_length_px": 34.0,
+      "length_p90_px": 85.0,
+      "aspect": 3.89,
+      "width_rel": 0.0219,
+      "curvature_per_px": 0.0216,
+      "curve_radius_rel_width": 5.29,
+      "turn_consistency": 0.33,
+      "jitter_deg": 7.3,
+      "direction_deg": 90.8,
+      "direction_order": 0.486,
+      "coherence": 0.54,
+      "coherent_area": 0.866,
+      "swirls": [],
+      "neighbour_dE": 17.3,
+      "value_p5_p95": [
+        55.9,
+        85.7
+      ],
+      "thresholds_dE": {
+        "edge": 4.8,
+        "stroke": 13.7
+      },
+      "palette": [
+        [
+          "#D9C67A",
+          0.245
+        ],
+        [
+          "#D9CE9B",
+          0.217
+        ],
+        [
+          "#D3A530",
+          0.212
+        ],
+        [
+          "#DCC25A",
+          0.2
+        ],
+        [
+          "#BE7F26",
+          0.1
+        ],
+        [
+          "#72613D",
+          0.026
+        ]
+      ]
+    },
+    {
+      "name": "10#0",
+      "file": "vangogh/10_wheatfield_view_arles_detail.webp",
+      "box": [
+        0.1,
+        0.4,
+        1.0,
+        1.0
+      ],
+      "weight": 0.6,
+      "size_px": [
+        400,
+        433
+      ],
+      "stroke_width_px": 6.0,
+      "stroke_length_px": 27.0,
+      "length_p90_px": 60.9,
+      "aspect": 4.5,
+      "width_rel": 0.015,
+      "curvature_per_px": 0.0227,
+      "curve_radius_rel_width": 7.33,
+      "turn_consistency": 0.33,
+      "jitter_deg": 6.6,
+      "direction_deg": 83.7,
+      "direction_order": 0.808,
+      "coherence": 0.515,
+      "coherent_area": 0.886,
+      "swirls": [],
+      "neighbour_dE": 8.5,
+      "value_p5_p95": [
+        49.8,
+        72.7
+      ],
+      "thresholds_dE": {
+        "edge": 3.0,
+        "stroke": 8.4
+      },
+      "palette": [
+        [
+          "#D78E24",
+          0.308
+        ],
+        [
+          "#DFA225",
+          0.218
+        ],
+        [
+          "#CA7B23",
+          0.212
+        ],
+        [
+          "#C78C34",
+          0.136
+        ],
+        [
+          "#B16C29",
+          0.102
+        ],
+        [
+          "#814D23",
+          0.023
+        ]
+      ]
+    },
+    {
+      "name": "19#3",
+      "file": "vangogh/19_road_cypress_star_1890.webp",
+      "box": [
+        0.0,
+        0.6,
+        0.28,
+        0.98
+      ],
+      "weight": 1.0,
+      "size_px": [
+        400,
+        710
+      ],
+      "stroke_width_px": 6.0,
+      "stroke_length_px": 29.5,
+      "length_p90_px": 77.0,
+      "aspect": 4.92,
+      "width_rel": 0.015,
+      "curvature_per_px": 0.0178,
+      "curve_radius_rel_width": 9.34,
+      "turn_consistency": 0.33,
+      "jitter_deg": 6.7,
+      "direction_deg": 109.2,
+      "direction_order": 0.664,
+      "coherence": 0.564,
+      "coherent_area": 0.903,
+      "swirls": [],
+      "neighbour_dE": 12.9,
+      "value_p5_p95": [
+        30.2,
+        78.3
+      ],
+      "thresholds_dE": {
+        "edge": 4.3,
+        "stroke": 12.3
+      },
+      "palette": [
+        [
+          "#AC813B",
+          0.359
+        ],
+        [
+          "#CFA14A",
+          0.206
+        ],
+        [
+          "#83632B",
+          0.192
+        ],
+        [
+          "#878257",
+          0.09
+        ],
+        [
+          "#4D3F1E",
+          0.078
+        ],
+        [
+          "#BDC1AA",
+          0.075
+        ]
+      ]
+    }
+  ]
+}

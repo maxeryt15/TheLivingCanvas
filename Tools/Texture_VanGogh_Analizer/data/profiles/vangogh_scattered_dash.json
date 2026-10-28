@@ -1,0 +1,153 @@
+{
+  "artist": "vangogh",
+  "theme": "scattered_dash",
+  "work_short_side_px": 400,
+  "aggregate": {
+    "stroke_width_px": 8.5,
+    "stroke_length_px": 32.5,
+    "aspect": 3.82,
+    "width_rel": 0.0213,
+    "curvature_per_px": 0.0209,
+    "curve_radius_rel_width": 3.75,
+    "turn_consistency": 0.33,
+    "jitter_deg": 7.8,
+    "coherence": 0.483,
+    "coherent_area": 0.818,
+    "neighbour_dE": 4.2,
+    "direction_order": 0.253,
+    "swirls_per_region": 0.0,
+    "swirl_radius_rel": null,
+    "direction_deg": 90.3,
+    "direction_agreement": 0.276
+  },
+  "regions": [
+    {
+      "name": "08#0",
+      "file": "vangogh/08_selfportrait_grey_felt_hat_1887.webp",
+      "box": [
+        0.0,
+        0.0,
+        0.2,
+        0.45
+      ],
+      "weight": 1.0,
+      "size_px": [
+        400,
+        1348
+      ],
+      "stroke_width_px": 8.5,
+      "stroke_length_px": 32.5,
+      "length_p90_px": 74.1,
+      "aspect": 3.82,
+      "width_rel": 0.0213,
+      "curvature_per_px": 0.0314,
+      "curve_radius_rel_width": 3.75,
+      "turn_consistency": 0.33,
+      "jitter_deg": 10.1,
+      "direction_deg": 98.3,
+      "direction_order": 0.253,
+      "coherence": 0.483,
+      "coherent_area": 0.838,
+      "swirls": [],
+      "neighbour_dE": 13.8,
+      "value_p5_p95": [
+        15.6,
+        70.5
+      ],
+      "thresholds_dE": {
+        "edge": 4.2,
+        "stroke": 12.1
+      },
+      "palette": [
+        [
+          "#334A60",
+          0.281
+        ],
+        [
+          "#557291",
+          0.183
+        ],
+        [
+          "#686360",
+          0.158
+        ],
+        [
+          "#292D30",
+          0.153
+        ],
+        [
+          "#B2A491",
+          0.125
+        ],
+        [
+          "#7A4E3A",
+          0.1
+        ]
+      ]
+    },
+    {
+      "name": "18#0",
+      "file": "vangogh/18_selfportrait_straw_hat_1887.webp",
+      "box": [
+        0.0,
+        0.15,
+        0.2,
+        0.85
+      ],
+      "weight": 1.0,
+      "size_px": [
+        400,
+        1750
+      ],
+      "stroke_width_px": 10.0,
+      "stroke_length_px": 52.0,
+      "length_p90_px": 157.0,
+      "aspect": 5.2,
+      "width_rel": 0.025,
+      "curvature_per_px": 0.0209,
+      "curve_radius_rel_width": 4.79,
+      "turn_consistency": 0.33,
+      "jitter_deg": 7.8,
+      "direction_deg": 84.0,
+      "direction_order": 0.316,
+      "coherence": 0.49,
+      "coherent_area": 0.818,
+      "swirls": [],
+      "neighbour_dE": 4.2,
+      "value_p5_p95": [
+        54.4,
+        72.7
+      ],
+      "thresholds_dE": {
+        "edge": 2.0,
+        "stroke": 5.0
+      },
+      "palette": [
+        [
+          "#B9AC8E",
+          0.521
+        ],
+        [
+          "#AC9F7D",
+          0.182
+        ],
+        [
+          "#9B9A89",
+          0.137
+        ],
+        [
+          "#798787",
+          0.073
+        ],
+        [
+          "#AD9754",
+          0.056
+        ],
+        [
+          "#90754F",
+          0.03
+        ]
+      ]
+    }
+  ]
+}

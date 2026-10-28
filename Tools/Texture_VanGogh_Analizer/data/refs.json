@@ -1,0 +1,120 @@
+{
+  "_info": [
+    "Referencias para Tools/brushstyle. Las imagenes completas viven en <artista>/; cada 'region' es un recorte por tema.",
+    "box = [x0, y0, x1, y1] normalizado 0..1 sobre la imagen. weight = cuanto pesa en el perfil del tema (1.0 normal).",
+    "use = false: se guarda pero no se mide (duplicados, copias pintadas por terceros). Nunca entran en el build."
+  ],
+  "themes": {
+    "sky_swirl": "cielo con remolinos: trazos curvos largos que giran alrededor de centros",
+    "sky_dash": "cielo de trazos cortos casi paralelos, color roto",
+    "field": "trigal / pasto: trazos cortos verticales o diagonales, ritmo denso",
+    "cypress": "llama vertical: trazos curvos que suben y se retuercen",
+    "foliage": "copa de arbol / arbusto: comas curvas en abanico",
+    "leaf_blade": "hojas largas en cuchilla (lirios), contorno marcado",
+    "petal": "petalos y corolas, impasto grueso radial",
+    "scattered_dash": "fondo de toques sueltos que orbitan una forma (retratos): ideal para paredes",
+    "water": "reflejos verticales quebrados sobre agua",
+    "ground": "suelo / camino: trazos horizontales o que siguen la perspectiva",
+    "roof": "tejas: toques cortos en hileras",
+    "flower_dabs": "manchas de flores pequenas, toques redondeados",
+    "hatch": "rayado direccional que modela volumen (sombrero, cara)"
+  },
+  "images": [
+    {"file": "vangogh/01_wheatfield_cypresses_1889.webp", "artist": "vangogh", "title": "Wheat Field with Cypresses (1889)", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "sky_swirl", "box": [0.00, 0.00, 0.62, 0.45]},
+       {"theme": "cypress",   "box": [0.77, 0.30, 0.86, 0.58]},
+       {"theme": "field",     "box": [0.25, 0.72, 0.80, 0.95]},
+       {"theme": "foliage",   "box": [0.00, 0.55, 0.25, 0.75]}]},
+    {"file": "vangogh/02_starry_night_rhone_1888.webp", "artist": "vangogh", "title": "Starry Night over the Rhone (1888)", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "sky_dash", "box": [0.05, 0.00, 1.00, 0.30]},
+       {"theme": "water",    "box": [0.05, 0.45, 1.00, 0.68]},
+       {"theme": "ground",   "box": [0.00, 0.75, 0.65, 1.00]}]},
+    {"file": "vangogh/03_starry_night_1889_detail.webp", "artist": "vangogh", "title": "The Starry Night (1889), detalle", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "sky_swirl", "box": [0.28, 0.02, 0.78, 0.98]}]},
+    {"file": "vangogh/04_sunflowers_yellow_1889.webp", "artist": "vangogh", "title": "Sunflowers, fondo amarillo (1889)", "weight": 0.5, "use": true,
+     "notes": "baja resolucion",
+     "regions": [
+       {"theme": "petal", "box": [0.28, 0.05, 0.82, 0.45]}]},
+    {"file": "vangogh/05_irises_1889_detail.webp", "artist": "vangogh", "title": "Irises (1889), detalle", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "leaf_blade", "box": [0.00, 0.45, 0.75, 1.00]}]},
+    {"file": "vangogh/06_garden_white_house.webp", "artist": "vangogh", "title": "Jardin con casa blanca", "weight": 0.4, "use": true,
+     "notes": "atribucion dudosa: peso bajo",
+     "regions": [
+       {"theme": "sky_dash",    "box": [0.42, 0.00, 1.00, 0.40]},
+       {"theme": "foliage",     "box": [0.00, 0.05, 0.35, 0.50]},
+       {"theme": "flower_dabs", "box": [0.50, 0.65, 1.00, 1.00]}]},
+    {"file": "vangogh/07_wheatfield_cypresses_lowres.png", "artist": "vangogh", "title": "Wheat Field with Cypresses, recorte", "weight": 0.0, "use": false,
+     "notes": "duplicado de 01 en baja resolucion y suavizado"},
+    {"file": "vangogh/08_selfportrait_grey_felt_hat_1887.webp", "artist": "vangogh", "title": "Self-Portrait with Grey Felt Hat (1887)", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "scattered_dash", "box": [0.00, 0.00, 0.20, 0.45]},
+       {"theme": "hatch",          "box": [0.25, 0.08, 0.90, 0.30]}]},
+    {"file": "vangogh/09_harvest_provence_1888.webp", "artist": "vangogh", "title": "Harvest in Provence (1888)", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "field", "box": [0.00, 0.62, 1.00, 1.00]}]},
+    {"file": "vangogh/10_wheatfield_view_arles_detail.webp", "artist": "vangogh", "title": "Wheat Field with a View of Arles (1888), detalle", "weight": 0.6, "use": true,
+     "notes": "baja resolucion",
+     "regions": [
+       {"theme": "field", "box": [0.10, 0.40, 1.00, 1.00]}]},
+    {"file": "vangogh/11_almond_blossom_copy.webp", "artist": "copia", "title": "Almond Blossom, copia pintada por terceros", "weight": 0.0, "use": false,
+     "notes": "no es el original: el trazo es de otro pintor"},
+    {"file": "vangogh/12_white_house_night_1890.webp", "artist": "vangogh", "title": "White House at Night (1890)", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "sky_dash", "box": [0.15, 0.00, 0.68, 0.14]},
+       {"theme": "sky_dash", "box": [0.74, 0.28, 1.00, 0.42]},
+       {"theme": "roof",     "box": [0.18, 0.17, 0.58, 0.30]},
+       {"theme": "ground",   "box": [0.20, 0.82, 0.90, 1.00]}]},
+    {"file": "vangogh/13_olive_trees_1889.webp", "artist": "vangogh", "title": "Olive Trees (1889)", "weight": 1.0, "use": true,
+     "notes": "marca de agua abajo a la derecha: fuera de las regiones",
+     "regions": [
+       {"theme": "foliage", "box": [0.30, 0.00, 0.75, 0.45]},
+       {"theme": "ground",  "box": [0.00, 0.55, 0.40, 0.85]}]},
+    {"file": "vangogh/14_olive_grove_orange_sky_1889.webp", "artist": "vangogh", "title": "Olive Grove, Orange Sky (1889)", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "sky_dash", "box": [0.15, 0.00, 0.75, 0.30]},
+       {"theme": "foliage",  "box": [0.70, 0.18, 1.00, 0.50]},
+       {"theme": "ground",   "box": [0.00, 0.75, 0.60, 1.00]}]},
+    {"file": "vangogh/15_sunflowers_detail_1888.webp", "artist": "vangogh", "title": "Sunflowers (1888), detalle", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "petal", "box": [0.20, 0.00, 0.85, 1.00]}]},
+    {"file": "vangogh/16_sunflowers_turquoise_1889.webp", "artist": "vangogh", "title": "Sunflowers, fondo turquesa (1888-89)", "weight": 0.7, "use": true,
+     "regions": [
+       {"theme": "petal", "box": [0.20, 0.05, 0.85, 0.50]}]},
+    {"file": "vangogh/17_sunflowers_turquoise_copy.webp", "artist": "copia", "title": "Sunflowers, copia pintada por terceros", "weight": 0.0, "use": false,
+     "notes": "no es el original"},
+    {"file": "vangogh/18_selfportrait_straw_hat_1887.webp", "artist": "vangogh", "title": "Self-Portrait with Straw Hat (1887)", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "scattered_dash", "box": [0.00, 0.15, 0.20, 0.85]},
+       {"theme": "hatch",          "box": [0.25, 0.05, 0.95, 0.35]}]},
+    {"file": "vangogh/19_road_cypress_star_1890.webp", "artist": "vangogh", "title": "Road with Cypress and Star (1890)", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "sky_swirl", "box": [0.00, 0.00, 0.38, 0.42]},
+       {"theme": "sky_swirl", "box": [0.62, 0.00, 1.00, 0.42]},
+       {"theme": "cypress",   "box": [0.43, 0.20, 0.57, 0.62]},
+       {"theme": "field",     "box": [0.00, 0.60, 0.28, 0.98]},
+       {"theme": "ground",    "box": [0.42, 0.72, 1.00, 1.00]}]},
+    {"file": "vangogh/20_cypresses_1889.webp", "artist": "vangogh", "title": "Cypresses (1889)", "weight": 1.0, "use": true,
+     "regions": [
+       {"theme": "cypress",   "box": [0.12, 0.25, 0.55, 0.75]},
+       {"theme": "sky_swirl", "box": [0.65, 0.05, 1.00, 0.50]}]},
+    {"file": "vangogh/21_houses_auvers_1890.jpg", "artist": "vangogh", "title": "Houses in Auvers (1890)", "weight": 1.0, "use": true,
+     "notes": "PENDIENTE: falta el archivo",
+     "regions": [
+       {"theme": "sky_dash", "box": [0.00, 0.00, 0.55, 0.25]},
+       {"theme": "roof",     "box": [0.32, 0.30, 0.68, 0.42]},
+       {"theme": "foliage",  "box": [0.75, 0.05, 1.00, 0.35]},
+       {"theme": "ground",   "box": [0.30, 0.75, 1.00, 0.95]}]},
+    {"file": "vangogh/22_thatched_cottages_cordeville_1890.jpg", "artist": "vangogh", "title": "Thatched Cottages at Cordeville (1890)", "weight": 1.0, "use": true,
+     "notes": "PENDIENTE: falta el archivo",
+     "regions": [
+       {"theme": "sky_swirl", "box": [0.35, 0.00, 1.00, 0.22]},
+       {"theme": "foliage",   "box": [0.00, 0.12, 0.45, 0.35]},
+       {"theme": "roof",      "box": [0.45, 0.30, 0.75, 0.55]}]},
+    {"file": "vangogh/23_reminiscence_north_copy.jpg", "artist": "copia", "title": "Reminiscence of the North, copia pintada por terceros", "weight": 0.0, "use": false,
+     "notes": "PENDIENTE: falta el archivo. Firma y trazo de reproduccion comercial: solo referencia"}
+  ]
+}

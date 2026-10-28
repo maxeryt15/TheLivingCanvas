@@ -1,0 +1,224 @@
+{
+  "artist": "vangogh",
+  "theme": "cypress",
+  "work_short_side_px": 400,
+  "aggregate": {
+    "stroke_width_px": 6.5,
+    "stroke_length_px": 34.0,
+    "aspect": 5.23,
+    "width_rel": 0.0163,
+    "curvature_per_px": 0.0279,
+    "curve_radius_rel_width": 5.39,
+    "turn_consistency": 0.33,
+    "jitter_deg": 8.2,
+    "coherence": 0.543,
+    "coherent_area": 0.884,
+    "neighbour_dE": 11.8,
+    "direction_order": 0.584,
+    "swirls_per_region": 0.33,
+    "swirl_radius_rel": 0.109,
+    "direction_deg": 81.4,
+    "direction_agreement": 0.604
+  },
+  "regions": [
+    {
+      "name": "01#1",
+      "file": "vangogh/01_wheatfield_cypresses_1889.webp",
+      "box": [
+        0.77,
+        0.3,
+        0.86,
+        0.58
+      ],
+      "weight": 1.0,
+      "size_px": [
+        400,
+        1244
+      ],
+      "stroke_width_px": 6.0,
+      "stroke_length_px": 36.0,
+      "length_p90_px": 83.0,
+      "aspect": 6.0,
+      "width_rel": 0.015,
+      "curvature_per_px": 0.0223,
+      "curve_radius_rel_width": 7.47,
+      "turn_consistency": 0.33,
+      "jitter_deg": 7.6,
+      "direction_deg": 82.4,
+      "direction_order": 0.688,
+      "coherence": 0.543,
+      "coherent_area": 0.867,
+      "swirls": [],
+      "neighbour_dE": 5.5,
+      "value_p5_p95": [
+        9.8,
+        75.4
+      ],
+      "thresholds_dE": {
+        "edge": 2.0,
+        "stroke": 5.7
+      },
+      "palette": [
+        [
+          "#172527",
+          0.405
+        ],
+        [
+          "#21332F",
+          0.283
+        ],
+        [
+          "#344739",
+          0.149
+        ],
+        [
+          "#C3CAC2",
+          0.064
+        ],
+        [
+          "#667577",
+          0.061
+        ],
+        [
+          "#4A5F36",
+          0.039
+        ]
+      ]
+    },
+    {
+      "name": "19#2",
+      "file": "vangogh/19_road_cypress_star_1890.webp",
+      "box": [
+        0.43,
+        0.2,
+        0.57,
+        0.62
+      ],
+      "weight": 1.0,
+      "size_px": [
+        400,
+        1579
+      ],
+      "stroke_width_px": 7.0,
+      "stroke_length_px": 32.5,
+      "length_p90_px": 79.9,
+      "aspect": 4.64,
+      "width_rel": 0.0175,
+      "curvature_per_px": 0.0279,
+      "curve_radius_rel_width": 5.12,
+      "turn_consistency": 0.33,
+      "jitter_deg": 9.4,
+      "direction_deg": 76.0,
+      "direction_order": 0.556,
+      "coherence": 0.567,
+      "coherent_area": 0.886,
+      "swirls": [],
+      "neighbour_dE": 12.8,
+      "value_p5_p95": [
+        5.5,
+        64.4
+      ],
+      "thresholds_dE": {
+        "edge": 4.0,
+        "stroke": 11.5
+      },
+      "palette": [
+        [
+          "#161E1F",
+          0.347
+        ],
+        [
+          "#2B3627",
+          0.206
+        ],
+        [
+          "#5D6543",
+          0.149
+        ],
+        [
+          "#4A5957",
+          0.138
+        ],
+        [
+          "#929C7E",
+          0.095
+        ],
+        [
+          "#708DAE",
+          0.066
+        ]
+      ]
+    },
+    {
+      "name": "20#0",
+      "file": "vangogh/20_cypresses_1889.webp",
+      "box": [
+        0.12,
+        0.25,
+        0.55,
+        0.75
+      ],
+      "weight": 1.0,
+      "size_px": [
+        400,
+        591
+      ],
+      "stroke_width_px": 6.5,
+      "stroke_length_px": 34.0,
+      "length_p90_px": 72.2,
+      "aspect": 5.23,
+      "width_rel": 0.0163,
+      "curvature_per_px": 0.0285,
+      "curve_radius_rel_width": 5.39,
+      "turn_consistency": 0.5,
+      "jitter_deg": 8.2,
+      "direction_deg": 85.4,
+      "direction_order": 0.584,
+      "coherence": 0.541,
+      "coherent_area": 0.884,
+      "swirls": [
+        {
+          "cx_rel": 0.477,
+          "cy_rel": 0.37,
+          "radius_rel": 0.109,
+          "score": 0.56
+        }
+      ],
+      "neighbour_dE": 11.8,
+      "value_p5_p95": [
+        14.3,
+        48.3
+      ],
+      "thresholds_dE": {
+        "edge": 4.2,
+        "stroke": 12.0
+      },
+      "palette": [
+        [
+          "#39402A",
+          0.327
+        ],
+        [
+          "#292D24",
+          0.282
+        ],
+        [
+          "#4C552F",
+          0.236
+        ],
+        [
+          "#6D7136",
+          0.1
+        ],
+        [
+          "#646253",
+          0.042
+        ],
+        [
+          "#A1BEA7",
+          0.014
+        ]
+      ]
+    }
+  ]
+}

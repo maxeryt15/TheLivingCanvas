@@ -1,0 +1,57 @@
+{
+  "theme": "cypress",
+  "mix_requested": {
+    "vangogh": 0.9,
+    "monet": 0.1
+  },
+  "mix_used": {
+    "vangogh": 1.0
+  },
+  "measured": {
+    "aspect": 5.23,
+    "coherence": 0.543,
+    "coherent_area": 0.884,
+    "curvature_per_px": 0.0279,
+    "curve_radius_rel_width": 5.39,
+    "direction_agreement": 0.604,
+    "direction_deg": 81.4,
+    "direction_order": 0.584,
+    "jitter_deg": 8.2,
+    "neighbour_dE": 11.8,
+    "stroke_length_px": 34.0,
+    "stroke_width_px": 6.5,
+    "swirl_radius_rel": 0.109,
+    "swirls_per_region": 0.33,
+    "turn_consistency": 0.33,
+    "width_rel": 0.0163
+  },
+  "generator": {
+    "direction_deg": 81.4,
+    "drift_amount": 0.33,
+    "palette_weighted": true,
+    "stroke_width_rel": 0.0147,
+    "width_jitter": 0.3,
+    "aspect": 4.18,
+    "length_jitter": 0.35,
+    "bend_radius_rel_width": 5.39,
+    "bend_same_side": 0.33,
+    "jitter_deg": 8.2,
+    "swirls": 0,
+    "swirl_radius_rel": 0.174,
+    "swirl_same_spin": 0.5,
+    "drift_scale": 2,
+    "coverage": 1.48,
+    "neighbour_dE": 11.8,
+    "palette": [
+      "#2F4A2E",
+      "#1E2A22",
+      "#3E5A34",
+      "#3D5C58",
+      "#65785A",
+      "#9AA24A"
+    ],
+    "palette_scale": 2,
+    "impasto": 0.6,
+    "bristles": 0.5
+  }
+}
